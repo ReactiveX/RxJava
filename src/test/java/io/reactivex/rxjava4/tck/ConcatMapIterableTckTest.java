@@ -28,7 +28,7 @@ public class ConcatMapIterableTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createFlowPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .concatMapIterable((Function<Integer, Iterable<Integer>>) v -> Collections.singletonList(v))
+                .concatMapIterable((Function<Integer, Iterable<Integer>>) Collections::singletonList)
             ;
     }
 }

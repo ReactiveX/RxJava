@@ -71,7 +71,7 @@ public class FlowableCreateTest extends RxJavaTest {
 
             Flowable.<Integer>create(e -> {
                 e.setDisposable(d1);
-                e.setCancellable(() -> d2.dispose());
+                e.setCancellable(d2::dispose);
 
                 e.onNext(1);
                 e.onNext(2);
@@ -532,9 +532,9 @@ public class FlowableCreateTest extends RxJavaTest {
             Flowable<Object> source = Flowable.create(e -> {
                 final FlowableEmitter<Object> f = e.serialize();
 
-                Runnable r1 = () -> f.onComplete();
+                Runnable r1 = f::onComplete;
 
-                Runnable r2 = () -> f.onComplete();
+                Runnable r2 = f::onComplete;
 
                 TestHelper.race(r1, r2);
             }, m);

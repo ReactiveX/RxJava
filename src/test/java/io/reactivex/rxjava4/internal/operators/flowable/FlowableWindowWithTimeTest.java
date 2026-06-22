@@ -118,7 +118,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     }
 
     private void complete(final Subscriber<?> subscriber, int delay) {
-        innerScheduler.schedule(() -> subscriber.onComplete(), delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(subscriber::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> Consumer<Flowable<T>> observeWindow(final List<T> list, final List<List<T>> lists) {
@@ -176,7 +176,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         .doOnComplete(() -> System.out.println("Main done!"))
         .flatMap((Function<Flowable<Integer>, Flowable<Integer>>) w -> w.startWithItem(indicator)
                 .doOnComplete(() -> System.out.println("inner done: " + wip.incrementAndGet())))
-        .doOnNext(pv -> System.out.println(pv))
+        .doOnNext(System.out::println)
         .subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -757,7 +757,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
 
         TestSubscriber<Flowable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
-        .doOnNext(w -> w.subscribe()) // avoid abandonment
+        .doOnNext(Flowable::subscribe) // avoid abandonment
         .test();
 
         // window #1
@@ -1121,7 +1121,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(10, TimeUnit.MINUTES)
         .take(1)
-        .doOnNext(v -> inner.set(v))
+        .doOnNext(inner::set)
         .test();
 
         assertFalse("Processor still has subscribers!", pp.hasSubscribers());
@@ -1161,7 +1161,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(10, TimeUnit.MINUTES, 100)
         .take(1)
-        .doOnNext(v -> inner.set(v))
+        .doOnNext(inner::set)
         .test();
 
         assertFalse("Processor still has subscribers!", pp.hasSubscribers());
@@ -1231,7 +1231,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
             TestHelper.race(
                     () -> pp.onNext(1),
-                    () -> ts.cancel()
+                    ts::cancel
             );
         }
     }

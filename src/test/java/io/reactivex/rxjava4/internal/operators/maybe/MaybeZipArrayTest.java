@@ -210,14 +210,14 @@ public class MaybeZipArrayTest extends RxJavaTest {
 
     @Test
     public void bothSucceed() {
-        Maybe.zipArray(v -> Arrays.asList(v), Maybe.just(1), Maybe.just(2))
+        Maybe.zipArray(Arrays::asList, Maybe.just(1), Maybe.just(2))
         .test()
         .assertResult(Arrays.asList(1, 2));
     }
 
     @Test
     public void oneSourceOnly() {
-        Maybe.zipArray(v -> Arrays.asList(v), Maybe.just(1))
+        Maybe.zipArray(Arrays::asList, Maybe.just(1))
         .test()
         .assertResult(List.of(1));
     }

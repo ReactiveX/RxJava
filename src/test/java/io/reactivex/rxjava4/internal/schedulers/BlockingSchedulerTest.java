@@ -42,7 +42,7 @@ public class BlockingSchedulerTest {
             scheduler.execute(() -> {
                 Flowable.range(1, 5)
                 .subscribeOn(scheduler)
-                .doAfterTerminate(() -> scheduler.shutdown())
+                .doAfterTerminate(scheduler::shutdown)
                 .subscribe(ts);
 
                 ts.assertEmpty();
@@ -64,7 +64,7 @@ public class BlockingSchedulerTest {
             scheduler.execute(() -> {
                 Flowable.range(1, 5)
                 .subscribeOn(scheduler.scheduler())
-                .doAfterTerminate(() -> scheduler.shutdown())
+                .doAfterTerminate(scheduler::shutdown)
                 .subscribe(ts);
 
                 ts.assertEmpty();
@@ -87,7 +87,7 @@ public class BlockingSchedulerTest {
                 Flowable.range(1, 5)
                 .subscribeOn(scheduler)
                 .delay(100, TimeUnit.MILLISECONDS, scheduler)
-                .doAfterTerminate(() -> scheduler.shutdown())
+                .doAfterTerminate(scheduler::shutdown)
                 .subscribe(ts);
 
                 ts.assertEmpty();
@@ -218,7 +218,7 @@ public class BlockingSchedulerTest {
                 d.dispose();
                 assertTrue(d.isDisposed());
 
-                scheduler.scheduleDirect(() -> scheduler.shutdown());
+                scheduler.scheduleDirect(scheduler::shutdown);
 
                 ts.assertEmpty();
             });
@@ -251,7 +251,7 @@ public class BlockingSchedulerTest {
                 d.dispose();
                 assertTrue(d.isDisposed());
 
-                scheduler.scheduleDirect(() -> scheduler.shutdown());
+                scheduler.scheduleDirect(scheduler::shutdown);
 
                 ts.assertEmpty();
             });
@@ -427,7 +427,7 @@ public class BlockingSchedulerTest {
                 for (int i = 0; i < n; i++) {
                     scheduler.scheduleDirect(() -> counter[0]++);
                 }
-                scheduler.scheduleDirect(() -> scheduler.shutdown());
+                scheduler.scheduleDirect(scheduler::shutdown);
             }));
 
             assertEquals(n, counter[0]);
@@ -451,7 +451,7 @@ public class BlockingSchedulerTest {
                 for (int i = 0; i < n; i++) {
                     scheduler.scheduleDirect(() -> counter[0]++, i, TimeUnit.MILLISECONDS);
                 }
-                scheduler.scheduleDirect(() -> scheduler.shutdown(), n + 10, TimeUnit.MILLISECONDS);
+                scheduler.scheduleDirect(scheduler::shutdown, n + 10, TimeUnit.MILLISECONDS);
             });
 
             assertEquals(n, counter[0]);
@@ -473,7 +473,7 @@ public class BlockingSchedulerTest {
             scheduler.execute(() -> Flowable.just(1)
             .subscribeOn(Schedulers.cached())
             .observeOn(scheduler)
-            .doAfterTerminate(() -> scheduler.shutdown())
+            .doAfterTerminate(scheduler::shutdown)
             .subscribe(_ -> t1[0] = Thread.currentThread()));
 
             assertSame(t0, t1[0]);

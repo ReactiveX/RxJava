@@ -103,7 +103,7 @@ public class SingleOnErrorCompleteTest {
 
     @Test
     public void onSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToMaybe(f -> f.onErrorComplete());
+        TestHelper.checkDoubleOnSubscribeSingleToMaybe(Single::onErrorComplete);
     }
 
     @Test

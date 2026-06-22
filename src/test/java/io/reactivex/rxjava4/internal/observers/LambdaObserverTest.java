@@ -37,8 +37,8 @@ public class LambdaObserverTest extends RxJavaTest {
         final List<Object> received = new ArrayList<>();
 
         LambdaObserver<Object> o = new LambdaObserver<>(
-                v -> received.add(v),
-                e -> received.add(e),
+                received::add,
+                received::add,
                 () -> received.add(100),
                 _ -> { throw new TestException(); });
 
@@ -58,7 +58,7 @@ public class LambdaObserverTest extends RxJavaTest {
 
         LambdaObserver<Object> o = new LambdaObserver<>(
                 _ -> { throw new TestException(); },
-                e -> received.add(e),
+                received::add,
                 () -> received.add(100),
                 _ -> { });
 
@@ -80,7 +80,7 @@ public class LambdaObserverTest extends RxJavaTest {
             final List<Object> received = new ArrayList<>();
 
             LambdaObserver<Object> o = new LambdaObserver<>(
-                    v -> received.add(v),
+                    received::add,
                     _ -> { throw new TestException("Inner"); },
                     () -> received.add(100),
                     _ -> { });
@@ -110,8 +110,8 @@ public class LambdaObserverTest extends RxJavaTest {
             final List<Object> received = new ArrayList<>();
 
             LambdaObserver<Object> o = new LambdaObserver<>(
-                    v -> received.add(v),
-                    e -> received.add(e),
+                    received::add,
+                    received::add,
                     () -> { throw new TestException(); },
                     _ -> { });
 
@@ -152,8 +152,8 @@ public class LambdaObserverTest extends RxJavaTest {
             final List<Object> received = new ArrayList<>();
 
             LambdaObserver<Object> o = new LambdaObserver<>(
-                    v -> received.add(v),
-                    e -> received.add(e),
+                    received::add,
+                    received::add,
                     () -> received.add(100),
                     _ -> { });
 
@@ -186,8 +186,8 @@ public class LambdaObserverTest extends RxJavaTest {
 
             final List<Object> received = new ArrayList<>();
 
-            LambdaObserver<Object> o = new LambdaObserver<>(v -> received.add(v),
-                    e -> received.add(e), () -> received.add(100), _ -> { });
+            LambdaObserver<Object> o = new LambdaObserver<>(received::add,
+                    received::add, () -> received.add(100), _ -> { });
 
             source.subscribe(o);
 
@@ -207,7 +207,7 @@ public class LambdaObserverTest extends RxJavaTest {
 
         ps.subscribe(_ -> {
             throw new TestException();
-        }, e -> errors.add(e));
+        }, errors::add);
 
         assertTrue("No observers?!", ps.hasObservers());
         assertTrue("Has errors already?!", errors.isEmpty());
@@ -227,7 +227,7 @@ public class LambdaObserverTest extends RxJavaTest {
         final List<Throwable> errors = new ArrayList<>();
 
         ps.subscribe(new LambdaObserver<>(_ -> {
-        }, e -> errors.add(e), () -> {
+        }, errors::add, () -> {
         }, _ -> {
             throw new TestException();
         }));
@@ -268,7 +268,7 @@ public class LambdaObserverTest extends RxJavaTest {
 
             @SuppressWarnings("resource")
             LambdaObserver<Integer> o = new LambdaObserver<>(Functions.<Integer>emptyConsumer(),
-                    t -> observerErrors.add(t),
+                    observerErrors::add,
                     Functions.EMPTY_ACTION,
                     Functions.<Disposable>emptyConsumer());
 

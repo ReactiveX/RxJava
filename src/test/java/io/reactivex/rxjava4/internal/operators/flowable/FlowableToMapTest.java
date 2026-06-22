@@ -35,7 +35,7 @@ public class FlowableToMapTest extends RxJavaTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    Function<String, Integer> lengthFunc = t1 -> t1.length();
+    Function<String, Integer> lengthFunc = String::length;
     Function<String, String> duplicate = t1 -> t1 + t1;
 
     @Test
@@ -143,7 +143,7 @@ public class FlowableToMapTest extends RxJavaTest {
             }
         };
 
-        Function<String, Integer> lengthFunc = t1 -> t1.length();
+        Function<String, Integer> lengthFunc = String::length;
         Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, v -> v, mapFactory).toFlowable();
 
         Map<Integer, String> expected = new LinkedHashMap<>();
@@ -166,7 +166,7 @@ public class FlowableToMapTest extends RxJavaTest {
             throw new RuntimeException("Forced failure");
         };
 
-        Function<String, Integer> lengthFunc = t1 -> t1.length();
+        Function<String, Integer> lengthFunc = String::length;
         Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, v -> v, mapFactory).toFlowable();
 
         Map<Integer, String> expected = new LinkedHashMap<>();
@@ -282,7 +282,7 @@ public class FlowableToMapTest extends RxJavaTest {
             }
         };
 
-        Function<String, Integer> lengthFunc = t1 -> t1.length();
+        Function<String, Integer> lengthFunc = String::length;
         Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, v -> v, mapFactory);
 
         Map<Integer, String> expected = new LinkedHashMap<>();
@@ -304,7 +304,7 @@ public class FlowableToMapTest extends RxJavaTest {
             throw new RuntimeException("Forced failure");
         };
 
-        Function<String, Integer> lengthFunc = t1 -> t1.length();
+        Function<String, Integer> lengthFunc = String::length;
         Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, v -> v, mapFactory);
 
         Map<Integer, String> expected = new LinkedHashMap<>();

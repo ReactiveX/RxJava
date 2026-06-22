@@ -184,7 +184,7 @@ public class FlowableTakeTest extends RxJavaTest {
     @Test
     public void unsubscribeFromSynchronousInfiniteFlowable() {
         final AtomicLong count = new AtomicLong();
-        INFINITE_OBSERVABLE.take(10).subscribe(l -> count.set(l));
+        INFINITE_OBSERVABLE.take(10).subscribe(count::set);
         assertEquals(10, count.get());
     }
 

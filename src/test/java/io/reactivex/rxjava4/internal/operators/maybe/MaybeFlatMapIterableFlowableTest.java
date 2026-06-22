@@ -580,12 +580,12 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(MaybeSubject.create().flattenAsFlowable(v -> Collections.singletonList(v)));
+        TestHelper.assertBadRequestReported(MaybeSubject.create().flattenAsFlowable(Collections::singletonList));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(m -> m.flattenAsFlowable(v -> Collections.singletonList(v)));
+        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(m -> m.flattenAsFlowable(Collections::singletonList));
     }
 
     @Test

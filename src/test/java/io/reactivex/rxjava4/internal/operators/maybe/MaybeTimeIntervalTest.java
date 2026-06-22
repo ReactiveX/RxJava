@@ -84,7 +84,7 @@ public class MaybeTimeIntervalTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.timeInterval());
+        TestHelper.checkDoubleOnSubscribeMaybe(Maybe::timeInterval);
     }
 
     @Test

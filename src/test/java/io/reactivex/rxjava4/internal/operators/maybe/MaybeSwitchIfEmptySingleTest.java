@@ -81,9 +81,9 @@ public class MaybeSwitchIfEmptySingleTest extends RxJavaTest {
 
             final TestObserver<Integer> to = pp.singleElement().switchIfEmpty(Single.just(2)).test();
 
-            Runnable r1 = () -> pp.onComplete();
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = () -> to.dispose();
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }

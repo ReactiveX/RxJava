@@ -364,7 +364,7 @@ public class FlowableCacheTest extends RxJavaTest {
     @Test
     public void cancelledUpFrontConnectAnyway() {
         final AtomicInteger call = new AtomicInteger();
-        Flowable.fromCallable(() -> call.incrementAndGet())
+        Flowable.fromCallable(call::incrementAndGet)
         .cache()
         .test(1L, true)
         .assertNoValues();
@@ -375,7 +375,7 @@ public class FlowableCacheTest extends RxJavaTest {
     @Test
     public void cancelledUpFront() {
         final AtomicInteger call = new AtomicInteger();
-        Flowable<Integer> f = Flowable.<Integer>fromCallable(() -> call.incrementAndGet())
+        Flowable<Integer> f = Flowable.<Integer>fromCallable(call::incrementAndGet)
                 .concatWith(Flowable.<Integer>never())
         .cache();
 
@@ -430,7 +430,7 @@ public class FlowableCacheTest extends RxJavaTest {
 
             Runnable r1 = () -> cache.subscribe(ts);
 
-            Runnable r2 = () -> pp.onComplete();
+            Runnable r2 = pp::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -460,8 +460,8 @@ public class FlowableCacheTest extends RxJavaTest {
             TestSubscriber<Object> ts = f.test();
 
             TestHelper.race(
-                    () -> ts.cancel(),
-                    () -> f.test()
+                    ts::cancel,
+                    f::test
             );
         }
     }

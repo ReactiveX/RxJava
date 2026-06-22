@@ -1813,8 +1813,8 @@ public class ObservableBufferTest extends RxJavaTest {
                     .test();
 
             TestHelper.race(
-                    () -> bs.onComplete(),
-                    () -> ps.onComplete()
+                    bs::onComplete,
+                    ps::onComplete
             );
 
             to.assertResult(List.of(1));

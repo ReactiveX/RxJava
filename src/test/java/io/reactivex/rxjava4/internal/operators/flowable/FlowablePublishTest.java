@@ -462,7 +462,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
             Runnable r1 = () -> cf.subscribe(ts2);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -541,7 +541,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
             Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -595,7 +595,7 @@ public class FlowablePublishTest extends RxJavaTest {
             final Disposable d = cf.connect();
             final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            Runnable r1 = () -> d.dispose();
+            Runnable r1 = d::dispose;
 
             Runnable r2 = () -> cf.subscribe(ts);
 
@@ -649,7 +649,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
             cf.connect();
 
-            Runnable r1 = () -> cf.test();
+            Runnable r1 = cf::test;
 
             TestHelper.race(r1, r1);
         }
@@ -661,7 +661,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
             final ConnectableFlowable<Integer> cf = Flowable.<Integer>empty().publish();
 
-            Runnable r1 = () -> cf.connect();
+            Runnable r1 = cf::connect;
 
             TestHelper.race(r1, r1);
         }
@@ -1045,7 +1045,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
             Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = () -> ts1.cancel();
+            Runnable r2 = ts1::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -1217,7 +1217,7 @@ public class FlowablePublishTest extends RxJavaTest {
             final ConnectableFlowable<Integer> cf =
                     new FlowablePublish<>(Flowable.<Integer>never(), 128);
 
-            Runnable r = () -> cf.connect();
+            Runnable r = cf::connect;
 
             TestHelper.race(r, r);
         }

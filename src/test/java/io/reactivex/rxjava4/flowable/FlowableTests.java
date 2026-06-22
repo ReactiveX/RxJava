@@ -132,7 +132,7 @@ public class FlowableTests extends RxJavaTest {
 
     @Test
     public void countErrorFlowable() {
-        Flowable<String> f = Flowable.error(() -> new RuntimeException());
+        Flowable<String> f = Flowable.error(RuntimeException::new);
 
         f.count().toFlowable().subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -162,7 +162,7 @@ public class FlowableTests extends RxJavaTest {
 
     @Test
     public void countError() {
-        Flowable<String> f = Flowable.error(() -> new RuntimeException());
+        Flowable<String> f = Flowable.error(RuntimeException::new);
 
         f.count().subscribe(wo);
         verify(wo, never()).onSuccess(anyInt());
@@ -246,7 +246,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduce() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4);
-        flowable.reduce((t1, t2) -> t1 + t2)
+        flowable.reduce(Integer::sum)
         .toFlowable()
         .subscribe(w);
         // we should be called only once
@@ -257,7 +257,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduceWithEmptyObservable() {
         Flowable<Integer> flowable = Flowable.range(1, 0);
-        flowable.reduce((t1, t2) -> t1 + t2)
+        flowable.reduce(Integer::sum)
         .toFlowable()
         .test()
         .assertResult();
@@ -271,7 +271,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduceWithEmptyObservableAndSeed() {
         Flowable<Integer> flowable = Flowable.range(1, 0);
-        int value = flowable.reduce(1, (t1, t2) -> t1 + t2)
+        int value = flowable.reduce(1, Integer::sum)
         .blockingGet();
 
         assertEquals(1, value);
@@ -280,7 +280,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduceWithInitialValue() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4);
-        flowable.reduce(50, (t1, t2) -> t1 + t2)
+        flowable.reduce(50, Integer::sum)
         .subscribe(wo);
         // we should be called only once
         verify(wo, times(1)).onSuccess(anyInt());
@@ -406,7 +406,7 @@ public class FlowableTests extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<>();
         // FIXME custom built???
-        Flowable.just("1", "2").concatWith(Flowable.<String>error(() -> new NumberFormatException()))
+        Flowable.just("1", "2").concatWith(Flowable.<String>error(NumberFormatException::new))
         .subscribe(new DefaultSubscriber<String>() /* NFI */ {
 
             @Override

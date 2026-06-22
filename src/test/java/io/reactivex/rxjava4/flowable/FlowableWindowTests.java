@@ -37,7 +37,7 @@ public class FlowableWindowTests extends RxJavaTest {
             .window(3)
             .map(xs -> xs.toList().toFlowable())
         )
-        .blockingForEach(xs -> lists.add(xs));
+        .blockingForEach(lists::add);
 
         assertArrayEquals(lists.get(0).toArray(new Integer[3]), new Integer[] { 1, 2, 3 });
         assertArrayEquals(lists.get(1).toArray(new Integer[3]), new Integer[] { 4, 5, 6 });

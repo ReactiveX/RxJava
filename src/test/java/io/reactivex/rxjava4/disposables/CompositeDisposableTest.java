@@ -33,9 +33,9 @@ public class CompositeDisposableTest extends RxJavaTest {
     public void success() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable cd = new CompositeDisposable();
-        cd.add(Disposable.fromRunnable(() -> counter.incrementAndGet()));
+        cd.add(Disposable.fromRunnable(counter::incrementAndGet));
 
-        cd.add(Disposable.fromRunnable(() -> counter.incrementAndGet()));
+        cd.add(Disposable.fromRunnable(counter::incrementAndGet));
 
         cd.dispose();
 
@@ -51,7 +51,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         final int count = 10;
         final CountDownLatch start = new CountDownLatch(1);
         for (int i = 0; i < count; i++) {
-            cd.add(Disposable.fromRunnable(() -> counter.incrementAndGet()));
+            cd.add(Disposable.fromRunnable(counter::incrementAndGet));
         }
 
         final List<Thread> threads = new ArrayList<>();
@@ -88,7 +88,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             throw new RuntimeException("failed on first one");
         }));
 
-        cd.add(Disposable.fromRunnable(() -> counter.incrementAndGet()));
+        cd.add(Disposable.fromRunnable(counter::incrementAndGet));
 
         try {
             cd.dispose();
@@ -115,7 +115,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             throw new RuntimeException("failed on second one too");
         }));
 
-        cd.add(Disposable.fromRunnable(() -> counter.incrementAndGet()));
+        cd.add(Disposable.fromRunnable(counter::incrementAndGet));
 
         try {
             cd.dispose();
@@ -178,7 +178,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
         @SuppressWarnings("resource")
         CompositeDisposable cd = new CompositeDisposable();
-        cd.add(Disposable.fromRunnable(() -> counter.incrementAndGet()));
+        cd.add(Disposable.fromRunnable(counter::incrementAndGet));
 
         cd.dispose();
         cd.dispose();
@@ -197,7 +197,7 @@ public class CompositeDisposableTest extends RxJavaTest {
 
         final int count = 10;
         final CountDownLatch start = new CountDownLatch(1);
-        cd.add(Disposable.fromRunnable(() -> counter.incrementAndGet()));
+        cd.add(Disposable.fromRunnable(counter::incrementAndGet));
 
         final List<Thread> threads = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -401,7 +401,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             @SuppressWarnings("resource")
             final CompositeDisposable cd = new CompositeDisposable();
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
             TestHelper.race(run, run);
         }
@@ -473,7 +473,7 @@ public class CompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = () -> cd.clear();
+            Runnable run = cd::clear;
 
             TestHelper.race(run, run);
         }
@@ -485,7 +485,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             @SuppressWarnings("resource")
             final CompositeDisposable cd = new CompositeDisposable();
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
             Runnable run2 = () -> cd.add(Disposable.empty());
 
@@ -499,7 +499,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             @SuppressWarnings("resource")
             final CompositeDisposable cd = new CompositeDisposable();
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
             Runnable run2 = () -> cd.addAll(Disposable.empty());
 
@@ -517,7 +517,7 @@ public class CompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
             Runnable run2 = () -> cd.remove(d1);
 
@@ -535,7 +535,7 @@ public class CompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
             Runnable run2 = () -> cd.delete(d1);
 
@@ -553,9 +553,9 @@ public class CompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
-            Runnable run2 = () -> cd.clear();
+            Runnable run2 = cd::clear;
 
             TestHelper.race(run, run2);
         }
@@ -571,9 +571,9 @@ public class CompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
-            Runnable run2 = () -> cd.size();
+            Runnable run2 = cd::size;
 
             TestHelper.race(run, run2);
         }

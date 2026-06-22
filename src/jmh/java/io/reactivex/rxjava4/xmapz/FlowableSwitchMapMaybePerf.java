@@ -44,11 +44,11 @@ public class FlowableSwitchMapMaybePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.switchMap(v -> Flowable.just(v));
+        flowablePlain = source.switchMap(Flowable::just);
 
         flowableConvert = source.switchMap(v -> Maybe.just(v).toFlowable());
 
-        flowableDedicated = source.switchMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v));
+        flowableDedicated = source.switchMapMaybe((Function<Integer, Maybe<Integer>>) Maybe::just);
     }
 
     @Benchmark

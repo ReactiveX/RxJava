@@ -31,6 +31,6 @@ public class ObservableCountTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeObservable(o -> o.count().toObservable());
 
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(o -> o.count());
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(Observable::count);
     }
 }

@@ -157,7 +157,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.range(1, 5)
         .concatMap((Function<Integer, Flowable<Integer>>) v ->
-            Flowable.just(v).doOnCancel(() -> counter.getAndIncrement()), 2, ImmediateThinScheduler.INSTANCE)
+            Flowable.just(v).doOnCancel(counter::getAndIncrement), 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertResult(1, 2, 3, 4, 5);
 

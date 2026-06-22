@@ -548,7 +548,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
             })
             .test();
 
-            Runnable r1 = () -> ts.cancel();
+            Runnable r1 = ts::cancel;
             Runnable r2 = () -> {
                 Subscriber<Object> subscriber = ref.get();
                 subscriber.onNext(1);
@@ -598,7 +598,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
             })
             .test();
 
-            Runnable r1 = () -> ts.cancel();
+            Runnable r1 = ts::cancel;
             Runnable r2 = () -> {
                 Subscriber<Object> subscriber = ref.get();
                 subscriber.onNext(1);

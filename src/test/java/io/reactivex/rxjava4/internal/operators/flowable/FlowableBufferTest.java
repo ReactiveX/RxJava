@@ -262,7 +262,7 @@ public class FlowableBufferTest extends RxJavaTest {
     }
 
     private void complete(final Subscriber<?> subscriber, int delay) {
-        innerScheduler.schedule(() -> subscriber.onComplete(), delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(subscriber::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
@@ -1130,7 +1130,7 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void bufferIntoCustomCollection() {
         Flowable.just(1, 1, 2, 2, 3, 3, 4, 4)
-        .buffer(3, (Supplier<Collection<Integer>>) () -> new HashSet<>())
+        .buffer(3, (Supplier<Collection<Integer>>) HashSet::new)
         .test()
         .assertResult(set(1, 2), set(2, 3), set(4));
     }
@@ -1138,7 +1138,7 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void bufferSkipIntoCustomCollection() {
         Flowable.just(1, 1, 2, 2, 3, 3, 4, 4)
-        .buffer(3, 3, (Supplier<Collection<Integer>>) () -> new HashSet<>())
+        .buffer(3, 3, (Supplier<Collection<Integer>>) HashSet::new)
         .test()
         .assertResult(set(1, 2), set(2, 3), set(4));
     }
@@ -1582,7 +1582,7 @@ public class FlowableBufferTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Flowable.<Integer>empty()
-        .doOnCancel(() -> counter.getAndIncrement())
+        .doOnCancel(counter::getAndIncrement)
         .buffer(5, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1596,7 +1596,7 @@ public class FlowableBufferTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Flowable.<Integer>empty()
-        .doOnCancel(() -> counter.getAndIncrement())
+        .doOnCancel(counter::getAndIncrement)
         .buffer(5, 10, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1610,7 +1610,7 @@ public class FlowableBufferTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Flowable.<Integer>empty()
-        .doOnCancel(() -> counter.getAndIncrement())
+        .doOnCancel(counter::getAndIncrement)
         .buffer(10, 5, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -2201,8 +2201,8 @@ public class FlowableBufferTest extends RxJavaTest {
                     .test();
 
             TestHelper.race(
-                    () -> bp.onComplete(),
-                    () -> pp.onComplete()
+                    bp::onComplete,
+                    pp::onComplete
             );
 
             ts.assertResult(List.of(1));

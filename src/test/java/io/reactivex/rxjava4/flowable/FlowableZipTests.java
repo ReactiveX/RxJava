@@ -97,7 +97,7 @@ public class FlowableZipTests extends RxJavaTest {
     @Test
     public void zipWithDelayError() {
         Flowable.just(1)
-        .zipWith(Flowable.just(2), (a, b) -> a + b, true)
+        .zipWith(Flowable.just(2), Integer::sum, true)
         .test()
         .assertResult(3);
     }
@@ -105,7 +105,7 @@ public class FlowableZipTests extends RxJavaTest {
     @Test
     public void zipWithDelayErrorBufferSize() {
         Flowable.just(1)
-        .zipWith(Flowable.just(2), (a, b) -> a + b, true, 16)
+        .zipWith(Flowable.just(2), Integer::sum, true, 16)
         .test()
         .assertResult(3);
     }

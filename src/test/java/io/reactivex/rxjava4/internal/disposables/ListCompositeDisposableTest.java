@@ -189,7 +189,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
             @SuppressWarnings("resource")
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
             TestHelper.race(run, run);
         }
@@ -261,7 +261,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = () -> cd.clear();
+            Runnable run = cd::clear;
 
             TestHelper.race(run, run);
         }
@@ -273,7 +273,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
             @SuppressWarnings("resource")
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
             Runnable run2 = () -> cd.add(Disposable.empty());
 
@@ -287,7 +287,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
             @SuppressWarnings("resource")
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
             Runnable run2 = () -> cd.addAll(Disposable.empty());
 
@@ -305,7 +305,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
             Runnable run2 = () -> cd.remove(d1);
 
@@ -323,7 +323,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
             Runnable run2 = () -> cd.delete(d1);
 
@@ -341,9 +341,9 @@ public class ListCompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = () -> cd.dispose();
+            Runnable run = cd::dispose;
 
-            Runnable run2 = () -> cd.clear();
+            Runnable run2 = cd::clear;
 
             TestHelper.race(run, run2);
         }

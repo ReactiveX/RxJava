@@ -158,7 +158,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
             @Override
             public void request(long n) {
                 if (n > 0 && completed.compareAndSet(false, true)) {
-                    Schedulers.cached().createWorker().schedule(() -> subscriber.onComplete(), 100, TimeUnit.MILLISECONDS);
+                    Schedulers.cached().createWorker().schedule(subscriber::onComplete, 100, TimeUnit.MILLISECONDS);
                 }
             }
 

@@ -1238,7 +1238,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
             Observable.combineLatest(ps, Observable.never(), (a, _) -> a)
             .subscribe(to);
 
-            TestHelper.race(() -> ps.onComplete(), () -> to.dispose());
+            TestHelper.race(ps::onComplete, to::dispose);
         }
     }
 
@@ -1263,7 +1263,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
                 ref.get().onSubscribe(Disposable.empty());
 
-                TestHelper.race(() -> ref.get().onError(ex), () -> to.dispose());
+                TestHelper.race(() -> ref.get().onError(ex), to::dispose);
 
                 if (to.errors().isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -1277,7 +1277,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         PublishSubject<Integer> ps1 = PublishSubject.create();
         PublishSubject<Integer> ps2 = PublishSubject.create();
 
-        TestObserver<Integer> to = Observable.combineLatest(ps1, ps2, (a, b) -> a + b)
+        TestObserver<Integer> to = Observable.combineLatest(ps1, ps2, Integer::sum)
         .doOnNext(v -> {
             if (v == 2) {
                 ps2.onNext(3);

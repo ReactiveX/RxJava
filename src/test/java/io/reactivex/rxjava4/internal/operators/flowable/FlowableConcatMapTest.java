@@ -168,7 +168,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Flowable.range(1, 5)
-        .concatMap(v -> Flowable.just(v).doOnCancel(() -> counter.getAndIncrement()))
+        .concatMap(v -> Flowable.just(v).doOnCancel(counter::getAndIncrement))
         .test()
         .assertResult(1, 2, 3, 4, 5);
 

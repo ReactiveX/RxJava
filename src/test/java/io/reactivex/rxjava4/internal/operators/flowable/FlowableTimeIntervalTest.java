@@ -78,7 +78,7 @@ public class FlowableTimeIntervalTest extends RxJavaTest {
         try {
             Flowable.range(1, 5)
             .timeInterval()
-            .map(v -> v.time())
+            .map(Timed::time)
             .test()
             .assertResult(0L, 0L, 0L, 0L, 0L);
         } finally {
@@ -95,7 +95,7 @@ public class FlowableTimeIntervalTest extends RxJavaTest {
         try {
             Flowable.range(1, 5)
             .timeInterval(TimeUnit.SECONDS)
-            .map(v -> v.time())
+            .map(Timed::time)
             .test()
             .assertResult(0L, 0L, 0L, 0L, 0L);
         } finally {
@@ -118,6 +118,6 @@ public class FlowableTimeIntervalTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.timeInterval());
+        TestHelper.checkDoubleOnSubscribeFlowable(Flowable::timeInterval);
     }
 }

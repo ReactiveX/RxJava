@@ -552,7 +552,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
 
                 TestObserver<Observable<Integer>> to = BehaviorSubject.createDefault(1)
                 .window(o1, _ -> o2)
-                .doOnNext(w -> w.test())
+                .doOnNext(Observable::test)
                 .test();
 
                 ref1.get().onSubscribe(Disposable.empty());
@@ -674,9 +674,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         TestObserver<Observable<Object>> to = ps
         .window(o1, _ -> Observable.never())
         .take(1)
-        .doOnNext(w -> {
-            w.test();
-        })
+        .doOnNext(Observable::test)
         .test();
 
         ref1.get().onSubscribe(Disposable.empty());
@@ -695,7 +693,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
                 s.onError(new IOException());
             })
             .window(BehaviorSubject.createDefault(1), _ -> Observable.error(new TestException()))
-            .doOnNext(w -> w.test())
+            .doOnNext(Observable::test)
             .test()
             .assertError(TestException.class);
 

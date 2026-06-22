@@ -434,7 +434,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         for (int i = 1; i < 3; i++) {
             effectCounter.set(0);
             System.out.printf("- %d -%n", i);
-            result.subscribe(t1 -> System.out.println(t1), t1 -> t1.printStackTrace(),
+            result.subscribe(System.out::println, Throwable::printStackTrace,
                     () -> System.out.println("Done"));
             assertEquals(2, effectCounter.get());
         }
@@ -739,7 +739,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     public void backpressure() {
         final AtomicLong requested = new AtomicLong();
         Flowable<Integer> source = Flowable.range(1, 1000)
-                .doOnRequest(t -> requested.addAndGet(t));
+                .doOnRequest(requested::addAndGet);
         ConnectableFlowable<Integer> cf = source.replay();
 
         TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>(10L);
@@ -765,7 +765,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     public void backpressureBounded() {
         final AtomicLong requested = new AtomicLong();
         Flowable<Integer> source = Flowable.range(1, 1000)
-                .doOnRequest(t -> requested.addAndGet(t));
+                .doOnRequest(requested::addAndGet);
         ConnectableFlowable<Integer> cf = source.replay(50, true);
 
         TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>(10L);
@@ -1018,7 +1018,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         final List<Long> requests = new ArrayList<>();
 
         Flowable<Integer> out = source
-                .doOnRequest(t -> requests.add(t)).replay().autoConnect();
+                .doOnRequest(requests::add).replay().autoConnect();
 
         TestSubscriber<Integer> ts1 = new TestSubscriber<>(5L);
         TestSubscriber<Integer> ts2 = new TestSubscriber<>(10L);
@@ -1170,7 +1170,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ConnectableFlowable<Integer> cf = Flowable.range(1, 3).replay();
 
-            Runnable r = () -> cf.connect();
+            Runnable r = cf::connect;
 
             TestHelper.race(r, r);
         }
@@ -1202,7 +1202,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
             cf.subscribe(ts1);
 
-            Runnable r1 = () -> ts1.cancel();
+            Runnable r1 = ts1::cancel;
 
             Runnable r2 = () -> cf.subscribe(ts2);
 
@@ -1309,7 +1309,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
             cf.subscribe(ts1);
 
-            Runnable r1 = () -> ts1.cancel();
+            Runnable r1 = ts1::cancel;
 
             Runnable r2 = () -> {
                 for (int j = 0; j < 1000; j++) {
@@ -1332,7 +1332,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
             Runnable r1 = () -> cf.subscribe(ts1);
 
-            Runnable r2 = () -> ts1.cancel();
+            Runnable r2 = ts1::cancel;
 
             TestHelper.race(r1, r2);
         }

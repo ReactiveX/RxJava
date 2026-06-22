@@ -53,7 +53,7 @@ public class FlowableGroupByTests extends RxJavaTest {
         .flatMap((Function<GroupedFlowable<Object, Event>, Publisher<Object>>)
                 g -> g.map(event -> event.instanceId + " - " + event.values.get("count200")))
         .take(20)
-        .blockingForEach(v -> System.out.println(v));
+        .blockingForEach(System.out::println);
 
         System.out.println("**** finished");
     }

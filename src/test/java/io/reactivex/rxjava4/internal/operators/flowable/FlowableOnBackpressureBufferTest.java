@@ -134,7 +134,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
         ts.request(100);
         infinite.subscribeOn(Schedulers.computation())
-        .onBackpressureBuffer(500, () -> backpressureCallback.countDown())
+        .onBackpressureBuffer(500, backpressureCallback::countDown)
         /*.take(1000)*/
         .subscribe(ts);
         l1.await();
@@ -325,7 +325,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.onBackpressureBuffer());
+        TestHelper.checkDoubleOnSubscribeFlowable(Flowable::onBackpressureBuffer);
     }
 
     @Test

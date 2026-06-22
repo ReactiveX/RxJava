@@ -84,7 +84,7 @@ public class MaybeTimestampTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.timestamp());
+        TestHelper.checkDoubleOnSubscribeMaybe(Maybe::timestamp);
     }
 
     @Test

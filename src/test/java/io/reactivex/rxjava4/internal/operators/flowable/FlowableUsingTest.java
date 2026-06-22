@@ -50,7 +50,7 @@ public class FlowableUsingTest extends RxJavaTest {
 
     }
 
-    private final Consumer<Disposable> disposeSubscription = d -> d.dispose();
+    private final Consumer<Disposable> disposeSubscription = Disposable::dispose;
 
     @Test
     public void using() {
@@ -334,7 +334,7 @@ public class FlowableUsingTest extends RxJavaTest {
 
         Flowable.<Integer, Integer>using(
                         () -> 1,
-                        (Function<Integer, Flowable<Integer>>) v -> Flowable.just(v),
+                        (Function<Integer, Flowable<Integer>>) Flowable::just,
                         _ -> count.incrementAndGet(), false
         )
         .subscribe(ts);

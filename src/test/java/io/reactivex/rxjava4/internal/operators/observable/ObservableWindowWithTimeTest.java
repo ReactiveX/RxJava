@@ -1124,7 +1124,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
             TestHelper.race(
                     () -> ps.onNext(1),
-                    () -> to.dispose()
+                    to::dispose
             );
         }
     }

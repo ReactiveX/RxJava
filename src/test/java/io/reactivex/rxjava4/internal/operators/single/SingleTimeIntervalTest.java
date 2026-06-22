@@ -76,7 +76,7 @@ public class SingleTimeIntervalTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(m -> m.timestamp());
+        TestHelper.checkDoubleOnSubscribeSingle(Single::timestamp);
     }
 
     @Test

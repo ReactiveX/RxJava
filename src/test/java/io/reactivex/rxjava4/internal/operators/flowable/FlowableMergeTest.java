@@ -1080,7 +1080,7 @@ public class FlowableMergeTest extends RxJavaTest {
                     // log count
                     .doOnNext(printCount())
                     // release latch
-                    .doOnComplete(() -> latch.countDown()).subscribe();
+                    .doOnComplete(latch::countDown).subscribe();
             boolean a = latch.await(10, TimeUnit.SECONDS);
             if (!a) {
                 for (String s : messages) {

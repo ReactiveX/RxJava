@@ -59,7 +59,7 @@ public class MaybeHideTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposedMaybe(m -> m.hide());
+        TestHelper.checkDisposedMaybe(Maybe::hide);
     }
 
     @Test
@@ -71,6 +71,6 @@ public class MaybeHideTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Object>, Maybe<Object>>) f -> f.hide());
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Object>, Maybe<Object>>) Maybe::hide);
     }
 }

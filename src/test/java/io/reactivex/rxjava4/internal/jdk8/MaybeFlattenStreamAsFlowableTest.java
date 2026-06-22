@@ -139,7 +139,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
         Maybe.just(1)
-        .flattenStreamAsFlowable(v -> Stream.<Integer>of(v))
+        .flattenStreamAsFlowable(Stream::<Integer>of)
         .subscribe(ts);
 
         ts.assertFuseable()

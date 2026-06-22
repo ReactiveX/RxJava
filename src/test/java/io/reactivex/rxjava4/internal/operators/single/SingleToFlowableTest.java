@@ -27,6 +27,6 @@ public class SingleToFlowableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToFlowable(s -> s.toFlowable());
+        TestHelper.checkDoubleOnSubscribeSingleToFlowable(Single::toFlowable);
     }
 }

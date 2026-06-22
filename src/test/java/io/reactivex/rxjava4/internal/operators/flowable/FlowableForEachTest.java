@@ -30,7 +30,7 @@ public class FlowableForEachTest extends RxJavaTest {
         final List<Object> list = new ArrayList<>();
 
         Flowable.range(1, 5)
-        .doOnNext(v -> list.add(v))
+        .doOnNext(list::add)
         .forEachWhile(v -> v < 3);
 
         assertEquals(Arrays.asList(1, 2, 3), list);
@@ -41,7 +41,7 @@ public class FlowableForEachTest extends RxJavaTest {
         final List<Object> list = new ArrayList<>();
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
-        .doOnNext(v -> list.add(v))
+        .doOnNext(list::add)
         .forEachWhile(_ -> true, _ -> list.add(100));
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 100), list);

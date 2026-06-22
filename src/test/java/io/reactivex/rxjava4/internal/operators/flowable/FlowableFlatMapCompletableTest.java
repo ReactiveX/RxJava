@@ -443,9 +443,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             pp1.flatMapCompletable(_ -> {
-                TestHelper.raceOther(() -> {
-                    ts.cancel();
-                }, cdl);
+                TestHelper.raceOther(ts::cancel, cdl);
                 return Completable.complete();
             })
             .toFlowable()
@@ -466,9 +464,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             pp1.flatMapCompletable(_ -> {
-                TestHelper.raceOther(() -> {
-                    to.dispose();
-                }, cdl);
+                TestHelper.raceOther(to::dispose, cdl);
                 return Completable.complete();
             })
             .subscribe(to);

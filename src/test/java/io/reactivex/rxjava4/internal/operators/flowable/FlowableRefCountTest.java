@@ -343,7 +343,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         // subscribe list1
         final List<Long> list1 = new ArrayList<>();
-        Disposable d1 = interval.subscribe(t1 -> list1.add(t1));
+        Disposable d1 = interval.subscribe(list1::add);
 
         s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
 
@@ -353,7 +353,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         // subscribe list2
         final List<Long> list2 = new ArrayList<>();
-        Disposable d2 = interval.subscribe(t1 -> list2.add(t1));
+        Disposable d2 = interval.subscribe(list2::add);
 
         s.advanceTimeBy(300, TimeUnit.MILLISECONDS);
 
@@ -393,7 +393,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         // subscribing a new one should start over because the source should have been unsubscribed
         // subscribe list3
         final List<Long> list3 = new ArrayList<>();
-        interval.subscribe(t1 -> list3.add(t1));
+        interval.subscribe(list3::add);
 
         s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
 
@@ -450,7 +450,7 @@ public class FlowableRefCountTest extends RxJavaTest {
     public void connectDisconnectConnectAndSubjectState() {
         Flowable<Integer> f1 = Flowable.just(10);
         Flowable<Integer> f2 = Flowable.just(20);
-        Flowable<Integer> combined = Flowable.combineLatest(f1, f2, (t1, t2) -> t1 + t2)
+        Flowable<Integer> combined = Flowable.combineLatest(f1, f2, Integer::sum)
         .publish().refCount();
 
         TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
@@ -478,7 +478,7 @@ public class FlowableRefCountTest extends RxJavaTest {
                             .doOnSubscribe(_ -> System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet())
                             )
                             .flatMap(_ -> Flowable.defer(() -> Flowable.<String>error(new TestException("Some exception"))))
-                            .onErrorResumeNext((Function<Throwable, Publisher<String>>) t1 -> Flowable.error(t1))
+                            .onErrorResumeNext((Function<Throwable, Publisher<String>>) Flowable::error)
                             .publish()
                             .refCount();
 
@@ -1041,7 +1041,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts2 = new TestSubscriber<>(0);
 
-            Runnable r1 = () -> ts1.cancel();
+            Runnable r1 = ts1::cancel;
 
             Runnable r2 = () -> source.subscribe(ts2);
 

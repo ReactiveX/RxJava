@@ -45,7 +45,7 @@ public class FlowableDoOnRequestTest extends RxJavaTest {
         final List<Long> requests = new ArrayList<>();
         Flowable.range(1, 5)
         //
-                .doOnRequest(n -> requests.add(n))
+                .doOnRequest(requests::add)
                 //
                 .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 

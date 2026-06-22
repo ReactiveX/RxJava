@@ -297,7 +297,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         ts.assertNoErrors();
     }
 
-    static final Function<Object[], String> toArray = args -> Arrays.toString(args);
+    static final Function<Object[], String> toArray = Arrays::toString;
 
     @Test
     public void manySources() {
@@ -525,7 +525,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        just.withLatestFrom(just, just, (a, b, c) -> Arrays.asList(a, b, c))
+        just.withLatestFrom(just, just, Arrays::asList)
         .subscribe(ts);
 
         ts.assertValue(Arrays.asList(1, 1, 1));
@@ -539,7 +539,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        just.withLatestFrom(just, just, just, (a, b, c, d) -> Arrays.asList(a, b, c, d))
+        just.withLatestFrom(just, just, just, Arrays::asList)
         .subscribe(ts);
 
         ts.assertValue(Arrays.asList(1, 1, 1, 1));
@@ -553,7 +553,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        just.withLatestFrom(just, just, just, just, (a, b, c, d, e) -> Arrays.asList(a, b, c, d, e))
+        just.withLatestFrom(just, just, just, just, Arrays::asList)
         .subscribe(ts);
 
         ts.assertValue(Arrays.asList(1, 1, 1, 1, 1));
@@ -710,7 +710,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
             Runnable r1 = () -> source.subscribe(ts);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -737,7 +737,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
             Runnable r1 = () -> source.subscribe(ts);
 
-            Runnable r2 = () -> pp1.onComplete();
+            Runnable r2 = pp1::onComplete;
 
             TestHelper.race(r1, r2);
 

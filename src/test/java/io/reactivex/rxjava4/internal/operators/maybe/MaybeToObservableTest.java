@@ -32,6 +32,6 @@ public class MaybeToObservableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToObservable(m -> m.toObservable());
+        TestHelper.checkDoubleOnSubscribeMaybeToObservable(Maybe::toObservable);
     }
 }

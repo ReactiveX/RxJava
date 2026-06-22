@@ -33,7 +33,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void collectToListFlowable() {
         Flowable<List<Integer>> f = Flowable.just(1, 2, 3)
-        .collect((Supplier<List<Integer>>) () -> new ArrayList<>(),
+        .collect((Supplier<List<Integer>>) ArrayList::new,
                 List::add)
                 .toFlowable();
 
@@ -57,7 +57,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     public void collectToStringFlowable() {
         String value = Flowable.just(1, 2, 3)
             .collect(
-                () -> new StringBuilder(),
+                    StringBuilder::new,
                 (sb, v) -> {
                 if (sb.length() > 0) {
                     sb.append("-");
@@ -153,7 +153,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void collectToList() {
         Single<List<Integer>> o = Flowable.just(1, 2, 3)
-        .collect(() -> new ArrayList<>(), List::add);
+        .collect(ArrayList::new, List::add);
 
         List<Integer> list =  o.blockingGet();
 
@@ -175,7 +175,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     public void collectToString() {
         String value = Flowable.just(1, 2, 3)
             .collect(
-                () -> new StringBuilder(),
+                    StringBuilder::new,
                 (sb, v) -> {
                 if (sb.length() > 0) {
                     sb.append("-");

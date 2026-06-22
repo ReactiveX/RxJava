@@ -237,9 +237,9 @@ public class CompletableUsingTest extends RxJavaTest {
 
             ps.onNext(1);
 
-            Runnable r1 = () -> to.dispose();
+            Runnable r1 = to::dispose;
 
-            Runnable r2 = () -> ps.onComplete();
+            Runnable r2 = ps::onComplete;
 
             TestHelper.race(r1, r2);
         }
@@ -259,7 +259,7 @@ public class CompletableUsingTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = () -> to.dispose();
+                Runnable r1 = to::dispose;
 
                 Runnable r2 = () -> ps.onError(ex);
 
@@ -280,9 +280,9 @@ public class CompletableUsingTest extends RxJavaTest {
                     _ -> { }, true)
             .test();
 
-            Runnable r1 = () -> to.dispose();
+            Runnable r1 = to::dispose;
 
-            Runnable r2 = () -> ps.onComplete();
+            Runnable r2 = ps::onComplete;
 
             TestHelper.race(r1, r2);
         }

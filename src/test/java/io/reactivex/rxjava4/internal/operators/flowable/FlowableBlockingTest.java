@@ -53,7 +53,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Flowable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(v -> list.add(v));
+        .blockingSubscribe(list::add);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -64,7 +64,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
-                .blockingSubscribe(v -> list.add(v), 128);
+                .blockingSubscribe(list::add, 128);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -75,7 +75,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
-                .blockingSubscribe(v -> list.add(v), 3);
+                .blockingSubscribe(list::add, 3);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -86,7 +86,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Flowable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(v -> list.add(v), Functions.emptyConsumer());
+        .blockingSubscribe(list::add, Functions.emptyConsumer());
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -97,7 +97,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
-                .blockingSubscribe(v -> list.add(v), Functions.emptyConsumer(), 128);
+                .blockingSubscribe(list::add, Functions.emptyConsumer(), 128);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -108,7 +108,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
-                .blockingSubscribe(v -> list.add(v), Functions.emptyConsumer(), 3);
+                .blockingSubscribe(list::add, Functions.emptyConsumer(), 3);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -119,7 +119,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         TestException ex = new TestException();
 
-        Consumer<Object> cons = v -> list.add(v);
+        Consumer<Object> cons = list::add;
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(ex))
         .subscribeOn(Schedulers.computation())
@@ -134,7 +134,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         TestException ex = new TestException();
 
-        Consumer<Object> cons = v -> list.add(v);
+        Consumer<Object> cons = list::add;
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(ex))
                 .subscribeOn(Schedulers.computation())
@@ -147,7 +147,7 @@ public class FlowableBlockingTest extends RxJavaTest {
     public void blockingSubscribeConsumerConsumerAction() {
         final List<Object> list = new ArrayList<>();
 
-        Consumer<Object> cons = v -> list.add(v);
+        Consumer<Object> cons = list::add;
 
         Flowable.range(1, 5)
         .subscribeOn(Schedulers.computation())
@@ -160,7 +160,7 @@ public class FlowableBlockingTest extends RxJavaTest {
     public void boundedBlockingSubscribeConsumerConsumerAction() {
         final List<Object> list = new ArrayList<>();
 
-        Consumer<Object> cons = v -> list.add(v);
+        Consumer<Object> cons = list::add;
 
         Action action = () -> list.add(100);
 
@@ -175,7 +175,7 @@ public class FlowableBlockingTest extends RxJavaTest {
     public void boundedBlockingSubscribeConsumerConsumerActionBufferExceed() {
         final List<Object> list = new ArrayList<>();
 
-        Consumer<Object> cons = v -> list.add(v);
+        Consumer<Object> cons = list::add;
 
         Action action = () -> list.add(100);
 
@@ -190,7 +190,7 @@ public class FlowableBlockingTest extends RxJavaTest {
     public void boundedBlockingSubscribeConsumerConsumerActionBufferExceedMillionItem() {
         final List<Object> list = new ArrayList<>();
 
-        Consumer<Object> cons = v -> list.add(v);
+        Consumer<Object> cons = list::add;
 
         Action action = () -> list.add(1000001);
 
@@ -413,7 +413,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final Runnable r1 = () -> ts.cancel();
+            final Runnable r1 = ts::cancel;
 
             final Runnable r2 = () -> pp.onNext(1);
 

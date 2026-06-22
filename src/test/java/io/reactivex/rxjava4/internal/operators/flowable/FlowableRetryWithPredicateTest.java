@@ -327,7 +327,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
         Flowable<Integer> source = Flowable
                 .just(1)
                 .concatWith(Flowable.<Integer>error(new TestException()))
-                .doOnRequest(t -> requests.add(t));
+                .doOnRequest(requests::add);
 
         TestSubscriber<Integer> ts = new TestSubscriber<>(3L);
         source
@@ -377,7 +377,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
 
                 Runnable r1 = () -> pp.onError(ex);
 
-                Runnable r2 = () -> ts.cancel();
+                Runnable r2 = ts::cancel;
 
                 TestHelper.race(r1, r2);
 
@@ -417,7 +417,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
 
                 Runnable r1 = () -> pp.onError(ex);
 
-                Runnable r2 = () -> ts.cancel();
+                Runnable r2 = ts::cancel;
 
                 TestHelper.race(r1, r2);
 

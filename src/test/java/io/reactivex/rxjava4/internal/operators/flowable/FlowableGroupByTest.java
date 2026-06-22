@@ -470,11 +470,11 @@ public class FlowableGroupByTest extends RxJavaTest {
             if (group.getKey() < 3) {
                 return group.map(t1 -> "first groups: " + t1)
                         // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
-                        .take(2).doOnComplete(() -> first.countDown());
+                        .take(2).doOnComplete(first::countDown);
             } else {
                 return group.map(t1 -> "last group: " + t1);
             }
-        }).blockingForEach(s -> results.add(s));
+        }).blockingForEach(results::add);
 
         System.out.println("Results: " + results);
         assertEquals(6, results.size());
@@ -504,14 +504,14 @@ public class FlowableGroupByTest extends RxJavaTest {
             if (group.getKey() < 3) {
                 return group.map(t1 -> "first groups: " + t1)
                         // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
-                        .take(2).doOnComplete(() -> first.countDown());
+                        .take(2).doOnComplete(first::countDown);
             } else {
                 return group.subscribeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS)
                         .map(t1 -> "last group: " + t1)
                         .doOnEach(t1 -> System.err.println("subscribeOn notification => " + t1));
             }
         }).doOnEach(t1 -> System.err.println("outer notification => " + t1))
-        .blockingForEach(s -> results.add(s));
+        .blockingForEach(results::add);
 
         System.out.println("Results: " + results);
         assertEquals(6, results.size());
@@ -540,12 +540,12 @@ public class FlowableGroupByTest extends RxJavaTest {
             if (group.getKey() < 3) {
                 return group.map(t1 -> "first groups: " + t1)
                         // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
-                        .take(2).doOnComplete(() -> first.countDown());
+                        .take(2).doOnComplete(first::countDown);
             } else {
                 return group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS)
                         .map(t1 -> "last group: " + t1);
             }
-        }).blockingForEach(s -> results.add(s));
+        }).blockingForEach(results::add);
 
         System.out.println("Results: " + results);
         assertEquals(6, results.size());
@@ -566,7 +566,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                 System.out.println("Received: " + t1 + " on group : " + group.getKey());
                 return "first groups: " + t1;
             })).doOnEach(t1 -> System.out.println("notification => " + t1))
-        .blockingForEach(s -> results.add(s));
+        .blockingForEach(results::add);
 
         System.out.println("Results: " + results);
         assertEquals(4, results.size());
@@ -584,7 +584,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             sub.onComplete();
         }).groupBy(t -> t).flatMap((Function<GroupedFlowable<Integer, Integer>, Flowable<String>>) group ->
         group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(t1 -> "first groups: " + t1))
-        .blockingForEach(s -> results.add(s));
+        .blockingForEach(results::add);
 
         System.out.println("Results: " + results);
         assertEquals(4, results.size());
@@ -794,7 +794,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
         Flowable<GroupedFlowable<Integer, Integer>> m = source.groupBy(identity, dbl);
 
-        m.subscribe(t1 -> inner.set(t1));
+        m.subscribe(inner::set);
 
         inner.get().subscribe();
 
@@ -887,7 +887,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         Flowable.just("a", "b", "c").<String>groupBy(_ -> null)
         .subscribe(groupedFlowable -> {
             key[0] = groupedFlowable.getKey();
-            groupedFlowable.subscribe(s -> values.add(s));
+            groupedFlowable.subscribe(values::add);
         });
         assertNull(key[0]);
         assertEquals(Arrays.asList("a", "b", "c"), values);
@@ -1218,9 +1218,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void badRequestInner() {
         Flowable.just(1).hide()
         .groupBy(Functions.justFunction(1))
-        .doOnNext(g -> {
-            TestHelper.assertBadRequestReported(g);
-        })
+        .doOnNext(TestHelper::assertBadRequestReported)
         .test()
         .assertNoErrors();
     }
@@ -1567,7 +1565,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                 }
             };
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -1581,7 +1579,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
         Flowable.range(1, 1000)
         .groupBy(v -> v % 10)
-        .doOnNext(v -> groups.add(v))
+        .doOnNext(groups::add)
         .test()
         .assertValueCount(1000)
         .assertComplete()

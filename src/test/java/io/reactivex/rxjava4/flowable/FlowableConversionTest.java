@@ -166,10 +166,10 @@ public class FlowableConversionTest extends RxJavaTest {
         List<Object> crewOfBattlestarGalactica = Arrays.asList(new Object[] {"William Adama", "Laura Roslin", "Lee Adama", new Cylon()});
 
         Flowable.fromIterable(crewOfBattlestarGalactica)
-            .doOnNext(pv -> System.out.println(pv))
+            .doOnNext(System.out::println)
             .to(new ConvertToCylonDetector<>())
             .beep(Cylon.class::isInstance)
-            .boop(cylon -> new Jail(cylon))
+            .boop(Jail::new)
             .DESTROY()
             .x(new ConvertToObservable<>())
             .reduce("Cylon Detector finished. Report:\n", (a, n) -> a + n + "\n")

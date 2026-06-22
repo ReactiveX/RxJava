@@ -601,7 +601,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void toMultimapMapCollectionSupplierReturnsNull() {
-        just1.toMultimap(v -> v, v -> v, () -> new HashMap<>(), (Function<Integer, Collection<Integer>>) _ -> null)
+        just1.toMultimap(v -> v, v -> v, HashMap::new, (Function<Integer, Collection<Integer>>) _ -> null)
         .blockingGet();
     }
 

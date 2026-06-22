@@ -38,7 +38,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
     @Test
     public void simple() {
         Flowable.range(1, 5)
-        .switchMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v))
+        .switchMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -332,7 +332,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
             Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 

@@ -41,6 +41,6 @@ public class MaybeToSingleTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(m -> m.toSingle());
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(Maybe::toSingle);
     }
 }

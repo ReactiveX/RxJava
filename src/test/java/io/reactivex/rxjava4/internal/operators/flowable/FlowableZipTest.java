@@ -679,7 +679,7 @@ public class FlowableZipTest extends RxJavaTest {
         final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable.zip(Flowable.just(1),
-                Flowable.just(1), (a, b) -> a + b).subscribe(new DefaultSubscriber<Integer>() {
+                Flowable.just(1), Integer::sum).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {
@@ -1015,9 +1015,9 @@ public class FlowableZipTest extends RxJavaTest {
     public void issue1812() {
         // https://github.com/ReactiveX/RxJava/issues/1812
         Flowable<Integer> zip1 = Flowable.zip(Flowable.range(0, 1026), Flowable.range(0, 1026),
-                (i1, i2) -> i1 + i2);
+                Integer::sum);
         Flowable<Integer> zip2 = Flowable.zip(zip1, Flowable.range(0, 1026),
-                (i1, i2) -> i1 + i2);
+                Integer::sum);
         List<Integer> expected = new ArrayList<>();
         for (int i = 0; i < 1026; i++) {
             expected.add(i * 3);
@@ -1327,19 +1327,19 @@ public class FlowableZipTest extends RxJavaTest {
 
         Arrays.fill(arr, Flowable.just(1));
 
-        Flowable.zip(Arrays.asList(arr), (Function<Object[], Object>) a -> Arrays.toString(a))
+        Flowable.zip(Arrays.asList(arr), (Function<Object[], Object>) Arrays::toString)
         .test()
         .assertResult("[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]");
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.zip(Flowable.just(1), Flowable.just(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b));
+        TestHelper.checkDisposed(Flowable.zip(Flowable.just(1), Flowable.just(1), (BiFunction<Integer, Integer, Object>) Integer::sum));
     }
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.zip(Flowable.just(1), Flowable.just(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b));
+        TestHelper.assertBadRequestReported(Flowable.zip(Flowable.just(1), Flowable.just(1), (BiFunction<Integer, Integer, Object>) Integer::sum));
     }
 
     @Test
@@ -1405,7 +1405,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void fusedInputThrows() {
         Flowable.zip(Flowable.just(1).map(_ -> {
             throw new TestException();
-        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) (a, b) -> a + b)
+        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) Integer::sum)
         .test()
         .assertFailure(TestException.class);
     }
@@ -1414,7 +1414,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void fusedInputThrowsDelayError() {
         Flowable.zip(Flowable.just(1).map(_ -> {
             throw new TestException();
-        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) (a, b) -> a + b, true)
+        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) Integer::sum, true)
         .test()
         .assertFailure(TestException.class);
     }
@@ -1423,7 +1423,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void fusedInputThrowsBackpressured() {
         Flowable.zip(Flowable.just(1).map(_ -> {
             throw new TestException();
-        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) (a, b) -> a + b)
+        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) Integer::sum)
         .test(0L)
         .assertFailure(TestException.class);
     }
@@ -1432,7 +1432,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void fusedInputThrowsDelayErrorBackpressured() {
         Flowable.zip(Flowable.just(1).map(_ -> {
             throw new TestException();
-        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) (a, b) -> a + b, true)
+        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) Integer::sum, true)
         .test(0L)
         .assertFailure(TestException.class);
     }
@@ -1443,7 +1443,7 @@ public class FlowableZipTest extends RxJavaTest {
             TestSubscriber<List<Object>> ts = Flowable.zip(
                     Flowable.just(1).observeOn(Schedulers.single()).map((Function<Integer, Object>) _ -> Thread.currentThread().getName().substring(0, 4)),
                     Flowable.just(1).observeOn(Schedulers.computation()).map((Function<Integer, Object>) _ -> Thread.currentThread().getName().substring(0, 4)),
-                            (t1, t2) -> Arrays.asList(t1, t2)
+                            Arrays::asList
                     )
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -1503,14 +1503,14 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void fusedInputThrows2() {
-        Flowable.zip(new ThrowingQueueSubscription(), Flowable.just(1), (a, b) -> a + b)
+        Flowable.zip(new ThrowingQueueSubscription(), Flowable.just(1), Integer::sum)
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void fusedInputThrows2Backpressured() {
-        Flowable.zip(new ThrowingQueueSubscription(), Flowable.just(1), (a, b) -> a + b)
+        Flowable.zip(new ThrowingQueueSubscription(), Flowable.just(1), Integer::sum)
         .test(0)
         .assertFailure(TestException.class);
     }
@@ -1526,7 +1526,7 @@ public class FlowableZipTest extends RxJavaTest {
             }
         };
 
-        Flowable.zip(Flowable.range(1, 2), Flowable.range(3, 2), (a, b) -> a + b)
+        Flowable.zip(Flowable.range(1, 2), Flowable.range(3, 2), Integer::sum)
         .subscribe(ts);
 
         ts.assertResult(4);
@@ -1565,7 +1565,7 @@ public class FlowableZipTest extends RxJavaTest {
                 Flowable.just(1)
                 .<Integer>map(_ -> { throw new TestException(); })
                 .compose(TestHelper.flowableStripBoundary()),
-                (a, b) -> a + b, true
+                        Integer::sum, true
         )
         .test()
         .assertFailure(TestException.class);
@@ -1578,7 +1578,7 @@ public class FlowableZipTest extends RxJavaTest {
                 Flowable.just(1)
                 .<Integer>map(_ -> { throw new TestException(); })
                 .compose(TestHelper.flowableStripBoundary()),
-                (a, b) -> a + b, true
+                        Integer::sum, true
         )
         .test(0L)
         .assertFailure(TestException.class);

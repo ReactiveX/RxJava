@@ -646,7 +646,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 pp.onNext(0);
 
-                Runnable r1 = () -> pp.onComplete();
+                Runnable r1 = pp::onComplete;
 
                 Runnable r2 = () -> sub[0].onComplete();
 
@@ -689,7 +689,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 pp.onNext(0);
 
-                Runnable r1 = () -> pp.onComplete();
+                Runnable r1 = pp::onComplete;
 
                 Runnable r2 = () -> sub[0].onComplete();
 

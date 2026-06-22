@@ -390,9 +390,9 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
             final TestObserver<Object> to1 = p.test();
             final TestObserver<Object> to2 = p.test();
 
-            Runnable r1 = () -> to1.dispose();
+            Runnable r1 = to1::dispose;
 
-            Runnable r2 = () -> to2.dispose();
+            Runnable r2 = to2::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -407,7 +407,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 
             final TestObserverEx<Object> to1 = p.to(TestHelper.testConsumer());
 
-            Runnable r1 = () -> to1.dispose();
+            Runnable r1 = to1::dispose;
 
             final TestException ex = new TestException();
 

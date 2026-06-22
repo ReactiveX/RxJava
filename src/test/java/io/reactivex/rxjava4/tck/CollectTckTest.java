@@ -29,7 +29,7 @@ public class CollectTckTest extends BaseTck<List<Integer>> {
         return
                 Flowable.range(1, 1000)
                         .collect(Functions.<Integer>createArrayList(128),
-                                (a, b) -> a.add(b)).toFlowable()
+                                List::add).toFlowable()
             ;
     }
 

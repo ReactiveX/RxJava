@@ -317,7 +317,7 @@ public class FlowableTimerTest extends RxJavaTest {
 
             Runnable r1 = () -> scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }

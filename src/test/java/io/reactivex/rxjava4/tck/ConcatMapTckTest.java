@@ -26,7 +26,7 @@ public class ConcatMapTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createFlowPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .concatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v))
+                .concatMap((Function<Integer, Publisher<Integer>>) Flowable::just)
             ;
     }
 }

@@ -91,7 +91,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
     @Test
     public void cancelledTasksDontRun() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = () -> calls.getAndIncrement();
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec, true);
         Worker w = custom.createWorker();
@@ -115,7 +115,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
     @Test
     public void cancelledWorkerDoesntRunTasks() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = () -> calls.getAndIncrement();
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec, true);
         Worker w = custom.createWorker();
@@ -132,11 +132,11 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
     @Test
     public void plainExecutor() throws Exception {
-        Scheduler s = Schedulers.from(r -> r.run(), true);
+        Scheduler s = Schedulers.from(Runnable::run, true);
 
         final CountDownLatch cdl = new CountDownLatch(5);
 
-        Runnable r = () -> cdl.countDown();
+        Runnable r = cdl::countDown;
 
         s.scheduleDirect(r);
 
@@ -211,7 +211,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             final CountDownLatch cdl = new CountDownLatch(8);
 
-            Runnable r = () -> cdl.countDown();
+            Runnable r = cdl::countDown;
 
             s.scheduleDirect(r);
 
@@ -240,7 +240,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             final CountDownLatch cdl = new CountDownLatch(8);
 
-            Runnable r = () -> cdl.countDown();
+            Runnable r = cdl::countDown;
 
             s.schedule(r);
 
@@ -287,7 +287,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
     @Test
     public void runnableDisposed() {
-        final Scheduler s = Schedulers.from(r -> r.run(), true);
+        final Scheduler s = Schedulers.from(Runnable::run, true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
 
         assertTrue(d.isDisposed());
@@ -354,7 +354,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
     public void unwrapScheduleDirectTaskAfterDispose() {
         Scheduler scheduler = getScheduler();
         final CountDownLatch cdl = new CountDownLatch(1);
-        Runnable countDownRunnable = () -> cdl.countDown();
+        Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
         assertSame(countDownRunnable, wrapper.getWrappedRunnable());

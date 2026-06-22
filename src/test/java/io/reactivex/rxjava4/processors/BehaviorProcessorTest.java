@@ -414,7 +414,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
                     break;
                 } else {
                     Assert.assertEquals(1, o.get());
-                    worker.schedule(() -> rs.onComplete());
+                    worker.schedule(rs::onComplete);
                 }
             }
         } finally {
@@ -580,9 +580,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriber<Object> ts = p.test();
 
-            Runnable r1 = () -> p.test();
+            Runnable r1 = p::test;
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -597,9 +597,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             final TestSubscriber<Object> ts2 = p.test();
             final TestSubscriber<Object> ts3 = p.test();
 
-            Runnable r1 = () -> ts1.cancel();
+            Runnable r1 = ts1::cancel;
 
-            Runnable r2 = () -> ts2.cancel();
+            Runnable r2 = ts2::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -704,7 +704,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
             Runnable r1 = () -> p.subscribe(ts);
 
-            Runnable r2 = () -> p.onComplete();
+            Runnable r2 = p::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -744,7 +744,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
                 }
             };
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -797,8 +797,8 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             final BehaviorSubscription<Integer> bs = new BehaviorSubscription<>(ts, bp);
             ts.onSubscribe(bs);
 
-            Runnable r1 = () -> bs.emitFirst();
-            Runnable r2 = () -> bs.cancel();
+            Runnable r1 = bs::emitFirst;
+            Runnable r2 = bs::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -817,7 +817,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             ts.onSubscribe(bs);
 
             Runnable r1 = () -> bs.emitNext(2, 0);
-            Runnable r2 = () -> bs.cancel();
+            Runnable r2 = bs::cancel;
 
             TestHelper.race(r1, r2);
         }

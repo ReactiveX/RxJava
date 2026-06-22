@@ -77,7 +77,7 @@ public class FlowableSingleTest extends RxJavaTest {
         final List<Long> requests = new ArrayList<>();
         Flowable.just(1)
         //
-                .doOnRequest(n -> requests.add(n))
+                .doOnRequest(requests::add)
                 //
                 .singleElement()
                 //
@@ -113,7 +113,7 @@ public class FlowableSingleTest extends RxJavaTest {
         final List<Long> requests = new ArrayList<>();
         Flowable.just(1)
         //
-                .doOnRequest(n -> requests.add(n))
+                .doOnRequest(requests::add)
                 //
                 .singleElement()
                 //
@@ -148,7 +148,7 @@ public class FlowableSingleTest extends RxJavaTest {
         final List<Long> requests = new ArrayList<>();
         Flowable.just(1)
         //
-                .doOnRequest(n -> requests.add(n))
+                .doOnRequest(requests::add)
                 //
                 .singleElement()
                 //
@@ -384,7 +384,7 @@ public class FlowableSingleTest extends RxJavaTest {
     @Test
     public void singleDoesNotRequestMoreThanItNeedsToEmitItem() {
         final AtomicLong request = new AtomicLong();
-        Flowable.just(1).doOnRequest(n -> request.addAndGet(n)).blockingSingle();
+        Flowable.just(1).doOnRequest(request::addAndGet).blockingSingle();
         // FIXME single now triggers fast-path
         assertEquals(Long.MAX_VALUE, request.get());
     }
@@ -393,7 +393,7 @@ public class FlowableSingleTest extends RxJavaTest {
     public void singleDoesNotRequestMoreThanItNeedsToEmitErrorFromEmpty() {
         final AtomicLong request = new AtomicLong();
         try {
-            Flowable.empty().doOnRequest(n -> request.addAndGet(n)).blockingSingle();
+            Flowable.empty().doOnRequest(request::addAndGet).blockingSingle();
         } catch (NoSuchElementException e) {
             // FIXME single now triggers fast-path
             assertEquals(Long.MAX_VALUE, request.get());
@@ -404,7 +404,7 @@ public class FlowableSingleTest extends RxJavaTest {
     public void singleDoesNotRequestMoreThanItNeedsToEmitErrorFromMoreThanOne() {
         final AtomicLong request = new AtomicLong();
         try {
-            Flowable.just(1, 2).doOnRequest(n -> request.addAndGet(n)).blockingSingle();
+            Flowable.just(1, 2).doOnRequest(request::addAndGet).blockingSingle();
         } catch (IllegalArgumentException e) {
             // FIXME single now triggers fast-path
             assertEquals(Long.MAX_VALUE, request.get());
@@ -543,7 +543,7 @@ public class FlowableSingleTest extends RxJavaTest {
     public void issue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
-        Maybe<Integer> reduced = source.reduce((i1, i2) -> i1 + i2);
+        Maybe<Integer> reduced = source.reduce(Integer::sum);
 
         Integer r = reduced.blockingGet();
         assertEquals(21, r.intValue());
@@ -590,7 +590,7 @@ public class FlowableSingleTest extends RxJavaTest {
     public void issue1527Flowable() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
-        Flowable<Integer> reduced = source.reduce((i1, i2) -> i1 + i2).toFlowable();
+        Flowable<Integer> reduced = source.reduce(Integer::sum).toFlowable();
 
         Integer r = reduced.blockingFirst();
         assertEquals(21, r.intValue());
@@ -602,7 +602,7 @@ public class FlowableSingleTest extends RxJavaTest {
         final AtomicReference<Throwable> error = new AtomicReference<>();
 
         try {
-            RxJavaPlugins.setErrorHandler(throwable -> error.set(throwable));
+            RxJavaPlugins.setErrorHandler(error::set);
 
             Flowable.unsafeCreate((Publisher<Integer>) subscriber -> {
                 subscriber.onComplete();
@@ -617,20 +617,20 @@ public class FlowableSingleTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable((Function<Flowable<Object>, Object>) f -> f.singleOrError(), false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable((Function<Flowable<Object>, Object>) Flowable::singleOrError, false, 1, 1, 1);
 
-        TestHelper.checkBadSourceFlowable((Function<Flowable<Object>, Object>) f -> f.singleElement(), false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable((Function<Flowable<Object>, Object>) Flowable::singleElement, false, 1, 1, 1);
 
         TestHelper.checkBadSourceFlowable((Function<Flowable<Object>, Object>) f -> f.singleOrError().toFlowable(), false, 1, 1, 1);
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(f -> f.singleOrError());
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(Flowable::singleOrError);
 
         TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.singleOrError().toFlowable());
 
-        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(f -> f.singleElement());
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(Flowable::singleElement);
 
         TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.singleElement().toFlowable());
     }

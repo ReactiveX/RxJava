@@ -24,11 +24,11 @@ public final class TestingHelper {
     }
 
     public static <T> Consumer<T> addToList(final List<T> list) {
-        return t -> list.add(t);
+        return list::add;
     }
 
     public static <T> Supplier<List<T>> supplierListCreator() {
-        return () -> new ArrayList<>();
+        return ArrayList::new;
     }
 
     public static BiConsumer<Object, Object> biConsumerThrows(final RuntimeException e) {

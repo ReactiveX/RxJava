@@ -116,9 +116,9 @@ public class CompletableAmbTest extends RxJavaTest {
 
                 final Completable source = Completable.ambArray(ps.ignoreElements(), Completable.never(), Completable.never(), null);
 
-                Runnable r1 = () -> source.test();
+                Runnable r1 = source::test;
 
-                Runnable r2 = () -> ps.onComplete();
+                Runnable r2 = ps::onComplete;
 
                 TestHelper.race(r1, r2);
 

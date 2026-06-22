@@ -46,6 +46,6 @@ public class MaybeToCompletableTest extends RxJavaTest {
 
     @Test
     public void doubleSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToCompletable(m -> m.ignoreElement());
+        TestHelper.checkDoubleOnSubscribeMaybeToCompletable(Maybe::ignoreElement);
     }
 }

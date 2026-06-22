@@ -419,8 +419,8 @@ public class FlowableAmbTest extends RxJavaTest {
 
             TestSubscriber<Integer> ts = Flowable.ambArray(pp1, pp2).test();
 
-            Runnable r1 = () -> pp1.onComplete();
-            Runnable r2 = () -> pp2.onComplete();
+            Runnable r1 = pp1::onComplete;
+            Runnable r2 = pp2::onComplete;
 
             TestHelper.race(r1, r2);
 

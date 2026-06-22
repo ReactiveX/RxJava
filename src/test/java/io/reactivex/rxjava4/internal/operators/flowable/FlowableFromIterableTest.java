@@ -699,7 +699,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
             Runnable r1 = () -> ts.request(1);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .filter(Functions.alwaysTrue())
@@ -716,7 +716,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
             Runnable r1 = () -> ts.request(Long.MAX_VALUE);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .filter(Functions.alwaysTrue())
@@ -733,7 +733,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
             Runnable r1 = () -> ts.request(1);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .subscribe(ts);
@@ -749,7 +749,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
             Runnable r1 = () -> ts.request(Long.MAX_VALUE);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .subscribe(ts);

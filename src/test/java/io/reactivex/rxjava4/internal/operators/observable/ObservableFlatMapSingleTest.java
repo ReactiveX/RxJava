@@ -412,7 +412,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
             ps1.onNext(1);
 
             TestHelper.race(
-                    () -> ps1.onComplete(),
+                    ps1::onComplete,
                     () -> ps2.onError(ex)
             );
 
@@ -429,9 +429,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             ps1.flatMapSingle(_ -> {
-                TestHelper.raceOther(() -> {
-                    to.dispose();
-                }, cdl);
+                TestHelper.raceOther(to::dispose, cdl);
                 return Single.just(1);
             })
             .subscribe(to);

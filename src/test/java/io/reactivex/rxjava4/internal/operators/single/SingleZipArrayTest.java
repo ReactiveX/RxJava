@@ -211,7 +211,7 @@ public class SingleZipArrayTest extends RxJavaTest {
 
     @Test
     public void bothSucceed() {
-        Single.zipArray(a -> Arrays.asList(a), Single.just(1), Single.just(2))
+        Single.zipArray(Arrays::asList, Single.just(1), Single.just(2))
         .test()
         .assertResult(Arrays.asList(1, 2));
     }

@@ -34,8 +34,8 @@ public class BoundedSubscriberTest extends RxJavaTest {
     public void onSubscribeThrows() {
         final List<Object> received = new ArrayList<>();
 
-        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(o -> received.add(o),
-                throwable -> received.add(throwable),
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(received::add,
+                received::add,
                 () -> received.add(1), _ -> {
                     throw new TestException();
                 }, 128);
@@ -56,7 +56,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
         BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(_ -> {
             throw new TestException();
-        }, throwable -> received.add(throwable), () -> received.add(1), subscription -> subscription.request(128), 128);
+        }, received::add, () -> received.add(1), subscription -> subscription.request(128), 128);
 
         assertFalse(subscriber.isDisposed());
 
@@ -75,7 +75,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
         try {
             final List<Object> received = new ArrayList<>();
 
-            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(o -> received.add(o), _ -> {
+            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(received::add, _ -> {
                 throw new TestException("Inner");
             }, () -> received.add(1), subscription -> subscription.request(128), 128);
 
@@ -103,7 +103,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
         try {
             final List<Object> received = new ArrayList<>();
 
-            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(o -> received.add(o), throwable -> received.add(throwable), () -> {
+            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(received::add, received::add, () -> {
                 throw new TestException();
             }, subscription -> subscription.request(128), 128);
 
@@ -129,7 +129,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
         BoundedSubscriber<Integer> s = new BoundedSubscriber<>(_ -> {
             throw new TestException();
-        }, e -> errors.add(e), () -> {
+        }, errors::add, () -> {
 
         }, subscription -> subscription.request(128), 128);
 
@@ -153,7 +153,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
         final List<Throwable> errors = new ArrayList<>();
 
         BoundedSubscriber<Integer> s = new BoundedSubscriber<>(_ -> {
-        }, e -> errors.add(e), () -> {
+        }, errors::add, () -> {
         }, _ -> {
             throw new TestException();
         }, 128);
@@ -183,7 +183,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
         final List<Object> received = new ArrayList<>();
 
-        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(v -> received.add(v), e -> received.add(e), () -> received.add(100), s -> s.request(128), 128);
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(received::add, received::add, () -> received.add(100), s -> s.request(128), 128);
 
         source.subscribe(subscriber);
 
@@ -206,7 +206,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
         final List<Object> received = new ArrayList<>();
 
-        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(v -> received.add(v), e -> received.add(e), () -> received.add(100), s -> s.request(128), 128);
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(received::add, received::add, () -> received.add(100), s -> s.request(128), 128);
 
         source.subscribe(subscriber);
 

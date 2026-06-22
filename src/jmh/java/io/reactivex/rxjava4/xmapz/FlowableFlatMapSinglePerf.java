@@ -44,11 +44,11 @@ public class FlowableFlatMapSinglePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.flatMap(v -> Flowable.just(v));
+        flowablePlain = source.flatMap(Flowable::just);
 
         flowableConvert = source.flatMap(v -> Single.just(v).toFlowable());
 
-        flowableDedicated = source.flatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v));
+        flowableDedicated = source.flatMapSingle((Function<Integer, Single<Integer>>) Single::just);
     }
 
     @Benchmark

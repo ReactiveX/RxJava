@@ -28,6 +28,6 @@ public class SingleToObservableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToObservable(s -> s.toObservable());
+        TestHelper.checkDoubleOnSubscribeSingleToObservable(Single::toObservable);
     }
 }
