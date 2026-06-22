@@ -189,7 +189,7 @@ public record SchedulerToExecutorService(@NonNull Scheduler scheduler,
 
         while (!isTerminated()) {
             for (var f : result) {
-                if (f.isDone() && !f.isCancelled() && f.exceptionNow() == null) {
+                if (f.state() == Future.State.SUCCESS) {
 
                     var v = f.resultNow();
 
@@ -224,7 +224,7 @@ public record SchedulerToExecutorService(@NonNull Scheduler scheduler,
             totalTime--;
 
             for (var f : result) {
-                if (f.isDone() && !f.isCancelled() && f.exceptionNow() == null) {
+                if (f.state() == Future.State.SUCCESS) {
 
                     var v = f.resultNow();
 
