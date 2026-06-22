@@ -396,9 +396,9 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
             final TestSubscriber<Object> ts1 = p.test();
             final TestSubscriber<Object> ts2 = p.test();
 
-            Runnable r1 = () -> ts1.cancel();
+            Runnable r1 = ts1::cancel;
 
-            Runnable r2 = () -> ts2.cancel();
+            Runnable r2 = ts2::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -413,7 +413,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriberEx<Object> ts1 = p.to(TestHelper.<Object>testConsumer());
 
-            Runnable r1 = () -> ts1.cancel();
+            Runnable r1 = ts1::cancel;
 
             final TestException ex = new TestException();
 

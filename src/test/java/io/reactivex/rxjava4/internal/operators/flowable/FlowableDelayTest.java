@@ -239,7 +239,7 @@ public class FlowableDelayTest extends RxJavaTest {
             delays.add(delay);
         }
 
-        Function<Integer, Flowable<Integer>> delayFunc = t1 -> delays.get(t1);
+        Function<Integer, Flowable<Integer>> delayFunc = delays::get;
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -507,7 +507,7 @@ public class FlowableDelayTest extends RxJavaTest {
             subjects.add(PublishProcessor.<Integer> create());
         }
 
-        Flowable<Integer> result = source.delay((Function<Integer, Flowable<Integer>>) t1 -> subjects.get(t1));
+        Flowable<Integer> result = source.delay((Function<Integer, Flowable<Integer>>) subjects::get);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -536,7 +536,7 @@ public class FlowableDelayTest extends RxJavaTest {
     public void delayEmitsEverything() {
         Flowable<Integer> source = Flowable.range(1, 5);
         Flowable<Integer> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
-        delayed = delayed.doOnEach(t1 -> System.out.println(t1));
+        delayed = delayed.doOnEach(System.out::println);
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         delayed.subscribe(ts);
         // all will be delivered after 500ms since range does not delay between them

@@ -31,7 +31,7 @@ public class CompletableFromActionTest extends RxJavaTest {
     public void fromAction() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Completable.fromAction(() -> atomicInteger.incrementAndGet())
+        Completable.fromAction(atomicInteger::incrementAndGet)
             .test()
             .assertResult();
 
@@ -42,7 +42,7 @@ public class CompletableFromActionTest extends RxJavaTest {
     public void fromActionTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Action run = () -> atomicInteger.incrementAndGet();
+        Action run = atomicInteger::incrementAndGet;
 
         Completable.fromAction(run)
             .test()
@@ -61,7 +61,7 @@ public class CompletableFromActionTest extends RxJavaTest {
     public void fromActionInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Completable completable = Completable.fromAction(() -> atomicInteger.incrementAndGet());
+        Completable completable = Completable.fromAction(atomicInteger::incrementAndGet);
 
         assertEquals(0, atomicInteger.get());
 
@@ -84,7 +84,7 @@ public class CompletableFromActionTest extends RxJavaTest {
     @Test
     public void fromActionDisposed() {
         final AtomicInteger calls = new AtomicInteger();
-        Completable.fromAction(() -> calls.incrementAndGet())
+        Completable.fromAction(calls::incrementAndGet)
         .test(true)
         .assertEmpty();
 
@@ -119,9 +119,7 @@ public class CompletableFromActionTest extends RxJavaTest {
     public void disposeWhileRunningComplete() {
         TestObserver<Void> to = new TestObserver<>();
 
-        Completable.fromAction(() -> {
-            to.dispose();
-        })
+        Completable.fromAction(to::dispose)
         .subscribeWith(to)
         .assertEmpty();
     }

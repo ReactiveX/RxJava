@@ -553,6 +553,6 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.<Completable>checkDoubleOnSubscribeFlowableToCompletable(f -> Completable.merge(f));
+        TestHelper.<Completable>checkDoubleOnSubscribeFlowableToCompletable(Completable::merge);
     }
 }

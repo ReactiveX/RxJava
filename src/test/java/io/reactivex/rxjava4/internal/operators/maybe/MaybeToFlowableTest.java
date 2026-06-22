@@ -31,6 +31,6 @@ public class MaybeToFlowableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(m -> m.toFlowable());
+        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(Maybe::toFlowable);
     }
 }

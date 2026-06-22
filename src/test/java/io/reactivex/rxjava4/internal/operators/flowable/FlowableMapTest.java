@@ -133,7 +133,7 @@ public class FlowableMapTest extends RxJavaTest {
                 throw new TestException("Forced Failure");
             }
             return s;
-        }).doOnError(t1 -> errors.add(t1));
+        }).doOnError(errors::add);
 
         m.subscribe(stringSubscriber);
         verify(stringSubscriber, times(1)).onNext("one");

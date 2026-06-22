@@ -74,7 +74,7 @@ public class FlowableElementAtTest extends RxJavaTest {
     public void elementAtConstrainsUpstreamRequests() {
         final List<Long> requests = new ArrayList<>();
         Flowable.fromArray(1, 2, 3, 4)
-            .doOnRequest(n -> requests.add(n))
+            .doOnRequest(requests::add)
             .elementAt(2)
             .blockingGet()
                 .intValue();
@@ -85,7 +85,7 @@ public class FlowableElementAtTest extends RxJavaTest {
     public void elementAtWithDefaultConstrainsUpstreamRequests() {
         final List<Long> requests = new ArrayList<>();
         Flowable.fromArray(1, 2, 3, 4)
-            .doOnRequest(n -> requests.add(n))
+            .doOnRequest(requests::add)
             .elementAt(2, 100)
             .blockingGet()
                 .intValue();

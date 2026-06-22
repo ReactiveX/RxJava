@@ -39,7 +39,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     public void backpressureWithBufferDropOldest() throws InterruptedException {
         int bufferSize = 3;
         final AtomicInteger droppedCount = new AtomicInteger(0);
-        Action incrementOnDrop = () -> droppedCount.incrementAndGet();
+        Action incrementOnDrop = droppedCount::incrementAndGet;
         TestSubscriber<Long> ts = createTestSubscriber();
         Flowable.fromPublisher(send500ValuesAndComplete.onBackpressureBuffer(bufferSize, incrementOnDrop, DROP_OLDEST))
                 .subscribe(ts);
@@ -80,7 +80,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     public void backpressureWithBufferDropLatest() throws InterruptedException {
         int bufferSize = 3;
         final AtomicInteger droppedCount = new AtomicInteger(0);
-        Action incrementOnDrop = () -> droppedCount.incrementAndGet();
+        Action incrementOnDrop = droppedCount::incrementAndGet;
         TestSubscriber<Long> ts = createTestSubscriber();
         Flowable.fromPublisher(send500ValuesAndComplete.onBackpressureBuffer(bufferSize, incrementOnDrop, DROP_LATEST))
                 .subscribe(ts);

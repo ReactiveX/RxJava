@@ -44,11 +44,11 @@ public class FlowableFlatMapMaybePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.flatMap(v -> Flowable.just(v));
+        flowablePlain = source.flatMap(Flowable::just);
 
         flowableConvert = source.flatMap(v -> Maybe.just(v).toFlowable());
 
-        flowableDedicated = source.flatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v));
+        flowableDedicated = source.flatMapMaybe((Function<Integer, Maybe<Integer>>) Maybe::just);
     }
 
     @Benchmark

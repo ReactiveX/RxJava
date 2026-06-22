@@ -44,11 +44,11 @@ public class FlowableConcatMapMaybePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.concatMap(v -> Flowable.just(v));
+        flowablePlain = source.concatMap(Flowable::just);
 
         flowableConvert = source.concatMap(v -> Maybe.just(v).toFlowable());
 
-        flowableDedicated = source.concatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v));
+        flowableDedicated = source.concatMapMaybe((Function<Integer, Maybe<Integer>>) Maybe::just);
     }
 
     @Benchmark

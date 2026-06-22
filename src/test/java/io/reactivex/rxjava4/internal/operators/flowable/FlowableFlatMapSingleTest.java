@@ -382,7 +382,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
             .flatMapSingle(Functions.justFunction(Single.just(2))).test(0);
 
             Runnable r1 = () -> ts.request(1);
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }

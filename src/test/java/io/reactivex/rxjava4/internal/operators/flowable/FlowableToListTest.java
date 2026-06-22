@@ -260,7 +260,7 @@ public class FlowableToListTest extends RxJavaTest {
             final TestObserver<List<Integer>> to = pp.toList().test();
 
             Runnable r1 = () -> pp.onNext(1);
-            Runnable r2 = () -> to.dispose();
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -273,7 +273,7 @@ public class FlowableToListTest extends RxJavaTest {
             final TestSubscriber<List<Integer>> ts = pp.toList().toFlowable().test();
 
             Runnable r1 = () -> pp.onNext(1);
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -288,8 +288,8 @@ public class FlowableToListTest extends RxJavaTest {
 
             pp.onNext(1);
 
-            Runnable r1 = () -> pp.onComplete();
-            Runnable r2 = () -> ts.cancel();
+            Runnable r1 = pp::onComplete;
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -304,7 +304,6 @@ public class FlowableToListTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<List<Object>>>) f ->
                 f.toList().toFlowable());
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle((Function<Flowable<Object>, Single<List<Object>>>) f ->
-                f.toList());
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle((Function<Flowable<Object>, Single<List<Object>>>) Flowable::toList);
     }
 }

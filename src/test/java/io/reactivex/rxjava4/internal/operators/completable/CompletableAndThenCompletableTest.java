@@ -92,7 +92,7 @@ public class CompletableAndThenCompletableTest extends RxJavaTest {
     @Test
     public void andThenCanceled() {
         final AtomicInteger completableRunCount = new AtomicInteger();
-        Completable.fromRunnable(() -> completableRunCount.incrementAndGet())
+        Completable.fromRunnable(completableRunCount::incrementAndGet)
                 .andThen(Completable.complete())
                 .test(true)
                 .assertEmpty();
@@ -102,7 +102,7 @@ public class CompletableAndThenCompletableTest extends RxJavaTest {
     @Test
     public void andThenFirstCancels() {
         final TestObserver<Void> to = new TestObserver<>();
-        Completable.fromRunnable(() -> to.dispose())
+        Completable.fromRunnable(to::dispose)
                 .andThen(Completable.complete())
                 .subscribe(to);
         to
@@ -114,7 +114,7 @@ public class CompletableAndThenCompletableTest extends RxJavaTest {
     public void andThenSecondCancels() {
         final TestObserver<Void> to = new TestObserver<>();
         Completable.complete()
-                .andThen(Completable.fromRunnable(() -> to.dispose()))
+                .andThen(Completable.fromRunnable(to::dispose))
                 .subscribe(to);
         to
                 .assertNotComplete()
@@ -146,7 +146,7 @@ public class CompletableAndThenCompletableTest extends RxJavaTest {
                                 interrupted[0] = true;
                             }
                         }))
-                        .subscribe(() -> latch.countDown());
+                        .subscribe(latch::countDown);
             }
 
             latch.await();

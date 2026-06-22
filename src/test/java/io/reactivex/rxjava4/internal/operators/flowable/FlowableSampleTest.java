@@ -53,7 +53,7 @@ public class FlowableSampleTest extends RxJavaTest {
             subscriber1.onSubscribe(new BooleanSubscription());
             innerScheduler.schedule(() -> subscriber1.onNext(1L), 1, TimeUnit.SECONDS);
             innerScheduler.schedule(() -> subscriber1.onNext(2L), 2, TimeUnit.SECONDS);
-            innerScheduler.schedule(() -> subscriber1.onComplete(), 3, TimeUnit.SECONDS);
+            innerScheduler.schedule(subscriber1::onComplete, 3, TimeUnit.SECONDS);
         });
 
         Flowable<Long> sampled = source.sample(400L, TimeUnit.MILLISECONDS, scheduler);
@@ -337,7 +337,7 @@ public class FlowableSampleTest extends RxJavaTest {
 
             pp.onNext(1);
 
-            Runnable r1 = () -> pp.onComplete();
+            Runnable r1 = pp::onComplete;
 
             Runnable r2 = () -> scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -374,7 +374,7 @@ public class FlowableSampleTest extends RxJavaTest {
 
             pp.onNext(1);
 
-            Runnable r1 = () -> pp.onComplete();
+            Runnable r1 = pp::onComplete;
 
             Runnable r2 = () -> sampler.onNext(1);
 
@@ -394,9 +394,9 @@ public class FlowableSampleTest extends RxJavaTest {
 
             pp.onNext(1);
 
-            Runnable r1 = () -> pp.onComplete();
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = () -> sampler.onComplete();
+            Runnable r2 = sampler::onComplete;
 
             TestHelper.race(r1, r2);
 

@@ -36,7 +36,7 @@ public class FlowableFromRunnableTest extends RxJavaTest {
     public void fromRunnable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Flowable.fromRunnable(() -> atomicInteger.incrementAndGet())
+        Flowable.fromRunnable(atomicInteger::incrementAndGet)
             .test()
             .assertResult();
 
@@ -47,7 +47,7 @@ public class FlowableFromRunnableTest extends RxJavaTest {
     public void fromRunnableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Runnable run = () -> atomicInteger.incrementAndGet();
+        Runnable run = atomicInteger::incrementAndGet;
 
         Flowable.fromRunnable(run)
             .test()
@@ -66,7 +66,7 @@ public class FlowableFromRunnableTest extends RxJavaTest {
     public void fromRunnableInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Flowable<Object> source = Flowable.fromRunnable(() -> atomicInteger.incrementAndGet());
+        Flowable<Object> source = Flowable.fromRunnable(atomicInteger::incrementAndGet);
 
         assertEquals(0, atomicInteger.get());
 
@@ -148,7 +148,7 @@ public class FlowableFromRunnableTest extends RxJavaTest {
     public void cancelWhileRunning() {
         final TestSubscriber<Object> ts = new TestSubscriber<>();
 
-        Flowable.fromRunnable(() -> ts.cancel())
+        Flowable.fromRunnable(ts::cancel)
         .subscribeWith(ts)
         .assertEmpty();
 

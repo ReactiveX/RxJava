@@ -100,7 +100,7 @@ public class ArrayCompositeSubscriptionTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ArrayCompositeSubscription ac = new ArrayCompositeSubscription(1000);
 
-            Runnable r = () -> ac.dispose();
+            Runnable r = ac::dispose;
 
             TestHelper.race(r, r);
         }

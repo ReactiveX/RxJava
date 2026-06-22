@@ -468,7 +468,7 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
             .flatMapMaybe(Functions.justFunction(Maybe.just(2))).test(0);
 
             Runnable r1 = () -> ts.request(1);
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -520,7 +520,7 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
 
             TestHelper.race(
                     () -> ss1.onSuccess(1),
-                    () -> ss2.onComplete()
+                    ss2::onComplete
             );
 
             ts.assertResult(1);

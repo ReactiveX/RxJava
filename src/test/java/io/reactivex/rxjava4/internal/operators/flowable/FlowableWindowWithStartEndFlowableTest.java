@@ -95,7 +95,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
     }
 
     private void complete(final Subscriber<?> subscriber, int delay) {
-        innerScheduler.schedule(() -> subscriber.onComplete(), delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(subscriber::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private Consumer<Flowable<String>> observeWindow(final List<String> list, final List<List<String>> lists) {
@@ -395,7 +395,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(Flowable.<Integer>just(1).concatWith(Flowable.<Integer>never()),
                 Functions.justFunction(Flowable.never()))
-        .doOnNext(v -> inner.set(v))
+        .doOnNext(inner::set)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -462,7 +462,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
                 TestSubscriber<Flowable<Integer>> ts = BehaviorProcessor.createDefault(1)
                 .window(f1, _ -> f2)
-                .doOnNext(w -> w.test())
+                .doOnNext(Flowable::test)
                 .test();
 
                 ref1.get().onSubscribe(new BooleanSubscription());
@@ -584,9 +584,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         TestSubscriber<Flowable<Object>> ts = pp
         .window(f1, _ -> Flowable.never())
         .take(1)
-        .doOnNext(w -> {
-            w.test();
-        })
+        .doOnNext(Flowable::test)
         .test();
 
         ref1.get().onSubscribe(new BooleanSubscription());
@@ -610,7 +608,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
                 s.onError(new IOException());
             })
             .window(BehaviorProcessor.createDefault(1), _ -> Flowable.error(new TestException()))
-            .doOnNext(w -> w.test())
+            .doOnNext(Flowable::test)
             .test()
             .assertError(TestException.class);
 

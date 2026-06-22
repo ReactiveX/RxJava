@@ -93,7 +93,7 @@ public class FlowableTimestampTest extends RxJavaTest {
         try {
             Flowable.range(1, 5)
             .timestamp()
-            .map(v -> v.time())
+            .map(Timed::time)
             .test()
             .assertResult(0L, 0L, 0L, 0L, 0L);
         } finally {
@@ -110,7 +110,7 @@ public class FlowableTimestampTest extends RxJavaTest {
         try {
             Flowable.range(1, 5)
             .timestamp(TimeUnit.SECONDS)
-            .map(v -> v.time())
+            .map(Timed::time)
             .test()
             .assertResult(0L, 0L, 0L, 0L, 0L);
         } finally {

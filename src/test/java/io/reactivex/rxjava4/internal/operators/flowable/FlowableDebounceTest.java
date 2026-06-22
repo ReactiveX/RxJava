@@ -190,7 +190,7 @@ public class FlowableDebounceTest extends RxJavaTest {
     }
 
     private <T> void publishCompleted(final Subscriber<T> subscriber, long delay) {
-        innerScheduler.schedule(() -> subscriber.onComplete(), delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(subscriber::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final Subscriber<T> subscriber, long delay, final Exception error) {

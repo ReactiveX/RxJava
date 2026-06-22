@@ -120,7 +120,7 @@ public class DisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Disposable d = Disposable.empty();
 
-            Runnable r = () -> d.dispose();
+            Runnable r = d::dispose;
 
             TestHelper.race(r, r);
         }
@@ -167,7 +167,7 @@ public class DisposableTest extends RxJavaTest {
     public void fromAutoCloseable() {
         AtomicInteger counter = new AtomicInteger();
 
-        AutoCloseable ac = () -> counter.getAndIncrement();
+        AutoCloseable ac = counter::getAndIncrement;
 
         Disposable d = Disposable.fromAutoCloseable(ac);
 
@@ -220,7 +220,7 @@ public class DisposableTest extends RxJavaTest {
     public void toAutoCloseable() throws Exception {
         AtomicInteger counter = new AtomicInteger();
 
-        Disposable d = Disposable.fromAction(() -> counter.getAndIncrement());
+        Disposable d = Disposable.fromAction(counter::getAndIncrement);
 
         AutoCloseable ac = Disposable.toAutoCloseable(d);
 

@@ -36,7 +36,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    Function<String, Integer> lengthFunc = t1 -> t1.length();
+    Function<String, Integer> lengthFunc = String::length;
     Function<String, String> duplicate = t1 -> t1 + t1;
 
     @Test
@@ -117,7 +117,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
         };
 
         Function<String, String> identity = v -> v;
-        Supplier<Map<Integer, Collection<String>>> mapSupplier = () -> new HashMap<>();
+        Supplier<Map<Integer, Collection<String>>> mapSupplier = HashMap::new;
 
         Flowable<Map<Integer, Collection<String>>> mapped = source
                 .toMultimap(lengthFunc, identity, mapSupplier, collectionFactory).toFlowable();
@@ -216,7 +216,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
         };
 
         Function<String, String> identity = v -> v;
-        Supplier<Map<Integer, Collection<String>>> mapSupplier = () -> new HashMap<>();
+        Supplier<Map<Integer, Collection<String>>> mapSupplier = HashMap::new;
 
         Flowable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc,
                 identity, mapSupplier, collectionFactory).toFlowable();
@@ -307,7 +307,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
         };
 
         Function<String, String> identity = v -> v;
-        Supplier<Map<Integer, Collection<String>>> mapSupplier = () -> new HashMap<>();
+        Supplier<Map<Integer, Collection<String>>> mapSupplier = HashMap::new;
 
         Single<Map<Integer, Collection<String>>> mapped = source
                 .toMultimap(lengthFunc, identity, mapSupplier, collectionFactory);

@@ -107,6 +107,6 @@ public class ObservableDetachTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(o -> o.onTerminateDetach());
+        TestHelper.checkDoubleOnSubscribeObservable(Observable::onTerminateDetach);
     }
 }

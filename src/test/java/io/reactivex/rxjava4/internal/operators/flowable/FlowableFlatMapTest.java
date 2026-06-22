@@ -544,7 +544,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void flatMapBiMapper() {
         Flowable.just(1)
         .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10),
-                (a, b) -> a + b, true)
+                Integer::sum, true)
         .test()
         .assertResult(11);
     }
@@ -553,7 +553,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void flatMapBiMapperWithError() {
         Flowable.just(1)
         .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10).concatWith(Flowable.<Integer>error(new TestException())),
-                (a, b) -> a + b, true)
+                Integer::sum, true)
         .test()
         .assertFailure(TestException.class, 11);
     }
@@ -562,7 +562,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void flatMapBiMapperMaxConcurrency() {
         Flowable.just(1, 2)
         .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10),
-                (a, b) -> a + b, true, 1)
+                Integer::sum, true, 1)
         .test()
         .assertResult(11, 22);
     }
@@ -656,9 +656,9 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = Flowable.merge(Flowable.just(pp)).test();
 
-            Runnable r1 = () -> pp.onComplete();
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -726,8 +726,8 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
                 final TestSubscriber<Integer> ts = pp.flatMap(Functions.<Flowable<Integer>>identity()).test(0);
 
-                Runnable r1 = () -> ts.cancel();
-                Runnable r2 = () -> pp.onComplete();
+                Runnable r1 = ts::cancel;
+                Runnable r2 = pp::onComplete;
 
                 TestHelper.race(r1, r2);
 
@@ -937,7 +937,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         pp
-        .flatMap(v -> Flowable.just(v))
+        .flatMap(Flowable::just)
         .doOnNext(v -> {
             if (v == 1) {
                 pp.onNext(2);
@@ -958,11 +958,11 @@ public class FlowableFlatMapTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         CountDownLatch cdl = new CountDownLatch(1);
         pp
-        .flatMap(v -> Flowable.just(v))
+        .flatMap(Flowable::just)
         .doOnNext(v -> {
             if (v == 1) {
                 pp.onNext(2);
-                TestHelper.raceOther(() -> pp.onComplete(), cdl);
+                TestHelper.raceOther(pp::onComplete, cdl);
             }
         })
         .subscribe(ts);
@@ -1127,7 +1127,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
                 subscriber.onNext(3);
             }
         }
-        .flatMap(v -> Flowable.just(v), new FlatMapConfig(1))
+        .flatMap(Flowable::just, new FlatMapConfig(1))
         .test(0L)
         .assertFailure(QueueOverflowException.class);
     }
@@ -1143,7 +1143,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
                 subscriber.onNext(1);
             }
         }
-        .flatMap(v -> Flowable.just(v), new FlatMapConfig(1))
+        .flatMap(Flowable::just, new FlatMapConfig(1))
         .doOnNext(v -> {
             if (v == 1) {
                 ref.get().onNext(2);

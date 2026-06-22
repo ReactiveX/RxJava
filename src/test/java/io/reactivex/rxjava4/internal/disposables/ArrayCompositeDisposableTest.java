@@ -75,7 +75,7 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
 
-            Runnable r = () -> acd.dispose();
+            Runnable r = acd::dispose;
 
             TestHelper.race(r, r);
         }

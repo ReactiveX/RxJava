@@ -530,7 +530,7 @@ public class FlowableSubscriberTest {
             ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(v -> {
                 ts.onNext(v);
                 return true;
-            }, e -> ts.onError(e), () -> ts.onComplete());
+            }, ts::onError, ts::onComplete);
 
             s.onComplete();
             s.onNext(1);
@@ -553,7 +553,7 @@ public class FlowableSubscriberTest {
         @SuppressWarnings("resource")
         ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(_ -> {
             throw new TestException();
-        }, e -> ts.onError(e), () -> ts.onComplete());
+        }, ts::onError, ts::onComplete);
 
         BooleanSubscription b = new BooleanSubscription();
 
@@ -615,7 +615,7 @@ public class FlowableSubscriberTest {
     public void subscribeConsumerConsumerWithError() {
         final List<Integer> list = new ArrayList<>();
 
-        Flowable.<Integer>error(new TestException()).subscribe(v -> list.add(v), _ -> list.add(100));
+        Flowable.<Integer>error(new TestException()).subscribe(list::add, _ -> list.add(100));
 
         assertEquals(List.of(100), list);
     }
@@ -650,7 +650,7 @@ public class FlowableSubscriberTest {
     public void subscribeConsumerConsumer() {
         final List<Integer> list = new ArrayList<>();
 
-        Flowable.just(1).subscribe(v -> list.add(v), _ -> list.add(100));
+        Flowable.just(1).subscribe(list::add, _ -> list.add(100));
 
         assertEquals(List.of(1), list);
     }

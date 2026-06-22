@@ -119,7 +119,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
         to.setInitialFusionMode(QueueFuseable.ANY);
 
         Single.just(1)
-        .flattenStreamAsObservable(v -> Stream.<Integer>of(v))
+        .flattenStreamAsObservable(Stream::<Integer>of)
         .subscribe(to);
 
         to.assertFuseable()
@@ -411,7 +411,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
             .subscribe(to);
 
             Runnable r1 = () -> ss.onSuccess(1);
-            Runnable r2 = () -> to.dispose();
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }

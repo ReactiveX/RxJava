@@ -203,9 +203,7 @@ public interface Streamable<@NonNull T> {
     static <@NonNull T> Streamable<T> concat(Streamable<? extends Streamable<? extends T>> sources, ExecutorService exec) {
         return create(emitter -> {
             try (var mainSource = sources.forEach(item -> {
-                try (var innerSource = item.forEach(inner -> {
-                    emitter.emit(inner);
-                }, emitter.canceller().derive(), exec)) {
+                try (var innerSource = item.forEach(emitter::emit, emitter.canceller().derive(), exec)) {
                     innerSource.await(emitter.canceller());
                 }
             }, emitter.canceller(), exec)) {
@@ -426,10 +424,8 @@ public interface Streamable<@NonNull T> {
         final Streamable<T> me = this;
         Flowable.<T>virtualCreate(emitter -> {
             // System.out.println("subscribe::virtualCreate");
-            me.forEach(v -> {
-                // System.out.println("subscribe::virtualCreate::forEach::emit");
-                emitter.emit(v);
-            }).await(emitter.canceller());
+                    // System.out.println("subscribe::virtualCreate::forEach::emit");
+                    me.forEach(emitter::emit).await(emitter.canceller());
         }, executor)
         .subscribe(subscriber);
     }
@@ -441,10 +437,8 @@ public interface Streamable<@NonNull T> {
     default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber) {
         final Streamable<T> me = this;
         Flowable.<T>virtualCreate(emitter -> {
-            me.forEach(v -> {
-                // System.out.println("Emitting " + v);
-                emitter.emit(v);
-            }).await(emitter.canceller());
+                    // System.out.println("Emitting " + v);
+                    me.forEach(emitter::emit).await(emitter.canceller());
         })
         .subscribe(subscriber);
     }

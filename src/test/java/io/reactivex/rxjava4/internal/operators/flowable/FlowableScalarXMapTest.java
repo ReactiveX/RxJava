@@ -179,7 +179,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
 
             Runnable r1 = () -> sd.request(1);
 
-            Runnable r2 = () -> sd.cancel();
+            Runnable r2 = sd::cancel;
 
             TestHelper.race(r1, r2);
         }

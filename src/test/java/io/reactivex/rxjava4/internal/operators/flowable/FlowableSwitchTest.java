@@ -296,7 +296,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     }
 
     private <T> void publishCompleted(final Subscriber<T> subscriber, long delay) {
-        innerScheduler.schedule(() -> subscriber.onComplete(), delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(subscriber::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final Subscriber<T> subscriber, long delay, final Throwable error) {
@@ -532,7 +532,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void switchOnNextPrefetch() {
         final List<Integer> list = new ArrayList<>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(v -> list.add(v));
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(list::add);
 
         Flowable.switchOnNext(Flowable.just(source).hide(), 2)
         .test(1);
@@ -544,7 +544,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void switchOnNextDelayError() {
         final List<Integer> list = new ArrayList<>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(v -> list.add(v));
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(list::add);
 
         Flowable.switchOnNextDelayError(Flowable.just(source).hide())
         .test(1);
@@ -556,7 +556,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void switchOnNextDelayErrorPrefetch() {
         final List<Integer> list = new ArrayList<>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(v -> list.add(v));
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(list::add);
 
         Flowable.switchOnNextDelayError(Flowable.just(source).hide(), 2)
         .test(1);
@@ -722,7 +722,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
             Runnable r1 = () -> pp1.onNext(2);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -897,7 +897,7 @@ public class FlowableSwitchTest extends RxJavaTest {
             .switchMap(Functions.justFunction(pp))
             .subscribe(ts);
 
-            Runnable r1 = () -> ts.cancel();
+            Runnable r1 = ts::cancel;
 
             Runnable r2 = () -> pp.onNext(1);
 
@@ -1115,9 +1115,7 @@ public class FlowableSwitchTest extends RxJavaTest {
             }, BackpressureStrategy.MISSING)
             .switchMap(_ -> createFlowable(inner))
             .observeOn(Schedulers.computation())
-            .doFinally(() -> {
-                outer.incrementAndGet();
-            })
+            .doFinally(outer::incrementAndGet)
             .take(1)
             .blockingSubscribe(_ -> { }, Throwable::printStackTrace);
         }
@@ -1138,9 +1136,7 @@ public class FlowableSwitchTest extends RxJavaTest {
                 it.onNext(2);
             }, 0, TimeUnit.MILLISECONDS);
         })
-        .doFinally(() -> {
-            inner.incrementAndGet();
-        });
+        .doFinally(inner::incrementAndGet);
     }
 
     @Test

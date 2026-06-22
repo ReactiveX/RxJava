@@ -63,7 +63,7 @@ public class MaybeCountTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(f -> f.count());
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(Maybe::count);
     }
 
     @SuppressWarnings("unchecked")

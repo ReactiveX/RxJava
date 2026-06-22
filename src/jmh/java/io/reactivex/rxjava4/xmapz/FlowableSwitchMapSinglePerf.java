@@ -44,11 +44,11 @@ public class FlowableSwitchMapSinglePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.switchMap(v -> Flowable.just(v));
+        flowablePlain = source.switchMap(Flowable::just);
 
         flowableConvert = source.switchMap(v -> Single.just(v).toFlowable());
 
-        flowableDedicated = source.switchMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v));
+        flowableDedicated = source.switchMapSingle((Function<Integer, Single<Integer>>) Single::just);
     }
 
     @Benchmark

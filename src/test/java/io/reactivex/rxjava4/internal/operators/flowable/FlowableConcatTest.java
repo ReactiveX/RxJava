@@ -1498,7 +1498,7 @@ public class FlowableConcatTest {
     public void noCancelPreviousArray() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.just(1).doOnCancel(() -> counter.getAndIncrement());
+        Flowable<Integer> source = Flowable.just(1).doOnCancel(counter::getAndIncrement);
 
         Flowable.concatArray(source, source, source, source, source)
         .test()
@@ -1511,7 +1511,7 @@ public class FlowableConcatTest {
     public void noCancelPreviousIterable() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.just(1).doOnCancel(() -> counter.getAndIncrement());
+        Flowable<Integer> source = Flowable.just(1).doOnCancel(counter::getAndIncrement);
 
         Flowable.concat(Arrays.asList(source, source, source, source, source))
         .test()

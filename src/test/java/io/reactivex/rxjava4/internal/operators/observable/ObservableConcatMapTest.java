@@ -616,7 +616,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
     public void scalarInnerJustDelayError() {
         Observable.just(1)
         .hide()
-        .concatMapDelayError(v -> Observable.just(v))
+        .concatMapDelayError(Observable::just)
         .test()
         .assertResult(1);
     }

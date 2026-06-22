@@ -46,7 +46,7 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
     public void simple2() {
         final AtomicInteger counter = new AtomicInteger();
         Flowable.range(1, 5)
-        .concatMapCompletable(Functions.justFunction(Completable.fromAction(() -> counter.incrementAndGet())))
+        .concatMapCompletable(Functions.justFunction(Completable.fromAction(counter::incrementAndGet)))
         .test()
         .assertResult();
 

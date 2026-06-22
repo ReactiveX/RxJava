@@ -196,7 +196,7 @@ public class CompletableConcatTest extends RxJavaTest {
 
             Runnable r1 = () -> c.subscribe(to);
 
-            Runnable r2 = () -> to.dispose();
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -215,7 +215,7 @@ public class CompletableConcatTest extends RxJavaTest {
 
             Runnable r1 = () -> c.subscribe(to);
 
-            Runnable r2 = () -> to.dispose();
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -242,7 +242,7 @@ public class CompletableConcatTest extends RxJavaTest {
                     .observeOn(Schedulers.cached()),
                     c0)
                 )
-                .subscribe(() -> latch.countDown());
+                .subscribe(latch::countDown);
             }
 
             latch.await();
@@ -252,6 +252,6 @@ public class CompletableConcatTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.<Completable>checkDoubleOnSubscribeFlowableToCompletable(f -> Completable.concat(f));
+        TestHelper.<Completable>checkDoubleOnSubscribeFlowableToCompletable(Completable::concat);
     }
 }

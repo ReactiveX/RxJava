@@ -414,7 +414,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
                     break;
                 } else {
                     Assert.assertEquals(1, o.get());
-                    worker.schedule(() -> rs.onComplete());
+                    worker.schedule(rs::onComplete);
                 }
             }
         } finally {
@@ -580,9 +580,9 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
             final TestObserver<Object> to = p.test();
 
-            Runnable r1 = () -> p.test();
+            Runnable r1 = p::test;
 
-            Runnable r2 = () -> to.dispose();
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -649,7 +649,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
             Runnable r1 = () -> p.subscribe(to);
 
-            Runnable r2 = () -> p.onComplete();
+            Runnable r2 = p::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -717,8 +717,8 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
             final BehaviorDisposable<Integer> bd = new BehaviorDisposable<>(to, bs);
             to.onSubscribe(bd);
 
-            Runnable r1 = () -> bd.emitFirst();
-            Runnable r2 = () -> bd.dispose();
+            Runnable r1 = bd::emitFirst;
+            Runnable r2 = bd::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -737,7 +737,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
             to.onSubscribe(bd);
 
             Runnable r1 = () -> bd.emitNext(2, 0);
-            Runnable r2 = () -> bd.dispose();
+            Runnable r2 = bd::dispose;
 
             TestHelper.race(r1, r2);
         }

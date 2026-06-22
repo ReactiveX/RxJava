@@ -509,7 +509,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void maxConcurrent5() {
         final List<Long> requests = new ArrayList<>();
-        Flowable.range(1, 100).doOnRequest(reqCount -> requests.add(reqCount))
+        Flowable.range(1, 100).doOnRequest(requests::add)
         .concatMapEager(toJust, 5, Flowable.bufferSize())
         .subscribe(ts);
 
@@ -747,7 +747,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
                     .test();
 
             Runnable r1 = () -> pp1.onNext(1);
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -872,9 +872,9 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
             .concatMapEager(Functions.justFunction(pp))
             .subscribe(ts);
 
-            Runnable r1 = () -> pp.onComplete();
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }

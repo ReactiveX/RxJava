@@ -79,7 +79,7 @@ public final class Schedulers {
     }
 
     static final class VirtualHolder {
-        static final Scheduler DEFAULT = new DeferredExecutorScheduler(() -> Executors.newVirtualThreadPerTaskExecutor(), true, true);
+        static final Scheduler DEFAULT = new DeferredExecutorScheduler(Executors::newVirtualThreadPerTaskExecutor, true, true);
     }
 
     static final class NewThreadHolder {

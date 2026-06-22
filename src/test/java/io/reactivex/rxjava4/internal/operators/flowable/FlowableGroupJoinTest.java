@@ -37,7 +37,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
 
     Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-    BiFunction<Integer, Integer, Integer> add = (t1, t2) -> t1 + t2;
+    BiFunction<Integer, Integer, Integer> add = Integer::sum;
 
     <T> Function<Integer, Flowable<T>> just(final Flowable<T> flowable) {
         return _ -> flowable;
@@ -139,7 +139,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                 source2,
                 just2(Flowable.<Object> never()),
                 just2(Flowable.<Object> never()),
-                (t1, t2) -> new PPF(t1, t2));
+                PPF::new);
 
         q.subscribe(
                 new FlowableSubscriber<PPF>() /* NFI */ {

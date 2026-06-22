@@ -138,6 +138,6 @@ public class FlowableOnErrorCompleteTest {
 
     @Test
     public void onSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.onErrorComplete());
+        TestHelper.checkDoubleOnSubscribeFlowable(Flowable::onErrorComplete);
     }
 }

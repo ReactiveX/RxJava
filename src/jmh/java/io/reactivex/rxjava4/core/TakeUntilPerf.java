@@ -63,7 +63,7 @@ public class TakeUntilPerf implements Consumer<Integer> {
     public void flowable() {
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        flowable.subscribe(this, Functions.emptyConsumer(), () -> cdl.countDown());
+        flowable.subscribe(this, Functions.emptyConsumer(), cdl::countDown);
 
         while (cdl.getCount() != 0) { }
     }
@@ -72,7 +72,7 @@ public class TakeUntilPerf implements Consumer<Integer> {
     public void observable() {
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        observable.subscribe(this, Functions.emptyConsumer(), () -> cdl.countDown());
+        observable.subscribe(this, Functions.emptyConsumer(), cdl::countDown);
 
         while (cdl.getCount() != 0) { }
     }

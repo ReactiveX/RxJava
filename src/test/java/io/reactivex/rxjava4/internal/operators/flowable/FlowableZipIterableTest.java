@@ -332,12 +332,12 @@ public class FlowableZipIterableTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Integer>, Flowable<Object>>) f -> f.zipWith(List.of(1),
-                (BiFunction<Integer, Integer, Object>) (a, b) -> a + b));
+                (BiFunction<Integer, Integer, Object>) Integer::sum));
     }
 
     @Test
     public void iteratorThrows() {
-        Flowable.just(1).zipWith(new CrashingIterable(100, 1, 100), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
+        Flowable.just(1).zipWith(new CrashingIterable(100, 1, 100), (BiFunction<Integer, Integer, Object>) Integer::sum)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
@@ -357,7 +357,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
                     subscriber.onComplete();
                 }
             }
-            .zipWith(List.of(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
+            .zipWith(List.of(1), (BiFunction<Integer, Integer, Object>) Integer::sum)
             .test()
             .assertResult(2);
 

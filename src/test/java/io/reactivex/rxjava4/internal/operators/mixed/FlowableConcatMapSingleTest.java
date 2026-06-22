@@ -40,7 +40,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void simple() {
         Flowable.range(1, 5)
-        .concatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v))
+        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -68,7 +68,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void backpressure() {
         TestSubscriber<Integer> ts = Flowable.range(1, 1024)
-        .concatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v), 32)
+        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, 32)
         .test(0);
 
         for (int i = 1; i <= 1024; i++) {
@@ -160,7 +160,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void limit() {
         Flowable.range(1, 5)
-        .concatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v))
+        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .take(3)
         .test()
         .assertResult(1, 2, 3);
@@ -169,7 +169,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void cancel() {
         Flowable.range(1, 5)
-        .concatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v))
+        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .test(3)
         .assertValues(1, 2, 3)
         .assertNoErrors()
@@ -278,7 +278,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
                     .test();
 
             Runnable r1 = () -> ss.onSuccess(1);
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 

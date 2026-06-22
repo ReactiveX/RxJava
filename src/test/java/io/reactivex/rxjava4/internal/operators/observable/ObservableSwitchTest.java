@@ -1275,7 +1275,7 @@ public class ObservableSwitchTest extends RxJavaTest {
 
             TestHelper.race(
                     () -> ref.get().onComplete(),
-                    () -> to.dispose()
+                    to::dispose
             );
         }
     }
@@ -1411,9 +1411,7 @@ public class ObservableSwitchTest extends RxJavaTest {
             })
             .switchMap(_ -> createObservable(inner))
             .observeOn(Schedulers.computation())
-            .doFinally(() -> {
-                outer.incrementAndGet();
-            })
+            .doFinally(outer::incrementAndGet)
             .take(1)
             .blockingSubscribe(_ -> { }, Throwable::printStackTrace);
         }
@@ -1435,9 +1433,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 it.onNext(2);
             }, 0, TimeUnit.MILLISECONDS);
         })
-        .doFinally(() -> {
-            inner.incrementAndGet();
-        });
+        .doFinally(inner::incrementAndGet);
     }
 
     @Test

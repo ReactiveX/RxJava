@@ -170,7 +170,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             inner.schedule(() -> {
                 inner.schedule(first, 30, TimeUnit.MILLISECONDS);
                 inner.schedule(second, 10, TimeUnit.MILLISECONDS);
-                inner.schedule(() -> latch.countDown(), 40, TimeUnit.MILLISECONDS);
+                inner.schedule(latch::countDown, 40, TimeUnit.MILLISECONDS);
             });
 
             latch.await();
@@ -200,7 +200,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
                 inner.schedule(second, 300, TimeUnit.MILLISECONDS);
                 inner.schedule(third, 100, TimeUnit.MILLISECONDS);
                 inner.schedule(fourth);
-                inner.schedule(() -> latch.countDown(), 400, TimeUnit.MILLISECONDS);
+                inner.schedule(latch::countDown, 400, TimeUnit.MILLISECONDS);
             });
 
             latch.await();
@@ -440,7 +440,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        s.scheduleDirect(() -> cdl.countDown());
+        s.scheduleDirect(cdl::countDown);
 
         assertTrue(cdl.await(5, TimeUnit.SECONDS));
     }
@@ -451,7 +451,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        s.scheduleDirect(() -> cdl.countDown(), 50, TimeUnit.MILLISECONDS);
+        s.scheduleDirect(cdl::countDown, 50, TimeUnit.MILLISECONDS);
 
         assertTrue(cdl.await(5, TimeUnit.SECONDS));
     }
@@ -466,7 +466,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
         final CountDownLatch cdl = new CountDownLatch(5);
 
-        Disposable d = s.schedulePeriodicallyDirect(() -> cdl.countDown(), 10, 10, TimeUnit.MILLISECONDS);
+        Disposable d = s.schedulePeriodicallyDirect(cdl::countDown, 10, 10, TimeUnit.MILLISECONDS);
 
         try {
             assertTrue(cdl.await(5, TimeUnit.SECONDS));
@@ -600,7 +600,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         }
 
         final CountDownLatch cdl = new CountDownLatch(1);
-        Runnable countDownRunnable = () -> cdl.countDown();
+        Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = s.schedulePeriodicallyDirect(countDownRunnable, 100, 100, TimeUnit.MILLISECONDS);
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
 
@@ -617,7 +617,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             return;
         }
         final CountDownLatch cdl = new CountDownLatch(1);
-        Runnable countDownRunnable = () -> cdl.countDown();
+        Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
         assertSame(countDownRunnable, wrapper.getWrappedRunnable());

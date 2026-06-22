@@ -499,7 +499,7 @@ public class XFlatMapTest extends RxJavaTest {
             .flatMap((Function<Integer, Single<Integer>>) _ -> {
                 sleep();
                 return Single.<Integer>error(new TestException());
-            }, (a, b) -> a + b)
+            }, Integer::sum)
             .test();
 
             cb.await();
@@ -878,7 +878,7 @@ public class XFlatMapTest extends RxJavaTest {
             .flatMap((Function<Integer, Maybe<Integer>>) _ -> {
                 sleep();
                 return Maybe.<Integer>error(new TestException());
-            }, (a, b) -> a + b)
+            }, Integer::sum)
             .test();
 
             cb.await();

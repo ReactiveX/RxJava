@@ -38,7 +38,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
     @Test
     public void simple() {
         Flowable.range(1, 5)
-        .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v))
+        .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just)
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -107,7 +107,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
     @Test
     public void limit() {
         Flowable.range(1, 5)
-        .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v))
+        .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just)
         .take(3)
         .test()
         .assertResult(1, 2, 3);
@@ -371,7 +371,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
 
             Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 

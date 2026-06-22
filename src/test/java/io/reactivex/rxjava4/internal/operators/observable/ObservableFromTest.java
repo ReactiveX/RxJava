@@ -68,7 +68,7 @@ public class ObservableFromTest extends RxJavaTest {
 
     @Test
     public void fromPublisherDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowableToObservable(f -> f.toObservable());
+        TestHelper.checkDoubleOnSubscribeFlowableToObservable(Flowable::toObservable);
     }
 
     @Test

@@ -129,7 +129,7 @@ public class FlowableRetryTest extends RxJavaTest {
             .startWithItem(1)
             .cast(Object.class)
         )
-        .doOnError(e -> e.printStackTrace())
+        .doOnError(Throwable::printStackTrace)
         .subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -899,7 +899,7 @@ public class FlowableRetryTest extends RxJavaTest {
             }
             return Flowable.just(1);
         })
-        .doOnCancel(() -> counter.getAndIncrement());
+        .doOnCancel(counter::getAndIncrement);
 
         source.retry(5)
         .test()
@@ -920,7 +920,7 @@ public class FlowableRetryTest extends RxJavaTest {
             }
             return Flowable.just(1);
         })
-        .doOnCancel(() -> counter.getAndIncrement());
+        .doOnCancel(counter::getAndIncrement);
 
         source.retry(5, Functions.alwaysTrue())
         .test()
@@ -941,7 +941,7 @@ public class FlowableRetryTest extends RxJavaTest {
             }
             return Flowable.just(1);
         })
-        .doOnCancel(() -> counter.getAndIncrement());
+        .doOnCancel(counter::getAndIncrement);
 
         source.retry((a, _) -> a < 5)
         .test()
@@ -962,7 +962,7 @@ public class FlowableRetryTest extends RxJavaTest {
             }
             return Flowable.just(1);
         })
-        .doOnCancel(() -> counter.getAndIncrement());
+        .doOnCancel(counter::getAndIncrement);
 
         source.retryUntil(() -> false)
         .test()
@@ -982,7 +982,7 @@ public class FlowableRetryTest extends RxJavaTest {
                 return Flowable.error(new TestException());
             }
             return Flowable.just(1);
-        }).doOnCancel(() -> counter.getAndIncrement());
+        }).doOnCancel(counter::getAndIncrement);
 
         source.retryWhen((Function<Flowable<Throwable>, Flowable<?>>) e -> e.takeWhile((Predicate<Object>) _ -> times.getAndIncrement() < 4))
         .test()
@@ -998,7 +998,7 @@ public class FlowableRetryTest extends RxJavaTest {
         final AtomicInteger times = new AtomicInteger();
 
         Flowable<Integer> source = Flowable.<Integer>error(new TestException())
-                .doOnCancel(() -> counter.getAndIncrement());
+                .doOnCancel(counter::getAndIncrement);
 
         source.retryWhen((Function<Flowable<Throwable>, Flowable<?>>) e -> e.takeWhile((Predicate<Object>) _ -> times.getAndIncrement() < 4))
         .test()

@@ -527,9 +527,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             ps1.flatMapCompletable(_ -> {
-                TestHelper.raceOther(() -> {
-                    to.dispose();
-                }, cdl);
+                TestHelper.raceOther(to::dispose, cdl);
                 return Completable.complete();
             })
             .toObservable()
@@ -550,9 +548,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             ps1.flatMapCompletable(_ -> {
-                TestHelper.raceOther(() -> {
-                    to.dispose();
-                }, cdl);
+                TestHelper.raceOther(to::dispose, cdl);
                 return Completable.complete();
             })
             .subscribe(to);

@@ -61,7 +61,7 @@ public class CompletableCreateTest extends RxJavaTest {
 
             Completable.create(e -> {
                 e.setDisposable(d1);
-                e.setCancellable(() -> d2.dispose());
+                e.setCancellable(d2::dispose);
 
                 e.onComplete();
                 e.onError(new TestException());

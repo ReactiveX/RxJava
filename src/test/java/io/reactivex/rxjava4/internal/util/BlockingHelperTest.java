@@ -52,7 +52,7 @@ public class BlockingHelperTest extends RxJavaTest {
         final CountDownLatch cdl = new CountDownLatch(1);
         Disposable d = Disposable.empty();
 
-        Schedulers.computation().scheduleDirect(() -> cdl.countDown(), 100, TimeUnit.MILLISECONDS);
+        Schedulers.computation().scheduleDirect(cdl::countDown, 100, TimeUnit.MILLISECONDS);
 
         BlockingHelper.awaitForComplete(cdl, d);
 

@@ -32,7 +32,7 @@ public class MaybeDetachTest extends RxJavaTest {
     @Test
     public void doubleSubscribe() {
 
-        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.onTerminateDetach());
+        TestHelper.checkDoubleOnSubscribeMaybe(Maybe::onTerminateDetach);
     }
 
     @Test

@@ -44,9 +44,7 @@ public class VirtualResumableTest {
         var stateEx = 0;
 
         try {
-            var t = new Thread(() -> {
-                ready1.await();
-            });
+            var t = new Thread(ready1::await);
             t.start();
 
             while (ready1.get() == null) { }

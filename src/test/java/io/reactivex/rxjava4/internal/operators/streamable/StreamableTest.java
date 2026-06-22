@@ -59,7 +59,7 @@ public class StreamableTest extends StreamableBaseTest {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             ts.onSubscribe(EmptySubscription.INSTANCE);
 
-            try (var comp = Streamable.just(1).forEach(e -> { ts.onNext(e); }, exec)) {
+            try (var comp = Streamable.just(1).forEach(ts::onNext, exec)) {
 
                 comp.stage().toCompletableFuture().thenAccept(_ -> ts.onComplete())
                 .exceptionally(e -> { ts.onError(e); return null; }).join();
@@ -247,7 +247,7 @@ public class StreamableTest extends StreamableBaseTest {
         TestHelper.withVirtual(exec -> {
             var cancelled = new AtomicInteger();
             Flowable.range(1, 10)
-            .doOnCancel(() -> cancelled.incrementAndGet())
+            .doOnCancel(cancelled::incrementAndGet)
             .toStreamable(exec)
             .transform((item, emitter, stopper) -> {
                 if (item == 5) {

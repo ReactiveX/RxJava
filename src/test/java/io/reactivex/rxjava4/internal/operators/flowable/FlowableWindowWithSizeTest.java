@@ -38,7 +38,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
     private static <T> List<List<T>> toLists(Flowable<Flowable<T>> observables) {
 
-        return observables.flatMapSingle((Function<Flowable<T>, SingleSource<List<T>>>) w -> w.toList()).toList().blockingGet();
+        return observables.flatMapSingle((Function<Flowable<T>, SingleSource<List<T>>>) Flowable::toList).toList().blockingGet();
     }
 
     @Test
@@ -391,7 +391,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(10)
         .take(1)
-        .doOnNext(v -> inner.set(v))
+        .doOnNext(inner::set)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -435,7 +435,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(5, 10)
         .take(1)
-        .doOnNext(v -> inner.set(v))
+        .doOnNext(inner::set)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -531,7 +531,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void skipMultipleRequests() {
         Flowable.range(1, 10)
         .window(1, 2)
-        .doOnNext(w -> w.test())
+        .doOnNext(Flowable::test)
         .rebatchRequests(1)
         .test()
         .assertComplete();
@@ -550,7 +550,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void overlapMultipleRequests() {
         Flowable.range(1, 10)
         .window(2, 1)
-        .doOnNext(w -> w.test())
+        .doOnNext(Flowable::test)
         .rebatchRequests(1)
         .test()
         .assertComplete();
@@ -561,7 +561,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         Flowable.range(1, 10)
         .window(2, 1)
         .takeUntil(_ -> true)
-        .doOnNext(w -> w.test())
+        .doOnNext(Flowable::test)
         .test(0L)
         .requestMore(10)
         .assertComplete();
@@ -607,7 +607,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void moreQueuedClean() {
         Flowable.range(1, 10)
         .window(5, 1)
-        .doOnNext(w -> w.test())
+        .doOnNext(Flowable::test)
         .test(3)
         .cancel();
     }

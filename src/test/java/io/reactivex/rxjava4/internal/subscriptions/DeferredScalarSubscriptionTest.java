@@ -59,7 +59,7 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
 
             Runnable r1 = () -> ds.complete(1);
 
-            Runnable r2 = () -> ds.cancel();
+            Runnable r2 = ds::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -97,7 +97,7 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
 
             Runnable r1 = () -> ds.request(1);
 
-            Runnable r2 = () -> ds.cancel();
+            Runnable r2 = ds::cancel;
 
             TestHelper.race(r1, r2);
 

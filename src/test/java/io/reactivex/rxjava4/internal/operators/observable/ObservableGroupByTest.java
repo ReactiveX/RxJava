@@ -1700,9 +1700,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
             bs.groupBy(_ -> 1)
             .doOnNext(g -> {
-                TestHelper.raceOther(() -> {
-                    g.test();
-                }, cdl);
+                TestHelper.raceOther(g::test, cdl);
             })
             .test();
 

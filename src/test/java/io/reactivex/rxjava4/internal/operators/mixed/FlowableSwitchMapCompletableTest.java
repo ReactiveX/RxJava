@@ -174,7 +174,7 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
 
             Runnable r1 = () -> pp.onNext(2);
 
-            Runnable r2 = () -> cs.onComplete();
+            Runnable r2 = cs::onComplete;
 
             TestHelper.race(r1, r2);
 

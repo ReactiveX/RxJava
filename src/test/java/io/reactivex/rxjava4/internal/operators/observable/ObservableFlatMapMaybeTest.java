@@ -493,9 +493,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             ps1.flatMapMaybe(_ -> {
-                TestHelper.raceOther(() -> {
-                    to.dispose();
-                }, cdl);
+                TestHelper.raceOther(to::dispose, cdl);
                 return Maybe.just(1);
             })
             .subscribe(to);
@@ -517,7 +515,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
             .test();
 
             TestHelper.race(
-                    () -> ms1.onComplete(),
+                    ms1::onComplete,
                     () -> ms2.onSuccess(1)
             );
 
@@ -537,7 +535,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
             TestHelper.race(
                     () -> ms2.onSuccess(1),
-                    () -> ms1.onComplete()
+                    ms1::onComplete
             );
 
             to.assertResult(1);

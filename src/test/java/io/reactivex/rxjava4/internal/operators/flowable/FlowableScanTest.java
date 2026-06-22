@@ -62,7 +62,7 @@ public class FlowableScanTest extends RxJavaTest {
 
         Flowable<Integer> flowable = Flowable.just(1, 2, 3);
 
-        Flowable<Integer> m = flowable.scan((t1, t2) -> t1 + t2);
+        Flowable<Integer> m = flowable.scan(Integer::sum);
         m.subscribe(subscriber);
 
         verify(subscriber, never()).onError(any(Throwable.class));
@@ -81,7 +81,7 @@ public class FlowableScanTest extends RxJavaTest {
 
         Flowable<Integer> flowable = Flowable.just(1);
 
-        Flowable<Integer> m = flowable.scan((t1, t2) -> t1 + t2);
+        Flowable<Integer> m = flowable.scan(Integer::sum);
         m.subscribe(subscriber);
 
         verify(subscriber, never()).onError(any(Throwable.class));
@@ -96,7 +96,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void shouldNotEmitUntilAfterSubscription() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(1, 100)
-        .scan(0, (t1, t2) -> t1 + t2)
+        .scan(0, Integer::sum)
         .filter(t1 -> t1 > 0)
         .subscribe(ts);
 
@@ -107,7 +107,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void backpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan(0, (t1, t2) -> t1 + t2)
+                .scan(0, Integer::sum)
                 .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
@@ -141,7 +141,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void backpressureWithoutInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan((t1, t2) -> t1 + t2)
+                .scan(Integer::sum)
                 .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
@@ -175,7 +175,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void noBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan(0, (t1, t2) -> t1 + t2)
+                .scan(0, Integer::sum)
                 .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
@@ -206,7 +206,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void seedFactory() {
         Single<List<Integer>> o = Flowable.range(1, 10)
-                .collect(() -> new ArrayList<>(), (list, t2) -> list.add(t2));
+                .collect(ArrayList::new, List::add);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingGet());
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingGet());
@@ -218,7 +218,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void seedFactoryFlowable() {
         Flowable<List<Integer>> f = Flowable.range(1, 10)
-                .<List<Integer>>collect(() -> new ArrayList<>(), (list, item) -> list.add(item))
+                .<List<Integer>>collect(ArrayList::new, List::add)
                 .toFlowable()
                 .takeLast(1);
 
@@ -229,7 +229,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void scanWithRequestOne() {
         Flowable<Integer> f = Flowable.just(1, 2)
-        .scan(0, (t1, t2) -> t1 + t2)
+        .scan(0, Integer::sum)
         .take(1);
 
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>();
@@ -300,7 +300,7 @@ public class FlowableScanTest extends RxJavaTest {
             Subscription p = spy(subber);
             producer.set(p);
             subscriber.onSubscribe(p);
-        }).scan(100, (t1, t2) -> t1 + t2);
+        }).scan(100, Integer::sum);
 
         f.subscribe(new TestSubscriber<Integer>(1L) {
 
@@ -319,7 +319,7 @@ public class FlowableScanTest extends RxJavaTest {
         TestHelper.checkDisposed(PublishProcessor.create().scan((a, _) -> a));
 
         TestHelper.checkDisposed(PublishProcessor.<Integer>create()
-                .scan(0, (a, b) -> a + b));
+                .scan(0, Integer::sum));
     }
 
     @Test
@@ -341,7 +341,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void neverSource() {
         Flowable.<Integer>never()
-        .scan(0, (a, b) -> a + b)
+        .scan(0, Integer::sum)
         .test()
         .assertValue(0)
         .assertNoErrors()
@@ -363,7 +363,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void scanWithSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
         final List<Throwable> list = new CopyOnWriteArrayList<>();
-        Consumer<Throwable> errorConsumer = t -> list.add(t);
+        Consumer<Throwable> errorConsumer = list::add;
         try {
             RxJavaPlugins.setErrorHandler(errorConsumer);
             final RuntimeException e = new RuntimeException();
@@ -436,7 +436,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void scanNoSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
         final List<Throwable> list = new CopyOnWriteArrayList<>();
-        Consumer<Throwable> errorConsumer = t -> list.add(t);
+        Consumer<Throwable> errorConsumer = list::add;
         try {
             RxJavaPlugins.setErrorHandler(errorConsumer);
             final RuntimeException e = new RuntimeException();
@@ -485,7 +485,7 @@ public class FlowableScanTest extends RxJavaTest {
         };
     }
 
-    private static final BiFunction<Integer, Integer, Integer> SUM = (t1, t2) -> t1 + t2;
+    private static final BiFunction<Integer, Integer, Integer> SUM = Integer::sum;
 
     private static Supplier<Integer> throwingSupplier(final RuntimeException e) {
         return () -> {
@@ -547,14 +547,14 @@ public class FlowableScanTest extends RxJavaTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.<Integer>never().scanWith(() -> 1, (a, b) -> a + b));
+        TestHelper.assertBadRequestReported(Flowable.<Integer>never().scanWith(() -> 1, Integer::sum));
     }
 
     @Test
     public void drainMoreWork() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.scanWith(() -> 0, (a, b) -> a + b)
+        TestSubscriber<Integer> ts = pp.scanWith(() -> 0, Integer::sum)
         .doOnNext(v -> {
             if (v == 1) {
                 pp.onNext(2);

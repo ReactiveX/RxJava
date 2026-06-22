@@ -454,7 +454,7 @@ public class ObservableJoinTest extends RxJavaTest {
                 ps2,
                 _ -> Observable.never(),
                 _ -> Observable.never(),
-                (a, b) -> a + b)
+                        Integer::sum)
         .doOnNext(_ -> {
             ps1.onComplete();
             ps2.onNext(2);

@@ -111,7 +111,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             boolean correctThreadName = threadName.startsWith("RxNewThreadScheduler");
             System.out.println("ObserveOn ThreadName: " + threadName + "  Correct => " + correctThreadName);
             assertTrue(correctThreadName);
-        }).doAfterTerminate(() -> completedLatch.countDown()).subscribe(subscriber);
+        }).doAfterTerminate(completedLatch::countDown).subscribe(subscriber);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
@@ -670,7 +670,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final List<Long> requests = Collections.synchronizedList(new ArrayList<>());
         Flowable.range(1, 1000000)
-                .doOnRequest(n -> requests.add(n))
+                .doOnRequest(requests::add)
                 .observeOn(Schedulers.cached())
                 .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
@@ -781,7 +781,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final List<Long> requests = new ArrayList<>();
 
         Flowable.range(1, 100)
-        .doOnRequest(v -> requests.add(v))
+        .doOnRequest(requests::add)
         .observeOn(test, false, 16).subscribe(ts);
 
         test.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -823,7 +823,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 50)
-        .doOnRequest(r -> requests.add(r))
+        .doOnRequest(requests::add)
         .rebatchRequests(20)
         .subscribe(ts);
 
@@ -1604,9 +1604,9 @@ public class FlowableObserveOnTest extends RxJavaTest {
             .filter(Functions.alwaysTrue())
             .subscribe(ts);
 
-            Runnable r1 = () -> ts.cancel();
+            Runnable r1 = ts::cancel;
 
-            Runnable r2 = () -> scheduler.triggerActions();
+            Runnable r2 = scheduler::triggerActions;
 
             TestHelper.race(r1, r2);
 

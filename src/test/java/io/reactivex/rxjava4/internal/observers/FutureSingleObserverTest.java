@@ -137,7 +137,7 @@ public class FutureSingleObserverTest extends RxJavaTest {
 
             Runnable r1 = () -> f.cancel(true);
 
-            Runnable r2 = () -> ps.onComplete();
+            Runnable r2 = ps::onComplete;
 
             TestHelper.race(r1, r2);
         }

@@ -64,7 +64,7 @@ public class FlowableCovarianceTest extends RxJavaTest {
         .groupBy((Function<Movie, Object>) Movie::getClass)
         .doOnNext(g -> System.out.println(g.getKey()))
         .flatMap((Function<GroupedFlowable<Object, Movie>, Publisher<String>>) g -> g
-                .doOnNext(v -> System.out.println(v))
+                .doOnNext(System.out::println)
                 .compose(m -> m.concatWith(Flowable.just(new ActionMovie())))
                 .map((Function<Object, String>) Object::toString))
         .subscribe(ts);

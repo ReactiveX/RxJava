@@ -276,7 +276,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void concatObservableError() {
-        Completable c = Completable.concat(Flowable.<Completable>error(() -> new TestException()));
+        Completable c = Completable.concat(Flowable.<Completable>error(TestException::new));
 
         c.blockingAwait();
     }
@@ -319,7 +319,7 @@ public class CompletableTest extends RxJavaTest {
         Flowable<Completable> cs = Flowable
                 .just(normal.completable)
                 .repeat(10)
-                .doOnRequest(v -> requested.add(v));
+                .doOnRequest(requested::add);
 
         Completable c = Completable.concat(cs, 5);
 
@@ -392,7 +392,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void errorSupplierNormal() {
-        Completable c = Completable.error(() -> new TestException());
+        Completable c = Completable.error(TestException::new);
 
         c.blockingAwait();
     }
@@ -422,7 +422,7 @@ public class CompletableTest extends RxJavaTest {
     public void fromCallableNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = Completable.fromCallable(() -> calls.getAndIncrement());
+        Completable c = Completable.fromCallable(calls::getAndIncrement);
 
         c.blockingAwait();
 
@@ -454,7 +454,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void fromFlowableError() {
-        Completable c = Completable.fromPublisher(Flowable.error(() -> new TestException()));
+        Completable c = Completable.fromPublisher(Flowable.error(TestException::new));
 
         c.blockingAwait();
     }
@@ -477,7 +477,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void fromObservableError() {
-        Completable c = Completable.fromObservable(Observable.error(() -> new TestException()));
+        Completable c = Completable.fromObservable(Observable.error(TestException::new));
 
         c.blockingAwait();
     }
@@ -486,7 +486,7 @@ public class CompletableTest extends RxJavaTest {
     public void fromActionNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = Completable.fromAction(() -> calls.getAndIncrement());
+        Completable c = Completable.fromAction(calls::getAndIncrement);
 
         c.blockingAwait();
 
@@ -509,7 +509,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void fromSingleThrows() {
-        Completable c = Completable.fromSingle(Single.error(() -> new TestException()));
+        Completable c = Completable.fromSingle(Single.error(TestException::new));
 
         c.blockingAwait();
     }
@@ -638,7 +638,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void mergeObservableError() {
-        Completable c = Completable.merge(Flowable.<Completable>error(() -> new TestException()));
+        Completable c = Completable.merge(Flowable.<Completable>error(TestException::new));
 
         c.blockingAwait();
     }
@@ -681,7 +681,7 @@ public class CompletableTest extends RxJavaTest {
         Flowable<Completable> cs = Flowable
                 .just(normal.completable)
                 .repeat(10)
-                .doOnRequest(v -> requested.add(v));
+                .doOnRequest(requested::add);
 
         Completable c = Completable.merge(cs, 5);
 
@@ -823,7 +823,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void mergeDelayErrorObservableError() {
-        Completable c = Completable.mergeDelayError(Flowable.<Completable>error(() -> new TestException()));
+        Completable c = Completable.mergeDelayError(Flowable.<Completable>error(TestException::new));
 
         c.blockingAwait();
     }
@@ -866,7 +866,7 @@ public class CompletableTest extends RxJavaTest {
         Flowable<Completable> cs = Flowable
                 .just(normal.completable)
                 .repeat(10)
-                .doOnRequest(v -> requested.add(v));
+                .doOnRequest(requested::add);
 
         Completable c = Completable.mergeDelayError(cs, 5);
 
@@ -993,7 +993,7 @@ public class CompletableTest extends RxJavaTest {
         Completable c = Completable.using(
                 () -> 1,
                 (Function<Object, Completable>) _ -> normal.completable,
-                d -> dispose.set(d));
+                dispose::set);
 
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<>();
@@ -1026,7 +1026,7 @@ public class CompletableTest extends RxJavaTest {
 
         Completable c = Completable.using(() -> 1,
                 (Function<Integer, Completable>) _ -> normal.completable,
-                d -> dispose.set(d), false);
+                dispose::set, false);
 
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<>();
@@ -1059,7 +1059,7 @@ public class CompletableTest extends RxJavaTest {
 
         Completable c = Completable.using(() -> 1,
                 (Function<Integer, Completable>) _ -> error.completable,
-                d -> dispose.set(d));
+                dispose::set);
 
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
@@ -1092,7 +1092,7 @@ public class CompletableTest extends RxJavaTest {
 
         Completable c = Completable.using(() -> 1,
                 (Function<Integer, Completable>) _ -> error.completable,
-                d -> dispose.set(d), false);
+                dispose::set, false);
 
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
@@ -1292,7 +1292,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnCompleteNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnComplete(() -> calls.getAndIncrement());
+        Completable c = normal.completable.doOnComplete(calls::getAndIncrement);
 
         c.blockingAwait();
 
@@ -1303,7 +1303,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnCompleteError() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnComplete(() -> calls.getAndIncrement());
+        Completable c = error.completable.doOnComplete(calls::getAndIncrement);
 
         try {
             c.blockingAwait();
@@ -1326,7 +1326,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnDisposeNormalDoesntCall() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnDispose(() -> calls.getAndIncrement());
+        Completable c = normal.completable.doOnDispose(calls::getAndIncrement);
 
         c.blockingAwait();
 
@@ -1337,7 +1337,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnDisposeErrorDoesntCall() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnDispose(() -> calls.getAndIncrement());
+        Completable c = error.completable.doOnDispose(calls::getAndIncrement);
 
         try {
             c.blockingAwait();
@@ -1352,7 +1352,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnDisposeChildCancels() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnDispose(() -> calls.getAndIncrement());
+        Completable c = normal.completable.doOnDispose(calls::getAndIncrement);
 
         c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
@@ -1407,7 +1407,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnErrorNoError() {
         final AtomicReference<Throwable> error = new AtomicReference<>();
 
-        Completable c = normal.completable.doOnError(e -> error.set(e));
+        Completable c = normal.completable.doOnError(error::set);
 
         c.blockingAwait();
 
@@ -1418,7 +1418,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnErrorHasError() {
         final AtomicReference<Throwable> err = new AtomicReference<>();
 
-        Completable c = error.completable.doOnError(e -> err.set(e));
+        Completable c = error.completable.doOnError(err::set);
 
         try {
             c.blockingAwait();
@@ -1470,7 +1470,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnTerminateNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnTerminate(() -> calls.getAndIncrement());
+        Completable c = normal.completable.doOnTerminate(calls::getAndIncrement);
 
         c.blockingAwait();
 
@@ -1481,7 +1481,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnTerminateError() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnTerminate(() -> calls.getAndIncrement());
+        Completable c = error.completable.doOnTerminate(calls::getAndIncrement);
 
         try {
             c.blockingAwait();
@@ -1869,7 +1869,7 @@ public class CompletableTest extends RxJavaTest {
     public void subscribeTwoCallbacksNormal() {
         final AtomicReference<Throwable> err = new AtomicReference<>();
         final AtomicBoolean complete = new AtomicBoolean();
-        normal.completable.subscribe(() -> complete.set(true), e -> err.set(e));
+        normal.completable.subscribe(() -> complete.set(true), err::set);
 
         Assert.assertNull(err.get());
         Assert.assertTrue("Not completed", complete.get());
@@ -1879,7 +1879,7 @@ public class CompletableTest extends RxJavaTest {
     public void subscribeTwoCallbacksError() {
         final AtomicReference<Throwable> err = new AtomicReference<>();
         final AtomicBoolean complete = new AtomicBoolean();
-        error.completable.subscribe(() -> complete.set(true), e -> err.set(e));
+        error.completable.subscribe(() -> complete.set(true), err::set);
 
         Assert.assertTrue(err.get() instanceof TestException);
         Assert.assertFalse("Not completed", complete.get());
@@ -1890,7 +1890,7 @@ public class CompletableTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final AtomicReference<Throwable> err = new AtomicReference<>();
-            normal.completable.subscribe(() -> { throw new TestException(); }, e -> err.set(e));
+            normal.completable.subscribe(() -> { throw new TestException(); }, err::set);
 
             Assert.assertNull(err.get());
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -2125,7 +2125,7 @@ public class CompletableTest extends RxJavaTest {
         .subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(final Disposable d) {
-                Schedulers.single().scheduleDirect(() -> d.dispose(), 100, TimeUnit.MILLISECONDS);
+                Schedulers.single().scheduleDirect(d::dispose, 100, TimeUnit.MILLISECONDS);
             }
 
             @Override
@@ -2204,7 +2204,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<>();
 
-        c.subscribe(Functions.EMPTY_ACTION, v -> complete.set(v));
+        c.subscribe(Functions.EMPTY_ACTION, complete::set);
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2256,7 +2256,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<>();
 
-        c.subscribe(Functions.EMPTY_ACTION, v -> complete.set(v));
+        c.subscribe(Functions.EMPTY_ACTION, complete::set);
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2387,7 +2387,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<>();
 
-        c.subscribe(Functions.EMPTY_ACTION, v -> complete.set(v));
+        c.subscribe(Functions.EMPTY_ACTION, complete::set);
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2439,7 +2439,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<>();
 
-        c.subscribe(Functions.EMPTY_ACTION, v -> complete.set(v));
+        c.subscribe(Functions.EMPTY_ACTION, complete::set);
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2844,7 +2844,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnCompletedNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnComplete(() -> calls.getAndIncrement());
+        Completable c = normal.completable.doOnComplete(calls::getAndIncrement);
 
         c.blockingAwait();
 
@@ -2855,7 +2855,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnCompletedError() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnComplete(() -> calls.getAndIncrement());
+        Completable c = error.completable.doOnComplete(calls::getAndIncrement);
 
         try {
             c.blockingAwait();
@@ -2922,7 +2922,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void subscribeEmptyOnError() {
-        expectUncaughtTestException(() -> error.completable.subscribe());
+        expectUncaughtTestException(error.completable::subscribe);
     }
 
     @Test
@@ -3255,7 +3255,7 @@ public class CompletableTest extends RxJavaTest {
     public void fromRunnableNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = Completable.fromRunnable(() -> calls.getAndIncrement());
+        Completable c = Completable.fromRunnable(calls::getAndIncrement);
 
         c.blockingAwait();
 

@@ -297,9 +297,9 @@ public class FlowableTakeLastTimedTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = pp.takeLast(1, TimeUnit.DAYS).test();
 
-            Runnable r1 = () -> pp.onComplete();
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }

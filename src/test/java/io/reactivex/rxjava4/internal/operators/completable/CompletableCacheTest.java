@@ -201,7 +201,7 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
 
             final TestObserver<Void> to2 = new TestObserver<>();
 
-            Runnable r1 = () -> to1.dispose();
+            Runnable r1 = to1::dispose;
             Runnable r2 = () -> c.subscribe(to2);
 
             TestHelper.race(r1, r2);

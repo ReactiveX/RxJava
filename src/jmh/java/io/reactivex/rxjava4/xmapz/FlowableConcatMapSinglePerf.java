@@ -44,11 +44,11 @@ public class FlowableConcatMapSinglePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.concatMap(v -> Flowable.just(v));
+        flowablePlain = source.concatMap(Flowable::just);
 
         flowableConvert = source.concatMap(v -> Single.just(v).toFlowable());
 
-        flowableDedicated = source.concatMapSingle((Function<Integer, Single<? extends Integer>>) v -> Single.just(v));
+        flowableDedicated = source.concatMapSingle((Function<Integer, Single<? extends Integer>>) Single::just);
     }
 
     @Benchmark

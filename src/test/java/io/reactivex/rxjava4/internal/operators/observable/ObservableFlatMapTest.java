@@ -1146,7 +1146,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
 
         ps
-        .flatMap(v -> Observable.just(v))
+        .flatMap(Observable::just)
         .doOnNext(v -> {
             if (v == 1) {
                 ps.onNext(2);
@@ -1167,11 +1167,11 @@ public class ObservableFlatMapTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         CountDownLatch cdl = new CountDownLatch(1);
         ps
-        .flatMap(v -> Observable.just(v))
+        .flatMap(Observable::just)
         .doOnNext(v -> {
             if (v == 1) {
                 ps.onNext(2);
-                TestHelper.raceOther(() -> ps.onComplete(), cdl);
+                TestHelper.raceOther(ps::onComplete, cdl);
             }
         })
         .subscribe(to);

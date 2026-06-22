@@ -304,7 +304,7 @@ public class FlowableRepeatTest {
     public void noCancelPreviousRepeat() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.just(1).doOnCancel(() -> counter.getAndIncrement());
+        Flowable<Integer> source = Flowable.just(1).doOnCancel(counter::getAndIncrement);
 
         source.repeat(5)
         .test()
@@ -317,7 +317,7 @@ public class FlowableRepeatTest {
     public void noCancelPreviousRepeatUntil() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.just(1).doOnCancel(() -> counter.getAndIncrement());
+        Flowable<Integer> source = Flowable.just(1).doOnCancel(counter::getAndIncrement);
 
         final AtomicInteger times = new AtomicInteger();
 
@@ -332,7 +332,7 @@ public class FlowableRepeatTest {
     public void noCancelPreviousRepeatWhen() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.just(1).doOnCancel(() -> counter.getAndIncrement());
+        Flowable<Integer> source = Flowable.just(1).doOnCancel(counter::getAndIncrement);
 
         final AtomicInteger times = new AtomicInteger();
 

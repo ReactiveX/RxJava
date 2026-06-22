@@ -94,7 +94,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
     @Test
     public void cancelledTasksDontRun() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = () -> calls.getAndIncrement();
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec, false, true);
         Worker w = custom.createWorker();
@@ -118,7 +118,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
     @Test
     public void cancelledWorkerDoesntRunTasks() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = () -> calls.getAndIncrement();
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec, false, true);
         Worker w = custom.createWorker();
@@ -135,11 +135,11 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
     @Test
     public void plainExecutor() throws Exception {
-        Scheduler s = Schedulers.from(r -> r.run(), false, true);
+        Scheduler s = Schedulers.from(Runnable::run, false, true);
 
         final CountDownLatch cdl = new CountDownLatch(5);
 
-        Runnable r = () -> cdl.countDown();
+        Runnable r = cdl::countDown;
 
         s.scheduleDirect(r);
 
@@ -214,7 +214,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
             final CountDownLatch cdl = new CountDownLatch(8);
 
-            Runnable r = () -> cdl.countDown();
+            Runnable r = cdl::countDown;
 
             s.scheduleDirect(r);
 
@@ -243,7 +243,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
             final CountDownLatch cdl = new CountDownLatch(8);
 
-            Runnable r = () -> cdl.countDown();
+            Runnable r = cdl::countDown;
 
             s.schedule(r);
 
@@ -290,7 +290,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
     @Test
     public void runnableDisposed() {
-        final Scheduler s = Schedulers.from(r -> r.run(), false, true);
+        final Scheduler s = Schedulers.from(Runnable::run, false, true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
 
         assertTrue(d.isDisposed());
@@ -357,7 +357,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
     public void unwrapScheduleDirectTaskAfterDispose() {
         Scheduler scheduler = getScheduler();
         final CountDownLatch cdl = new CountDownLatch(1);
-        Runnable countDownRunnable = () -> cdl.countDown();
+        Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
         assertSame(countDownRunnable, wrapper.getWrappedRunnable());

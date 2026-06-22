@@ -231,7 +231,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
                 }
             };
 
-            Runnable r1 = () -> task.dispose();
+            Runnable r1 = task::dispose;
 
             Runnable r2 = () -> task.setFuture(ft);
 

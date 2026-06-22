@@ -265,7 +265,7 @@ public class TestSchedulerTest extends RxJavaTest {
             return r;
         });
         try {
-            Runnable r = () -> run.getAndIncrement();
+            Runnable r = run::getAndIncrement;
             TestScheduler ts = new TestScheduler(true);
 
             ts.createWorker().schedule(r);
@@ -299,7 +299,7 @@ public class TestSchedulerTest extends RxJavaTest {
             return r;
         });
         try {
-            Runnable r = () -> run.getAndIncrement();
+            Runnable r = run::getAndIncrement;
             TestScheduler ts = new TestScheduler(1, TimeUnit.HOURS, true);
 
             ts.createWorker().schedule(r);
@@ -327,7 +327,7 @@ public class TestSchedulerTest extends RxJavaTest {
     @Test
     public void disposeWork() {
         AtomicInteger run = new AtomicInteger();
-        Runnable r = () -> run.getAndIncrement();
+        Runnable r = run::getAndIncrement;
         TestScheduler ts = new TestScheduler(1, TimeUnit.HOURS, true);
 
         Disposable d = ts.createWorker().schedule(r);

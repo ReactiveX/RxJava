@@ -27,7 +27,7 @@ public class FlowableDoOnTest extends RxJavaTest {
     @Test
     public void doOnEach() {
         final AtomicReference<String> r = new AtomicReference<>();
-        String output = Flowable.just("one").doOnNext(v -> r.set(v)).blockingSingle();
+        String output = Flowable.just("one").doOnNext(r::set).blockingSingle();
 
         assertEquals("one", output);
         assertEquals("one", r.get());
@@ -39,7 +39,7 @@ public class FlowableDoOnTest extends RxJavaTest {
         Throwable t = null;
         try {
             Flowable.<String> error(new RuntimeException("an error"))
-            .doOnError(v -> r.set(v)).blockingSingle();
+            .doOnError(r::set).blockingSingle();
             fail("expected exception, not a return value");
         } catch (Throwable e) {
             t = e;

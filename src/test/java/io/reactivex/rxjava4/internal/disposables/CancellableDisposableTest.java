@@ -32,7 +32,7 @@ public class CancellableDisposableTest extends RxJavaTest {
     public void normal() {
         final AtomicInteger count = new AtomicInteger();
 
-        Cancellable c = () -> count.getAndIncrement();
+        Cancellable c = count::getAndIncrement;
 
         @SuppressWarnings("resource")
         CancellableDisposable cd = new CancellableDisposable(c);
@@ -81,12 +81,12 @@ public class CancellableDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicInteger count = new AtomicInteger();
 
-            Cancellable c = () -> count.getAndIncrement();
+            Cancellable c = count::getAndIncrement;
 
             @SuppressWarnings("resource")
             final CancellableDisposable cd = new CancellableDisposable(c);
 
-            Runnable r = () -> cd.dispose();
+            Runnable r = cd::dispose;
 
             TestHelper.race(r, r);
 

@@ -279,7 +279,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
             final TestObserver<Boolean> to = Flowable.sequenceEqual(Flowable.never(), pp).test();
 
-            Runnable r1 = () -> to.dispose();
+            Runnable r1 = to::dispose;
 
             Runnable r2 = () -> pp.onNext(1);
 
@@ -296,7 +296,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
             final TestSubscriber<Boolean> ts = Flowable.sequenceEqual(Flowable.never(), pp).toFlowable().test();
 
-            Runnable r1 = () -> ts.cancel();
+            Runnable r1 = ts::cancel;
 
             Runnable r2 = () -> pp.onNext(1);
 
@@ -366,7 +366,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
             Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -455,7 +455,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
             Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = () -> to.dispose();
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
 

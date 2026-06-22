@@ -490,7 +490,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(
                 Flowable.just(1).hide(),
                 Flowable.<Integer>error(new TestException()))
-                .doOnRequest(t1 -> requests.add(t1)), 1);
+                .doOnRequest(requests::add), 1);
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 

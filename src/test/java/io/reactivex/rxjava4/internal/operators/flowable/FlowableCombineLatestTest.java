@@ -1215,7 +1215,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
             }
         };
 
-        Flowable.combineLatest(pp1, pp2, (t1, t2) -> t1 + t2)
+        Flowable.combineLatest(pp1, pp2, Integer::sum)
         .subscribe(ts);
 
         pp1.onNext(1);
@@ -1281,7 +1281,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
             Flowable.combineLatest(pp, Flowable.never(), (a, _) -> a)
             .subscribe(ts);
 
-            TestHelper.race(() -> pp.onComplete(), () -> ts.cancel());
+            TestHelper.race(pp::onComplete, ts::cancel);
         }
     }
 
@@ -1306,7 +1306,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
                 ref.get().onSubscribe(new BooleanSubscription());
 
-                TestHelper.race(() -> ref.get().onError(ex), () -> ts.cancel());
+                TestHelper.race(() -> ref.get().onError(ex), ts::cancel);
 
                 if (ts.errors().isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -1320,7 +1320,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Flowable.combineLatest(pp1, pp2, (a, b) -> a + b)
+        TestSubscriber<Integer> ts = Flowable.combineLatest(pp1, pp2, Integer::sum)
         .doOnNext(v -> {
             if (v == 2) {
                 pp2.onNext(3);
@@ -1377,7 +1377,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
-        Flowable.combineLatest(Flowable.just(1), Flowable.just(2), (a, b) -> a + b)
+        Flowable.combineLatest(Flowable.just(1), Flowable.just(2), Integer::sum)
         .subscribeWith(ts)
         .assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -1389,7 +1389,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
-        Flowable.combineLatest(Flowable.just(1), Flowable.just(2), (a, b) -> a + b)
+        Flowable.combineLatest(Flowable.just(1), Flowable.just(2), Integer::sum)
         .parallel()
         .sequential()
         .subscribeWith(ts)
@@ -1401,7 +1401,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
-        Flowable.combineLatest(Flowable.just(1), Flowable.just(2), (a, b) -> a + b)
+        Flowable.combineLatest(Flowable.just(1), Flowable.just(2), Integer::sum)
         .compose(TestHelper.flowableStripBoundary())
         .parallel()
         .sequential()
@@ -1414,7 +1414,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
-        Flowable.combineLatest(Flowable.just(1), Flowable.<Integer>error(new TestException()), (a, b) -> a + b)
+        Flowable.combineLatest(Flowable.just(1), Flowable.<Integer>error(new TestException()), Integer::sum)
         .subscribeWith(ts)
         .assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -1425,7 +1425,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     public void nonFusedMoreWorkBeforeTermination() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Flowable.combineLatest(pp, Flowable.just(1), (a, b) -> a + b)
+        TestSubscriber<Integer> ts = Flowable.combineLatest(pp, Flowable.just(1), Integer::sum)
         .doOnNext(v -> {
             if (v == 1) {
                 pp.onNext(2);
@@ -1443,7 +1443,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     public void nonFusedDelayErrorMoreWorkBeforeTermination() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<List<Object>> ts = Flowable.combineLatestDelayError(Arrays.asList(pp, Flowable.just(1)), a -> Arrays.asList(a))
+        TestSubscriber<List<Object>> ts = Flowable.combineLatestDelayError(Arrays.asList(pp, Flowable.just(1)), Arrays::asList)
         .doOnNext(v -> {
             if (((Integer)v.get(0)) == 0) {
                 pp.onNext(2);

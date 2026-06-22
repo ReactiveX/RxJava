@@ -48,14 +48,14 @@ public class EachTypeFlatMapPerf {
         bpRange = Flowable.range(1, times);
         nbpRange = Observable.range(1, times);
 
-        bpRangeMapJust = bpRange.flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v));
-        nbpRangeMapJust = nbpRange.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v));
+        bpRangeMapJust = bpRange.flatMap((Function<Integer, Publisher<Integer>>) Flowable::just);
+        nbpRangeMapJust = nbpRange.flatMap((Function<Integer, Observable<Integer>>) Observable::just);
 
         bpRangeMapRange = bpRange.flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.range(v, 2));
         nbpRangeMapRange = nbpRange.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.range(v, 2));
 
         singleJust = Single.just(1);
-        singleJustMapJust = singleJust.flatMap((Function<Integer, Single<Integer>>) v -> Single.just(v));
+        singleJustMapJust = singleJust.flatMap((Function<Integer, Single<Integer>>) Single::just);
     }
 
     @Benchmark

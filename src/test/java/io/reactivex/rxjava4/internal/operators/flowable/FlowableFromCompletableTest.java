@@ -36,7 +36,7 @@ public class FlowableFromCompletableTest extends RxJavaTest {
     public void fromCompletable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Flowable.fromCompletable(Completable.fromAction(() -> atomicInteger.incrementAndGet()))
+        Flowable.fromCompletable(Completable.fromAction(atomicInteger::incrementAndGet))
             .test()
             .assertResult();
 
@@ -47,7 +47,7 @@ public class FlowableFromCompletableTest extends RxJavaTest {
     public void fromCompletableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Action run = () -> atomicInteger.incrementAndGet();
+        Action run = atomicInteger::incrementAndGet;
 
         Flowable.fromCompletable(Completable.fromAction(run))
             .test()
@@ -66,7 +66,7 @@ public class FlowableFromCompletableTest extends RxJavaTest {
     public void fromCompletableInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Flowable<Object> source = Flowable.fromCompletable(Completable.fromAction(() -> atomicInteger.incrementAndGet()));
+        Flowable<Object> source = Flowable.fromCompletable(Completable.fromAction(atomicInteger::incrementAndGet));
 
         assertEquals(0, atomicInteger.get());
 
@@ -130,7 +130,7 @@ public class FlowableFromCompletableTest extends RxJavaTest {
     public void cancelWhileRunning() {
         final TestSubscriber<Object> ts = new TestSubscriber<>();
 
-        Flowable.fromCompletable(Completable.fromAction(() -> ts.cancel()))
+        Flowable.fromCompletable(Completable.fromAction(ts::cancel))
         .subscribeWith(ts)
         .assertEmpty();
 

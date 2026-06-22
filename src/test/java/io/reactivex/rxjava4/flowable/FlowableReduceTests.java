@@ -25,7 +25,7 @@ public class FlowableReduceTests extends RxJavaTest {
     @Test
     public void reduceIntsFlowable() {
         Flowable<Integer> f = Flowable.just(1, 2, 3);
-        int value = f.reduce((t1, t2) -> t1 + t2).toFlowable().blockingSingle();
+        int value = f.reduce(Integer::sum).toFlowable().blockingSingle();
 
         assertEquals(6, value);
     }
@@ -59,7 +59,7 @@ public class FlowableReduceTests extends RxJavaTest {
     @Test
     public void reduceInts() {
         Flowable<Integer> f = Flowable.just(1, 2, 3);
-        int value = f.reduce((t1, t2) -> t1 + t2).toFlowable().blockingSingle();
+        int value = f.reduce(Integer::sum).toFlowable().blockingSingle();
 
         assertEquals(6, value);
     }

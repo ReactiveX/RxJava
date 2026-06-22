@@ -355,8 +355,8 @@ public class ObservableCacheTest extends RxJavaTest {
             TestObserver<Object> to = o.test();
 
             TestHelper.race(
-                    () -> to.dispose(),
-                    () -> o.test()
+                    to::dispose,
+                    o::test
             );
         }
     }

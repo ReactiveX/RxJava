@@ -42,7 +42,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void simple() {
         Flowable.range(1, 5)
-        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v))
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just)
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -70,7 +70,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void backpressure() {
         TestSubscriber<Integer> ts = Flowable.range(1, 1024)
-        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v), 32)
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, 32)
         .test(0);
 
         for (int i = 1; i <= 1024; i++) {
@@ -237,7 +237,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void cancel() {
         Flowable.range(1, 5)
-        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v))
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just)
         .test(3)
         .assertValues(1, 2, 3)
         .assertNoErrors()
@@ -346,7 +346,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
                     .test();
 
             Runnable r1 = () -> ms.onSuccess(1);
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 
