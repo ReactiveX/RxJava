@@ -13,30 +13,144 @@
 
 package io.reactivex.rxjava4.core;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.stream.*;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.Subscriber;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-import static java.util.concurrent.Flow.*;
-
-import io.reactivex.rxjava4.annotations.*;
-import io.reactivex.rxjava4.disposables.*;
-import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
-import io.reactivex.rxjava4.internal.functions.*;
-import io.reactivex.rxjava4.internal.fuseable.*;
-import io.reactivex.rxjava4.internal.jdk8.*;
-import io.reactivex.rxjava4.internal.observers.*;
-import io.reactivex.rxjava4.internal.operators.completable.*;
-import io.reactivex.rxjava4.internal.operators.flowable.*;
-import io.reactivex.rxjava4.internal.operators.maybe.*;
-import io.reactivex.rxjava4.internal.operators.mixed.*;
+import io.reactivex.rxjava4.annotations.BackpressureKind;
+import io.reactivex.rxjava4.annotations.BackpressureSupport;
+import io.reactivex.rxjava4.annotations.CheckReturnValue;
+import io.reactivex.rxjava4.annotations.NonNull;
+import io.reactivex.rxjava4.annotations.Nullable;
+import io.reactivex.rxjava4.annotations.SchedulerSupport;
+import io.reactivex.rxjava4.core.config.SingleConcatConfig;
+import io.reactivex.rxjava4.core.config.SingleConcatEagerConfig;
+import io.reactivex.rxjava4.disposables.CompositeDisposable;
+import io.reactivex.rxjava4.disposables.Disposable;
+import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.exceptions.CompositeException;
+import io.reactivex.rxjava4.exceptions.Exceptions;
+import io.reactivex.rxjava4.exceptions.UndeliverableException;
+import io.reactivex.rxjava4.functions.Action;
+import io.reactivex.rxjava4.functions.BiConsumer;
+import io.reactivex.rxjava4.functions.BiFunction;
+import io.reactivex.rxjava4.functions.BiPredicate;
+import io.reactivex.rxjava4.functions.BooleanSupplier;
+import io.reactivex.rxjava4.functions.Cancellable;
+import io.reactivex.rxjava4.functions.Consumer;
+import io.reactivex.rxjava4.functions.Function;
+import io.reactivex.rxjava4.functions.Function3;
+import io.reactivex.rxjava4.functions.Function4;
+import io.reactivex.rxjava4.functions.Function5;
+import io.reactivex.rxjava4.functions.Function6;
+import io.reactivex.rxjava4.functions.Function7;
+import io.reactivex.rxjava4.functions.Function8;
+import io.reactivex.rxjava4.functions.Function9;
+import io.reactivex.rxjava4.functions.Predicate;
+import io.reactivex.rxjava4.functions.Supplier;
+import io.reactivex.rxjava4.internal.functions.Functions;
+import io.reactivex.rxjava4.internal.functions.ObjectHelper;
+import io.reactivex.rxjava4.internal.fuseable.FuseToFlowable;
+import io.reactivex.rxjava4.internal.fuseable.FuseToMaybe;
+import io.reactivex.rxjava4.internal.fuseable.FuseToObservable;
+import io.reactivex.rxjava4.internal.jdk8.CompletionStageConsumer;
+import io.reactivex.rxjava4.internal.jdk8.SingleFlattenStreamAsFlowable;
+import io.reactivex.rxjava4.internal.jdk8.SingleFlattenStreamAsObservable;
+import io.reactivex.rxjava4.internal.jdk8.SingleFromCompletionStage;
+import io.reactivex.rxjava4.internal.jdk8.SingleMapOptional;
+import io.reactivex.rxjava4.internal.observers.BiConsumerSingleObserver;
+import io.reactivex.rxjava4.internal.observers.BlockingDisposableMultiObserver;
+import io.reactivex.rxjava4.internal.observers.BlockingMultiObserver;
+import io.reactivex.rxjava4.internal.observers.ConsumerSingleObserver;
+import io.reactivex.rxjava4.internal.observers.DisposableAutoReleaseMultiObserver;
+import io.reactivex.rxjava4.internal.observers.FutureMultiObserver;
+import io.reactivex.rxjava4.internal.observers.SafeSingleObserver;
+import io.reactivex.rxjava4.internal.operators.completable.CompletableFromSingle;
+import io.reactivex.rxjava4.internal.operators.completable.CompletableToFlowable;
+import io.reactivex.rxjava4.internal.operators.flowable.FlowableFlatMapSinglePublisher;
+import io.reactivex.rxjava4.internal.operators.flowable.FlowableSingleSingle;
+import io.reactivex.rxjava4.internal.operators.maybe.MaybeFilterSingle;
+import io.reactivex.rxjava4.internal.operators.maybe.MaybeFromSingle;
+import io.reactivex.rxjava4.internal.operators.maybe.MaybeToSingle;
+import io.reactivex.rxjava4.internal.operators.mixed.FlowableConcatMapSinglePublisher;
+import io.reactivex.rxjava4.internal.operators.mixed.FlowableSwitchMapSinglePublisher;
+import io.reactivex.rxjava4.internal.operators.mixed.ObservableConcatMapSingle;
+import io.reactivex.rxjava4.internal.operators.mixed.SingleFlatMapObservable;
 import io.reactivex.rxjava4.internal.operators.observable.ObservableSingleSingle;
-import io.reactivex.rxjava4.internal.operators.single.*;
+import io.reactivex.rxjava4.internal.operators.single.SingleAmb;
+import io.reactivex.rxjava4.internal.operators.single.SingleCache;
+import io.reactivex.rxjava4.internal.operators.single.SingleContains;
+import io.reactivex.rxjava4.internal.operators.single.SingleCreate;
+import io.reactivex.rxjava4.internal.operators.single.SingleDefer;
+import io.reactivex.rxjava4.internal.operators.single.SingleDelay;
+import io.reactivex.rxjava4.internal.operators.single.SingleDelayWithCompletable;
+import io.reactivex.rxjava4.internal.operators.single.SingleDelayWithObservable;
+import io.reactivex.rxjava4.internal.operators.single.SingleDelayWithPublisher;
+import io.reactivex.rxjava4.internal.operators.single.SingleDelayWithSingle;
+import io.reactivex.rxjava4.internal.operators.single.SingleDematerialize;
+import io.reactivex.rxjava4.internal.operators.single.SingleDetach;
+import io.reactivex.rxjava4.internal.operators.single.SingleDoAfterSuccess;
+import io.reactivex.rxjava4.internal.operators.single.SingleDoAfterTerminate;
+import io.reactivex.rxjava4.internal.operators.single.SingleDoFinally;
+import io.reactivex.rxjava4.internal.operators.single.SingleDoOnDispose;
+import io.reactivex.rxjava4.internal.operators.single.SingleDoOnError;
+import io.reactivex.rxjava4.internal.operators.single.SingleDoOnEvent;
+import io.reactivex.rxjava4.internal.operators.single.SingleDoOnLifecycle;
+import io.reactivex.rxjava4.internal.operators.single.SingleDoOnSubscribe;
+import io.reactivex.rxjava4.internal.operators.single.SingleDoOnSuccess;
+import io.reactivex.rxjava4.internal.operators.single.SingleDoOnTerminate;
+import io.reactivex.rxjava4.internal.operators.single.SingleEquals;
+import io.reactivex.rxjava4.internal.operators.single.SingleError;
+import io.reactivex.rxjava4.internal.operators.single.SingleFlatMap;
+import io.reactivex.rxjava4.internal.operators.single.SingleFlatMapBiSelector;
+import io.reactivex.rxjava4.internal.operators.single.SingleFlatMapCompletable;
+import io.reactivex.rxjava4.internal.operators.single.SingleFlatMapIterableFlowable;
+import io.reactivex.rxjava4.internal.operators.single.SingleFlatMapIterableObservable;
+import io.reactivex.rxjava4.internal.operators.single.SingleFlatMapMaybe;
+import io.reactivex.rxjava4.internal.operators.single.SingleFlatMapNotification;
+import io.reactivex.rxjava4.internal.operators.single.SingleFlatMapPublisher;
+import io.reactivex.rxjava4.internal.operators.single.SingleFromCallable;
+import io.reactivex.rxjava4.internal.operators.single.SingleFromPublisher;
+import io.reactivex.rxjava4.internal.operators.single.SingleFromSupplier;
+import io.reactivex.rxjava4.internal.operators.single.SingleFromUnsafeSource;
+import io.reactivex.rxjava4.internal.operators.single.SingleHide;
+import io.reactivex.rxjava4.internal.operators.single.SingleInternalHelper;
+import io.reactivex.rxjava4.internal.operators.single.SingleJust;
+import io.reactivex.rxjava4.internal.operators.single.SingleLift;
+import io.reactivex.rxjava4.internal.operators.single.SingleMap;
+import io.reactivex.rxjava4.internal.operators.single.SingleMaterialize;
+import io.reactivex.rxjava4.internal.operators.single.SingleNever;
+import io.reactivex.rxjava4.internal.operators.single.SingleObserveOn;
+import io.reactivex.rxjava4.internal.operators.single.SingleOnErrorComplete;
+import io.reactivex.rxjava4.internal.operators.single.SingleOnErrorReturn;
+import io.reactivex.rxjava4.internal.operators.single.SingleResumeNext;
+import io.reactivex.rxjava4.internal.operators.single.SingleSubscribeOn;
+import io.reactivex.rxjava4.internal.operators.single.SingleTakeUntil;
+import io.reactivex.rxjava4.internal.operators.single.SingleTimeInterval;
+import io.reactivex.rxjava4.internal.operators.single.SingleTimeout;
+import io.reactivex.rxjava4.internal.operators.single.SingleTimer;
+import io.reactivex.rxjava4.internal.operators.single.SingleToFlowable;
+import io.reactivex.rxjava4.internal.operators.single.SingleToObservable;
+import io.reactivex.rxjava4.internal.operators.single.SingleUnsubscribeOn;
+import io.reactivex.rxjava4.internal.operators.single.SingleUsing;
+import io.reactivex.rxjava4.internal.operators.single.SingleZipArray;
+import io.reactivex.rxjava4.internal.operators.single.SingleZipIterable;
 import io.reactivex.rxjava4.internal.util.ErrorMode;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
-import io.reactivex.rxjava4.schedulers.*;
+import io.reactivex.rxjava4.schedulers.Schedulers;
+import io.reactivex.rxjava4.schedulers.Timed;
 
 /**
  * The {@code Single} class implements the Reactive Pattern for a single value response.
@@ -243,7 +357,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
-        return concat(sources, 2);
+        return concat(sources, SingleConcatConfig.DEFAULT);
     }
 
     /**
@@ -260,20 +374,20 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * </dl>
      * @param <T> the value type
      * @param sources the {@code Publisher} of {@code SingleSource} instances
-     * @param prefetch the number of {@code SingleSource}s to prefetch from the {@code Publisher}
+     * @param config the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
-     * @since 2.0
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, int prefetch) {
+    public static <@NonNull T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull SingleConcatConfig config) {
         Objects.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableConcatMapSinglePublisher<>(sources, Functions.identity(), ErrorMode.IMMEDIATE, prefetch));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapSinglePublisher<>(
+        		sources, Functions.identity(), config.delayError() ? ErrorMode.END : ErrorMode.IMMEDIATE, config.prefetch()));
     }
 
     /**
@@ -421,9 +535,10 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code concatArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
+     * @param config the configuration record for this operator
      * @param sources the array of {@code SingleSource} instances
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @since 3.0.0
      */
     @CheckReturnValue
@@ -431,8 +546,10 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
-    public static <@NonNull T> Flowable<T> concatArrayDelayError(@NonNull SingleSource<? extends T>... sources) {
-        return Flowable.fromArray(sources).concatMapSingleDelayError(Functions.identity(), true);
+    public static <@NonNull T> Flowable<T> concatArray(@NonNull SingleConcatConfig config, @NonNull SingleSource<? extends T>... sources) {
+    	Objects.requireNonNull(config, "config is null");
+        return Flowable.fromArray(sources).concatMapSingleDelayError(
+        		Functions.identity(), config.delayError(), config.prefetch());
     }
 
     /**
@@ -478,9 +595,10 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
+     * @param config the configuration record for this operator
      * @param sources a sequence of {@code SingleSource}s that need to be eagerly concatenated
      * @return the new {@link Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @since 3.0.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -488,8 +606,10 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
-    public static <@NonNull T> Flowable<T> concatArrayEagerDelayError(@NonNull SingleSource<? extends T>... sources) {
-        return Flowable.fromArray(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true);
+    public static <@NonNull T> Flowable<T> concatArrayEager(@NonNull SingleConcatEagerConfig config, @NonNull SingleSource<? extends T>... sources) {
+        Objects.requireNonNull(config, "config is null");
+        return Flowable.fromArray(sources).concatMapEagerDelayError(
+                SingleInternalHelper.toFlowable(), config.delayError(), config.maxConcurrency(), config.prefetch());
     }
 
     /**
@@ -507,75 +627,21 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param <T> the common element base type
      * @param sources the {@code Iterable} sequence of {@code SingleSource}s
+     * @param config the configuration record for this operator
      * @return the new {@code Flowable} with the concatenating behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @since 3.0.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concatDelayError(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources) {
-        return Flowable.fromIterable(sources).concatMapSingleDelayError(Functions.identity());
-    }
-
-    /**
-     * Concatenates the {@link Publisher} sequence of {@link SingleSource}s into a single sequence by subscribing to each inner {@code SingleSource},
-     * one after the other, one at a time and delays any errors till the all inner and the outer {@code Publisher} terminate
-     * as a {@link Flowable} sequence.
-     * <p>
-     * <img width="640" height="345" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatDelayError.p.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>{@code concatDelayError} fully supports backpressure.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources the {@code Publisher} sequence of {@code SingleSource}s
-     * @return the new {@code Flowable} with the concatenating behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @since 3.0.0
-     */
-    @BackpressureSupport(BackpressureKind.FULL)
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Flowable<T> concatDelayError(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
-        return Flowable.fromPublisher(sources).concatMapSingleDelayError(Functions.identity());
-    }
-
-    /**
-     * Concatenates the {@link Publisher} sequence of {@link SingleSource}s into a single sequence by subscribing to each inner {@code SingleSource},
-     * one after the other, one at a time and delays any errors till the all inner and the outer {@code Publisher} terminate
-     * as a {@link Flowable} sequence.
-     * <p>
-     * <img width="640" height="299" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatDelayError.pn.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>{@code concatDelayError} fully supports backpressure.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources the {@code Publisher} sequence of {@code SingleSource}s
-     * @param prefetch The number of upstream items to prefetch so that fresh items are
-     *                 ready to be mapped when a previous {@code SingleSource} terminates.
-     *                 The operator replenishes after half of the prefetch amount has been consumed
-     *                 and turned into {@code SingleSource}s.
-     * @return the new {@code Flowable} with the concatenating behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
-     * @since 3.0.0
-     */
-    @BackpressureSupport(BackpressureKind.FULL)
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Flowable<T> concatDelayError(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, int prefetch) {
-        return Flowable.fromPublisher(sources).concatMapSingleDelayError(Functions.identity(), true, prefetch);
+    public static <@NonNull T> Flowable<T> concat(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull SingleConcatConfig config) {
+        Objects.requireNonNull(config, "config is null");
+        if (config.delayError()) {
+            return Flowable.fromIterable(sources).concatMapSingleDelayError(Functions.identity(), true, config.prefetch());
+        }
+        return Flowable.fromIterable(sources).concatMapSingle(Functions.identity(), config.prefetch());
     }
 
     /**
@@ -622,10 +688,9 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * </dl>
      * @param <T> the value type
      * @param sources an {@code Iterable} sequence of {@code SingleSource} that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrently running inner {@code SingleSource}s; {@link Integer#MAX_VALUE}
-     *                       is interpreted as all inner {@code SingleSource}s can be active at the same time
+     * @param config the configuration record for this operator
      * @return the new {@link Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
      * @since 3.0.0
      */
@@ -633,8 +698,12 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources, int maxConcurrency) {
-        return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), false, maxConcurrency, 1);
+    public static <@NonNull T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull SingleConcatEagerConfig config) {
+        Objects.requireNonNull(config, "config is null");
+        if (config.delayError()) {
+            return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true, config.maxConcurrency(), config.prefetch());
+        }
+        return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), false, config.maxConcurrency(), config.prefetch());
     }
 
     /**
@@ -685,10 +754,9 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * </dl>
      * @param <T> the value type
      * @param sources a sequence of {@code SingleSource}s that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrently running inner {@code SingleSource}s; {@link Integer#MAX_VALUE}
-     *                       is interpreted as all inner {@code SingleSource}s can be active at the same time
+     * @param config the configuration record for this operator
      * @return the new {@link Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
      * @since 3.0.0
      */
@@ -696,134 +764,12 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, int maxConcurrency) {
-        return Flowable.fromPublisher(sources).concatMapEager(SingleInternalHelper.toFlowable(), maxConcurrency, 1);
-    }
-
-    /**
-     * Concatenates an {@link Iterable} sequence of {@link SingleSource}s eagerly into a single stream of values,
-     * delaying errors until all the inner sources terminate.
-     * <p>
-     * <img width="640" height="431" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.i.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * source {@code SingleSource}s. The operator buffers the values emitted by these {@code SingleSource}s and then drains them
-     * in order, each one after the previous one succeeds.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Backpressure is honored towards the downstream.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources an {@code Iterable} sequence of {@code SingleSource} that need to be eagerly concatenated
-     * @return the new {@link Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @since 3.0.0
-     */
-    @BackpressureSupport(BackpressureKind.FULL)
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concatEagerDelayError(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources) {
-        return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true);
-    }
-
-    /**
-     * Concatenates an {@link Iterable} sequence of {@link SingleSource}s eagerly into a single stream of values,
-     * delaying errors until all the inner sources terminate.
-     * <p>
-     * <img width="640" height="378" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.in.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * source {@code SingleSource}s. The operator buffers the values emitted by these {@code SingleSource}s and then drains them
-     * in order, each one after the previous one succeeds.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Backpressure is honored towards the downstream.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources an {@code Iterable} sequence of {@code SingleSource} that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrently running inner {@code SingleSource}s; {@link Integer#MAX_VALUE}
-     *                       is interpreted as all inner {@code SingleSource}s can be active at the same time
-     * @return the new {@link Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
-     * @since 3.0.0
-     */
-    @BackpressureSupport(BackpressureKind.FULL)
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concatEagerDelayError(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources, int maxConcurrency) {
-        return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true, maxConcurrency, 1);
-    }
-
-    /**
-     * Concatenates a {@link Publisher} sequence of {@link SingleSource}s eagerly into a single stream of values,
-     * delaying errors until all the inner and the outer sequence terminate.
-     * <p>
-     * <img width="640" height="444" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.p.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * emitted source {@code SingleSource}s as they are observed. The operator buffers the values emitted by these
-     * {@code SingleSource}s and then drains them in order, each one after the previous one succeeds.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Backpressure is honored towards the downstream and the outer {@code Publisher} is
-     *  expected to support backpressure. Violating this assumption, the operator will
-     *  signal {@link io.reactivex.rxjava4.exceptions.MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources a sequence of {@code SingleSource}s that need to be eagerly concatenated
-     * @return the new {@link Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @since 3.0.0
-     */
-    @BackpressureSupport(BackpressureKind.FULL)
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concatEagerDelayError(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
-        return Flowable.fromPublisher(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true);
-    }
-
-    /**
-     * Concatenates a {@link Publisher} sequence of {@link SingleSource}s eagerly into a single stream of values,
-     * running at most the specified number of those inner {@code SingleSource}s at once and
-     * delaying errors until all the inner and the outer sequence terminate.
-     * <p>
-     * <img width="640" height="421" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.pn.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * emitted source {@code SingleSource}s as they are observed. The operator buffers the values emitted by these
-     * {@code SingleSource}s and then drains them in order, each one after the previous one succeeds.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Backpressure is honored towards the downstream and the outer {@code Publisher} is
-     *  expected to support backpressure. Violating this assumption, the operator will
-     *  signal {@link io.reactivex.rxjava4.exceptions.MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources a sequence of {@code SingleSource}s that need to be eagerly concatenated
-     * @param maxConcurrency the number of inner {@code SingleSource}s to run at once
-     * @return the new {@link Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
-     * @since 3.0.0
-     */
-    @BackpressureSupport(BackpressureKind.FULL)
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concatEagerDelayError(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, int maxConcurrency) {
-        return Flowable.fromPublisher(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true, maxConcurrency, 1);
+    public static <@NonNull T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull SingleConcatEagerConfig config) {
+        Objects.requireNonNull(config, "config is null");
+        if (config.delayError()) {
+            return Flowable.fromPublisher(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true, config.maxConcurrency(), config.prefetch());
+        }
+        return Flowable.fromPublisher(sources).concatMapEager(SingleInternalHelper.toFlowable(), config.maxConcurrency(), config.prefetch());
     }
 
     /**
