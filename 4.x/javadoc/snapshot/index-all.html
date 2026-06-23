@@ -1489,6 +1489,22 @@ only indication for completion or exception.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#%3Cinit%3E()" class="member-name-link">Completable()</a> - Constructor for class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record for Completable.concat() operators.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#%3Cinit%3E(boolean)" class="member-name-link">CompletableConcatConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#%3Cinit%3E(boolean,int)" class="member-name-link">CompletableConcatConfig(boolean, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#%3Cinit%3E(int)" class="member-name-link">CompletableConcatConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/CompletableConverter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">CompletableConverter&lt;R&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
 <div class="block">Convenience interface and callback used by the <a href="io/reactivex/rxjava4/core/Completable.html#to(io.reactivex.rxjava4.core.CompletableConverter)"><code>Completable.to(CompletableConverter)</code></a> operator to turn a Completable into another
@@ -1498,6 +1514,22 @@ value fluently.</div>
 <dd>
 <div class="block">Abstraction over an RxJava <a href="io/reactivex/rxjava4/core/CompletableObserver.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableObserver</code></a> that allows associating
 a resource with it.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record for Completable.merge() operators.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#%3Cinit%3E(boolean)" class="member-name-link">CompletableMergeConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#%3Cinit%3E(boolean,int)" class="member-name-link">CompletableMergeConfig(boolean, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#%3Cinit%3E(int)" class="member-name-link">CompletableMergeConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/CompletableObserver.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">CompletableObserver</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -1672,6 +1704,10 @@ interleaving them.</div>
 <dd>
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Completable.html#concat(java.lang.Iterable,io.reactivex.rxjava4.core.config.CompletableConcatConfig)" class="member-name-link">concat(Iterable, CompletableConcatConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
+<dd>
+<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#concat(java.lang.Iterable)" class="member-name-link">concat(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a> sources provided by
@@ -1711,7 +1747,7 @@ interleaving them.</div>
 <dd>
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Completable.html#concat(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concat(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Completable.html#concat(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.CompletableConcatConfig)" class="member-name-link">concat(Flow.Publisher, CompletableConcatConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </dd>
@@ -1763,13 +1799,13 @@ as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reacti
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided in
 an array.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Completable.html#concatArray(io.reactivex.rxjava4.core.config.CompletableConcatConfig,io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">concatArray(CompletableConcatConfig, CompletableSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
+<dd>
+<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArray(java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArray(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Concatenates a variable number of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sources.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Completable.html#concatArrayDelayError(io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">concatArrayDelayError(CompletableSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
-<dd>
-<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#concatArrayDelayError(io.reactivex.rxjava4.core.MaybeSource...)" class="member-name-link">concatArrayDelayError(MaybeSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -1854,10 +1890,6 @@ by subscribing to each inner <code>ObservableSource</code>, one after the other,
 <div class="block">Concatenates the <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a> sequence of <code>ObservableSource</code>s into a single sequence by subscribing to each inner <code>ObservableSource</code>,
 one after the other, one at a time and delays any errors till the all inner and the outer <code>ObservableSource</code>s terminate.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Completable.html#concatDelayError(java.lang.Iterable)" class="member-name-link">concatDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
-<dd>
-<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#concatDelayError(java.lang.Iterable)" class="member-name-link">concatDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
 <div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s into a single sequence by subscribing to each <code>MaybeSource</code>,
@@ -1880,14 +1912,6 @@ as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reacti
 <dd>
 <div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into a single sequence by subscribing to each <code>Publisher</code>,
 one after the other, one at a time and delays any errors till the all inner <code>Publisher</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Completable.html#concatDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">concatDelayError(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
-<dd>
-<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Completable.html#concatDelayError(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concatDelayError(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
-<dd>
-<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#concatDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">concatDelayError(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -2930,6 +2954,14 @@ denoted by an item emission or completion from a generated inner <a href="io/rea
 <div class="block">Returns a <code>Flowable</code> that mirrors the current <code>Flowable</code>, except that it drops items emitted by the
 current <code>Flowable</code> that are followed by another item within a computed debounce duration.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a></dt>
+<dd>
+<div class="block">The default configuration with no error delays and prefetch of 2.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
+<dd>
+<div class="block">The default config with no error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/exceptions/MissingBackpressureException.html#DEFAULT_MESSAGE" class="member-name-link">DEFAULT_MESSAGE</a> - Static variable in exception class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava4.exceptions">MissingBackpressureException</a></dt>
 <dd>
 <div class="block">The default error message.</div>
@@ -3103,6 +3135,22 @@ per-item basis.</div>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that delays the subscription to and emissions from the current <code>Flowable</code> via another
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> on a per-item basis.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a></dt>
+<dd>
+<div class="block">The default configuration with error delays and prefetch of 2.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#DELAY_ERRORS" class="member-name-link">DELAY_ERRORS</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
+<dd>
+<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#param-delayError"><code>delayError</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#delayErrors()" class="member-name-link">delayErrors()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#param-delayErrors"><code>delayErrors</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#delayErrors()" class="member-name-link">delayErrors()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>
@@ -3795,6 +3843,14 @@ immediately.</div>
 <dt><a href="io/reactivex/rxjava4/disposables/Disposable.html#empty()" class="member-name-link">empty()</a> - Static method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Returns a new, non-disposed <code>Disposable</code> instance.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>
@@ -5401,6 +5457,14 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <dd>
 <div class="block">Returns <code>true</code> or <code>false</code> if a custom <code>onError</code> consumer has been provided.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
@@ -6260,6 +6324,10 @@ and emits it as a <a href="io/reactivex/rxjava4/core/Single.html" title="class i
 <div class="block">Maps the signal types of this <code>Single</code> into a <a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core"><code>Notification</code></a> of the same kind
 and emits it as a single success value to downstream.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#maxConcurrency()" class="member-name-link">maxConcurrency()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#param-maxConcurrency"><code>maxConcurrency</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#maxConcurrency()" class="member-name-link">maxConcurrency()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/FlatMapConfig.html#param-maxConcurrency"><code>maxConcurrency</code></a> record component.</div>
@@ -6369,6 +6437,12 @@ emitted by the nested <code>SingleSource</code>, without any transformation.</di
 <div class="block">Returns a <code>Completable</code> instance that subscribes to all sources at once and
 completes only when all source <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s complete or one of them emits an error.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Completable.html#merge(java.lang.Iterable,io.reactivex.rxjava4.core.config.CompletableMergeConfig)" class="member-name-link">merge(Iterable, CompletableMergeConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
+<dd>
+<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source sequence and delays
+any error emitted by any of the inner <code>CompletableSource</code>s until all of
+them terminate in a way or another.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#merge(java.lang.Iterable)" class="member-name-link">merge(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
 <div class="block">Merges an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a> instances into a single <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence,
@@ -6424,7 +6498,7 @@ number of concurrent subscriptions to these <code>Publisher</code>s.</div>
 <div class="block">Returns a <code>Completable</code> instance that subscribes to all sources at once and
 completes only when all source <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s complete or one of them emits an error.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Completable.html#merge(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">merge(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Completable.html#merge(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.CompletableMergeConfig)" class="member-name-link">merge(Flow.Publisher, CompletableMergeConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a <code>Completable</code> instance that keeps subscriptions to a limited number of sources at once and
 completes only when all source <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s complete or one of them emits an error.</div>
@@ -6474,6 +6548,12 @@ completes only when all source <a href="io/reactivex/rxjava4/core/CompletableSou
 <dd>
 <div class="block">Flattens an array of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, without any transformation.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Completable.html#mergeArray(io.reactivex.rxjava4.core.config.CompletableMergeConfig,io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">mergeArray(CompletableMergeConfig, CompletableSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
+<dd>
+<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source array and delays
+any error emitted by any of the inner <code>CompletableSource</code>s until all of
+them terminate in a way or another.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#mergeArray(io.reactivex.rxjava4.core.MaybeSource...)" class="member-name-link">mergeArray(MaybeSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
 <div class="block">Merges an array of <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a> instances into a single <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence,
@@ -6499,12 +6579,6 @@ notification from one of them, while limiting the number of concurrent subscript
 <div class="block">Flattens an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
 successfully emitted items from each of the source <code>Publisher</code>s without being interrupted by an error
 notification from one of them, while limiting the number of concurrent subscriptions to these <code>Publisher</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Completable.html#mergeArrayDelayError(io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">mergeArrayDelayError(CompletableSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
-<dd>
-<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source array and delays
-any error emitted by any of the inner <code>CompletableSource</code>s until all of
-them terminate in a way or another.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#mergeArrayDelayError(io.reactivex.rxjava4.core.MaybeSource...)" class="member-name-link">mergeArrayDelayError(MaybeSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -6594,12 +6668,6 @@ any error(s) until all sources succeed or fail.</div>
 <div class="block">Flattens two <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into one <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a>, without any transformation, delaying
 any error(s) until all sources succeed or fail.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Completable.html#mergeDelayError(java.lang.Iterable)" class="member-name-link">mergeDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
-<dd>
-<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source sequence and delays
-any error emitted by any of the inner <code>CompletableSource</code>s until all of
-them terminate in a way or another.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#mergeDelayError(java.lang.Iterable)" class="member-name-link">mergeDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
 <div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s into one <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a>, in a way that allows a subscriber to receive all
@@ -6664,19 +6732,6 @@ notification from one of them.</div>
 <div class="block">Flattens four <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
 successfully emitted items from all of the source <code>Publisher</code>s without being interrupted by an error
 notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Completable.html#mergeDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">mergeDelayError(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
-<dd>
-<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source sequence and delays
-any error emitted by either the sources <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> or any of the inner <code>CompletableSource</code>s until all of
-them terminate in a way or another.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Completable.html#mergeDelayError(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">mergeDelayError(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
-<dd>
-<div class="block">Returns a <code>Completable</code> that subscribes to a limited number of inner <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s at once in
-the source sequence and delays any error emitted by either the sources
-<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> or any of the inner <code>CompletableSource</code>s until all of
-them terminate in a way or another.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#mergeDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">mergeDelayError(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -7836,6 +7891,10 @@ the queue is empty.</div>
 <dt><a href="io/reactivex/rxjava4/functions/Predicate.html" class="type-name-link" title="interface in io.reactivex.rxjava4.functions">Predicate&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/functions/package-summary.html">io.reactivex.rxjava4.functions</a></dt>
 <dd>
 <div class="block">A functional interface (callback) that returns true or false for the given input value.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#prefetch()" class="member-name-link">prefetch()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#param-prefetch"><code>prefetch</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/GenericConfig.html#prefetch()" class="member-name-link">prefetch()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></dt>
 <dd>
@@ -11534,6 +11593,14 @@ transparently relaying signals between the two async representations of a sequen
 <dd>
 <div class="block">Converts this <code>Flowable</code> into a <a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core"><code>Streamable</code></a> instance,
 transparently relaying signals between the two async representations of a sequence.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>

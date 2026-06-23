@@ -74,13 +74,11 @@ initTheme();
 <li><a href="#amb(java.lang.Iterable)" tabindex="0">amb(Iterable)</a></li>
 <li><a href="#complete()" tabindex="0">complete()</a></li>
 <li><a href="#concatArray(io.reactivex.rxjava4.core.CompletableSource...)" tabindex="0">concatArray(CompletableSource...)</a></li>
-<li><a href="#concatArrayDelayError(io.reactivex.rxjava4.core.CompletableSource...)" tabindex="0">concatArrayDelayError(CompletableSource...)</a></li>
+<li><a href="#concatArray(io.reactivex.rxjava4.core.config.CompletableConcatConfig,io.reactivex.rxjava4.core.CompletableSource...)" tabindex="0">concatArray(CompletableConcatConfig, CompletableSource...)</a></li>
 <li><a href="#concat(java.lang.Iterable)" tabindex="0">concat(Iterable)</a></li>
 <li><a href="#concat(java.util.concurrent.Flow.Publisher)" tabindex="0">concat(Flow.Publisher)</a></li>
-<li><a href="#concat(java.util.concurrent.Flow.Publisher,int)" tabindex="0">concat(Flow.Publisher, int)</a></li>
-<li><a href="#concatDelayError(java.lang.Iterable)" tabindex="0">concatDelayError(Iterable)</a></li>
-<li><a href="#concatDelayError(java.util.concurrent.Flow.Publisher)" tabindex="0">concatDelayError(Flow.Publisher)</a></li>
-<li><a href="#concatDelayError(java.util.concurrent.Flow.Publisher,int)" tabindex="0">concatDelayError(Flow.Publisher, int)</a></li>
+<li><a href="#concat(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.CompletableConcatConfig)" tabindex="0">concat(Flow.Publisher, CompletableConcatConfig)</a></li>
+<li><a href="#concat(java.lang.Iterable,io.reactivex.rxjava4.core.config.CompletableConcatConfig)" tabindex="0">concat(Iterable, CompletableConcatConfig)</a></li>
 <li><a href="#create(io.reactivex.rxjava4.core.CompletableOnSubscribe)" tabindex="0">create(CompletableOnSubscribe)</a></li>
 <li><a href="#sequenceEqual(io.reactivex.rxjava4.core.CompletableSource,io.reactivex.rxjava4.core.CompletableSource)" tabindex="0">sequenceEqual(CompletableSource, CompletableSource)</a></li>
 <li><a href="#unsafeCreate(io.reactivex.rxjava4.core.CompletableSource)" tabindex="0">unsafeCreate(CompletableSource)</a></li>
@@ -99,11 +97,9 @@ initTheme();
 <li><a href="#mergeArray(io.reactivex.rxjava4.core.CompletableSource...)" tabindex="0">mergeArray(CompletableSource...)</a></li>
 <li><a href="#merge(java.lang.Iterable)" tabindex="0">merge(Iterable)</a></li>
 <li><a href="#merge(java.util.concurrent.Flow.Publisher)" tabindex="0">merge(Flow.Publisher)</a></li>
-<li><a href="#merge(java.util.concurrent.Flow.Publisher,int)" tabindex="0">merge(Flow.Publisher, int)</a></li>
-<li><a href="#mergeArrayDelayError(io.reactivex.rxjava4.core.CompletableSource...)" tabindex="0">mergeArrayDelayError(CompletableSource...)</a></li>
-<li><a href="#mergeDelayError(java.lang.Iterable)" tabindex="0">mergeDelayError(Iterable)</a></li>
-<li><a href="#mergeDelayError(java.util.concurrent.Flow.Publisher)" tabindex="0">mergeDelayError(Flow.Publisher)</a></li>
-<li><a href="#mergeDelayError(java.util.concurrent.Flow.Publisher,int)" tabindex="0">mergeDelayError(Flow.Publisher, int)</a></li>
+<li><a href="#merge(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.CompletableMergeConfig)" tabindex="0">merge(Flow.Publisher, CompletableMergeConfig)</a></li>
+<li><a href="#mergeArray(io.reactivex.rxjava4.core.config.CompletableMergeConfig,io.reactivex.rxjava4.core.CompletableSource...)" tabindex="0">mergeArray(CompletableMergeConfig, CompletableSource...)</a></li>
+<li><a href="#merge(java.lang.Iterable,io.reactivex.rxjava4.core.config.CompletableMergeConfig)" tabindex="0">merge(Iterable, CompletableMergeConfig)</a></li>
 <li><a href="#never()" tabindex="0">never()</a></li>
 <li><a href="#timer(long,java.util.concurrent.TimeUnit)" tabindex="0">timer(long, TimeUnit)</a></li>
 <li><a href="#timer(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)" tabindex="0">timer(long, TimeUnit, Scheduler)</a></li>
@@ -429,39 +425,30 @@ and relays/replays it to observers.</div>
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concat(java.util.concurrent.Flow.Publisher)" class="member-name-link">concat</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concat(java.lang.Iterable,io.reactivex.rxjava4.core.config.CompletableConcatConfig)" class="member-name-link">concat</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concat(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concat</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
- int&nbsp;prefetch)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concat(java.util.concurrent.Flow.Publisher)" class="member-name-link">concat</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArray(io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">concatArray</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>...&nbsp;sources)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concat(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.CompletableConcatConfig)" class="member-name-link">concat</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArrayDelayError(io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">concatArrayDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>...&nbsp;sources)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArray(io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">concatArray</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>...&nbsp;sources)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatDelayError(java.lang.Iterable)" class="member-name-link">concatDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">concatDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatDelayError(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concatDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
- int&nbsp;prefetch)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArray(io.reactivex.rxjava4.core.config.CompletableConcatConfig,io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">concatArray</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a>&nbsp;config,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>...&nbsp;sources)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </div>
@@ -669,52 +656,38 @@ and emits it as a single success value to downstream.</div>
 completes only when all source <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s complete or one of them emits an error.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#merge(java.util.concurrent.Flow.Publisher)" class="member-name-link">merge</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#merge(java.lang.Iterable,io.reactivex.rxjava4.core.config.CompletableMergeConfig)" class="member-name-link">merge</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source sequence and delays
+any error emitted by any of the inner <code>CompletableSource</code>s until all of
+them terminate in a way or another.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#merge(java.util.concurrent.Flow.Publisher)" class="member-name-link">merge</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a <code>Completable</code> instance that subscribes to all sources at once and
 completes only when all source <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s complete or one of them emits an error.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#merge(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">merge</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#merge(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.CompletableMergeConfig)" class="member-name-link">merge</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a>&nbsp;config)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a <code>Completable</code> instance that keeps subscriptions to a limited number of sources at once and
 completes only when all source <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s complete or one of them emits an error.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#mergeArray(io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">mergeArray</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>...&nbsp;sources)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#mergeArray(io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">mergeArray</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>...&nbsp;sources)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a <code>Completable</code> instance that subscribes to all sources at once and
 completes only when all source <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s complete or one of them emits an error.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#mergeArrayDelayError(io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">mergeArrayDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>...&nbsp;sources)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#mergeArray(io.reactivex.rxjava4.core.config.CompletableMergeConfig,io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">mergeArray</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a>&nbsp;config,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>...&nbsp;sources)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a <code>Completable</code> that subscribes to all <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source array and delays
 any error emitted by any of the inner <code>CompletableSource</code>s until all of
-them terminate in a way or another.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#mergeDelayError(java.lang.Iterable)" class="member-name-link">mergeDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source sequence and delays
-any error emitted by any of the inner <code>CompletableSource</code>s until all of
-them terminate in a way or another.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#mergeDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">mergeDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source sequence and delays
-any error emitted by either the sources <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> or any of the inner <code>CompletableSource</code>s until all of
-them terminate in a way or another.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#mergeDelayError(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">mergeDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Returns a <code>Completable</code> that subscribes to a limited number of inner <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s at once in
-the source sequence and delays any error emitted by either the sources
-<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> or any of the inner <code>CompletableSource</code>s until all of
 them terminate in a way or another.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
@@ -1241,14 +1214,16 @@ terminates (normally or with an error) and disposes all other <code>Completable<
 </section>
 </li>
 <li>
-<section class="detail" id="concatArrayDelayError(io.reactivex.rxjava4.core.CompletableSource...)">
-<h3>concatArrayDelayError</h3>
+<section class="detail" id="concatArray(io.reactivex.rxjava4.core.config.CompletableConcatConfig,io.reactivex.rxjava4.core.CompletableSource...)">
+<h3>concatArray</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/SafeVarargs.html" title="annotation interface in java.lang" class="external-link">@SafeVarargs</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">concatArrayDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">concatArray</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a>&nbsp;config,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>...&nbsp;sources)</span></div>
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.
 <p>
@@ -1259,13 +1234,14 @@ terminates (normally or with an error) and disposes all other <code>Completable<
 </dl></div>
 <dl class="notes">
 <dt>Parameters:</dt>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dd><code>sources</code> - the sources to concatenate</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
 <dt>Since:</dt>
-<dd>3.0.0</dd>
+<dd>4.0.0</dd>
 </dl>
 </div>
 </section>
@@ -1329,7 +1305,7 @@ terminates (normally or with an error) and disposes all other <code>Completable<
 </section>
 </li>
 <li>
-<section class="detail" id="concat(java.util.concurrent.Flow.Publisher,int)">
+<section class="detail" id="concat(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.CompletableConcatConfig)">
 <h3>concat</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
@@ -1338,7 +1314,8 @@ terminates (normally or with an error) and disposes all other <code>Completable<
 <a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
 </span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">concat</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
- int&nbsp;prefetch)</span></div>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a>&nbsp;config)</span></div>
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.
 <p>
 <img width="640" height="238" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concat.pn.png" alt="">
@@ -1352,25 +1329,29 @@ terminates (normally or with an error) and disposes all other <code>Completable<
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sources</code> - the sources to concatenate</dd>
-<dd><code>prefetch</code> - the number of sources to prefetch from the sources</dd>
+<dd><code>config</code> - the operatar configuration record</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
 </dl>
 </div>
 </section>
 </li>
 <li>
-<section class="detail" id="concatDelayError(java.lang.Iterable)">
-<h3>concatDelayError</h3>
+<section class="detail" id="concat(java.lang.Iterable,io.reactivex.rxjava4.core.config.CompletableConcatConfig)">
+<h3>concat</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">concatDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</span></div>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">concat</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a>&nbsp;config)</span></div>
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.
 <p>
 <img width="640" height="361" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatDelayError.i.png" alt="">
@@ -1381,81 +1362,13 @@ terminates (normally or with an error) and disposes all other <code>Completable<
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sources</code> - the sources to concatenate</dd>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
 <dt>Since:</dt>
-<dd>3.0.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="concatDelayError(java.util.concurrent.Flow.Publisher)">
-<h3>concatDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-<a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">concatDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</span></div>
-<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.
-<p>
-<img width="640" height="396" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatDelayError.p.png" alt="">
-<dl>
- <dt><b>Backpressure:</b></dt>
- <dd>The returned <code>Completable</code> honors the backpressure of the downstream consumer
- and expects the other <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> to honor it as well.</dd>
- <dt><b>Scheduler:</b></dt>
- <dd><code>concatDelayError</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>sources</code> - the sources to concatenate</dd>
-<dt>Returns:</dt>
-<dd>the new <code>Completable</code> instance</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dt>Since:</dt>
-<dd>3.0.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="concatDelayError(java.util.concurrent.Flow.Publisher,int)">
-<h3>concatDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-<a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">concatDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
- int&nbsp;prefetch)</span></div>
-<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.
-<p>
-<img width="640" height="359" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatDelayError.pn.png" alt="">
-<dl>
- <dt><b>Backpressure:</b></dt>
- <dd>The returned <code>Completable</code> honors the backpressure of the downstream consumer
- and expects the other <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> to honor it as well.</dd>
- <dt><b>Scheduler:</b></dt>
- <dd><code>concatDelayError</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>sources</code> - the sources to concatenate</dd>
-<dd><code>prefetch</code> - the number of sources to prefetch from the sources</dd>
-<dt>Returns:</dt>
-<dd>the new <code>Completable</code> instance</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
-<dt>Since:</dt>
-<dd>3.0.0</dd>
+<dd>4.0.0</dd>
 </dl>
 </div>
 </section>
@@ -2045,8 +1958,6 @@ completes only when all source <a href="CompletableSource.html" title="interface
  <a href="../plugins/RxJavaPlugins.html#onError(java.lang.Throwable)"><code>RxJavaPlugins.onError(Throwable)</code></a> method as <a href="../exceptions/UndeliverableException.html" title="class in io.reactivex.rxjava4.exceptions"><code>UndeliverableException</code></a> errors. Similarly, <code>Throwable</code>s
  signaled by source(s) after the returned <code>Completable</code> has been disposed or terminated with a
  (composite) error will be sent to the same global error handler.
- Use <a href="#mergeArrayDelayError(io.reactivex.rxjava4.core.CompletableSource...)"><code>mergeArrayDelayError(CompletableSource...)</code></a> to merge sources and terminate only when all source <code>CompletableSource</code>s
- have completed or failed with an error.
  </dd>
 </dl></div>
 <dl class="notes">
@@ -2056,12 +1967,6 @@ completes only when all source <a href="CompletableSource.html" title="interface
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list-long">
-<li><a href="#mergeArrayDelayError(io.reactivex.rxjava4.core.CompletableSource...)"><code>mergeArrayDelayError(CompletableSource...)</code></a></li>
-</ul>
-</dd>
 </dl>
 </div>
 </section>
@@ -2092,8 +1997,6 @@ completes only when all source <a href="CompletableSource.html" title="interface
  <a href="../plugins/RxJavaPlugins.html#onError(java.lang.Throwable)"><code>RxJavaPlugins.onError(Throwable)</code></a> method as <a href="../exceptions/UndeliverableException.html" title="class in io.reactivex.rxjava4.exceptions"><code>UndeliverableException</code></a> errors. Similarly, <code>Throwable</code>s
  signaled by source(s) after the returned <code>Completable</code> has been disposed or terminated with a
  (composite) error will be sent to the same global error handler.
- Use <a href="#mergeDelayError(java.lang.Iterable)"><code>mergeDelayError(Iterable)</code></a> to merge sources and terminate only when all source <code>CompletableSource</code>s
- have completed or failed with an error.
  </dd>
 </dl></div>
 <dl class="notes">
@@ -2103,12 +2006,6 @@ completes only when all source <a href="CompletableSource.html" title="interface
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list">
-<li><a href="#mergeDelayError(java.lang.Iterable)"><code>mergeDelayError(Iterable)</code></a></li>
-</ul>
-</dd>
 </dl>
 </div>
 </section>
@@ -2143,8 +2040,6 @@ completes only when all source <a href="CompletableSource.html" title="interface
  <a href="../plugins/RxJavaPlugins.html#onError(java.lang.Throwable)"><code>RxJavaPlugins.onError(Throwable)</code></a> method as <a href="../exceptions/UndeliverableException.html" title="class in io.reactivex.rxjava4.exceptions"><code>UndeliverableException</code></a> errors. Similarly, <code>Throwable</code>s
  signaled by source(s) after the returned <code>Completable</code> has been disposed or terminated with a
  (composite) error will be sent to the same global error handler.
- Use <a href="#mergeDelayError(java.util.concurrent.Flow.Publisher)"><code>mergeDelayError(Publisher)</code></a> to merge sources and terminate only when all source <code>CompletableSource</code>s
- have completed or failed with an error.
  </dd>
 </dl></div>
 <dl class="notes">
@@ -2154,18 +2049,12 @@ completes only when all source <a href="CompletableSource.html" title="interface
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list">
-<li><a href="#mergeDelayError(java.util.concurrent.Flow.Publisher)"><code>mergeDelayError(Publisher)</code></a></li>
-</ul>
-</dd>
 </dl>
 </div>
 </section>
 </li>
 <li>
-<section class="detail" id="merge(java.util.concurrent.Flow.Publisher,int)">
+<section class="detail" id="merge(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.CompletableMergeConfig)">
 <h3>merge</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
@@ -2174,7 +2063,8 @@ completes only when all source <a href="CompletableSource.html" title="interface
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">merge</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</span></div>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a>&nbsp;config)</span></div>
 <div class="block">Returns a <code>Completable</code> instance that keeps subscriptions to a limited number of sources at once and
 completes only when all source <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s complete or one of them emits an error.
 <p>
@@ -2196,38 +2086,34 @@ completes only when all source <a href="CompletableSource.html" title="interface
  <a href="../plugins/RxJavaPlugins.html#onError(java.lang.Throwable)"><code>RxJavaPlugins.onError(Throwable)</code></a> method as <a href="../exceptions/UndeliverableException.html" title="class in io.reactivex.rxjava4.exceptions"><code>UndeliverableException</code></a> errors. Similarly, <code>Throwable</code>s
  signaled by source(s) after the returned <code>Completable</code> has been disposed or terminated with a
  (composite) error will be sent to the same global error handler.
- Use <a href="#mergeDelayError(java.util.concurrent.Flow.Publisher,int)"><code>mergeDelayError(Publisher, int)</code></a> to merge sources and terminate only when all source <code>CompletableSource</code>s
- have completed or failed with an error.
  </dd>
 </dl></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sources</code> - the <code>Publisher</code> sequence of <code>CompletableSource</code>s.</dd>
-<dd><code>maxConcurrency</code> - the maximum number of concurrent subscriptions</dd>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>maxConcurrency</code> is less than 1</dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list-long">
-<li><a href="#mergeDelayError(java.util.concurrent.Flow.Publisher,int)"><code>mergeDelayError(Publisher, int)</code></a></li>
-</ul>
-</dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
 </dl>
 </div>
 </section>
 </li>
 <li>
-<section class="detail" id="mergeArrayDelayError(io.reactivex.rxjava4.core.CompletableSource...)">
-<h3>mergeArrayDelayError</h3>
+<section class="detail" id="mergeArray(io.reactivex.rxjava4.core.config.CompletableMergeConfig,io.reactivex.rxjava4.core.CompletableSource...)">
+<h3>mergeArray</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/SafeVarargs.html" title="annotation interface in java.lang" class="external-link">@SafeVarargs</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">mergeArrayDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">mergeArray</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a>&nbsp;config,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>...&nbsp;sources)</span></div>
 <div class="block">Returns a <code>Completable</code> that subscribes to all <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source array and delays
 any error emitted by any of the inner <code>CompletableSource</code>s until all of
@@ -2240,24 +2126,27 @@ them terminate in a way or another.
 </dl></div>
 <dl class="notes">
 <dt>Parameters:</dt>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dd><code>sources</code> - the array of <code>CompletableSource</code>s</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
 </dl>
 </div>
 </section>
 </li>
 <li>
-<section class="detail" id="mergeDelayError(java.lang.Iterable)">
-<h3>mergeDelayError</h3>
+<section class="detail" id="merge(java.lang.Iterable,io.reactivex.rxjava4.core.config.CompletableMergeConfig)">
+<h3>merge</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">mergeDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</span></div>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">merge</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a>&nbsp;config)</span></div>
 <div class="block">Returns a <code>Completable</code> that subscribes to all <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source sequence and delays
 any error emitted by any of the inner <code>CompletableSource</code>s until all of
 them terminate in a way or another.
@@ -2270,81 +2159,13 @@ them terminate in a way or another.
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sources</code> - the sequence of <code>CompletableSource</code>s</dd>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="mergeDelayError(java.util.concurrent.Flow.Publisher)">
-<h3>mergeDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-<a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#UNBOUNDED_IN">UNBOUNDED_IN</a>)
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">mergeDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources)</span></div>
-<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s in the source sequence and delays
-any error emitted by either the sources <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> or any of the inner <code>CompletableSource</code>s until all of
-them terminate in a way or another.
-<p>
-<img width="640" height="466" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.mergeDelayError.p.png" alt="">
-<dl>
- <dt><b>Backpressure:</b></dt>
- <dd>The operator consumes the <code>Publisher</code> in an unbounded manner
- (requesting <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html#MAX_VALUE" class="external-link"><code>Long.MAX_VALUE</code></a> from it).</dd>
- <dt><b>Scheduler:</b></dt>
- <dd><code>mergeDelayError</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>sources</code> - the sequence of <code>CompletableSource</code>s</dd>
-<dt>Returns:</dt>
-<dd>the new <code>Completable</code> instance</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="mergeDelayError(java.util.concurrent.Flow.Publisher,int)">
-<h3>mergeDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-<a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">mergeDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</span></div>
-<div class="block">Returns a <code>Completable</code> that subscribes to a limited number of inner <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s at once in
-the source sequence and delays any error emitted by either the sources
-<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> or any of the inner <code>CompletableSource</code>s until all of
-them terminate in a way or another.
-<p>
-<img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.mergeDelayError.pn.png" alt="">
-<dl>
- <dt><b>Backpressure:</b></dt>
- <dd>The operator requests <code>maxConcurrency</code> items from the <code>Publisher</code>
- upfront and keeps requesting as many more as many inner <code>CompletableSource</code>s terminate.</dd>
- <dt><b>Scheduler:</b></dt>
- <dd><code>mergeDelayError</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>sources</code> - the sequence of <code>CompletableSource</code>s</dd>
-<dd><code>maxConcurrency</code> - the maximum number of concurrent subscriptions to have
-                      at a time to the inner <code>CompletableSource</code>s</dd>
-<dt>Returns:</dt>
-<dd>the new <code>Completable</code> instance</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>maxConcurrency</code> is non-positive</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
 </dl>
 </div>
 </section>
