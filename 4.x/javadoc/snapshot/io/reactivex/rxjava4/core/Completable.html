@@ -336,7 +336,7 @@ terminates (normally or with an error) and disposes all other <code>Completable<
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#ambWith(io.reactivex.rxjava4.core.CompletableSource)" class="member-name-link">ambWith</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&nbsp;other)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns a <code>Completable</code> that emits the a terminated event of either this <code>Completable</code>
+<div class="block">Returns a <code>Completable</code> that emits a terminated event of either this <code>Completable</code>
 or the other <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>, whichever fires first.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
@@ -927,7 +927,7 @@ perform the business logic in your operator.</div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#subscribeOn(io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">subscribeOn</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&nbsp;scheduler)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a <code>Completable</code> which subscribes the downstream subscriber on the specified scheduler, making
-sure the subscription side-effects happen on that specific thread of the <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
+sure the subscription side effects happen on that specific thread of the <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> E extends <a href="CompletableObserver.html" title="interface in io.reactivex.rxjava4.core">CompletableObserver</a>&gt;<br>E</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#subscribeWith(E)" class="member-name-link">subscribeWith</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> E&nbsp;observer)</code></div>
@@ -1831,7 +1831,7 @@ emits either its unchecked exception or simply completes.
 <p>
 <img width="640" height="297" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.fromRunnable.png" alt="">
 <p>
-If the code to be wrapped needs to throw a checked or more broader <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> exception, that
+If the code to be wrapped needs to throw a checked or broader <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> exception, that
 exception has to be converted to an unchecked exception by the wrapped code itself. Alternatively,
 use the <a href="#fromAction(io.reactivex.rxjava4.functions.Action)"><code>fromAction(Action)</code></a> method which allows the wrapped code to throw any <code>Throwable</code>
 exception and will signal it to observers as-is.
@@ -2647,7 +2647,7 @@ if not already <code>Completable</code>.
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">ambWith</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&nbsp;other)</span></div>
-<div class="block">Returns a <code>Completable</code> that emits the a terminated event of either this <code>Completable</code>
+<div class="block">Returns a <code>Completable</code> that emits a terminated event of either this <code>Completable</code>
 or the other <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>, whichever fires first.
 <p>
 <img width="640" height="485" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.ambWith.png" alt="">
@@ -4848,7 +4848,7 @@ and routed to the global <a href="../plugins/RxJavaPlugins.html#onError(java.lan
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">subscribeOn</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&nbsp;scheduler)</span></div>
 <div class="block">Returns a <code>Completable</code> which subscribes the downstream subscriber on the specified scheduler, making
-sure the subscription side-effects happen on that specific thread of the <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.
+sure the subscription side effects happen on that specific thread of the <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.
 <p>
 <img width="640" height="686" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.subscribeOn.png" alt="">
 <dl>

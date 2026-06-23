@@ -138,8 +138,8 @@ re-adjust the absolute/relative time calculation accordingly.
 If the <code>Worker</code> is disposed, the <code>schedule</code> methods
 should return the <a href="../disposables/Disposable.html#disposed()"><code>Disposable.disposed()</code></a> singleton instance indicating the disposed
 state to the caller. Since the <a href="../disposables/Disposable.html#dispose()"><code>Disposable.dispose()</code></a> call can happen on any thread, the <code>schedule</code> implementations
-should make best effort to cancel tasks immediately after those tasks have been submitted to the
-underlying task-execution scheme if the dispose was detected after this submission.
+should make the best effort to cancel tasks immediately after those tasks have been submitted to the
+underlying task-execution scheme if dispose() was detected after this submission.
 <p>
 All methods on the <code>Worker</code> class should be thread safe.</div>
 </div>
@@ -202,7 +202,7 @@ All methods on the <code>Worker</code> class should be thread safe.</div>
  long&nbsp;delay,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Schedules an Runnable for execution at some point in the future specified by a time delay
+<div class="block">Schedules a Runnable for execution at some point in the future specified by a time delay
 relative to the current time.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
@@ -329,7 +329,7 @@ and shares the access to it through its own Workers.</div>
  long&nbsp;delay,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</span></div>
-<div class="block">Schedules an Runnable for execution at some point in the future specified by a time delay
+<div class="block">Schedules a Runnable for execution at some point in the future specified by a time delay
 relative to the current time.
 <p>
 Note to implementors: non-positive <code>delayTime</code> should be regarded as non-delayed schedule, i.e.,
@@ -337,7 +337,7 @@ as if the <a href="#schedule(java.lang.Runnable)"><code>schedule(Runnable)</code
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>run</code> - the Runnable to schedule</dd>
-<dd><code>delay</code> - time to "wait" before executing the action; non-positive values indicate an non-delayed
+<dd><code>delay</code> - time to "wait" before executing the action; non-positive values indicate a non-delayed
            schedule</dd>
 <dd><code>unit</code> - the time unit of <code>delayTime</code></dd>
 <dt>Returns:</dt>
@@ -377,7 +377,7 @@ common <a href="#schedule(java.lang.Runnable,long,java.util.concurrent.TimeUnit)
 <dt>Parameters:</dt>
 <dd><code>run</code> - the Runnable to execute periodically</dd>
 <dd><code>initialDelay</code> - time to wait before executing the action for the first time; non-positive values indicate
-           an non-delayed schedule</dd>
+           a non-delayed schedule</dd>
 <dd><code>period</code> - the time interval to wait each time in between executing the action; non-positive values
            indicate no delay between repeated schedules</dd>
 <dd><code>unit</code> - the time unit of <code>period</code></dd>

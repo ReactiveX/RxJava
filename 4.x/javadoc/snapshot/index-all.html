@@ -187,7 +187,7 @@ a termination notification.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#ambWith(io.reactivex.rxjava4.core.CompletableSource)" class="member-name-link">ambWith(CompletableSource)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a <code>Completable</code> that emits the a terminated event of either this <code>Completable</code>
+<div class="block">Returns a <code>Completable</code> that emits a terminated event of either this <code>Completable</code>
 or the other <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>, whichever fires first.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#ambWith(io.reactivex.rxjava4.core.MaybeSource)" class="member-name-link">ambWith(MaybeSource)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
@@ -516,7 +516,7 @@ specified callback with the <a href="io/reactivex/rxjava4/disposables/Disposable
 </dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#await()" class="member-name-link">await()</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
 <dd>
-<div class="block">Awaits until this <code>TestObserver</code>/<code>TestSubscriber</code> receives an <code>onError</code> or <code>onComplete</code> events.</div>
+<div class="block">Wait until this <code>TestObserver</code>/<code>TestSubscriber</code> receives an <code>onError</code> or <code>onComplete</code> events.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#await(long,java.util.concurrent.TimeUnit)" class="member-name-link">await(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
 <dd>
@@ -529,13 +529,13 @@ receives an <code>onError</code> or <code>onComplete</code> events, whichever ha
 </dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#awaitCount(int)" class="member-name-link">awaitCount(int)</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
 <dd>
-<div class="block">Await until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
+<div class="block">Wait until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
 number of items or terminates by sleeping 10 milliseconds at a time
 up to 5000 milliseconds of timeout.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#awaitDone(long,java.util.concurrent.TimeUnit)" class="member-name-link">awaitDone(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
 <dd>
-<div class="block">Awaits until the internal latch is counted down.</div>
+<div class="block">Wait until the internal latch is counted down.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.html#awaitFinish()" class="member-name-link">awaitFinish()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
 <dd>
@@ -2961,7 +2961,7 @@ when the subscription happens.</div>
 <dd>
 <div class="block">Abstract base implementation of a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Subscriber</code></a> with
 support for requesting via <code>#request(long)</code>, cancelling via
-via <code>#cancel()</code> (both synchronously) and calls <code>#onStart()</code>
+<code>#cancel()</code> (both synchronously) and calls <code>#onStart()</code>
 when the subscription happens.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/subscribers/DefaultSubscriber.html#%3Cinit%3E()" class="member-name-link">DefaultSubscriber()</a> - Constructor for class io.reactivex.rxjava4.subscribers.<a href="io/reactivex/rxjava4/subscribers/DefaultSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">DefaultSubscriber</a></dt>
@@ -5063,7 +5063,7 @@ signal, null otherwise.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getErrorHandler()" class="member-name-link">getErrorHandler()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
-<div class="block">Returns the a hook consumer.</div>
+<div class="block">Returns the hook consumer.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/exceptions/CompositeException.html#getExceptions()" class="member-name-link">getExceptions()</a> - Method in exception class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/CompositeException.html" title="class in io.reactivex.rxjava4.exceptions">CompositeException</a></dt>
 <dd>
@@ -6805,7 +6805,7 @@ subscribers have cancelled.</div>
 <dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#NEVER" class="member-name-link">NEVER</a> - Static variable in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
 <dd>
 <div class="block">The container implementation that just ignores everything, for
-cases where the dispose signal has no side-effects to work with.</div>
+cases where the dispose signal has no side effects to work with.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#%3Cinit%3E()" class="member-name-link">NeverDisposableContainer()</a> - Constructor for record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
 <dd>
@@ -8855,7 +8855,7 @@ by the current <code>Observable</code>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Scheduler.Worker.html#schedule(java.lang.Runnable,long,java.util.concurrent.TimeUnit)" class="member-name-link">schedule(Runnable, long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core">Scheduler.Worker</a></dt>
 <dd>
-<div class="block">Schedules an Runnable for execution at some point in the future specified by a time delay
+<div class="block">Schedules a Runnable for execution at some point in the future specified by a time delay
 relative to the current time.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Scheduler.html#scheduleDirect(java.lang.Runnable)" class="member-name-link">scheduleDirect(Runnable)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></dt>
@@ -9548,7 +9548,7 @@ sorted order based on a specified comparison function.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/annotations/BackpressureKind.html#SPECIAL" class="member-name-link">SPECIAL</a> - Enum constant in enum class io.reactivex.rxjava4.annotations.<a href="io/reactivex/rxjava4/annotations/BackpressureKind.html" title="enum class in io.reactivex.rxjava4.annotations">BackpressureKind</a></dt>
 <dd>
-<div class="block">The operator performs special backpressure management; see the associated javadoc.</div>
+<div class="block">The operator performs special backpressure management; see the associated Javadoc.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/operators/SpscArrayQueue.html" class="type-name-link" title="class in io.reactivex.rxjava4.operators">SpscArrayQueue&lt;E&gt;</a> - Class in <a href="io/reactivex/rxjava4/operators/package-summary.html">io.reactivex.rxjava4.operators</a></dt>
 <dd>
@@ -9747,11 +9747,11 @@ emitted by the current <code>Observable</code>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#stream()" class="member-name-link">stream()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
-<div class="block">Realizes the stream and returns an interface that let's one consume it.</div>
+<div class="block">Realizes the stream and returns an interface that lets one consume it.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#stream(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">stream(DisposableContainer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
-<div class="block">Realizes the stream and returns an interface that let's one consume it.</div>
+<div class="block">Realizes the stream and returns an interface that lets one consume it.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">Streamable&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -10032,7 +10032,7 @@ performs the necessary business logic and handles the incoming <a href="https://
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#subscribeOn(io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">subscribeOn(Scheduler)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a <code>Completable</code> which subscribes the downstream subscriber on the specified scheduler, making
-sure the subscription side-effects happen on that specific thread of the <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
+sure the subscription side effects happen on that specific thread of the <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#subscribeOn(io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">subscribeOn(Scheduler)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>

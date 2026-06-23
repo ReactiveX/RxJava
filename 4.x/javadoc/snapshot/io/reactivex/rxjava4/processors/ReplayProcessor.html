@@ -4368,7 +4368,7 @@ When <code>Subscriber</code>s subscribe to a terminated <code>ReplayProcessor</c
 <p>
 If a <code>Subscriber</code> subscribes while the <code>ReplayProcessor</code> is active, it will observe all items in the
 buffer at that point in time and each item observed afterwards, even if the buffer evicts items due to
-the size constraint in the mean time. In other words, once a <code>Subscriber</code> subscribes, it will receive items
+the size constraint in the meantime. In other words, once a <code>Subscriber</code> subscribes, it will receive items
 without gaps in the sequence.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
@@ -4406,7 +4406,7 @@ buffer after the terminal event, regardless of their age.
 <p>
 If a <code>Subscriber</code> subscribes while the <code>ReplayProcessor</code> is active, it will observe only those items
 from within the buffer that have an age less than the specified time, and each item observed thereafter,
-even if the buffer evicts items due to the time constraint in the mean time. In other words, once a
+even if the buffer evicts items due to the time constraint in the meantime. In other words, once a
 <code>Subscriber</code> subscribes, it observes items without gaps in the sequence except for any outdated items at the
 beginning of the sequence.
 <p>
@@ -4454,7 +4454,7 @@ the buffer after the terminal notification, regardless of their age, but at most
 <p>
 If a <code>Subscriber</code> subscribes while the <code>ReplayProcessor</code> is active, it will observe only those items
 from within the buffer that have age less than the specified time and each subsequent item, even if the
-buffer evicts items due to the time constraint in the mean time. In other words, once a <code>Subscriber</code>
+buffer evicts items due to the time constraint in the meantime. In other words, once a <code>Subscriber</code>
 subscribes, it observes items without gaps in the sequence except for the outdated items at the beginning
 of the sequence.
 <p>

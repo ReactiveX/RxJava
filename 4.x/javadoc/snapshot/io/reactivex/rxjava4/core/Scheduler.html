@@ -160,9 +160,9 @@ The default implementations of <a href="#start()"><code>start()</code></a> and <
 underlying task-execution scheme supports stopping and restarting itself.
 <p>
 If the <code>Scheduler</code> is shut down or a <code>Worker</code> is disposed, the <code>schedule</code> methods
-should return the <a href="../disposables/Disposable.html#disposed()"><code>Disposable.disposed()</code></a> singleton instance indicating the shut down/disposed
+should return the <a href="../disposables/Disposable.html#disposed()"><code>Disposable.disposed()</code></a> singleton instance indicating the shut-down/disposed
 state to the caller. Since the shutdown or dispose can happen from any thread, the <code>schedule</code> implementations
-should make best effort to cancel tasks immediately after those tasks have been submitted to the
+should make the best effort to cancel tasks immediately after those tasks have been submitted to the
 underlying task-execution scheme if the shutdown/dispose was detected after this submission.
 <p>
 All methods on the <code>Scheduler</code> and <code>Worker</code> classes should be thread safe.</div>
@@ -426,7 +426,7 @@ ordering or non-overlapping guarantees between tasks.</div>
 <dt>Parameters:</dt>
 <dd><code>run</code> - the task to execute</dd>
 <dt>Returns:</dt>
-<dd>the Disposable instance that let's one cancel this particular task.</dd>
+<dd>the Disposable instance that lets one cancel this particular task.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>run</code> is <code>null</code></dd>
 <dt>Since:</dt>
@@ -456,7 +456,7 @@ ordering guarantees between tasks.</div>
 <dd><code>delay</code> - the delay amount, non-positive values indicate non-delayed scheduling</dd>
 <dd><code>unit</code> - the unit of measure of the delay amount</dd>
 <dt>Returns:</dt>
-<dd>the Disposable that let's one cancel this particular delayed task.</dd>
+<dd>the Disposable that lets one cancel this particular delayed task.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>run</code> or <code>unit</code> is <code>null</code></dd>
 <dt>Since:</dt>
@@ -493,7 +493,7 @@ The periodic execution is at a fixed rate, that is, the first execution will be 
 <dd><code>period</code> - the period at which the task should be re-executed</dd>
 <dd><code>unit</code> - the unit of measure of the delay amount</dd>
 <dt>Returns:</dt>
-<dd>the Disposable that let's one cancel this particular delayed task.</dd>
+<dd>the Disposable that lets one cancel this particular delayed task.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>run</code> or <code>unit</code> is <code>null</code></dd>
 <dt>Since:</dt>

@@ -131,7 +131,7 @@ Disposing the connection will reset the <code>ConnectableFlowable</code> to its 
 Note that although <a href="#connect()"><code>connect()</code></a> and <a href="#reset()"><code>reset()</code></a> are safe to call from multiple threads, it is recommended
 a dedicated thread or business logic manages the connection or resetting of a <code>ConnectableFlowable</code> so that
 there is no unwanted signal loss due to early <code>connect()</code> or <code>reset()</code> calls while <code>Subscriber</code>s are
-still being subscribed to to this <code>ConnectableFlowable</code> to receive signals from the get go.
+still being subscribed to this <code>ConnectableFlowable</code> to receive signals from the get-go.
 <p></div>
 <dl class="notes">
 <dt>Since:</dt>

@@ -331,7 +331,7 @@ which is equal to the given value with respect to <code>null</code>-safe <a href
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#await()" class="member-name-link">await</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Awaits until this <code>TestObserver</code>/<code>TestSubscriber</code> receives an <code>onError</code> or <code>onComplete</code> events.</div>
+<div class="block">Wait until this <code>TestObserver</code>/<code>TestSubscriber</code> receives an <code>onError</code> or <code>onComplete</code> events.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#await(long,java.util.concurrent.TimeUnit)" class="member-name-link">await</a><wbr>(long&nbsp;time,
@@ -343,7 +343,7 @@ receives an <code>onError</code> or <code>onComplete</code> events, whichever ha
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitCount(int)" class="member-name-link">awaitCount</a><wbr>(int&nbsp;atLeast)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Await until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
+<div class="block">Wait until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
 number of items or terminates by sleeping 10 milliseconds at a time
 up to 5000 milliseconds of timeout.</div>
 </div>
@@ -351,7 +351,7 @@ up to 5000 milliseconds of timeout.</div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitDone(long,java.util.concurrent.TimeUnit)" class="member-name-link">awaitDone</a><wbr>(long&nbsp;time,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Awaits until the internal latch is counted down.</div>
+<div class="block">Wait until the internal latch is counted down.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
@@ -541,7 +541,7 @@ when accessed in a read-only fashion, should be also thread-safe and not throw a
 </span><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AssertionError.html" title="class in java.lang" class="external-link">AssertionError</a></span>&nbsp;<span class="element-name">fail</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html" title="class in java.lang" class="external-link">String</a>&nbsp;message)</span></div>
 <div class="block">Fail with the given message and add the sequence of errors as suppressed ones.
-<p>Note this is deliberately the only fail method. Most of the times an assertion
+<p>Note this is deliberately the only fail method. Usually an assertion
 would fail but it is possible it was due to an exception somewhere. This construct
 will capture those potential errors and report it along with the original failure.</div>
 <dl class="notes">
@@ -560,7 +560,7 @@ will capture those potential errors and report it along with the original failur
 <div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></span>&nbsp;<span class="element-name">await</span>()
               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/InterruptedException.html" title="class in java.lang" class="external-link">InterruptedException</a></span></div>
-<div class="block">Awaits until this <code>TestObserver</code>/<code>TestSubscriber</code> receives an <code>onError</code> or <code>onComplete</code> events.</div>
+<div class="block">Wait until this <code>TestObserver</code>/<code>TestSubscriber</code> receives an <code>onError</code> or <code>onComplete</code> events.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>this</dd>
@@ -953,7 +953,7 @@ and then failed with a specific class or subclass of <a href="https://docs.oracl
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></span>&nbsp;<span class="element-name">awaitDone</span><wbr><span class="parameters">(long&nbsp;time,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</span></div>
-<div class="block">Awaits until the internal latch is counted down.
+<div class="block">Wait until the internal latch is counted down.
 <p>If the wait times out or gets interrupted, the <code>TestObserver</code>/<code>TestSubscriber</code> is cancelled.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -1010,7 +1010,7 @@ other state information.
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></span>&nbsp;<span class="element-name">awaitCount</span><wbr><span class="parameters">(int&nbsp;atLeast)</span></div>
-<div class="block">Await until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
+<div class="block">Wait until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
 number of items or terminates by sleeping 10 milliseconds at a time
 up to 5000 milliseconds of timeout.
 <p>History: 2.0.7 - experimental</div>

@@ -252,7 +252,7 @@ terminates (normally or with an error) and disposes all other <code>Completable<
 <div class="col-first even-row-color"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
 <div class="col-second even-row-color"><code><a href="../core/Completable.html#ambWith(io.reactivex.rxjava4.core.CompletableSource)" class="member-name-link">ambWith</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&nbsp;other)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Returns a <code>Completable</code> that emits the a terminated event of either this <code>Completable</code>
+<div class="block">Returns a <code>Completable</code> that emits a terminated event of either this <code>Completable</code>
 or the other <a href="../core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>, whichever fires first.</div>
 </div>
 <div class="col-first odd-row-color"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
@@ -837,7 +837,7 @@ from the given composite.</div>
 <div class="col-second even-row-color"><code><a href="../core/Completable.html#subscribeOn(io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">subscribeOn</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&nbsp;scheduler)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Returns a <code>Completable</code> which subscribes the downstream subscriber on the specified scheduler, making
-sure the subscription side-effects happen on that specific thread of the <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
+sure the subscription side effects happen on that specific thread of the <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
 </div>
 <div class="col-first odd-row-color"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> E extends <a href="../core/CompletableObserver.html" title="interface in io.reactivex.rxjava4.core">CompletableObserver</a>&gt;<br>E</code></div>
 <div class="col-second odd-row-color"><code><a href="../core/Completable.html#subscribeWith(E)" class="member-name-link">subscribeWith</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> E&nbsp;observer)</code></div>

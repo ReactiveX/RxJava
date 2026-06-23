@@ -214,12 +214,12 @@ which is free to block and is natively backpressured.</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#stream()" class="member-name-link">stream</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Realizes the stream and returns an interface that let's one consume it.</div>
+<div class="block">Realizes the stream and returns an interface that lets one consume it.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#stream(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">stream</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Realizes the stream and returns an interface that let's one consume it.</div>
+<div class="block">Realizes the stream and returns an interface that lets one consume it.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#subscribe(java.util.concurrent.Flow.Subscriber)" class="member-name-link">subscribe</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;&nbsp;subscriber)</code></div>
@@ -287,7 +287,7 @@ on the provided executor service.</div>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">stream</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</span></div>
-<div class="block">Realizes the stream and returns an interface that let's one consume it.</div>
+<div class="block">Realizes the stream and returns an interface that lets one consume it.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>cancellation</code> - where to register and listen for cancellation calls.</dd>
@@ -304,7 +304,7 @@ on the provided executor service.</div>
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">stream</span>()</div>
-<div class="block">Realizes the stream and returns an interface that let's one consume it.</div>
+<div class="block">Realizes the stream and returns an interface that lets one consume it.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the Streamer instance to consume.</dd>
@@ -500,7 +500,7 @@ Runs on the given executor service.</div>
 <dt>Type Parameters:</dt>
 <dd><span id="concat(io.reactivex.rxjava4.core.Streamable,java.util.concurrent.ExecutorService)-type-param-T"><code>T</code> - the common element type</span></dd>
 <dt>Parameters:</dt>
-<dd><code>sources</code> - the streamable of inner streamables</dd>
+<dd><code>sources</code> - a streamable of inner streamables</dd>
 <dd><code>exec</code> - the executorservice where to run the virtual wait</dd>
 <dt>Returns:</dt>
 <dd>the new Streamable instance.</dd>
@@ -599,7 +599,7 @@ on the provided executor service.</div>
 <dt>Parameters:</dt>
 <dd><code>consumer</code> - the callback that gets the elements until completion</dd>
 <dt>Returns:</dt>
-<dd>a Disposable that let's one cancel the sequence asynchronously.</dd>
+<dd>a Disposable that lets one cancel the sequence asynchronously.</dd>
 </dl>
 </div>
 </section>
@@ -641,7 +641,7 @@ on the provided executor service.</div>
 <dd><code>consumer</code> - the callback that gets the elements until completion</dd>
 <dd><code>executor</code> - the service that hosts the blocking waits.</dd>
 <dt>Returns:</dt>
-<dd>a Disposable that let's one cancel the sequence asynchronously.</dd>
+<dd>a Disposable that lets one cancel the sequence asynchronously.</dd>
 </dl>
 </div>
 </section>
