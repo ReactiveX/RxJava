@@ -99,7 +99,7 @@ public class SingleTest extends RxJavaTest {
         Single<String> a = Single.just("A");
         Single<String> b = Single.just("B");
 
-        Single.merge(a, b).subscribe(ts);
+        Single.mergeArray(a, b).subscribe(ts);
         ts.assertValueSequence(Arrays.asList("A", "B"));
     }
 

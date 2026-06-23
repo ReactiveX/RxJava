@@ -995,16 +995,16 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         .assertFailure(TestException.class, "[1, 2]");
     }
 
-    // @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void combineLatestArrayEmpty() {
-        assertSame(Flowable.empty(), Flowable.combineLatestArray(new Flowable[0], Functions.<Object[]>identity(), 16));
+        assertSame(Flowable.empty(), Flowable.combineLatestArray(new Flowable[0], (Function)Functions.identity(), 16));
     }
 
-    // @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void combineLatestDelayErrorEmpty() {
-        assertSame(Flowable.empty(), Flowable.combineLatestArrayDelayError(new Flowable[0], Functions.<Object[]>identity(), 16));
+        assertSame(Flowable.empty(), Flowable.combineLatestArrayDelayError(new Flowable[0], (Function)Functions.identity(), 16));
     }
 
     @Test
