@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.testsupport.*;
@@ -43,12 +42,7 @@ public class ObservableIgnoreElementsTest extends RxJavaTest {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         long count = Observable.range(1, num)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer t) {
-                        upstreamCount.incrementAndGet();
-                    }
-                })
+                .doOnNext(_ -> upstreamCount.incrementAndGet())
                 .ignoreElements()
                 .toObservable()
                 .count().blockingGet();
@@ -80,11 +74,7 @@ public class ObservableIgnoreElementsTest extends RxJavaTest {
     public void unsubscribesFromUpstreamObservable() {
         final AtomicBoolean unsub = new AtomicBoolean();
         Observable.range(1, 10).concatWith(Observable.<Integer>never())
-        .doOnDispose(new Action() {
-            @Override
-            public void run() {
-                unsub.set(true);
-            }})
+        .doOnDispose(() -> unsub.set(true))
             .ignoreElements()
             .toObservable()
             .subscribe()
@@ -107,12 +97,7 @@ public class ObservableIgnoreElementsTest extends RxJavaTest {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         Observable.range(1, num)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer t) {
-                        upstreamCount.incrementAndGet();
-                    }
-                })
+                .doOnNext(_ -> upstreamCount.incrementAndGet())
                 .ignoreElements()
                 .blockingAwait();
         assertEquals(num, upstreamCount.get());
@@ -142,11 +127,7 @@ public class ObservableIgnoreElementsTest extends RxJavaTest {
     public void unsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
         Observable.range(1, 10).concatWith(Observable.<Integer>never())
-        .doOnDispose(new Action() {
-            @Override
-            public void run() {
-                unsub.set(true);
-            }})
+        .doOnDispose(() -> unsub.set(true))
             .ignoreElements()
             .subscribe()
             .dispose();

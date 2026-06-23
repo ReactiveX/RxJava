@@ -28,11 +28,8 @@ public class ObservableLiftTest extends RxJavaTest {
     public void callbackCrash() {
         try {
             Observable.just(1)
-            .lift(new ObservableOperator<Object, Integer>() {
-                @Override
-                public Observer<? super Integer> apply(Observer<? super Object> o) throws Exception {
-                    throw new TestException();
-                }
+            .lift(_ -> {
+                throw new TestException();
             })
             .test();
             fail("Should have thrown");

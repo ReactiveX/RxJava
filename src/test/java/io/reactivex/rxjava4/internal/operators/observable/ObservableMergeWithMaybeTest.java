@@ -106,20 +106,12 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
 
             TestObserver<Integer> to = ps.mergeWith(cs).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(1);
-                    ps.onComplete();
-                }
+            Runnable r1 = () -> {
+                ps.onNext(1);
+                ps.onComplete();
             };
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cs.onSuccess(1);
-                }
-            };
+            Runnable r2 = () -> cs.onSuccess(1);
 
             TestHelper.race(r1, r2);
 
@@ -219,13 +211,7 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribeMain() {
         TestHelper.checkDoubleOnSubscribeObservable(
-                new Function<Observable<Object>, Observable<Object>>() {
-                    @Override
-                    public Observable<Object> apply(Observable<Object> f)
-                            throws Exception {
-                        return f.mergeWith(Maybe.just(1));
-                    }
-                }
+                (Function<Observable<Object>, Observable<Object>>) f -> f.mergeWith(Maybe.just(1))
         );
     }
 
@@ -311,11 +297,6 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.mergeWith(Maybe.just(1).hide());
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.mergeWith(Maybe.just(1).hide()));
     }
 }

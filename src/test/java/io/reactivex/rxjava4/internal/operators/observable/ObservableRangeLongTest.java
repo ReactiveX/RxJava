@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.observers.*;
 import io.reactivex.rxjava4.operators.QueueFuseable;
 import io.reactivex.rxjava4.testsupport.*;
@@ -49,12 +48,7 @@ public class ObservableRangeLongTest extends RxJavaTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        Observable.rangeLong(1, 1000).doOnNext(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                count.incrementAndGet();
-            }
-        })
+        Observable.rangeLong(1, 1000).doOnNext(_ -> count.incrementAndGet())
         .take(3).subscribe(observer);
 
         verify(observer, times(1)).onNext(1L);
