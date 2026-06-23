@@ -17,40 +17,42 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.Single;
+import io.reactivex.rxjava4.core.config.SingleConcatConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class SingleConcatDelayErrorTest {
 
     @Test
     public void normalIterable() {
-        Single.concatDelayError(Arrays.asList(
+        Single.concat(Arrays.asList(
                 Single.just(1),
                 Single.<Integer>error(new TestException()),
                 Single.just(2)
-        ))
+        ), SingleConcatConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void normalPublisher() {
-        Single.concatDelayError(Flowable.fromArray(
+        Single.concat(Flowable.fromArray(
                 Single.just(1),
                 Single.<Integer>error(new TestException()),
                 Single.just(2)
-        ))
+        ), SingleConcatConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void normalPublisherPrefetch() {
-        Single.concatDelayError(Flowable.fromArray(
+        Single.concat(Flowable.fromArray(
                 Single.just(1),
                 Single.<Integer>error(new TestException()),
                 Single.just(2)
-        ), 1)
+        ), new SingleConcatConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }

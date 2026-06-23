@@ -16,13 +16,14 @@ package io.reactivex.rxjava4.internal.operators.single;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.Single;
+import io.reactivex.rxjava4.core.config.SingleConcatConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class SingleConcatArrayDelayErrorTest {
 
     @Test
     public void normal() {
-        Single.concatArrayDelayError(
+        Single.concatArray(SingleConcatConfig.DELAY_ERROR,
                 Single.just(1),
                 Single.<Integer>error(new TestException()),
                 Single.just(2)

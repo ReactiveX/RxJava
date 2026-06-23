@@ -17,7 +17,9 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.Single;
+import io.reactivex.rxjava4.core.config.SingleConcatEagerConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class SingleConcatEagerTest {
@@ -37,7 +39,7 @@ public class SingleConcatEagerTest {
         Single.concatEager(Arrays.asList(
                 Single.just(1),
                 Single.just(2)
-        ), 1)
+        ), new SingleConcatEagerConfig(1))
         .test()
         .assertResult(1, 2);
     }
@@ -59,7 +61,7 @@ public class SingleConcatEagerTest {
                 Single.just(1),
                 Single.error(new TestException()),
                 Single.just(2)
-        ), 1)
+        ), new SingleConcatEagerConfig(1))
         .test()
         .assertFailure(TestException.class, 1);
     }
@@ -79,7 +81,7 @@ public class SingleConcatEagerTest {
         Single.concatEager(Flowable.fromArray(
                 Single.just(1),
                 Single.just(2)
-        ), 1)
+        ), new SingleConcatEagerConfig(1))
         .test()
         .assertResult(1, 2);
     }
@@ -97,44 +99,44 @@ public class SingleConcatEagerTest {
 
     @Test
     public void iterableDelayError() {
-        Single.concatEagerDelayError(Arrays.asList(
+        Single.concatEager(Arrays.asList(
                 Single.just(1),
                 Single.error(new TestException()),
                 Single.just(2)
-        ))
+        ), SingleConcatEagerConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void iterableDelayErrorMaxConcurrency() {
-        Single.concatEagerDelayError(Arrays.asList(
+        Single.concatEager(Arrays.asList(
                 Single.just(1),
                 Single.error(new TestException()),
                 Single.just(2)
-        ), 1)
+        ), new SingleConcatEagerConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void publisherDelayError() {
-        Single.concatEagerDelayError(Flowable.fromArray(
+        Single.concatEager(Flowable.fromArray(
                 Single.just(1),
                 Single.error(new TestException()),
                 Single.just(2)
-        ))
+        ), SingleConcatEagerConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void publisherDelayErrorMaxConcurrency() {
-        Single.concatEagerDelayError(Flowable.fromArray(
+        Single.concatEager(Flowable.fromArray(
                 Single.just(1),
                 Single.error(new TestException()),
                 Single.just(2)
-        ), 1)
+        ), new SingleConcatEagerConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
