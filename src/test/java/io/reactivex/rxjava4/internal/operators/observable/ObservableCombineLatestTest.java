@@ -735,16 +735,16 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         .assertFailure(TestException.class, "[1, 2]");
     }
 
-    // @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void combineLatestArrayEmpty() {
-        assertSame(Observable.empty(), Observable.combineLatestArray(new ObservableSource[0], Functions.<Object[]>identity(), 16));
+        assertSame(Observable.empty(), Observable.combineLatestArray(new ObservableSource[0], (Function)Functions.identity(), 16));
     }
 
-    // @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void combineLatestDelayErrorEmpty() {
-        assertSame(Observable.empty(), Observable.combineLatestArrayDelayError(new ObservableSource[0], Functions.<Object[]>identity(), 16));
+        assertSame(Observable.empty(), Observable.combineLatestArrayDelayError(new ObservableSource[0], (Function)Functions.identity(), 16));
     }
 
     @Test

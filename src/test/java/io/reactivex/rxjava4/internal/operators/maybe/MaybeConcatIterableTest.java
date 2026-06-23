@@ -20,6 +20,7 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.MaybeConcatConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.util.CrashingMappedIterable;
@@ -119,7 +120,7 @@ public class MaybeConcatIterableTest extends RxJavaTest {
             s.onSuccess(1);
         });
 
-        Maybe.concatDelayError(Arrays.asList(source, source)).firstElement()
+        Maybe.concat(Arrays.asList(source, source), MaybeConcatConfig.DELAY_ERROR).firstElement()
         .test()
         .assertResult(1);
 

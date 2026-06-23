@@ -18,6 +18,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.MaybeConcatEagerConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class MaybeConcatEagerTest {
@@ -39,7 +40,7 @@ public class MaybeConcatEagerTest {
                 Maybe.just(1),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), 1)
+        ), new MaybeConcatEagerConfig(1))
         .test()
         .assertResult(1, 2);
     }
@@ -63,7 +64,7 @@ public class MaybeConcatEagerTest {
                 Maybe.error(new TestException()),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), 1)
+        ), new MaybeConcatEagerConfig(1))
         .test()
         .assertFailure(TestException.class, 1);
     }
@@ -85,7 +86,7 @@ public class MaybeConcatEagerTest {
                 Maybe.just(1),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), 1)
+        ), new MaybeConcatEagerConfig(1))
         .test()
         .assertResult(1, 2);
     }
@@ -104,48 +105,48 @@ public class MaybeConcatEagerTest {
 
     @Test
     public void iterableDelayError() {
-        Maybe.concatEagerDelayError(Arrays.asList(
+        Maybe.concatEager(Arrays.asList(
                 Maybe.just(1),
                 Maybe.error(new TestException()),
                 Maybe.empty(),
                 Maybe.just(2)
-        ))
+        ), MaybeConcatEagerConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void iterableDelayErrorMaxConcurrency() {
-        Maybe.concatEagerDelayError(Arrays.asList(
+        Maybe.concatEager(Arrays.asList(
                 Maybe.just(1),
                 Maybe.error(new TestException()),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), 1)
+        ), new MaybeConcatEagerConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void publisherDelayError() {
-        Maybe.concatEagerDelayError(Flowable.fromArray(
+        Maybe.concatEager(Flowable.fromArray(
                 Maybe.just(1),
                 Maybe.error(new TestException()),
                 Maybe.empty(),
                 Maybe.just(2)
-        ))
+        ), MaybeConcatEagerConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void publisherDelayErrorMaxConcurrency() {
-        Maybe.concatEagerDelayError(Flowable.fromArray(
+        Maybe.concatEager(Flowable.fromArray(
                 Maybe.just(1),
                 Maybe.error(new TestException()),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), 1)
+        ), new MaybeConcatEagerConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }

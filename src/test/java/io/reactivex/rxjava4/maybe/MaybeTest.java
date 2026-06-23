@@ -19,14 +19,15 @@ import java.io.IOException;
 import java.lang.management.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.core.config.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -936,21 +937,21 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void concat2() {
-        Maybe.concat(Maybe.just(1), Maybe.just(2))
+        Maybe.concatArray(Maybe.just(1), Maybe.just(2))
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void concat2Empty() {
-        Maybe.concat(Maybe.empty(), Maybe.empty())
+        Maybe.concatArray(Maybe.empty(), Maybe.empty())
         .test()
         .assertResult();
     }
 
     @Test
     public void concat2Backpressured() {
-        TestSubscriber<Integer> ts = Maybe.concat(Maybe.just(1), Maybe.just(2))
+        TestSubscriber<Integer> ts = Maybe.concatArray(Maybe.just(1), Maybe.just(2))
         .test(0L);
 
         ts.assertEmpty();
@@ -969,7 +970,7 @@ public class MaybeTest extends RxJavaTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.concat(pp1.singleElement(), pp2.singleElement())
+        TestSubscriber<Integer> ts = Maybe.concatArray(pp1.singleElement(), pp2.singleElement())
         .test(0L);
 
         assertTrue(pp1.hasSubscribers());
@@ -1005,35 +1006,35 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void concat3() {
-        Maybe.concat(Maybe.just(1), Maybe.just(2), Maybe.just(3))
+        Maybe.concatArray(Maybe.just(1), Maybe.just(2), Maybe.just(3))
         .test()
         .assertResult(1, 2, 3);
     }
 
     @Test
     public void concat3Empty() {
-        Maybe.concat(Maybe.empty(), Maybe.empty(), Maybe.empty())
+        Maybe.concatArray(Maybe.empty(), Maybe.empty(), Maybe.empty())
         .test()
         .assertResult();
     }
 
     @Test
     public void concat3Mixed1() {
-        Maybe.concat(Maybe.just(1), Maybe.empty(), Maybe.just(3))
+        Maybe.concatArray(Maybe.just(1), Maybe.empty(), Maybe.just(3))
         .test()
         .assertResult(1, 3);
     }
 
     @Test
     public void concat3Mixed2() {
-        Maybe.concat(Maybe.just(1), Maybe.just(2), Maybe.empty())
+        Maybe.concatArray(Maybe.just(1), Maybe.just(2), Maybe.empty())
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void concat3Backpressured() {
-        TestSubscriber<Integer> ts = Maybe.concat(Maybe.just(1), Maybe.just(2), Maybe.just(3))
+        TestSubscriber<Integer> ts = Maybe.concatArray(Maybe.just(1), Maybe.just(2), Maybe.just(3))
         .test(0L);
 
         ts.assertEmpty();
@@ -1059,7 +1060,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void concat4() {
-        Maybe.concat(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4))
+        Maybe.concatArray(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4))
         .test()
         .assertResult(1, 2, 3, 4);
     }
@@ -1150,7 +1151,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void concatPublisherPrefetch() {
-        Maybe.concat(Flowable.just(Maybe.just(1), Maybe.just(2)), 1).test().assertResult(1, 2);
+        Maybe.concat(Flowable.just(Maybe.just(1), Maybe.just(2)), new MaybeConcatConfig(1)).test().assertResult(1, 2);
     }
 
     @Test
@@ -1610,28 +1611,28 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void merge2() {
-        Maybe.merge(Maybe.just(1), Maybe.just(2))
+        Maybe.mergeArray(Maybe.just(1), Maybe.just(2))
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void merge3() {
-        Maybe.merge(Maybe.just(1), Maybe.just(2), Maybe.just(3))
+        Maybe.mergeArray(Maybe.just(1), Maybe.just(2), Maybe.just(3))
         .test()
         .assertResult(1, 2, 3);
     }
 
     @Test
     public void merge4() {
-        Maybe.merge(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4))
+        Maybe.mergeArray(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4))
         .test()
         .assertResult(1, 2, 3, 4);
     }
 
     @Test
     public void merge4Take2() {
-        Maybe.merge(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4))
+        Maybe.mergeArray(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4))
         .take(2)
         .test()
         .assertResult(1, 2);
@@ -1767,7 +1768,7 @@ public class MaybeTest extends RxJavaTest {
         final PublishProcessor<Integer> pp1 = PublishProcessor.create();
         final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.merge(Flowable.just(pp1.singleElement(), pp2.singleElement()), 1).test(0L);
+        TestSubscriber<Integer> ts = Maybe.merge(Flowable.just(pp1.singleElement(), pp2.singleElement()), new MaybeMergeConfig(1)).test(0L);
 
         assertTrue(pp1.hasSubscribers());
         assertFalse(pp2.hasSubscribers());
@@ -1845,14 +1846,14 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void mergeErrorSuccess() {
-        Maybe.merge(Maybe.error(new TestException()), Maybe.just(1))
+        Maybe.mergeArray(Maybe.error(new TestException()), Maybe.just(1))
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void mergeSuccessError() {
-        Maybe.merge(Maybe.just(1), Maybe.error(new TestException()))
+        Maybe.mergeArray(Maybe.just(1), Maybe.error(new TestException()))
         .test()
         .assertFailure(TestException.class, 1);
     }
@@ -2040,48 +2041,48 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void concatArrayDelayError() {
-        Maybe.concatArrayDelayError(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException()))
+        Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, Maybe.empty(), Maybe.just(1), Maybe.error(new TestException()))
         .test()
         .assertFailure(TestException.class, 1);
 
-        Maybe.concatArrayDelayError(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1))
+        Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1))
         .test()
         .assertFailure(TestException.class, 1);
 
-        assertSame(Flowable.empty(), Maybe.concatArrayDelayError());
+        assertSame(Flowable.empty(), Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR));
 
-        assertFalse(Maybe.concatArrayDelayError(Maybe.never()) instanceof MaybeConcatArrayDelayError);
+        assertFalse(Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, Maybe.never()) instanceof MaybeConcatArrayDelayError);
     }
 
     @Test
     public void concatIterableDelayError() {
-        Maybe.concatDelayError(Arrays.asList(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())))
+        Maybe.concat(Arrays.asList(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())), MaybeConcatConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1);
 
-        Maybe.concatDelayError(Arrays.asList(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)))
+        Maybe.concat(Arrays.asList(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)), MaybeConcatConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1);
     }
 
     @Test
     public void concatPublisherDelayError() {
-        Maybe.concatDelayError(Flowable.just(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())))
+        Maybe.concat(Flowable.just(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())), MaybeConcatConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1);
 
-        Maybe.concatDelayError(Flowable.just(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)))
+        Maybe.concat(Flowable.just(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)), MaybeConcatConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1);
     }
 
     @Test
     public void concatPublisherDelayErrorPrefetch() {
-        Maybe.concatDelayError(Flowable.just(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())), 1)
+        Maybe.concat(Flowable.just(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())), new MaybeConcatConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1);
 
-        Maybe.concatDelayError(Flowable.just(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)), 1)
+        Maybe.concat(Flowable.just(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)), new MaybeConcatConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1);
     }
@@ -2190,74 +2191,74 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void mergeArrayDelayError() {
-        Maybe.mergeArrayDelayError(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException()))
+        Maybe.mergeArray(MaybeMergeConfig.DELAY_ERRORS, Maybe.empty(), Maybe.just(1), Maybe.error(new TestException()))
         .test()
         .assertFailure(TestException.class, 1);
 
-        Maybe.mergeArrayDelayError(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1))
+        Maybe.mergeArray(MaybeMergeConfig.DELAY_ERRORS, Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1))
         .test()
         .assertFailure(TestException.class, 1);
     }
 
     @Test
     public void mergeIterableDelayError() {
-        Maybe.mergeDelayError(Arrays.asList(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())))
+        Maybe.merge(Arrays.asList(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())), MaybeMergeConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, 1);
 
-        Maybe.mergeDelayError(Arrays.asList(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)))
+        Maybe.merge(Arrays.asList(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)), MaybeMergeConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, 1);
     }
 
     @Test
     public void mergePublisherDelayError() {
-        Maybe.mergeDelayError(Flowable.just(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())))
+        Maybe.merge(Flowable.just(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())), MaybeMergeConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, 1);
 
-        Maybe.mergeDelayError(Flowable.just(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)))
+        Maybe.merge(Flowable.just(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)), MaybeMergeConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, 1);
     }
 
     @Test
     public void mergeDelayError2() {
-        Maybe.mergeDelayError(Maybe.just(1), Maybe.error(new TestException()))
+        Maybe.mergeArray(MaybeMergeConfig.DELAY_ERRORS, Maybe.just(1), Maybe.error(new TestException()))
         .test()
         .assertFailure(TestException.class, 1);
 
-        Maybe.mergeDelayError(Maybe.error(new TestException()), Maybe.just(1))
+        Maybe.mergeArray(MaybeMergeConfig.DELAY_ERRORS, Maybe.error(new TestException()), Maybe.just(1))
         .test()
         .assertFailure(TestException.class, 1);
     }
 
     @Test
     public void mergeDelayError3() {
-        Maybe.mergeDelayError(Maybe.just(1), Maybe.error(new TestException()), Maybe.just(2))
+        Maybe.mergeArray(MaybeMergeConfig.DELAY_ERRORS, Maybe.just(1), Maybe.error(new TestException()), Maybe.just(2))
         .test()
         .assertFailure(TestException.class, 1, 2);
 
-        Maybe.mergeDelayError(Maybe.error(new TestException()), Maybe.just(1), Maybe.just(2))
+        Maybe.mergeArray(MaybeMergeConfig.DELAY_ERRORS, Maybe.error(new TestException()), Maybe.just(1), Maybe.just(2))
         .test()
         .assertFailure(TestException.class, 1, 2);
 
-        Maybe.mergeDelayError(Maybe.just(1), Maybe.just(2), Maybe.error(new TestException()))
+        Maybe.mergeArray(MaybeMergeConfig.DELAY_ERRORS, Maybe.just(1), Maybe.just(2), Maybe.error(new TestException()))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void mergeDelayError4() {
-        Maybe.mergeDelayError(Maybe.just(1), Maybe.error(new TestException()), Maybe.just(2), Maybe.just(3))
+        Maybe.mergeArray(MaybeMergeConfig.DELAY_ERRORS, Maybe.just(1), Maybe.error(new TestException()), Maybe.just(2), Maybe.just(3))
         .test()
         .assertFailure(TestException.class, 1, 2, 3);
 
-        Maybe.mergeDelayError(Maybe.error(new TestException()), Maybe.just(1), Maybe.just(2), Maybe.just(3))
+        Maybe.mergeArray(MaybeMergeConfig.DELAY_ERRORS, Maybe.error(new TestException()), Maybe.just(1), Maybe.just(2), Maybe.just(3))
         .test()
         .assertFailure(TestException.class, 1, 2, 3);
 
-        Maybe.mergeDelayError(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.error(new TestException()))
+        Maybe.mergeArray(MaybeMergeConfig.DELAY_ERRORS, Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.error(new TestException()))
         .test()
         .assertFailure(TestException.class, 1, 2, 3);
     }

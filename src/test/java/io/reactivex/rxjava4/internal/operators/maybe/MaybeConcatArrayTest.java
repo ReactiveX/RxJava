@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.MaybeConcatConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -40,7 +41,7 @@ public class MaybeConcatArrayTest extends RxJavaTest {
 
     @Test
     public void cancelDelayError() {
-        Maybe.concatArrayDelayError(Maybe.just(1), Maybe.just(2))
+        Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, Maybe.just(1), Maybe.just(2))
         .take(1)
         .test()
         .assertResult(1);
@@ -64,7 +65,7 @@ public class MaybeConcatArrayTest extends RxJavaTest {
 
     @Test
     public void backpressureDelayError() {
-        TestSubscriber<Integer> ts = Maybe.concatArrayDelayError(Maybe.just(1), Maybe.just(2))
+        TestSubscriber<Integer> ts = Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, Maybe.just(1), Maybe.just(2))
         .test(0L);
 
         ts.assertEmpty();
@@ -95,7 +96,7 @@ public class MaybeConcatArrayTest extends RxJavaTest {
     @Test
     public void requestCancelRaceDelayError() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = Maybe.concatArrayDelayError(Maybe.just(1), Maybe.just(2))
+            final TestSubscriber<Integer> ts = Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, Maybe.just(1), Maybe.just(2))
                     .test(0L);
 
             Runnable r1 = ts::cancel;
@@ -111,7 +112,7 @@ public class MaybeConcatArrayTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final MaybeObserver<?>[] o = { null };
-            Maybe.concatArrayDelayError(Maybe.just(1),
+            Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, Maybe.just(1),
                     Maybe.error(new IOException()),
             new Maybe<Integer>() {
                 @Override
@@ -157,7 +158,7 @@ public class MaybeConcatArrayTest extends RxJavaTest {
             s.onSuccess(1);
         });
 
-        Maybe.concatArrayDelayError(source, source).firstElement()
+        Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, source, source).firstElement()
         .test()
         .assertResult(1);
 
@@ -171,7 +172,7 @@ public class MaybeConcatArrayTest extends RxJavaTest {
 
     @Test
     public void badRequestDelayError() {
-        TestHelper.assertBadRequestReported(Maybe.concatArrayDelayError(MaybeSubject.create(), MaybeSubject.create()));
+        TestHelper.assertBadRequestReported(Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, MaybeSubject.create(), MaybeSubject.create()));
     }
 
     @Test
@@ -216,7 +217,7 @@ public class MaybeConcatArrayTest extends RxJavaTest {
     @Test
     public void requestBeforeSuccessDelayError() {
         MaybeSubject<Integer> ms = MaybeSubject.create();
-        TestSubscriber<Integer> ts = Maybe.concatArrayDelayError(ms, ms)
+        TestSubscriber<Integer> ts = Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, ms, ms)
         .test();
 
         ts.assertEmpty();
@@ -229,7 +230,7 @@ public class MaybeConcatArrayTest extends RxJavaTest {
     @Test
     public void requestBeforeCompleteDelayError() {
         MaybeSubject<Integer> ms = MaybeSubject.create();
-        TestSubscriber<Integer> ts = Maybe.concatArrayDelayError(ms, ms)
+        TestSubscriber<Integer> ts = Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, ms, ms)
         .test();
 
         ts.assertEmpty();
