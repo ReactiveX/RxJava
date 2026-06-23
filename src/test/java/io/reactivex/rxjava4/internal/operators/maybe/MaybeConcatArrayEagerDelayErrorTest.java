@@ -16,13 +16,14 @@ package io.reactivex.rxjava4.internal.operators.maybe;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.Maybe;
+import io.reactivex.rxjava4.core.config.MaybeConcatEagerConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class MaybeConcatArrayEagerDelayErrorTest {
 
     @Test
     public void normal() {
-        Maybe.concatArrayEagerDelayError(
+        Maybe.concatArrayEager(MaybeConcatEagerConfig.DELAY_ERROR,
                 Maybe.just(1),
                 Maybe.<Integer>error(new TestException()),
                 Maybe.empty(),

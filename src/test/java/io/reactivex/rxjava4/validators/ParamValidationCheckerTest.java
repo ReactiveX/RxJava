@@ -624,6 +624,10 @@ public class ParamValidationCheckerTest {
         defaultValues.put(SingleConcatEagerConfig.class, SingleConcatEagerConfig.DEFAULT);
         defaultValues.put(SingleMergeConfig.class, SingleMergeConfig.DEFAULT);
 
+        defaultValues.put(MaybeConcatConfig.class, MaybeConcatConfig.DEFAULT);
+        defaultValues.put(MaybeConcatEagerConfig.class, MaybeConcatEagerConfig.DEFAULT);
+        defaultValues.put(MaybeMergeConfig.class, MaybeMergeConfig.DEFAULT);
+
         @SuppressWarnings("rawtypes")
         class MixedConverters implements FlowableConverter, ObservableConverter, SingleConverter,
         MaybeConverter, CompletableConverter, ParallelFlowableConverter {
