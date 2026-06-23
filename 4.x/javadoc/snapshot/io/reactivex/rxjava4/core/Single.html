@@ -75,25 +75,19 @@ initTheme();
 <li><a href="#concat(java.lang.Iterable)" tabindex="0">concat(Iterable)</a></li>
 <li><a href="#concat(io.reactivex.rxjava4.core.ObservableSource)" tabindex="0">concat(ObservableSource)</a></li>
 <li><a href="#concat(java.util.concurrent.Flow.Publisher)" tabindex="0">concat(Flow.Publisher)</a></li>
-<li><a href="#concat(java.util.concurrent.Flow.Publisher,int)" tabindex="0">concat(Flow.Publisher, int)</a></li>
+<li><a href="#concat(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.SingleConcatConfig)" tabindex="0">concat(Flow.Publisher, SingleConcatConfig)</a></li>
 <li><a href="#concat(io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource)" tabindex="0">concat(SingleSource, SingleSource)</a></li>
 <li><a href="#concat(io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource)" tabindex="0">concat(SingleSource, SingleSource, SingleSource)</a></li>
 <li><a href="#concat(io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource)" tabindex="0">concat(SingleSource, SingleSource, SingleSource, SingleSource)</a></li>
 <li><a href="#concatArray(io.reactivex.rxjava4.core.SingleSource...)" tabindex="0">concatArray(SingleSource...)</a></li>
-<li><a href="#concatArrayDelayError(io.reactivex.rxjava4.core.SingleSource...)" tabindex="0">concatArrayDelayError(SingleSource...)</a></li>
+<li><a href="#concatArray(io.reactivex.rxjava4.core.config.SingleConcatConfig,io.reactivex.rxjava4.core.SingleSource...)" tabindex="0">concatArray(SingleConcatConfig, SingleSource...)</a></li>
 <li><a href="#concatArrayEager(io.reactivex.rxjava4.core.SingleSource...)" tabindex="0">concatArrayEager(SingleSource...)</a></li>
-<li><a href="#concatArrayEagerDelayError(io.reactivex.rxjava4.core.SingleSource...)" tabindex="0">concatArrayEagerDelayError(SingleSource...)</a></li>
-<li><a href="#concatDelayError(java.lang.Iterable)" tabindex="0">concatDelayError(Iterable)</a></li>
-<li><a href="#concatDelayError(java.util.concurrent.Flow.Publisher)" tabindex="0">concatDelayError(Flow.Publisher)</a></li>
-<li><a href="#concatDelayError(java.util.concurrent.Flow.Publisher,int)" tabindex="0">concatDelayError(Flow.Publisher, int)</a></li>
+<li><a href="#concatArrayEager(io.reactivex.rxjava4.core.config.SingleConcatEagerConfig,io.reactivex.rxjava4.core.SingleSource...)" tabindex="0">concatArrayEager(SingleConcatEagerConfig, SingleSource...)</a></li>
+<li><a href="#concat(java.lang.Iterable,io.reactivex.rxjava4.core.config.SingleConcatConfig)" tabindex="0">concat(Iterable, SingleConcatConfig)</a></li>
 <li><a href="#concatEager(java.lang.Iterable)" tabindex="0">concatEager(Iterable)</a></li>
-<li><a href="#concatEager(java.lang.Iterable,int)" tabindex="0">concatEager(Iterable, int)</a></li>
+<li><a href="#concatEager(java.lang.Iterable,io.reactivex.rxjava4.core.config.SingleConcatEagerConfig)" tabindex="0">concatEager(Iterable, SingleConcatEagerConfig)</a></li>
 <li><a href="#concatEager(java.util.concurrent.Flow.Publisher)" tabindex="0">concatEager(Flow.Publisher)</a></li>
-<li><a href="#concatEager(java.util.concurrent.Flow.Publisher,int)" tabindex="0">concatEager(Flow.Publisher, int)</a></li>
-<li><a href="#concatEagerDelayError(java.lang.Iterable)" tabindex="0">concatEagerDelayError(Iterable)</a></li>
-<li><a href="#concatEagerDelayError(java.lang.Iterable,int)" tabindex="0">concatEagerDelayError(Iterable, int)</a></li>
-<li><a href="#concatEagerDelayError(java.util.concurrent.Flow.Publisher)" tabindex="0">concatEagerDelayError(Flow.Publisher)</a></li>
-<li><a href="#concatEagerDelayError(java.util.concurrent.Flow.Publisher,int)" tabindex="0">concatEagerDelayError(Flow.Publisher, int)</a></li>
+<li><a href="#concatEager(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.SingleConcatEagerConfig)" tabindex="0">concatEager(Flow.Publisher, SingleConcatEagerConfig)</a></li>
 <li><a href="#create(io.reactivex.rxjava4.core.SingleOnSubscribe)" tabindex="0">create(SingleOnSubscribe)</a></li>
 <li><a href="#defer(io.reactivex.rxjava4.functions.Supplier)" tabindex="0">defer(Supplier)</a></li>
 <li><a href="#error(io.reactivex.rxjava4.functions.Supplier)" tabindex="0">error(Supplier)</a></li>
@@ -488,61 +482,49 @@ an <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core
 an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concat(java.util.concurrent.Flow.Publisher)" class="member-name-link">concat</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided by
-a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concat(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concat</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;prefetch)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided by
-a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence and prefetched by the specified amount.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArray(io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArray</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;...&nbsp;sources)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided in
-an array.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArrayDelayError(io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArrayDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;...&nbsp;sources)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided in
-an array.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArrayEager(io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArrayEager</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;...&nbsp;sources)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenates a sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> eagerly into a single stream of values.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArrayEagerDelayError(io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArrayEagerDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;...&nbsp;sources)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenates a sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> eagerly into a single stream of values.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatDelayError(java.lang.Iterable)" class="member-name-link">concatDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concat(java.lang.Iterable,io.reactivex.rxjava4.core.config.SingleConcatConfig)" class="member-name-link">concat</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each <code>SingleSource</code>,
 one after the other, one at a time and delays any errors till the all inner <code>SingleSource</code>s terminate
 as a <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">concatDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concat(java.util.concurrent.Flow.Publisher)" class="member-name-link">concat</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each inner <code>SingleSource</code>,
-one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code> terminate
-as a <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.</div>
+<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided by
+a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatDelayError(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concatDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;prefetch)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concat(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.SingleConcatConfig)" class="member-name-link">concat</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each inner <code>SingleSource</code>,
-one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code> terminate
-as a <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.</div>
+<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided by
+a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence and prefetched by the specified amount.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArray(io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArray</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;...&nbsp;sources)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided in
+an array.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArray(io.reactivex.rxjava4.core.config.SingleConcatConfig,io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArray</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a>&nbsp;config,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;...&nbsp;sources)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided in
+an array.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArrayEager(io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArrayEager</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;...&nbsp;sources)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Concatenates a sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> eagerly into a single stream of values.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatArrayEager(io.reactivex.rxjava4.core.config.SingleConcatEagerConfig,io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArrayEager</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a>&nbsp;config,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;...&nbsp;sources)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Concatenates a sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> eagerly into a single stream of values.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatEager(java.lang.Iterable)" class="member-name-link">concatEager</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources)</code></div>
@@ -550,8 +532,8 @@ as a <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Fl
 <div class="block">Concatenates an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatEager(java.lang.Iterable,int)" class="member-name-link">concatEager</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatEager(java.lang.Iterable,io.reactivex.rxjava4.core.config.SingleConcatEagerConfig)" class="member-name-link">concatEager</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Concatenates an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values and
 runs a limited number of the inner sources at once.</div>
@@ -562,38 +544,11 @@ runs a limited number of the inner sources at once.</div>
 <div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatEager(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concatEager</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatEager(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.SingleConcatEagerConfig)" class="member-name-link">concatEager</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values and
 runs a limited number of those inner <code>SingleSource</code>s at once.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatEagerDelayError(java.lang.Iterable)" class="member-name-link">concatEagerDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenates an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-delaying errors until all the inner sources terminate.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatEagerDelayError(java.lang.Iterable,int)" class="member-name-link">concatEagerDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenates an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-delaying errors until all the inner sources terminate.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatEagerDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">concatEagerDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-delaying errors until all the inner and the outer sequence terminate.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#concatEagerDelayError(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concatEagerDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-running at most the specified number of those inner <code>SingleSource</code>s at once and
-delaying errors until all the inner and the outer sequence terminate.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Single.html" title="class in io.reactivex.rxjava4.core">Single</a><wbr>&lt;R&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#concatMap(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMap</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Single">T</a>, ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper)</code></div>
@@ -1799,7 +1754,7 @@ a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/uti
 </section>
 </li>
 <li>
-<section class="detail" id="concat(java.util.concurrent.Flow.Publisher,int)">
+<section class="detail" id="concat(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.SingleConcatConfig)">
 <h3>concat</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
@@ -1808,7 +1763,8 @@ a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/uti
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 </span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concat</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;prefetch)</span></div>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a>&nbsp;config)</span></div>
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided by
 a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence and prefetched by the specified amount.
 <p>
@@ -1822,17 +1778,16 @@ a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/uti
 </dl></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="concat(java.util.concurrent.Flow.Publisher,int)-type-param-T"><code>T</code> - the value type</span></dd>
+<dd><span id="concat(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.SingleConcatConfig)-type-param-T"><code>T</code> - the value type</span></dd>
 <dt>Parameters:</dt>
 <dd><code>sources</code> - the <code>Publisher</code> of <code>SingleSource</code> instances</dd>
-<dd><code>prefetch</code> - the number of <code>SingleSource</code>s to prefetch from the <code>Publisher</code></dd>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Flowable</code> instance</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
 <dt>Since:</dt>
-<dd>2.0</dd>
+<dd>4.0.0</dd>
 </dl>
 </div>
 </section>
@@ -2006,15 +1961,17 @@ an array.
 </section>
 </li>
 <li>
-<section class="detail" id="concatArrayDelayError(io.reactivex.rxjava4.core.SingleSource...)">
-<h3>concatArrayDelayError</h3>
+<section class="detail" id="concatArray(io.reactivex.rxjava4.core.config.SingleConcatConfig,io.reactivex.rxjava4.core.SingleSource...)">
+<h3>concatArray</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 <a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/SafeVarargs.html" title="annotation interface in java.lang" class="external-link">@SafeVarargs</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatArrayDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatArray</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a>&nbsp;config,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;...&nbsp;sources)</span></div>
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided in
 an array.
@@ -2028,13 +1985,14 @@ an array.
 </dl></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="concatArrayDelayError(io.reactivex.rxjava4.core.SingleSource...)-type-param-T"><code>T</code> - the value type</span></dd>
+<dd><span id="concatArray(io.reactivex.rxjava4.core.config.SingleConcatConfig,io.reactivex.rxjava4.core.SingleSource...)-type-param-T"><code>T</code> - the value type</span></dd>
 <dt>Parameters:</dt>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dd><code>sources</code> - the array of <code>SingleSource</code> instances</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Flowable</code> instance</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
 <dt>Since:</dt>
 <dd>3.0.0</dd>
 </dl>
@@ -2079,15 +2037,17 @@ in order, each one after the previous one succeeds.
 </section>
 </li>
 <li>
-<section class="detail" id="concatArrayEagerDelayError(io.reactivex.rxjava4.core.SingleSource...)">
-<h3>concatArrayEagerDelayError</h3>
+<section class="detail" id="concatArrayEager(io.reactivex.rxjava4.core.config.SingleConcatEagerConfig,io.reactivex.rxjava4.core.SingleSource...)">
+<h3>concatArrayEager</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
 <a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/SafeVarargs.html" title="annotation interface in java.lang" class="external-link">@SafeVarargs</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatArrayEagerDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatArrayEager</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a>&nbsp;config,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;...&nbsp;sources)</span></div>
 <div class="block">Concatenates a sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> eagerly into a single stream of values.
 <p>
@@ -2104,13 +2064,14 @@ in order, each one after the previous one succeeds.
 </dl></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="concatArrayEagerDelayError(io.reactivex.rxjava4.core.SingleSource...)-type-param-T"><code>T</code> - the value type</span></dd>
+<dd><span id="concatArrayEager(io.reactivex.rxjava4.core.config.SingleConcatEagerConfig,io.reactivex.rxjava4.core.SingleSource...)-type-param-T"><code>T</code> - the value type</span></dd>
 <dt>Parameters:</dt>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dd><code>sources</code> - a sequence of <code>SingleSource</code>s that need to be eagerly concatenated</dd>
 <dt>Returns:</dt>
 <dd>the new <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> instance with the specified concatenation behavior</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
 <dt>Since:</dt>
 <dd>3.0.0</dd>
 </dl>
@@ -2118,15 +2079,17 @@ in order, each one after the previous one succeeds.
 </section>
 </li>
 <li>
-<section class="detail" id="concatDelayError(java.lang.Iterable)">
-<h3>concatDelayError</h3>
+<section class="detail" id="concat(java.lang.Iterable,io.reactivex.rxjava4.core.config.SingleConcatConfig)">
+<h3>concat</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
 <a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources)</span></div>
+</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concat</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a>&nbsp;config)</span></div>
 <div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each <code>SingleSource</code>,
 one after the other, one at a time and delays any errors till the all inner <code>SingleSource</code>s terminate
 as a <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.
@@ -2140,91 +2103,14 @@ as a <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Fl
 </dl></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="concatDelayError(java.lang.Iterable)-type-param-T"><code>T</code> - the common element base type</span></dd>
+<dd><span id="concat(java.lang.Iterable,io.reactivex.rxjava4.core.config.SingleConcatConfig)-type-param-T"><code>T</code> - the common element base type</span></dd>
 <dt>Parameters:</dt>
 <dd><code>sources</code> - the <code>Iterable</code> sequence of <code>SingleSource</code>s</dd>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Flowable</code> with the concatenating behavior</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dt>Since:</dt>
-<dd>3.0.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="concatDelayError(java.util.concurrent.Flow.Publisher)">
-<h3>concatDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
-<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources)</span></div>
-<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each inner <code>SingleSource</code>,
-one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code> terminate
-as a <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.
-<p>
-<img width="640" height="345" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatDelayError.p.png" alt="">
-<dl>
- <dt><b>Backpressure:</b></dt>
- <dd><code>concatDelayError</code> fully supports backpressure.</dd>
- <dt><b>Scheduler:</b></dt>
- <dd><code>concatDelayError</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Type Parameters:</dt>
-<dd><span id="concatDelayError(java.util.concurrent.Flow.Publisher)-type-param-T"><code>T</code> - the common element base type</span></dd>
-<dt>Parameters:</dt>
-<dd><code>sources</code> - the <code>Publisher</code> sequence of <code>SingleSource</code>s</dd>
-<dt>Returns:</dt>
-<dd>the new <code>Flowable</code> with the concatenating behavior</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dt>Since:</dt>
-<dd>3.0.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="concatDelayError(java.util.concurrent.Flow.Publisher,int)">
-<h3>concatDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
-<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;prefetch)</span></div>
-<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each inner <code>SingleSource</code>,
-one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code> terminate
-as a <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.
-<p>
-<img width="640" height="299" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatDelayError.pn.png" alt="">
-<dl>
- <dt><b>Backpressure:</b></dt>
- <dd><code>concatDelayError</code> fully supports backpressure.</dd>
- <dt><b>Scheduler:</b></dt>
- <dd><code>concatDelayError</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Type Parameters:</dt>
-<dd><span id="concatDelayError(java.util.concurrent.Flow.Publisher,int)-type-param-T"><code>T</code> - the common element base type</span></dd>
-<dt>Parameters:</dt>
-<dd><code>sources</code> - the <code>Publisher</code> sequence of <code>SingleSource</code>s</dd>
-<dd><code>prefetch</code> - The number of upstream items to prefetch so that fresh items are
-                ready to be mapped when a previous <code>SingleSource</code> terminates.
-                The operator replenishes after half of the prefetch amount has been consumed
-                and turned into <code>SingleSource</code>s.</dd>
-<dt>Returns:</dt>
-<dd>the new <code>Flowable</code> with the concatenating behavior</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
 <dt>Since:</dt>
 <dd>3.0.0</dd>
 </dl>
@@ -2268,7 +2154,7 @@ in order, each one after the previous one succeeds.
 </section>
 </li>
 <li>
-<section class="detail" id="concatEager(java.lang.Iterable,int)">
+<section class="detail" id="concatEager(java.lang.Iterable,io.reactivex.rxjava4.core.config.SingleConcatEagerConfig)">
 <h3>concatEager</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
@@ -2277,7 +2163,8 @@ in order, each one after the previous one succeeds.
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 </span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatEager</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</span></div>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a>&nbsp;config)</span></div>
 <div class="block">Concatenates an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values and
 runs a limited number of the inner sources at once.
 <p>
@@ -2294,15 +2181,14 @@ in order, each one after the previous one succeeds.
 </dl></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="concatEager(java.lang.Iterable,int)-type-param-T"><code>T</code> - the value type</span></dd>
+<dd><span id="concatEager(java.lang.Iterable,io.reactivex.rxjava4.core.config.SingleConcatEagerConfig)-type-param-T"><code>T</code> - the value type</span></dd>
 <dt>Parameters:</dt>
 <dd><code>sources</code> - an <code>Iterable</code> sequence of <code>SingleSource</code> that need to be eagerly concatenated</dd>
-<dd><code>maxConcurrency</code> - the maximum number of concurrently running inner <code>SingleSource</code>s; <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Integer.html#MAX_VALUE" class="external-link"><code>Integer.MAX_VALUE</code></a>
-                      is interpreted as all inner <code>SingleSource</code>s can be active at the same time</dd>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dt>Returns:</dt>
 <dd>the new <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> instance with the specified concatenation behavior</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>maxConcurrency</code> is non-positive</dd>
 <dt>Since:</dt>
 <dd>3.0.0</dd>
@@ -2349,7 +2235,7 @@ emitted source <code>SingleSource</code>s as they are observed. The operator buf
 </section>
 </li>
 <li>
-<section class="detail" id="concatEager(java.util.concurrent.Flow.Publisher,int)">
+<section class="detail" id="concatEager(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.SingleConcatEagerConfig)">
 <h3>concatEager</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
@@ -2358,7 +2244,8 @@ emitted source <code>SingleSource</code>s as they are observed. The operator buf
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 </span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatEager</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</span></div>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a>&nbsp;config)</span></div>
 <div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values and
 runs a limited number of those inner <code>SingleSource</code>s at once.
 <p>
@@ -2377,183 +2264,14 @@ emitted source <code>SingleSource</code>s as they are observed. The operator buf
 </dl></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="concatEager(java.util.concurrent.Flow.Publisher,int)-type-param-T"><code>T</code> - the value type</span></dd>
+<dd><span id="concatEager(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.SingleConcatEagerConfig)-type-param-T"><code>T</code> - the value type</span></dd>
 <dt>Parameters:</dt>
 <dd><code>sources</code> - a sequence of <code>SingleSource</code>s that need to be eagerly concatenated</dd>
-<dd><code>maxConcurrency</code> - the maximum number of concurrently running inner <code>SingleSource</code>s; <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Integer.html#MAX_VALUE" class="external-link"><code>Integer.MAX_VALUE</code></a>
-                      is interpreted as all inner <code>SingleSource</code>s can be active at the same time</dd>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dt>Returns:</dt>
 <dd>the new <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> instance with the specified concatenation behavior</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>maxConcurrency</code> is non-positive</dd>
-<dt>Since:</dt>
-<dd>3.0.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="concatEagerDelayError(java.lang.Iterable)">
-<h3>concatEagerDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
-<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatEagerDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources)</span></div>
-<div class="block">Concatenates an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-delaying errors until all the inner sources terminate.
-<p>
-<img width="640" height="431" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.i.png" alt="">
-<p>
-Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-source <code>SingleSource</code>s. The operator buffers the values emitted by these <code>SingleSource</code>s and then drains them
-in order, each one after the previous one succeeds.
-<dl>
- <dt><b>Backpressure:</b></dt>
- <dd>Backpressure is honored towards the downstream.</dd>
- <dt><b>Scheduler:</b></dt>
- <dd>This method does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Type Parameters:</dt>
-<dd><span id="concatEagerDelayError(java.lang.Iterable)-type-param-T"><code>T</code> - the value type</span></dd>
-<dt>Parameters:</dt>
-<dd><code>sources</code> - an <code>Iterable</code> sequence of <code>SingleSource</code> that need to be eagerly concatenated</dd>
-<dt>Returns:</dt>
-<dd>the new <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> instance with the specified concatenation behavior</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dt>Since:</dt>
-<dd>3.0.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="concatEagerDelayError(java.lang.Iterable,int)">
-<h3>concatEagerDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
-<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatEagerDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</span></div>
-<div class="block">Concatenates an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-delaying errors until all the inner sources terminate.
-<p>
-<img width="640" height="378" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.in.png" alt="">
-<p>
-Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-source <code>SingleSource</code>s. The operator buffers the values emitted by these <code>SingleSource</code>s and then drains them
-in order, each one after the previous one succeeds.
-<dl>
- <dt><b>Backpressure:</b></dt>
- <dd>Backpressure is honored towards the downstream.</dd>
- <dt><b>Scheduler:</b></dt>
- <dd>This method does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Type Parameters:</dt>
-<dd><span id="concatEagerDelayError(java.lang.Iterable,int)-type-param-T"><code>T</code> - the value type</span></dd>
-<dt>Parameters:</dt>
-<dd><code>sources</code> - an <code>Iterable</code> sequence of <code>SingleSource</code> that need to be eagerly concatenated</dd>
-<dd><code>maxConcurrency</code> - the maximum number of concurrently running inner <code>SingleSource</code>s; <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Integer.html#MAX_VALUE" class="external-link"><code>Integer.MAX_VALUE</code></a>
-                      is interpreted as all inner <code>SingleSource</code>s can be active at the same time</dd>
-<dt>Returns:</dt>
-<dd>the new <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> instance with the specified concatenation behavior</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>maxConcurrency</code> is non-positive</dd>
-<dt>Since:</dt>
-<dd>3.0.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="concatEagerDelayError(java.util.concurrent.Flow.Publisher)">
-<h3>concatEagerDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
-<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatEagerDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources)</span></div>
-<div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-delaying errors until all the inner and the outer sequence terminate.
-<p>
-<img width="640" height="444" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.p.png" alt="">
-<p>
-Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-emitted source <code>SingleSource</code>s as they are observed. The operator buffers the values emitted by these
-<code>SingleSource</code>s and then drains them in order, each one after the previous one succeeds.
-<dl>
- <dt><b>Backpressure:</b></dt>
- <dd>Backpressure is honored towards the downstream and the outer <code>Publisher</code> is
- expected to support backpressure. Violating this assumption, the operator will
- signal <a href="../exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava4.exceptions"><code>MissingBackpressureException</code></a>.</dd>
- <dt><b>Scheduler:</b></dt>
- <dd>This method does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Type Parameters:</dt>
-<dd><span id="concatEagerDelayError(java.util.concurrent.Flow.Publisher)-type-param-T"><code>T</code> - the value type</span></dd>
-<dt>Parameters:</dt>
-<dd><code>sources</code> - a sequence of <code>SingleSource</code>s that need to be eagerly concatenated</dd>
-<dt>Returns:</dt>
-<dd>the new <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> instance with the specified concatenation behavior</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
-<dt>Since:</dt>
-<dd>3.0.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="concatEagerDelayError(java.util.concurrent.Flow.Publisher,int)">
-<h3>concatEagerDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
-<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">concatEagerDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&gt;&nbsp;sources,
- int&nbsp;maxConcurrency)</span></div>
-<div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-running at most the specified number of those inner <code>SingleSource</code>s at once and
-delaying errors until all the inner and the outer sequence terminate.
-<p>
-<img width="640" height="421" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.pn.png" alt="">
-<p>
-Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-emitted source <code>SingleSource</code>s as they are observed. The operator buffers the values emitted by these
-<code>SingleSource</code>s and then drains them in order, each one after the previous one succeeds.
-<dl>
- <dt><b>Backpressure:</b></dt>
- <dd>Backpressure is honored towards the downstream and the outer <code>Publisher</code> is
- expected to support backpressure. Violating this assumption, the operator will
- signal <a href="../exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava4.exceptions"><code>MissingBackpressureException</code></a>.</dd>
- <dt><b>Scheduler:</b></dt>
- <dd>This method does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Type Parameters:</dt>
-<dd><span id="concatEagerDelayError(java.util.concurrent.Flow.Publisher,int)-type-param-T"><code>T</code> - the value type</span></dd>
-<dt>Parameters:</dt>
-<dd><code>sources</code> - a sequence of <code>SingleSource</code>s that need to be eagerly concatenated</dd>
-<dd><code>maxConcurrency</code> - the number of inner <code>SingleSource</code>s to run at once</dd>
-<dt>Returns:</dt>
-<dd>the new <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> instance with the specified concatenation behavior</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>maxConcurrency</code> is non-positive</dd>
 <dt>Since:</dt>
 <dd>3.0.0</dd>

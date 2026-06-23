@@ -1723,6 +1723,12 @@ of elements without interleaving them.</div>
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided by
 an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Single.html#concat(java.lang.Iterable,io.reactivex.rxjava4.core.config.SingleConcatConfig)" class="member-name-link">concat(Iterable, SingleConcatConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
+<dd>
+<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each <code>SingleSource</code>,
+one after the other, one at a time and delays any errors till the all inner <code>SingleSource</code>s terminate
+as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concat(java.lang.Iterable)" class="member-name-link">concat(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Concatenates elements of each <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> provided via an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence into a single sequence
@@ -1766,7 +1772,7 @@ a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/uti
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided by
 a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concat(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concat(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Single.html#concat(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.SingleConcatConfig)" class="member-name-link">concat(Flow.Publisher, SingleConcatConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
 <dd>
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided by
 a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence and prefetched by the specified amount.</div>
@@ -1803,6 +1809,11 @@ an array.</div>
 <dd>
 <div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Single.html#concatArray(io.reactivex.rxjava4.core.config.SingleConcatConfig,io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArray(SingleConcatConfig, SingleSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
+<dd>
+<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided in
+an array.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArray(java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArray(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Concatenates a variable number of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sources.</div>
@@ -1816,11 +1827,6 @@ till all terminate as a <a href="io/reactivex/rxjava4/core/Flowable.html" title=
 <dd>
 <div class="block">Concatenates a variable number of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a> sources and delays errors from any of them
 till all terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concatArrayDelayError(io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArrayDelayError(SingleSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided in
-an array.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArrayDelayError(java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArrayDelayError(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -1847,6 +1853,10 @@ till all terminate.</div>
 <dd>
 <div class="block">Concatenates a sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> eagerly into a single stream of values.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Single.html#concatArrayEager(io.reactivex.rxjava4.core.config.SingleConcatEagerConfig,io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArrayEager(SingleConcatEagerConfig, SingleSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
+<dd>
+<div class="block">Concatenates a sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> eagerly into a single stream of values.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArrayEager(java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArrayEager(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Concatenates an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s eagerly into a single stream of values.</div>
@@ -1869,10 +1879,6 @@ and delaying any errors until all sources terminate.</div>
 <dd>
 <div class="block">Concatenates an array of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s eagerly into a single stream of values
 and delaying any errors until all sources terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concatArrayEagerDelayError(io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">concatArrayEagerDelayError(SingleSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Concatenates a sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> eagerly into a single stream of values.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArrayEagerDelayError(java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArrayEagerDelayError(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -1902,12 +1908,6 @@ as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reacti
  by subscribing to each <code>ObservableSource</code>, one after the other, one at a time and delays any errors till
  the all inner <code>ObservableSource</code>s terminate.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concatDelayError(java.lang.Iterable)" class="member-name-link">concatDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each <code>SingleSource</code>,
-one after the other, one at a time and delays any errors till the all inner <code>SingleSource</code>s terminate
-as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatDelayError(java.lang.Iterable)" class="member-name-link">concatDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into a single sequence by subscribing to each <code>Publisher</code>,
@@ -1922,18 +1922,6 @@ as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reacti
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#concatDelayError(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concatDelayError(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
 <div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s into a single sequence by subscribing to each inner <code>MaybeSource</code>,
-one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code> terminate
-as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concatDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">concatDelayError(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each inner <code>SingleSource</code>,
-one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code> terminate
-as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concatDelayError(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concatDelayError(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each inner <code>SingleSource</code>,
 one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code> terminate
 as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.</div>
 </dd>
@@ -1978,7 +1966,7 @@ runs a limited number of inner sequences at once.</div>
 <dd>
 <div class="block">Concatenates an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concatEager(java.lang.Iterable,int)" class="member-name-link">concatEager(Iterable, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Single.html#concatEager(java.lang.Iterable,io.reactivex.rxjava4.core.config.SingleConcatEagerConfig)" class="member-name-link">concatEager(Iterable, SingleConcatEagerConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
 <dd>
 <div class="block">Concatenates an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values and
 runs a limited number of the inner sources at once.</div>
@@ -2005,7 +1993,7 @@ running at most the given number of inner <code>MaybeSource</code>s at once.</di
 <dd>
 <div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concatEager(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concatEager(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Single.html#concatEager(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.SingleConcatEagerConfig)" class="member-name-link">concatEager(Flow.Publisher, SingleConcatEagerConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
 <dd>
 <div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values and
 runs a limited number of those inner <code>SingleSource</code>s at once.</div>
@@ -2051,16 +2039,6 @@ delaying errors until all the inner sequences terminate.</div>
 delaying errors until all the inner sequences terminate and runs a limited number of inner
 sequences at once.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concatEagerDelayError(java.lang.Iterable)" class="member-name-link">concatEagerDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Concatenates an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-delaying errors until all the inner sources terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concatEagerDelayError(java.lang.Iterable,int)" class="member-name-link">concatEagerDelayError(Iterable, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Concatenates an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-delaying errors until all the inner sources terminate.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatEagerDelayError(java.lang.Iterable)" class="member-name-link">concatEagerDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Concatenates a sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s eagerly into a single stream of values,
@@ -2082,17 +2060,6 @@ delaying errors until all the inner and the outer sequence terminate.</div>
 <div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s eagerly into a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence,
 delaying errors until all the inner and the outer sequence terminate and
 runs a limited number of the inner <code>MaybeSource</code>s at once.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concatEagerDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">concatEagerDelayError(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-delaying errors until all the inner and the outer sequence terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concatEagerDelayError(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concatEagerDelayError(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s eagerly into a single stream of values,
-running at most the specified number of those inner <code>SingleSource</code>s at once and
-delaying errors until all the inner and the outer sequence terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatEagerDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">concatEagerDelayError(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -2962,6 +2929,14 @@ current <code>Flowable</code> that are followed by another item within a compute
 <dd>
 <div class="block">The default config with no error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
+<dd>
+<div class="block">The default configuration with no error delays and prefetch of 2.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
+<dd>
+<div class="block">The default configuration with no error delays, maxConcurrency and prefetch of Flowable#bufferSize().</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/exceptions/MissingBackpressureException.html#DEFAULT_MESSAGE" class="member-name-link">DEFAULT_MESSAGE</a> - Static variable in exception class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava4.exceptions">MissingBackpressureException</a></dt>
 <dd>
 <div class="block">The default error message.</div>
@@ -3140,6 +3115,14 @@ per-item basis.</div>
 <dd>
 <div class="block">The default configuration with error delays and prefetch of 2.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
+<dd>
+<div class="block">The default configuration with error delays and prefetch of 2.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
+<dd>
+<div class="block">The default configuration with error delays, maxConcurrency and prefetch of Flowable#bufferSize().</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#DELAY_ERRORS" class="member-name-link">DELAY_ERRORS</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
 <dd>
 <div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
@@ -3147,6 +3130,14 @@ per-item basis.</div>
 <dt><a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableConcatConfig</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/CompletableConcatConfig.html#param-delayError"><code>delayError</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/SingleConcatConfig.html#param-delayError"><code>delayError</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#param-delayError"><code>delayError</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#delayErrors()" class="member-name-link">delayErrors()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
 <dd>
@@ -3861,6 +3852,14 @@ immediately.</div>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
@@ -5477,6 +5476,14 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Notification.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core">Notification</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.HiddenStreamer.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.HiddenStreamer.html" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer</a></dt>
@@ -6331,6 +6338,10 @@ and emits it as a single success value to downstream.</div>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#maxConcurrency()" class="member-name-link">maxConcurrency()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/FlatMapConfig.html#param-maxConcurrency"><code>maxConcurrency</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#maxConcurrency()" class="member-name-link">maxConcurrency()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#param-maxConcurrency"><code>maxConcurrency</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Maybe&lt;T&gt;</a> - Class in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -7900,6 +7911,14 @@ the queue is empty.</div>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/GenericConfig.html#param-prefetch"><code>prefetch</code></a> record component.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#prefetch()" class="member-name-link">prefetch()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/SingleConcatConfig.html#param-prefetch"><code>prefetch</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#prefetch()" class="member-name-link">prefetch()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#param-prefetch"><code>prefetch</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/exceptions/CompositeException.html#printStackTrace()" class="member-name-link">printStackTrace()</a> - Method in exception class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/CompositeException.html" title="class in io.reactivex.rxjava4.exceptions">CompositeException</a></dt>
 <dd>
 <div class="block">All of the following <code>printStackTrace</code> functionality is derived from JDK <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a>
@@ -9361,6 +9380,42 @@ emits only a single item, or a default item if the current <code>Observable</cod
 <dd>
 <div class="block">The operator/class runs on RxJava's <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#single()">single scheduler</a>
 or takes timing information from it.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record for Single.concat() operators.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#%3Cinit%3E(boolean)" class="member-name-link">SingleConcatConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#%3Cinit%3E(boolean,int)" class="member-name-link">SingleConcatConfig(boolean, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#%3Cinit%3E(int)" class="member-name-link">SingleConcatConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record for Single.concatEager() operators.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#%3Cinit%3E(boolean)" class="member-name-link">SingleConcatEagerConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#%3Cinit%3E(boolean,int)" class="member-name-link">SingleConcatEagerConfig(boolean, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#%3Cinit%3E(boolean,int,int)" class="member-name-link">SingleConcatEagerConfig(boolean, int, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#%3Cinit%3E(int)" class="member-name-link">SingleConcatEagerConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/SingleConverter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">SingleConverter&lt;T,<wbr>R&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -11611,6 +11666,14 @@ transparently relaying signals between the two async representations of a sequen
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
