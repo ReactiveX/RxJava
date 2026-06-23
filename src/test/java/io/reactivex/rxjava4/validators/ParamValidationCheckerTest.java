@@ -617,6 +617,8 @@ public class ParamValidationCheckerTest {
 
         defaultValues.put(FlatMapConfig.class, new FlatMapConfig());
         defaultValues.put(GenericConfig.class, new GenericConfig());
+        defaultValues.put(CompletableConcatConfig.class, CompletableConcatConfig.DEFAULT);
+        defaultValues.put(CompletableMergeConfig.class, CompletableMergeConfig.DEFAULT);
 
         @SuppressWarnings("rawtypes")
         class MixedConverters implements FlowableConverter, ObservableConverter, SingleConverter,
@@ -686,7 +688,7 @@ public class ParamValidationCheckerTest {
         addDefaultInstance(Maybe.class, Maybe.just(1).hide(), "Just(1).Hide()");
 
         addDefaultInstance(ParallelFlowable.class, Flowable.just(1).parallel(), "Just(1)");
-}
+    }
 
     static void addIgnore(ParamIgnore ignore) {
         String key = ignore.toString();

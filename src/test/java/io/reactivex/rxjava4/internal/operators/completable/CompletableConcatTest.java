@@ -18,10 +18,11 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
-import io.reactivex.rxjava4.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.CompletableConcatConfig;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.observers.TestObserver;
@@ -44,7 +45,7 @@ public class CompletableConcatTest extends RxJavaTest {
                     s.onNext(Completable.never());
                     s.onNext(Completable.never());
                     s.onComplete();
-                }), 1
+                }), new CompletableConcatConfig(1)
             )
             .test()
             .assertFailure(QueueOverflowException.class);
@@ -58,7 +59,7 @@ public class CompletableConcatTest extends RxJavaTest {
     @Test
     public void invalidPrefetch() {
         try {
-            Completable.concat(Flowable.just(Completable.complete()), -99);
+            Completable.concat(Flowable.just(Completable.complete()), new CompletableConcatConfig(-99));
             fail("Should have thrown IllegalArgumentExceptio");
         } catch (IllegalArgumentException ex) {
             assertEquals("prefetch > 0 required but it was -99", ex.getMessage());
@@ -112,14 +113,14 @@ public class CompletableConcatTest extends RxJavaTest {
 
     @Test
     public void unboundedIn() {
-        Completable.concat(Flowable.just(Completable.complete()).hide(), Integer.MAX_VALUE)
+        Completable.concat(Flowable.just(Completable.complete()).hide(), new CompletableConcatConfig(Integer.MAX_VALUE))
         .test()
         .assertResult();
     }
 
     @Test
     public void syncFusedUnboundedIn() {
-        Completable.concat(Flowable.just(Completable.complete()), Integer.MAX_VALUE)
+        Completable.concat(Flowable.just(Completable.complete()), new CompletableConcatConfig(Integer.MAX_VALUE))
         .test()
         .assertResult();
     }
@@ -130,7 +131,7 @@ public class CompletableConcatTest extends RxJavaTest {
         up.onNext(Completable.complete());
         up.onComplete();
 
-        Completable.concat(up, Integer.MAX_VALUE)
+        Completable.concat(up, new CompletableConcatConfig(Integer.MAX_VALUE))
         .test()
         .assertResult();
     }

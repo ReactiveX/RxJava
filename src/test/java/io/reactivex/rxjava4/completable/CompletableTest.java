@@ -28,6 +28,7 @@ import org.junit.jupiter.api.parallel.Isolated;
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
@@ -321,7 +322,7 @@ public class CompletableTest extends RxJavaTest {
                 .repeat(10)
                 .doOnRequest(requested::add);
 
-        Completable c = Completable.concat(cs, 5);
+        Completable c = Completable.concat(cs, new CompletableConcatConfig(5));
 
         c.blockingAwait();
 
@@ -683,7 +684,7 @@ public class CompletableTest extends RxJavaTest {
                 .repeat(10)
                 .doOnRequest(requested::add);
 
-        Completable c = Completable.merge(cs, 5);
+        Completable c = Completable.merge(cs, new CompletableMergeConfig(5));
 
         c.blockingAwait();
 
@@ -693,14 +694,14 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void mergeDelayErrorEmpty() {
-        Completable c = Completable.mergeArrayDelayError();
+        Completable c = Completable.mergeArray(CompletableMergeConfig.DELAY_ERRORS);
 
         c.blockingAwait();
     }
 
     @Test
     public void mergeDelayErrorSingleSource() {
-        Completable c = Completable.mergeArrayDelayError(normal.completable);
+        Completable c = Completable.mergeArray(CompletableMergeConfig.DELAY_ERRORS, normal.completable);
 
         c.blockingAwait();
 
@@ -709,14 +710,14 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void mergeDelayErrorSingleSourceThrows() {
-        Completable c = Completable.mergeArrayDelayError(error.completable);
+        Completable c = Completable.mergeArray(CompletableMergeConfig.DELAY_ERRORS, error.completable);
 
         c.blockingAwait();
     }
 
     @Test
     public void mergeDelayErrorMultipleSources() {
-        Completable c = Completable.mergeArrayDelayError(normal.completable, normal.completable, normal.completable);
+        Completable c = Completable.mergeArray(CompletableMergeConfig.DELAY_ERRORS, normal.completable, normal.completable, normal.completable);
 
         c.blockingAwait();
 
@@ -725,7 +726,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void mergeDelayErrorMultipleOneThrows() {
-        Completable c = Completable.mergeArrayDelayError(normal.completable, error.completable, normal.completable);
+        Completable c = Completable.mergeArray(CompletableMergeConfig.DELAY_ERRORS, normal.completable, error.completable, normal.completable);
 
         try {
             c.blockingAwait();
@@ -736,28 +737,28 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorMultipleOneIsNull() {
-        Completable c = Completable.mergeArrayDelayError(normal.completable, null);
+        Completable c = Completable.mergeArray(CompletableMergeConfig.DELAY_ERRORS, normal.completable, null);
 
         c.blockingAwait();
     }
 
     @Test
     public void mergeDelayErrorIterableEmpty() {
-        Completable c = Completable.mergeDelayError(Collections.<Completable>emptyList());
+        Completable c = Completable.merge(Collections.<Completable>emptyList(), CompletableMergeConfig.DELAY_ERRORS);
 
         c.blockingAwait();
     }
 
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableIteratorNull() {
-        Completable c = Completable.mergeDelayError((Iterable<Completable>) () -> null);
+        Completable c = Completable.merge((Iterable<Completable>) () -> null, CompletableMergeConfig.DELAY_ERRORS);
 
         c.blockingAwait();
     }
 
     @Test
     public void mergeDelayErrorIterableSingle() {
-        Completable c = Completable.mergeDelayError(Collections.singleton(normal.completable));
+        Completable c = Completable.merge(Collections.singleton(normal.completable), CompletableMergeConfig.DELAY_ERRORS);
 
         c.blockingAwait();
 
@@ -766,7 +767,8 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void mergeDelayErrorIterableMany() {
-        Completable c = Completable.mergeDelayError(Arrays.asList(normal.completable, normal.completable, normal.completable));
+        Completable c = Completable.merge(
+                Arrays.asList(normal.completable, normal.completable, normal.completable), CompletableMergeConfig.DELAY_ERRORS);
 
         c.blockingAwait();
 
@@ -775,14 +777,15 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void mergeDelayErrorIterableOneThrows() {
-        Completable c = Completable.mergeDelayError(Collections.singleton(error.completable));
+        Completable c = Completable.merge(Collections.singleton(error.completable), CompletableMergeConfig.DELAY_ERRORS);
 
         c.blockingAwait();
     }
 
     @Test
     public void mergeDelayErrorIterableManyOneThrows() {
-        Completable c = Completable.mergeDelayError(Arrays.asList(normal.completable, error.completable, normal.completable));
+        Completable c = Completable.merge(
+                Arrays.asList(normal.completable, error.completable, normal.completable), CompletableMergeConfig.DELAY_ERRORS);
 
         try {
             c.blockingAwait();
@@ -793,44 +796,44 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void mergeDelayErrorIterableIterableThrows() {
-        Completable c = Completable.mergeDelayError((Iterable<Completable>) () -> {
+        Completable c = Completable.merge((Iterable<Completable>) () -> {
             throw new TestException();
-        });
+        }, CompletableMergeConfig.DELAY_ERRORS);
 
         c.blockingAwait();
     }
 
     @Test(expected = TestException.class)
     public void mergeDelayErrorIterableIteratorHasNextThrows() {
-        Completable c = Completable.mergeDelayError(new IterableIteratorHasNextThrows());
+        Completable c = Completable.merge(new IterableIteratorHasNextThrows(), CompletableMergeConfig.DELAY_ERRORS);
 
         c.blockingAwait();
     }
 
     @Test(expected = TestException.class)
     public void mergeDelayErrorIterableIteratorNextThrows() {
-        Completable c = Completable.mergeDelayError(new IterableIteratorNextThrows());
+        Completable c = Completable.merge(new IterableIteratorNextThrows(), CompletableMergeConfig.DELAY_ERRORS);
 
         c.blockingAwait();
     }
 
     @Test
     public void mergeDelayErrorObservableEmpty() {
-        Completable c = Completable.mergeDelayError(Flowable.<Completable>empty());
+        Completable c = Completable.merge(Flowable.<Completable>empty(), new CompletableMergeConfig(true));
 
         c.blockingAwait();
     }
 
     @Test(expected = TestException.class)
     public void mergeDelayErrorObservableError() {
-        Completable c = Completable.mergeDelayError(Flowable.<Completable>error(TestException::new));
+        Completable c = Completable.merge(Flowable.<Completable>error(TestException::new), new CompletableMergeConfig(true));
 
         c.blockingAwait();
     }
 
     @Test
     public void mergeDelayErrorObservableSingle() {
-        Completable c = Completable.mergeDelayError(Flowable.just(normal.completable));
+        Completable c = Completable.merge(Flowable.just(normal.completable), new CompletableMergeConfig(true));
 
         c.blockingAwait();
 
@@ -839,14 +842,14 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void mergeDelayErrorObservableSingleThrows() {
-        Completable c = Completable.mergeDelayError(Flowable.just(error.completable));
+        Completable c = Completable.merge(Flowable.just(error.completable), new CompletableMergeConfig(true));
 
         c.blockingAwait();
     }
 
     @Test
     public void mergeDelayErrorObservableMany() {
-        Completable c = Completable.mergeDelayError(Flowable.just(normal.completable).repeat(3));
+        Completable c = Completable.merge(Flowable.just(normal.completable).repeat(3), new CompletableMergeConfig(true));
 
         c.blockingAwait();
 
@@ -855,7 +858,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void mergeDelayErrorObservableManyOneThrows() {
-        Completable c = Completable.mergeDelayError(Flowable.just(normal.completable, error.completable));
+        Completable c = Completable.merge(Flowable.just(normal.completable, error.completable), new CompletableMergeConfig(true));
 
         c.blockingAwait();
     }
@@ -868,7 +871,7 @@ public class CompletableTest extends RxJavaTest {
                 .repeat(10)
                 .doOnRequest(requested::add);
 
-        Completable c = Completable.mergeDelayError(cs, 5);
+        Completable c = Completable.merge(cs, new CompletableMergeConfig(true, 5));
 
         c.blockingAwait();
 

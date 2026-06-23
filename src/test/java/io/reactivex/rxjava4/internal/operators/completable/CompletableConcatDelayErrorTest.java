@@ -20,6 +20,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.CompletableConcatConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Action;
 
@@ -30,11 +31,11 @@ public class CompletableConcatDelayErrorTest {
         Action action1 = mock(Action.class);
         Action action2 = mock(Action.class);
 
-        Completable.concatDelayError(Arrays.asList(
+        Completable.concat(Arrays.asList(
                 Completable.fromAction(action1),
                 Completable.error(new TestException()),
                 Completable.fromAction(action2)
-        ))
+        ), CompletableConcatConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class);
 
@@ -48,11 +49,11 @@ public class CompletableConcatDelayErrorTest {
         Action action1 = mock(Action.class);
         Action action2 = mock(Action.class);
 
-        Completable.concatDelayError(Flowable.fromArray(
+        Completable.concat(Flowable.fromArray(
                 Completable.fromAction(action1),
                 Completable.error(new TestException()),
                 Completable.fromAction(action2)
-        ))
+        ), new CompletableConcatConfig(true))
         .test()
         .assertFailure(TestException.class);
 
@@ -66,11 +67,11 @@ public class CompletableConcatDelayErrorTest {
         Action action1 = mock(Action.class);
         Action action2 = mock(Action.class);
 
-        Completable.concatDelayError(Flowable.fromArray(
+        Completable.concat(Flowable.fromArray(
                 Completable.fromAction(action1),
                 Completable.error(new TestException()),
                 Completable.fromAction(action2)
-        ), 1)
+        ), new CompletableConcatConfig(true, 1))
         .test()
         .assertFailure(TestException.class);
 
