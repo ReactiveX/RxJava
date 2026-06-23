@@ -45,7 +45,7 @@ public record SingleConcatEagerConfig(boolean delayError, int maxConcurrency, in
 
     /**
      * Constructs a configuration record.
-	 * @param maxConcurrency the maximum number of concurrent sources running
+     * @param maxConcurrency the maximum number of concurrent sources running
      */
     public SingleConcatEagerConfig(int maxConcurrency) {
         this(false, maxConcurrency, maxConcurrency);
@@ -63,8 +63,8 @@ public record SingleConcatEagerConfig(boolean delayError, int maxConcurrency, in
     /**
      * Constructs a configuration record.
      * @param delayError should the error propagation be delayed?
-	 * @param maxConcurrency the maximum number of concurrent sources running
-	 * @param prefetch the number of items to request from each source
+     * @param maxConcurrency the maximum number of concurrent sources running
+     * @param prefetch the number of items to request from each source
      */
     public SingleConcatEagerConfig(boolean delayError, int maxConcurrency, int prefetch) {
         ObjectHelper.verifyPositive(prefetch, "prefetch");

@@ -387,7 +387,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new FlowableConcatMapSinglePublisher<>(
-        		sources, Functions.identity(), config.delayError() ? ErrorMode.END : ErrorMode.IMMEDIATE, config.prefetch()));
+                sources, Functions.identity(), config.delayError() ? ErrorMode.END : ErrorMode.IMMEDIATE, config.prefetch()));
     }
 
     /**
@@ -547,9 +547,9 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
     public static <@NonNull T> Flowable<T> concatArray(@NonNull SingleConcatConfig config, @NonNull SingleSource<? extends T>... sources) {
-    	Objects.requireNonNull(config, "config is null");
+        Objects.requireNonNull(config, "config is null");
         return Flowable.fromArray(sources).concatMapSingleDelayError(
-        		Functions.identity(), config.delayError(), config.prefetch());
+                Functions.identity(), config.delayError(), config.prefetch());
     }
 
     /**
