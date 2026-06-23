@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -67,13 +66,7 @@ public class ObservableHideTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o)
-                    throws Exception {
-                return o.hide();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(Observable::hide);
     }
 
     @Test

@@ -34,20 +34,10 @@ import io.reactivex.rxjava4.testsupport.*;
 public class ObservableJoinTest extends RxJavaTest {
     Observer<Object> observer = TestHelper.mockObserver();
 
-    BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            return t1 + t2;
-        }
-    };
+    BiFunction<Integer, Integer, Integer> add = Integer::sum;
 
     <T> Function<Integer, Observable<T>> just(final Observable<T> observable) {
-        return new Function<Integer, Observable<T>>() {
-            @Override
-            public Observable<T> apply(Integer t1) {
-                return observable;
-            }
-        };
+        return _ -> observable;
     }
 
     @Before
@@ -238,11 +228,8 @@ public class ObservableJoinTest extends RxJavaTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> fail = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                throw new RuntimeException("Forced failure");
-            }
+        Function<Integer, Observable<Integer>> fail = _ -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Observable<Integer> m = source1.join(source2,
@@ -262,11 +249,8 @@ public class ObservableJoinTest extends RxJavaTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> fail = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                throw new RuntimeException("Forced failure");
-            }
+        Function<Integer, Observable<Integer>> fail = _ -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Observable<Integer> m = source1.join(source2,
@@ -286,11 +270,8 @@ public class ObservableJoinTest extends RxJavaTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        BiFunction<Integer, Integer, Integer> fail = new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                throw new RuntimeException("Forced failure");
-            }
+        BiFunction<Integer, Integer, Integer> fail = (_, _) -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Observable<Integer> m = source1.join(source2,
@@ -310,12 +291,7 @@ public class ObservableJoinTest extends RxJavaTest {
     public void dispose() {
         TestHelper.checkDisposed(PublishSubject.<Integer>create().join(Observable.just(1),
                 Functions.justFunction(Observable.never()),
-                Functions.justFunction(Observable.never()), new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        return a + b;
-                    }
-                }));
+                Functions.justFunction(Observable.never()), Integer::sum));
     }
 
     @Test
@@ -324,12 +300,7 @@ public class ObservableJoinTest extends RxJavaTest {
                 Observable.just(2),
                 Functions.justFunction(Observable.never()),
                 Functions.justFunction(Observable.never()),
-                new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        return a + b;
-                    }
-                })
+                        Integer::sum)
         .take(1)
         .test()
         .assertResult(3);
@@ -342,12 +313,7 @@ public class ObservableJoinTest extends RxJavaTest {
         TestObserver<Integer> to = ps.join(Observable.just(2),
                 Functions.justFunction(Observable.never()),
                 Functions.justFunction(Observable.empty()),
-                new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        return a + b;
-                    }
-            })
+                        Integer::sum)
         .test()
         .assertEmpty();
 
@@ -364,12 +330,9 @@ public class ObservableJoinTest extends RxJavaTest {
                 Observable.just(2),
                 Functions.justFunction(Observable.never()),
                 Functions.justFunction(Observable.never()),
-                new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        throw new TestException();
-                    }
-                })
+                        (BiFunction<Integer, Integer, Integer>) (_, _) -> {
+                            throw new TestException();
+                        })
         .test();
 
         ps.onNext(1);
@@ -393,12 +356,7 @@ public class ObservableJoinTest extends RxJavaTest {
             .join(Observable.just(2),
                     Functions.justFunction(Observable.never()),
                     Functions.justFunction(Observable.never()),
-                    new BiFunction<Integer, Integer, Integer>() {
-                        @Override
-                        public Integer apply(Integer a, Integer b) throws Exception {
-                            return a + b;
-                        }
-                })
+                    Integer::sum)
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
@@ -426,12 +384,7 @@ public class ObservableJoinTest extends RxJavaTest {
                             observer.onError(new TestException("First"));
                         }
                     }),
-                    new BiFunction<Integer, Integer, Integer>() {
-                        @Override
-                        public Integer apply(Integer a, Integer b) throws Exception {
-                            return a + b;
-                        }
-                })
+                    Integer::sum)
             .to(TestHelper.<Integer>testConsumer());
 
             o[0].onError(new TestException("Second"));
