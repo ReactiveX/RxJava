@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import io.reactivex.rxjava4.core.*;
@@ -46,12 +45,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> timeoutFunc = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return timeout;
-            }
-        };
+        Function<Integer, Observable<Integer>> timeoutFunc = _ -> timeout;
 
         Observable<Integer> other = Observable.fromIterable(List.of(100));
 
@@ -79,12 +73,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         Observable<Integer> source = Observable.<Integer>never();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> timeoutFunc = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return timeout;
-            }
-        };
+        Function<Integer, Observable<Integer>> timeoutFunc = _ -> timeout;
 
         Observable<Integer> other = Observable.fromIterable(List.of(100));
 
@@ -106,18 +95,10 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         Observable<Integer> source = Observable.<Integer>never();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> timeoutFunc = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return timeout;
-            }
-        };
+        Function<Integer, Observable<Integer>> timeoutFunc = _ -> timeout;
 
-        Supplier<Observable<Integer>> firstTimeoutFunc = new Supplier<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> get() {
-                throw new TestException();
-            }
+        Supplier<Observable<Integer>> firstTimeoutFunc = () -> {
+            throw new TestException();
         };
 
         Observable<Integer> other = Observable.fromIterable(List.of(100));
@@ -137,11 +118,8 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> timeoutFunc = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, Observable<Integer>> timeoutFunc = _ -> {
+            throw new TestException();
         };
 
         Observable<Integer> other = Observable.fromIterable(List.of(100));
@@ -164,12 +142,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> timeoutFunc = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return timeout;
-            }
-        };
+        Function<Integer, Observable<Integer>> timeoutFunc = _ -> timeout;
 
         Observable<Integer> other = Observable.fromIterable(List.of(100));
 
@@ -188,12 +161,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> timeoutFunc = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return Observable.<Integer> error(new TestException());
-            }
-        };
+        Function<Integer, Observable<Integer>> timeoutFunc = _ -> Observable.<Integer> error(new TestException());
 
         Observable<Integer> other = Observable.fromIterable(List.of(100));
 
@@ -215,12 +183,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> timeoutFunc = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return PublishSubject.create();
-            }
-        };
+        Function<Integer, Observable<Integer>> timeoutFunc = _ -> PublishSubject.create();
 
         Observer<Object> o = TestHelper.mockObserver();
         source.timeout(timeout, timeoutFunc).subscribe(o);
@@ -237,12 +200,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> timeoutFunc = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return timeout;
-            }
-        };
+        Function<Integer, Observable<Integer>> timeoutFunc = _ -> timeout;
 
         Observer<Object> o = TestHelper.mockObserver();
         source.timeout(PublishSubject.create(), timeoutFunc).subscribe(o);
@@ -276,87 +234,66 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         final CountDownLatch enteredTimeoutOne = new CountDownLatch(1);
         final AtomicBoolean latchTimeout = new AtomicBoolean(false);
 
-        final Function<Integer, Observable<Integer>> timeoutFunc = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                if (t1 == 1) {
-                    // Force "unsubscribe" run on another thread
-                    return Observable.unsafeCreate(new ObservableSource<Integer>() {
-                        @Override
-                        public void subscribe(Observer<? super Integer> observer) {
-                            observer.onSubscribe(Disposable.empty());
-                            enteredTimeoutOne.countDown();
-                            // force the timeout message be sent after observer.onNext(2)
-                            while (true) {
-                                try {
-                                    if (!observerReceivedTwo.await(30, TimeUnit.SECONDS)) {
-                                        // CountDownLatch timeout
-                                        // There should be something wrong
-                                        latchTimeout.set(true);
-                                    }
-                                    break;
-                                } catch (InterruptedException e) {
-                                    // Since we just want to emulate a busy method,
-                                    // we ignore the interrupt signal from Scheduler.
-                                }
+        final Function<Integer, Observable<Integer>> timeoutFunc = t1 -> {
+            if (t1 == 1) {
+                // Force "unsubscribe" run on another thread
+                return Observable.unsafeCreate((ObservableSource<Integer>) observer -> {
+                    observer.onSubscribe(Disposable.empty());
+                    enteredTimeoutOne.countDown();
+                    // force the timeout message be sent after observer.onNext(2)
+                    while (true) {
+                        try {
+                            if (!observerReceivedTwo.await(30, TimeUnit.SECONDS)) {
+                                // CountDownLatch timeout
+                                // There should be something wrong
+                                latchTimeout.set(true);
                             }
-                            observer.onNext(1);
-                            timeoutEmittedOne.countDown();
+                            break;
+                        } catch (InterruptedException e) {
+                            // Since we just want to emulate a busy method,
+                            // we ignore the interrupt signal from Scheduler.
                         }
-                    }).subscribeOn(Schedulers.newThread());
-                } else {
-                    return PublishSubject.create();
-                }
+                    }
+                    observer.onNext(1);
+                    timeoutEmittedOne.countDown();
+                }).subscribeOn(Schedulers.newThread());
+            } else {
+                return PublishSubject.create();
             }
         };
 
         final Observer<Integer> o = TestHelper.mockObserver();
-        doAnswer(new Answer<Void>() {
-
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                observerReceivedTwo.countDown();
-                return null;
-            }
-
+        doAnswer((Answer<Void>) _ -> {
+            observerReceivedTwo.countDown();
+            return null;
         }).when(o).onNext(2);
-        doAnswer(new Answer<Void>() {
-
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                observerCompleted.countDown();
-                return null;
-            }
-
+        doAnswer((Answer<Void>) _ -> {
+            observerCompleted.countDown();
+            return null;
         }).when(o).onComplete();
 
         final TestObserver<Integer> to = new TestObserver<>(o);
 
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                PublishSubject<Integer> source = PublishSubject.create();
-                source.timeout(timeoutFunc, Observable.just(3)).subscribe(to);
-                source.onNext(1); // start timeout
-                try {
-                    if (!enteredTimeoutOne.await(30, TimeUnit.SECONDS)) {
-                        latchTimeout.set(true);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        new Thread(() -> {
+            PublishSubject<Integer> source = PublishSubject.create();
+            source.timeout(timeoutFunc, Observable.just(3)).subscribe(to);
+            source.onNext(1); // start timeout
+            try {
+                if (!enteredTimeoutOne.await(30, TimeUnit.SECONDS)) {
+                    latchTimeout.set(true);
                 }
-                source.onNext(2); // disable timeout
-                try {
-                    if (!timeoutEmittedOne.await(30, TimeUnit.SECONDS)) {
-                        latchTimeout.set(true);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                source.onComplete();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-
+            source.onNext(2); // disable timeout
+            try {
+                if (!timeoutEmittedOne.await(30, TimeUnit.SECONDS)) {
+                    latchTimeout.set(true);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            source.onComplete();
         }).start();
 
         if (!observerCompleted.await(30, TimeUnit.SECONDS)) {
@@ -383,19 +320,9 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.timeout(Functions.justFunction(Observable.never()));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.timeout(Functions.justFunction(Observable.never())));
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.timeout(Functions.justFunction(Observable.never()), Observable.never());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.timeout(Functions.justFunction(Observable.never()), Observable.never()));
     }
 
     @Test
@@ -575,21 +502,11 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                 ps.onNext(0);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onNext(1);
-                    }
-                };
+                Runnable r1 = () -> ps.onNext(1);
 
                 final Throwable ex = new TestException();
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        sub[0].onError(ex);
-                    }
-                };
+                Runnable r2 = () -> sub[0].onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -630,21 +547,11 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                 ps.onNext(0);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onNext(1);
-                    }
-                };
+                Runnable r1 = () -> ps.onNext(1);
 
                 final Throwable ex = new TestException();
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        sub[0].onError(ex);
-                    }
-                };
+                Runnable r2 = () -> sub[0].onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -687,19 +594,9 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Throwable ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> ps.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        sub[0].onComplete();
-                    }
-                };
+                Runnable r2 = () -> sub[0].onComplete();
 
                 TestHelper.race(r1, r2);
 
@@ -740,19 +637,9 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                 ps.onNext(0);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onComplete();
-                    }
-                };
+                Runnable r1 = ps::onComplete;
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        sub[0].onComplete();
-                    }
-                };
+                Runnable r2 = () -> sub[0].onComplete();
 
                 TestHelper.race(r1, r2);
 
@@ -793,19 +680,9 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                 ps.onNext(0);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onComplete();
-                    }
-                };
+                Runnable r1 = ps::onComplete;
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        sub[0].onComplete();
-                    }
-                };
+                Runnable r2 = () -> sub[0].onComplete();
 
                 TestHelper.race(r1, r2);
 
@@ -825,12 +702,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         final AtomicInteger counter = new AtomicInteger();
 
-        Observable<Object> timeoutAndFallback = Observable.never().doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                counter.incrementAndGet();
-            }
-        });
+        Observable<Object> timeoutAndFallback = Observable.never().doOnSubscribe(_ -> counter.incrementAndGet());
 
         ps
         .timeout(timeoutAndFallback, Functions.justFunction(timeoutAndFallback))
@@ -845,12 +717,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         PublishSubject<Object> ps = PublishSubject.create();
         final AtomicInteger counter = new AtomicInteger();
 
-        Observable<Object> timeoutAndFallback = Observable.never().doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                counter.incrementAndGet();
-            }
-        });
+        Observable<Object> timeoutAndFallback = Observable.never().doOnSubscribe(_ -> counter.incrementAndGet());
 
         ps
         .timeout(timeoutAndFallback, Functions.justFunction(timeoutAndFallback), timeoutAndFallback)

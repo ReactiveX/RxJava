@@ -102,23 +102,23 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void mainBoundaryErrorInnerSuccess() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestSubscriber<Integer> ts = pp.concatMapSingleDelayError(Functions.justFunction(ms), false).test();
+        TestSubscriber<Integer> ts = pp.concatMapSingleDelayError(Functions.justFunction(ss), false).test();
 
         ts.assertEmpty();
 
         pp.onNext(1);
 
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         pp.onError(new TestException());
 
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         ts.assertEmpty();
 
-        ms.onSuccess(1);
+        ss.onSuccess(1);
 
         ts.assertFailure(TestException.class, 1);
     }

@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 import org.junit.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -162,18 +161,8 @@ public class ObservableSkipUntilTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.skipUntil(Observable.never());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.skipUntil(Observable.never()));
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return Observable.never().skipUntil(o);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> Observable.never().skipUntil(o));
     }
 }

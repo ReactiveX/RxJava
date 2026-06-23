@@ -21,7 +21,7 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 - :+1: New `Streamable<T>` built around Virtual Threads & virtual blocking. Think `IAsyncEnumerable` for Java. :satellite: in progress.
 - :+1: Using Java Cleaner API to detect resource leaks and using it for adaptive cleanups.
 - :information_source: Reactive Streams Test Compatibility Kit usage; [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm).
-- :satellite: Rewamp of the javadoc bloat in the base types via `sealed` interfaces.
+- :satellite: Rewamp of the Javadoc bloat in the base types via `sealed` interfaces.
 - :satellite: Reduce overload bloat by using `record`-based configurations.
 - :satellite: Internal optimizations now that I have the master :key:.
 - :eye: Possible usages for Scoped variables for context and per-item resource management.
@@ -67,8 +67,8 @@ Note that RxJava 4 components now live under `io.reactivex.rxjava4` and the base
 
 RxJava 4 features several base classes you can discover operators on:
 
-  - [`io.reactivex.rxjava4.core.Flowable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
-  - [`io.reactivex.rxjava4.core.Observable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Observable.html): 0..N flows, no backpressure,
+  - [`io.reactivex.rxjava4.core.Flowable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Flowable.html): 0 .. N flows, supporting Reactive-Streams and backpressure
+  - [`io.reactivex.rxjava4.core.Observable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Observable.html): 0 .. N flows, no backpressure,
   - [`io.reactivex.rxjava4.core.Single`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Single.html): a flow of exactly 1 item or an error,
   - [`io.reactivex.rxjava4.core.Completable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Completable.html): a flow without items but only a completion or error signal,
   - [`io.reactivex.rxjava4.core.Maybe`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Maybe.html): a flow with no items, exactly one item or an error.
@@ -116,7 +116,7 @@ Flowable<Integer> flow = Flowable.range(1, 5)
 ;
 ```
 
-At this point, the data is not flowing yet and no side-effects are happening.
+At this point, the data is not flowing yet and no side effects are happening.
 
 #### Subscription time
 
@@ -126,7 +126,7 @@ This is a temporary state when `subscribe()` is called on a flow that establishe
 flow.subscribe(System.out::println)
 ````
 
-This is when the **subscription side-effects** are triggered (see `doOnSubscribe`). Some sources block or start emitting items right away in this state.
+This is when the **subscription side effects** are triggered (see `doOnSubscribe`). Some sources block or start emitting items right away in this state.
 
 #### Runtime
 
@@ -265,7 +265,7 @@ Sometimes, when an item has become available, one would like to perform some dep
 
 #### Dependent
 
-The most typical scenario is to given a value, invoke another service, await and continue with its result:
+The most typical scenario is given a value, invoke another service, await and continue with its result:
 
 ```java
 service.apiCall()
@@ -296,7 +296,7 @@ continued.map(v -> v.toString())
 ```
 
 however, the continuation in this case stays `Observable` instead of the likely more appropriate `Single`. (This is understandable because
-from the perspective of `flatMapSingle`, `sourceObservable` is a multi-valued source and thus the mapping may result in multiple values as well).
+from the perspective of `flatMapSingle`, `sourceObservable` is a multivalued source and thus the mapping may result in multiple values as well).
 
 Often though there is a way that is somewhat more expressive (and also lower overhead) by using `Completable` as the mediator and its operator `andThen` to resume with something else:
 
@@ -366,7 +366,7 @@ Each reactive base class features operators that can perform such conversions, i
 |**Maybe** | `toFlowable`<sup>3</sup> | `toObservable` | `toSingle` |  | `ignoreElement` |
 |**Completable** | `toFlowable` | `toObservable` | `toSingle` | `toMaybe` |  |
 
-<sup>1</sup>: When turning a multi-valued source into a single-valued source, one should decide which of the many source values should be considered as the result.
+<sup>1</sup>: When turning a multivalued source into a single-valued source, one should decide which of the many source values should be considered as the result.
 
 <sup>2</sup>: Turning an `Observable` into `Flowable` requires an additional decision: what to do with the potential unconstrained flow
 of the source `Observable`? There are several strategies available (such as buffering, dropping, keeping the latest) via the `BackpressureStrategy` parameter or via standard `Flowable` operators such as `onBackpressureBuffer`, `onBackpressureDrop`, `onBackpressureLatest` which also
@@ -565,7 +565,7 @@ and for Ivy:
 
 ### Snapshots
 
-Snapshots after May 19st, 2025 are available via https://central.sonatype.com/repository/maven-snapshots/io/reactivex/rxjava4/rxjava/
+Snapshots after May 19th, 2025 are available via https://central.sonatype.com/repository/maven-snapshots/io/reactivex/rxjava4/rxjava/
 
 ```groovy
 repositories {
@@ -577,7 +577,7 @@ dependencies {
 }
 ```
 
-JavaDoc snapshots are available at https://reactivex.io/RxJava/4.x/javadoc/snapshot
+Javadoc snapshots are available at https://reactivex.io/RxJava/4.x/javadoc/snapshot
 
 ## Build
 
@@ -593,7 +593,7 @@ Further details on building can be found on the [Getting Started](https://github
 
 ## Bugs and Feedback
 
-For bugs, questions and discussions please use the [Github Issues](https://github.com/ReactiveX/RxJava/issues).
+For bugs, questions and discussions please use the [GitHub Issues](https://github.com/ReactiveX/RxJava/issues).
 
 ## Prior versions
 

@@ -42,18 +42,18 @@ public class FlowableFromSingleTest extends RxJavaTest {
 
     @Test
     public void cancelComposes() {
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestSubscriber<Integer> ts = Flowable.fromSingle(ms)
+        TestSubscriber<Integer> ts = Flowable.fromSingle(ss)
         .test();
 
         ts.assertEmpty();
 
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         ts.cancel();
 
-        assertFalse(ms.hasObservers());
+        assertFalse(ss.hasObservers());
     }
 
     @Test

@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
-import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
@@ -37,18 +36,8 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {
 
         final List<List<T>> lists = new ArrayList<>();
-        Observable.concatEager(observables.map(new Function<Observable<T>, Observable<List<T>>>() {
-            @Override
-            public Observable<List<T>> apply(Observable<T> xs) {
-                return xs.toList().toObservable();
-            }
-        }))
-                .blockingForEach(new Consumer<List<T>>() {
-                    @Override
-                    public void accept(List<T> xs) {
-                        lists.add(xs);
-                    }
-                });
+        Observable.concatEager(observables.map(xs -> xs.toList().toObservable()))
+                .blockingForEach(lists::add);
         return lists;
     }
 
@@ -109,14 +98,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         final AtomicInteger count = new AtomicInteger();
-        Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                count.incrementAndGet();
-            }
-
-        }).window(5).take(2))
+        Observable.merge(Observable.range(1, 10000).doOnNext(_ -> count.incrementAndGet()).window(5).take(2))
         .subscribe(to);
 
         to.awaitDone(500, TimeUnit.MILLISECONDS);
@@ -131,14 +113,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         final AtomicInteger count = new AtomicInteger();
-        Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                count.incrementAndGet();
-            }
-
-        }).window(5, 4).take(2))
+        Observable.merge(Observable.range(1, 10000).doOnNext(_ -> count.incrementAndGet()).window(5, 4).take(2))
         .subscribe(to);
 
         to.awaitDone(500, TimeUnit.MILLISECONDS);
@@ -154,14 +129,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
-
-                    @Override
-                    public void accept(Integer t1) {
-                        count.incrementAndGet();
-                    }
-
-                })
+                .doOnNext(_ -> count.incrementAndGet())
                 .observeOn(Schedulers.computation())
                 .window(5, 4)
                 .take(2), 128)
@@ -170,7 +138,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         to.awaitDone(500, TimeUnit.MILLISECONDS);
         to.assertTerminated();
         to.assertValues(1, 2, 3, 4, 5, 5, 6, 7, 8, 9);
-        // make sure we don't emit all values ... the unsubscribe should propagate
+        // make sure we don't emit all values ... unsubscribe should propagate
         // assertTrue(count.get() < 100000); // disabled: a small hiccup in the consumption may allow the source to run to completion
     }
 
@@ -183,26 +151,23 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
     }
 
     public static Observable<Integer> hotStream() {
-        return Observable.unsafeCreate(new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> observer) {
-                Disposable d = Disposable.empty();
-                observer.onSubscribe(d);
-                while (!d.isDisposed()) {
-                    // burst some number of items
-                    for (int i = 0; i < Math.random() * 20; i++) {
-                        observer.onNext(i);
-                    }
-                    try {
-                        // sleep for a random amount of time
-                        // NOTE: Only using Thread.sleep here as an artificial demo.
-                        Thread.sleep((long) (Math.random() * 200));
-                    } catch (Exception e) {
-                        // do nothing
-                    }
+        return Observable.unsafeCreate((ObservableSource<Integer>) observer -> {
+            Disposable d = Disposable.empty();
+            observer.onSubscribe(d);
+            while (!d.isDisposed()) {
+                // burst some number of items
+                for (int i = 0; i < Math.random() * 20; i++) {
+                    observer.onNext(i);
                 }
-                System.out.println("Hot done.");
+                try {
+                    // sleep for a random amount of time
+                    // NOTE: Only using Thread.sleep here as an artificial demo.
+                    Thread.sleep((long) (Math.random() * 200));
+                } catch (Exception e) {
+                    // do nothing
+                }
             }
+            System.out.println("Hot done.");
         }).subscribeOn(Schedulers.newThread()); // use newThread since we are using sleep to block
     }
 
@@ -215,12 +180,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         hotStream()
         .window(10)
         .take(2)
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> w) {
-                return w.startWithItem(indicator);
-            }
-        }).subscribe(to);
+        .flatMap((Function<Observable<Integer>, Observable<Integer>>) w -> w.startWithItem(indicator)).subscribe(to);
 
         to.awaitDone(2, TimeUnit.SECONDS);
         to.assertComplete();
@@ -238,26 +198,11 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Observable<Object>>>() {
-            @Override
-            public ObservableSource<Observable<Object>> apply(Observable<Object> o) throws Exception {
-                return o.window(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.window(1));
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Observable<Object>>>() {
-            @Override
-            public ObservableSource<Observable<Object>> apply(Observable<Object> o) throws Exception {
-                return o.window(2, 1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.window(2, 1));
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Observable<Object>>>() {
-            @Override
-            public ObservableSource<Observable<Object>> apply(Observable<Object> o) throws Exception {
-                return o.window(1, 2);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.window(1, 2));
     }
 
     @Test
@@ -291,12 +236,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         final TestObserver[] to = { null };
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
         .window(2)
-        .doOnNext(new Consumer<Observable<Integer>>() {
-            @Override
-            public void accept(Observable<Integer> w) throws Exception {
-                to[0] = w.test();
-            }
-        })
+        .doOnNext(w -> to[0] = w.test())
         .test()
         .assertError(TestException.class);
 
@@ -310,12 +250,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         final TestObserver[] to = { null };
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
         .window(2, 3)
-        .doOnNext(new Consumer<Observable<Integer>>() {
-            @Override
-            public void accept(Observable<Integer> w) throws Exception {
-                to[0] = w.test();
-            }
-        })
+        .doOnNext(w -> to[0] = w.test())
         .test()
         .assertError(TestException.class);
 
@@ -329,12 +264,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         final TestObserver[] to = { null };
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
         .window(3, 2)
-        .doOnNext(new Consumer<Observable<Integer>>() {
-            @Override
-            public void accept(Observable<Integer> w) throws Exception {
-                to[0] = w.test();
-            }
-        })
+        .doOnNext(w -> to[0] = w.test())
         .test()
         .assertError(TestException.class);
 
@@ -347,12 +277,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps.window(10)
         .take(1)
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Observable<Integer>, Observable<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(ps.hasObservers());
@@ -373,12 +298,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
         TestObserver<Observable<Integer>> to = ps.window(10)
         .take(1)
-        .doOnNext(new Consumer<Observable<Integer>>() {
-            @Override
-            public void accept(Observable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertTrue(ps.hasObservers());
@@ -401,12 +321,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps.window(5, 10)
         .take(1)
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Observable<Integer>, Observable<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(ps.hasObservers());
@@ -427,12 +342,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
         TestObserver<Observable<Integer>> to = ps.window(5, 10)
         .take(1)
-        .doOnNext(new Consumer<Observable<Integer>>() {
-            @Override
-            public void accept(Observable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertTrue(ps.hasObservers());
@@ -455,12 +365,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps.window(5, 3)
         .take(1)
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Observable<Integer>, Observable<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(ps.hasObservers());
@@ -481,12 +386,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
         TestObserver<Observable<Integer>> to = ps.window(5, 3)
         .take(1)
-        .doOnNext(new Consumer<Observable<Integer>>() {
-            @Override
-            public void accept(Observable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertTrue(ps.hasObservers());

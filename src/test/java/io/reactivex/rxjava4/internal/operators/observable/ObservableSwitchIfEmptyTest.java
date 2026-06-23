@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
-import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.observers.DefaultObserver;
 
 public class ObservableSwitchIfEmptyTest extends RxJavaTest {
@@ -32,12 +31,7 @@ public class ObservableSwitchIfEmptyTest extends RxJavaTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final Observable<Integer> o = Observable.just(4)
                 .switchIfEmpty(Observable.just(2)
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable d) {
-                        subscribed.set(true);
-                    }
-                }));
+                .doOnSubscribe(_ -> subscribed.set(true)));
 
         assertEquals(4, o.blockingSingle().intValue());
         assertFalse(subscribed.get());
@@ -56,20 +50,14 @@ public class ObservableSwitchIfEmptyTest extends RxJavaTest {
 
         final Disposable d = Disposable.empty();
 
-        Observable<Long> withProducer = Observable.unsafeCreate(new ObservableSource<Long>() {
-            @Override
-            public void subscribe(final Observer<? super Long> observer) {
-                observer.onSubscribe(d);
-                observer.onNext(42L);
-            }
+        Observable<Long> withProducer = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(d);
+            observer.onNext(42L);
         });
 
         Observable.<Long>empty()
                 .switchIfEmpty(withProducer)
-                .lift(new ObservableOperator<Long, Long>() {
-            @Override
-            public Observer<? super Long> apply(final Observer<? super Long> child) {
-                return new DefaultObserver<Long>() {
+                .lift((ObservableOperator<Long, Long>) _ -> new DefaultObserver<Long>() {
                     @Override
                     public void onComplete() {
 
@@ -85,9 +73,7 @@ public class ObservableSwitchIfEmptyTest extends RxJavaTest {
                         cancel();
                     }
 
-                };
-            }
-        }).subscribe();
+                }).subscribe();
 
         assertTrue(d.isDisposed());
         // FIXME no longer assertable
@@ -98,12 +84,9 @@ public class ObservableSwitchIfEmptyTest extends RxJavaTest {
     public void switchShouldTriggerUnsubscribe() {
         final Disposable d = Disposable.empty();
 
-        Observable.unsafeCreate(new ObservableSource<Long>() {
-            @Override
-            public void subscribe(final Observer<? super Long> observer) {
-                observer.onSubscribe(d);
-                observer.onComplete();
-            }
+        Observable.unsafeCreate((ObservableSource<Long>) observer -> {
+            observer.onSubscribe(d);
+            observer.onComplete();
         }).switchIfEmpty(Observable.<Long>never()).subscribe();
         assertTrue(d.isDisposed());
     }

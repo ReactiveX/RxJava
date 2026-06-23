@@ -11,7 +11,7 @@ We are not against contributions from AI tools, LLM-based or future architecture
 This means, you have to make sure it doesn't hallucinate issues or elements of the contribution, doesn't try to hack rewards or hack established unit tests, doesn't go wild
 and rearchitect established components.
 
-If you post a contribution that is broken, we will not argue with your LLM or prompt engineer for you. You are responsible for having the the LLM's output work within the confines
+If you post a contribution that is broken, we will not argue with your LLM or prompt engineer for you. You are responsible for having the LLM's output work within the confines
 of this project.
 
 Please also be aware that this project is large both in current and historical sense with some rules not documented or enforced by unit tests. This is because such unwritten rules

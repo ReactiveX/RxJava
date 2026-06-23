@@ -45,26 +45,11 @@ public class ObservableSwitchMapMaybeEmptyPerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.switchMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.empty();
-            }
-        });
+        observablePlain = source.switchMap((Function<Integer, Observable<Integer>>) _ -> Observable.empty());
 
-        observableConvert = source.switchMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Maybe.<Integer>empty().toObservable();
-            }
-        });
+        observableConvert = source.switchMap((Function<Integer, Observable<Integer>>) _ -> Maybe.<Integer>empty().toObservable());
 
-        observableDedicated = source.switchMapMaybe(new Function<Integer, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Integer v) {
-                return Maybe.empty();
-            }
-        });
+        observableDedicated = source.switchMapMaybe((Function<Integer, Maybe<Integer>>) _ -> Maybe.empty());
     }
 
     @Benchmark

@@ -494,15 +494,15 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void successRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            MaybeSubject<Integer> ss1 = MaybeSubject.create();
-            MaybeSubject<Integer> ss2 = MaybeSubject.create();
+            MaybeSubject<Integer> ms1 = MaybeSubject.create();
+            MaybeSubject<Integer> ms2 = MaybeSubject.create();
 
-            TestSubscriber<Integer> ts = Flowable.just(ss1, ss2).flatMapMaybe(v -> v)
+            TestSubscriber<Integer> ts = Flowable.just(ms1, ms2).flatMapMaybe(v -> v)
             .test();
 
             TestHelper.race(
-                    () -> ss1.onSuccess(1),
-                    () -> ss2.onSuccess(1)
+                    () -> ms1.onSuccess(1),
+                    () -> ms2.onSuccess(1)
             );
 
             ts.assertResult(1, 1);
@@ -512,15 +512,15 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void successCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            MaybeSubject<Integer> ss1 = MaybeSubject.create();
-            MaybeSubject<Integer> ss2 = MaybeSubject.create();
+            MaybeSubject<Integer> ms1 = MaybeSubject.create();
+            MaybeSubject<Integer> ms2 = MaybeSubject.create();
 
-            TestSubscriber<Integer> ts = Flowable.just(ss1, ss2).flatMapMaybe(v -> v)
+            TestSubscriber<Integer> ts = Flowable.just(ms1, ms2).flatMapMaybe(v -> v)
             .test();
 
             TestHelper.race(
-                    () -> ss1.onSuccess(1),
-                    ss2::onComplete
+                    () -> ms1.onSuccess(1),
+                    ms2::onComplete
             );
 
             ts.assertResult(1);
@@ -529,12 +529,12 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void successShortcut() {
-        MaybeSubject<Integer> ss1 = MaybeSubject.create();
+        MaybeSubject<Integer> ms1 = MaybeSubject.create();
 
-        TestSubscriber<Integer> ts = Flowable.just(ss1).hide().flatMapMaybe(v -> v)
+        TestSubscriber<Integer> ts = Flowable.just(ms1).hide().flatMapMaybe(v -> v)
         .test();
 
-        ss1.onSuccess(1);
+        ms1.onSuccess(1);
 
         ts.assertResult(1);
     }

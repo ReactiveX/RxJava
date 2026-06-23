@@ -38,12 +38,12 @@ public final class QueueDrainHelper {
      * @param <T> the queue value type
      * @param <U> the emission value type
      * @param q the queue
-     * @param a the subscriber
+     * @param subscriber the subscriber
      * @param delayError true if errors should be delayed after all normal items
      * @param dispose the disposable to call when termination happens and cleanup is necessary
      * @param qd the QueueDrain instance that gives status information to the drain logic
      */
-    public static <T, U> void drainMaxLoop(SimplePlainQueue<T> q, Subscriber<? super U> a, boolean delayError,
+    public static <T, U> void drainMaxLoop(SimplePlainQueue<T> q, Subscriber<? super U> subscriber, boolean delayError,
             Disposable dispose, QueueDrain<T, U> qd) {
         int missed = 1;
 
@@ -55,7 +55,7 @@ public final class QueueDrainHelper {
 
                 boolean empty = v == null;
 
-                if (checkTerminated(d, empty, a, delayError, q, qd)) {
+                if (checkTerminated(d, empty, subscriber, delayError, q, qd)) {
                     if (dispose != null) {
                         dispose.dispose();
                     }
@@ -68,7 +68,7 @@ public final class QueueDrainHelper {
 
                 long r = qd.requested();
                 if (r != 0L) {
-                    if (qd.accept(a, v)) {
+                    if (qd.accept(subscriber, v)) {
                         if (r != Long.MAX_VALUE) {
                             qd.produced(1);
                         }
@@ -78,7 +78,7 @@ public final class QueueDrainHelper {
                     if (dispose != null) {
                         dispose.dispose();
                     }
-                    a.onError(MissingBackpressureException.createDefault());
+                    subscriber.onError(MissingBackpressureException.createDefault());
                     return;
                 }
             }

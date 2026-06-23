@@ -67,27 +67,12 @@ public class ObservableRefCountTest extends RxJavaTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Observable<Long> r = Observable.interval(0, 25, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable d) {
-                        subscribeCount.incrementAndGet();
-                    }
-                })
-                .doOnNext(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long l) {
-                        nextCount.incrementAndGet();
-                    }
-                })
+                .doOnSubscribe(_ -> subscribeCount.incrementAndGet())
+                .doOnNext(_ -> nextCount.incrementAndGet())
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable d1 = r.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long l) {
-                receivedCount.incrementAndGet();
-            }
-        });
+        Disposable d1 = r.subscribe(_ -> receivedCount.incrementAndGet());
 
         Disposable d2 = r.subscribe();
 
@@ -114,27 +99,12 @@ public class ObservableRefCountTest extends RxJavaTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Observable<Integer> r = Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable d) {
-                        subscribeCount.incrementAndGet();
-                    }
-                })
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer l) {
-                        nextCount.incrementAndGet();
-                    }
-                })
+                .doOnSubscribe(_ -> subscribeCount.incrementAndGet())
+                .doOnNext(_ -> nextCount.incrementAndGet())
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable d1 = r.subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer l) {
-                receivedCount.incrementAndGet();
-            }
-        });
+        Disposable d1 = r.subscribe(_ -> receivedCount.incrementAndGet());
 
         Disposable d2 = r.subscribe();
 
@@ -160,23 +130,15 @@ public class ObservableRefCountTest extends RxJavaTest {
     public void refCountSynchronousTake() {
         final AtomicInteger nextCount = new AtomicInteger();
         Observable<Integer> r = Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer l) {
-                            System.out.println("onNext --------> " + l);
-                            nextCount.incrementAndGet();
-                    }
+                .doOnNext(l -> {
+                        System.out.println("onNext --------> " + l);
+                        nextCount.incrementAndGet();
                 })
                 .take(4)
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        r.subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer l) {
-                receivedCount.incrementAndGet();
-            }
-        });
+        r.subscribe(_ -> receivedCount.incrementAndGet());
 
         System.out.println("onNext: " + nextCount.get());
 
@@ -189,21 +151,15 @@ public class ObservableRefCountTest extends RxJavaTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger unsubscribeCount = new AtomicInteger();
         Observable<Long> r = Observable.interval(0, 1, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable d) {
-                            System.out.println("******************************* Subscribe received");
-                            // when we are subscribed
-                            subscribeCount.incrementAndGet();
-                    }
+                .doOnSubscribe(_ -> {
+                        System.out.println("******************************* Subscribe received");
+                        // when we are subscribed
+                        subscribeCount.incrementAndGet();
                 })
-                .doOnDispose(new Action() {
-                    @Override
-                    public void run() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            unsubscribeCount.incrementAndGet();
-                    }
+                .doOnDispose(() -> {
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        unsubscribeCount.incrementAndGet();
                 })
                 .publish().refCount();
 
@@ -234,21 +190,15 @@ public class ObservableRefCountTest extends RxJavaTest {
         final CountDownLatch subscribeLatch = new CountDownLatch(1);
 
         Observable<Long> o = synchronousInterval()
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable d) {
-                            System.out.println("******************************* Subscribe received");
-                            // when we are subscribed
-                            subscribeLatch.countDown();
-                    }
+                .doOnSubscribe(_ -> {
+                        System.out.println("******************************* Subscribe received");
+                        // when we are subscribed
+                        subscribeLatch.countDown();
                 })
-                .doOnDispose(new Action() {
-                    @Override
-                    public void run() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            unsubscribeLatch.countDown();
-                    }
+                .doOnDispose(() -> {
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        unsubscribeLatch.countDown();
                 });
 
         TestObserverEx<Long> observer = new TestObserverEx<>();
@@ -280,20 +230,14 @@ public class ObservableRefCountTest extends RxJavaTest {
     public void connectUnsubscribeRaceCondition() throws InterruptedException {
         final AtomicInteger subUnsubCount = new AtomicInteger();
         Observable<Long> o = synchronousInterval()
-                .doOnDispose(new Action() {
-                    @Override
-                    public void run() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            subUnsubCount.decrementAndGet();
-                    }
+                .doOnDispose(() -> {
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        subUnsubCount.decrementAndGet();
                 })
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable d) {
-                            System.out.println("******************************* SUBSCRIBE received");
-                            subUnsubCount.incrementAndGet();
-                    }
+                .doOnSubscribe(_ -> {
+                        System.out.println("******************************* SUBSCRIBE received");
+                        subUnsubCount.incrementAndGet();
                 });
 
         TestObserverEx<Long> observer = new TestObserverEx<>();
@@ -324,26 +268,18 @@ public class ObservableRefCountTest extends RxJavaTest {
     }
 
     private Observable<Long> synchronousInterval() {
-        return Observable.unsafeCreate(new ObservableSource<Long>() {
-            @Override
-            public void subscribe(Observer<? super Long> observer) {
-                final AtomicBoolean cancel = new AtomicBoolean();
-                observer.onSubscribe(Disposable.fromRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        cancel.set(true);
-                    }
-                }));
-                for (;;) {
-                    if (cancel.get()) {
-                        break;
-                    }
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                    }
-                    observer.onNext(1L);
+        return Observable.unsafeCreate(observer -> {
+            final AtomicBoolean cancel = new AtomicBoolean();
+            observer.onSubscribe(Disposable.fromRunnable(() -> cancel.set(true)));
+            for (;;) {
+                if (cancel.get()) {
+                    break;
                 }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+                observer.onNext(1L);
             }
         });
     }
@@ -352,17 +288,9 @@ public class ObservableRefCountTest extends RxJavaTest {
     public void onlyFirstShouldSubscribeAndLastUnsubscribe() {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         final AtomicInteger unsubscriptionCount = new AtomicInteger();
-        Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> observer) {
-                subscriptionCount.incrementAndGet();
-                observer.onSubscribe(Disposable.fromRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                            unsubscriptionCount.incrementAndGet();
-                    }
-                }));
-            }
+        Observable<Integer> o = Observable.unsafeCreate(observer -> {
+            subscriptionCount.incrementAndGet();
+            observer.onSubscribe(Disposable.fromRunnable(unsubscriptionCount::incrementAndGet));
         });
         Observable<Integer> refCounted = o.publish().refCount();
 
@@ -386,12 +314,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         // subscribe list1
         final List<Long> list1 = new ArrayList<>();
-        Disposable d1 = interval.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                list1.add(t1);
-            }
-        });
+        Disposable d1 = interval.subscribe(list1::add);
 
         s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
 
@@ -401,12 +324,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         // subscribe list2
         final List<Long> list2 = new ArrayList<>();
-        Disposable d2 = interval.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                list2.add(t1);
-            }
-        });
+        Disposable d2 = interval.subscribe(list2::add);
 
         s.advanceTimeBy(300, TimeUnit.MILLISECONDS);
 
@@ -446,12 +364,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         // subscribing a new one should start over because the source should have been unsubscribed
         // subscribe list3
         final List<Long> list3 = new ArrayList<>();
-        interval.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                list3.add(t1);
-            }
-        });
+        interval.subscribe(list3::add);
 
         s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
 
@@ -508,12 +421,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     public void connectDisconnectConnectAndSubjectState() {
         Observable<Integer> o1 = Observable.just(10);
         Observable<Integer> o2 = Observable.just(20);
-        Observable<Integer> combined = Observable.combineLatest(o1, o2, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        })
+        Observable<Integer> combined = Observable.combineLatest(o1, o2, Integer::sum)
         .publish().refCount();
 
         TestObserverEx<Integer> to1 = new TestObserverEx<>();
@@ -536,62 +444,23 @@ public class ObservableRefCountTest extends RxJavaTest {
         final AtomicInteger intervalSubscribed = new AtomicInteger();
         Observable<String> interval =
                 Observable.interval(200, TimeUnit.MILLISECONDS)
-                        .doOnSubscribe(new Consumer<Disposable>() {
-                            @Override
-                            public void accept(Disposable d) {
-                                            System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
-                                    }
-                        }
-                         )
-                        .flatMap(new Function<Long, Observable<String>>() {
-                            @Override
-                            public Observable<String> apply(Long t1) {
-                                    return Observable.defer(new Supplier<Observable<String>>() {
-                                        @Override
-                                        public Observable<String> get() {
-                                                return Observable.<String>error(new Exception("Some exception"));
-                                        }
-                                    });
-                            }
-                        })
-                        .onErrorResumeNext(new Function<Throwable, Observable<String>>() {
-                            @Override
-                            public Observable<String> apply(Throwable t1) {
-                                    return Observable.<String>error(t1);
-                            }
-                        })
+                        .doOnSubscribe(_ -> System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet())
+                        )
+                        .flatMap((Function<Long, Observable<String>>) _ ->
+                            Observable.defer(() -> Observable.<String>error(new Exception("Some exception"))))
+                        .onErrorResumeNext((Function<Throwable, Observable<String>>) Observable::<String>error)
                         .publish()
                         .refCount();
 
         interval
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable t1) {
-                            System.out.println("Observer 1 onError: " + t1);
-                    }
-                })
+                .doOnError(t1 -> System.out.println("Observer 1 onError: " + t1))
                 .retry(5)
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String t1) {
-                            System.out.println("Observer 1: " + t1);
-                    }
-                });
+                .subscribe(t1 -> System.out.println("Observer 1: " + t1));
         Thread.sleep(100);
         interval
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t1) {
-                    System.out.println("Observer 2 onError: " + t1);
-            }
-        })
+        .doOnError(t1 -> System.out.println("Observer 2 onError: " + t1))
         .retry(5)
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String t1) {
-                            System.out.println("Observer 2: " + t1);
-                    }
-                });
+                .subscribe(t1 -> System.out.println("Observer 2: " + t1));
 
         Thread.sleep(1300);
 
@@ -659,12 +528,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
-        source = Observable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return new byte[100 * 1000 * 1000];
-            }
-        })
+        source = Observable.fromCallable((Callable<Object>) () -> new byte[100 * 1000 * 1000])
         .replay(1)
         .refCount();
 
@@ -683,12 +547,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
-        source = Observable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return new byte[100 * 1000 * 1000];
-            }
-        }).concatWith(Observable.never())
+        source = Observable.fromCallable((Callable<Object>) () -> new byte[100 * 1000 * 1000]).concatWith(Observable.never())
         .replay(1)
         .refCount();
 
@@ -724,11 +583,8 @@ public class ObservableRefCountTest extends RxJavaTest {
         System.gc();
         Thread.sleep(GC_SLEEP_TIME);
 
-        source = Observable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                throw new ExceptionData(new byte[100 * 1000 * 1000]);
-            }
+        source = Observable.fromCallable(() -> {
+            throw new ExceptionData(new byte[100 * 1000 * 1000]);
         })
         .publish()
         .refCount();
@@ -750,12 +606,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
-        source = Observable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return new byte[100 * 1000 * 1000];
-            }
-        }).concatWith(Observable.never())
+        source = Observable.fromCallable((Callable<Object>) () -> new byte[100 * 1000 * 1000]).concatWith(Observable.never())
         .publish()
         .refCount();
 
@@ -987,20 +838,12 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         final AtomicBoolean interrupted = new AtomicBoolean();
 
-        o.switchMap(new Function<Integer, ObservableSource<? extends Object>>() {
-            @Override
-            public ObservableSource<? extends Object> apply(Integer v) throws Exception {
-                return Observable.create(new ObservableOnSubscribe<Object>() {
-                    @Override
-                    public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
-                        while (!emitter.isDisposed()) {
-                            Thread.sleep(100);
-                        }
-                        interrupted.set(true);
-                    }
-                });
+        o.switchMap(_ -> Observable.create(emitter -> {
+            while (!emitter.isDisposed()) {
+                Thread.sleep(100);
             }
-        })
+            interrupted.set(true);
+        }))
         .take(500, TimeUnit.MILLISECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1014,12 +857,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         final int[] subscriptions = { 0 };
 
         Observable<Integer> source = Observable.range(1, 5)
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                subscriptions[0]++;
-            }
-        })
+        .doOnSubscribe(_ -> subscriptions[0]++)
         .publish()
         .refCount(2);
 
@@ -1047,12 +885,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         Observable<Integer> source = ps
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                subscriptions[0]++;
-            }
-        })
+        .doOnSubscribe(_ -> subscriptions[0]++)
         .publish()
         .refCount(500, TimeUnit.MILLISECONDS);
 
@@ -1090,12 +923,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         Observable<Integer> source = ps
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                subscriptions[0]++;
-            }
-        })
+        .doOnSubscribe(_ -> subscriptions[0]++)
         .publish()
         .refCount(1, 100, TimeUnit.MILLISECONDS);
 
@@ -1157,19 +985,9 @@ public class ObservableRefCountTest extends RxJavaTest {
 
             final TestObserver<Integer> to2 = new TestObserver<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to1.dispose();
-                }
-            };
+            Runnable r1 = to1::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    source.subscribe(to2);
-                }
-            };
+            Runnable r2 = () -> source.subscribe(to2);
 
             TestHelper.race(r1, r2, Schedulers.single());
 

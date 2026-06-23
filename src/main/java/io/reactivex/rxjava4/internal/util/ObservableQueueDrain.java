@@ -34,8 +34,8 @@ public interface ObservableQueueDrain<T, U> {
 
     /**
      * Accept the value and return true if forwarded.
-     * @param a the subscriber to deliver values to
-     * @param v the value to deliver
+     * @param observer the subscriber to deliver values to
+     * @param value the value to deliver
      */
-    void accept(Observer<? super U> a, T v);
+    void accept(Observer<? super U> observer, T value);
 }
