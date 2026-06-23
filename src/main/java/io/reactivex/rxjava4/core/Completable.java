@@ -15,14 +15,14 @@ package io.reactivex.rxjava4.core;
 
 import java.util.*;
 import java.util.concurrent.*;
-
-import static java.util.concurrent.Flow.*;
+import java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.*;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
-import io.reactivex.rxjava4.internal.functions.*;
+import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.fuseable.*;
 import io.reactivex.rxjava4.internal.jdk8.*;
 import io.reactivex.rxjava4.internal.observers.*;
@@ -192,14 +192,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
     public static Completable concatArray(@NonNull CompletableSource... sources) {
-        Objects.requireNonNull(sources, "sources is null");
-        if (sources.length == 0) {
-            return complete();
-        } else
-        if (sources.length == 1) {
-            return wrap(sources[0]);
-        }
-        return RxJavaPlugins.onAssembly(new CompletableConcatArray(sources));
+        return concatArray(CompletableConcatConfig.DEFAULT, sources);
     }
 
     /**
@@ -211,16 +204,29 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code concatArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param sources the sources to concatenate
+     * @param config the configuration record for this operator
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @since 3.0.0
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
-    public static Completable concatArrayDelayError(@NonNull CompletableSource... sources) {
-        return Flowable.fromArray(sources).concatMapCompletableDelayError(Functions.identity(), true, 2);
+    public static Completable concatArray(@NonNull CompletableConcatConfig config, @NonNull CompletableSource... sources) {
+        Objects.requireNonNull(sources, "sources is null");
+        Objects.requireNonNull(config, "config is null");
+        if (sources.length == 0) {
+            return complete();
+        } else
+        if (sources.length == 1) {
+            return wrap(sources[0]);
+        }
+        if (config.delayError()) {
+            return Flowable.fromArray(sources).concatMapCompletableDelayError(Functions.identity(), true, config.prefetch());
+        }
+        return RxJavaPlugins.onAssembly(new CompletableConcatArray(sources));
+
     }
 
     /**
@@ -239,9 +245,7 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable concat(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
-        Objects.requireNonNull(sources, "sources is null");
-
-        return RxJavaPlugins.onAssembly(new CompletableConcatIterable(sources));
+        return concat(sources, CompletableConcatConfig.DEFAULT);
     }
 
     /**
@@ -264,7 +268,7 @@ public abstract class Completable implements CompletableSource {
     @BackpressureSupport(BackpressureKind.FULL)
     @NonNull
     public static Completable concat(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
-        return concat(sources, 2);
+        return concat(sources, CompletableConcatConfig.DEFAULT);
     }
 
     /**
@@ -279,19 +283,24 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param sources the sources to concatenate
-     * @param prefetch the number of sources to prefetch from the sources
+     * @param config the operatar configuration record
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    public static Completable concat(@NonNull Publisher<@NonNull ? extends CompletableSource> sources, int prefetch) {
+    public static Completable concat(@NonNull Publisher<@NonNull ? extends CompletableSource> sources,
+            @NonNull CompletableConcatConfig config) {
         Objects.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new CompletableConcat(sources, prefetch));
+        Objects.requireNonNull(config, "config is null");
+        if (config.delayError()) {
+            return Flowable.fromPublisher(sources).concatMapCompletableDelayError(Functions.identity(), true, config.prefetch());
+        }
+        return RxJavaPlugins.onAssembly(new CompletableConcat(sources, config.prefetch()));
     }
 
     /**
@@ -303,65 +312,21 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param sources the sources to concatenate
+     * @param config the configuration record for this operator
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @since 3.0.0
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable concatDelayError(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
-        return Flowable.fromIterable(sources).concatMapCompletableDelayError(Functions.identity());
-    }
-
-    /**
-     * Returns a {@code Completable} which completes only when all sources complete, one after another.
-     * <p>
-     * <img width="640" height="396" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatDelayError.p.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The returned {@code Completable} honors the backpressure of the downstream consumer
-     *  and expects the other {@link Publisher} to honor it as well.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param sources the sources to concatenate
-     * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @since 3.0.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @BackpressureSupport(BackpressureKind.FULL)
-    @NonNull
-    public static Completable concatDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
-        return concatDelayError(sources, 2);
-    }
-
-    /**
-     * Returns a {@code Completable} which completes only when all sources complete, one after another.
-     * <p>
-     * <img width="640" height="359" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatDelayError.pn.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The returned {@code Completable} honors the backpressure of the downstream consumer
-     *  and expects the other {@link Publisher} to honor it as well.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param sources the sources to concatenate
-     * @param prefetch the number of sources to prefetch from the sources
-     * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
-     * @since 3.0.0
-     */
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @BackpressureSupport(BackpressureKind.FULL)
-    public static Completable concatDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources, int prefetch) {
-        return Flowable.fromPublisher(sources).concatMapCompletableDelayError(Functions.identity(), true, prefetch);
+    public static Completable concat(@NonNull Iterable<@NonNull ? extends CompletableSource> sources, @NonNull CompletableConcatConfig config) {
+        Objects.requireNonNull(sources, "sources is null");
+        Objects.requireNonNull(config, "config is null");
+        if (config.delayError()) {
+            return Flowable.fromIterable(sources).concatMapCompletableDelayError(Functions.identity(), true, config.prefetch());
+        }
+        return RxJavaPlugins.onAssembly(new CompletableConcatIterable(sources));
     }
 
     /**
@@ -434,7 +399,7 @@ public abstract class Completable implements CompletableSource {
     public static Single<Boolean> sequenceEqual(@NonNull CompletableSource source1, @NonNull CompletableSource source2) { // NOPMD
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
-        return mergeArrayDelayError(source1, source2).andThen(Single.just(true));
+        return mergeArray(CompletableMergeConfig.DEFAULT, source1, source2).andThen(Single.just(true));
     }
 
     /**
@@ -801,28 +766,18 @@ public abstract class Completable implements CompletableSource {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
      *  signaled by source(s) after the returned {@code Completable} has been disposed or terminated with a
      *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeArrayDelayError(CompletableSource...)} to merge sources and terminate only when all source {@code CompletableSource}s
-     *  have completed or failed with an error.
      *  </dd>
      * </dl>
      * @param sources the array of {@code CompletableSource}s.
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
-     * @see #mergeArrayDelayError(CompletableSource...)
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
     public static Completable mergeArray(@NonNull CompletableSource... sources) {
-        Objects.requireNonNull(sources, "sources is null");
-        if (sources.length == 0) {
-            return complete();
-        } else
-        if (sources.length == 1) {
-            return wrap(sources[0]);
-        }
-        return RxJavaPlugins.onAssembly(new CompletableMergeArray(sources));
+        return mergeArray(CompletableMergeConfig.DEFAULT, sources);
     }
 
     /**
@@ -843,21 +798,17 @@ public abstract class Completable implements CompletableSource {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
      *  signaled by source(s) after the returned {@code Completable} has been disposed or terminated with a
      *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(Iterable)} to merge sources and terminate only when all source {@code CompletableSource}s
-     *  have completed or failed with an error.
      *  </dd>
      * </dl>
      * @param sources the {@link Iterable} sequence of {@code CompletableSource}s.
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
-     * @see #mergeDelayError(Iterable)
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable merge(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
-        Objects.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new CompletableMergeIterable(sources));
+        return merge(sources, CompletableMergeConfig.DEFAULT);
     }
 
     /**
@@ -881,21 +832,18 @@ public abstract class Completable implements CompletableSource {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
      *  signaled by source(s) after the returned {@code Completable} has been disposed or terminated with a
      *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(Publisher)} to merge sources and terminate only when all source {@code CompletableSource}s
-     *  have completed or failed with an error.
      *  </dd>
      * </dl>
      * @param sources the {@code Publisher} sequence of {@code CompletableSource}s.
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
-     * @see #mergeDelayError(Publisher)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @NonNull
     public static Completable merge(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
-        return merge0(sources, Integer.MAX_VALUE, false);
+        return merge(sources, new CompletableMergeConfig(false, Integer.MAX_VALUE));
     }
 
     /**
@@ -920,52 +868,24 @@ public abstract class Completable implements CompletableSource {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
      *  signaled by source(s) after the returned {@code Completable} has been disposed or terminated with a
      *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(Publisher, int)} to merge sources and terminate only when all source {@code CompletableSource}s
-     *  have completed or failed with an error.
      *  </dd>
      * </dl>
      * @param sources the {@code Publisher} sequence of {@code CompletableSource}s.
-     * @param maxConcurrency the maximum number of concurrent subscriptions
+     * @param config the configuration record for this operator
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @throws IllegalArgumentException if {@code maxConcurrency} is less than 1
-     * @see #mergeDelayError(Publisher, int)
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     @NonNull
-    public static Completable merge(@NonNull Publisher<@NonNull ? extends CompletableSource> sources, int maxConcurrency) {
-        return merge0(sources, maxConcurrency, false);
-    }
-
-    /**
-     * Returns a {@code Completable} instance that keeps subscriptions to a limited number of {@link CompletableSource}s at once and
-     * completes only when all source {@code CompletableSource}s terminate in one way or another, combining any exceptions
-     * signaled by either the source {@link Publisher} or the inner {@code CompletableSource} instances.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the given {@code Publisher} in a bounded manner,
-     *  requesting {@code maxConcurrency} items first, then keeps requesting as
-     *  many more as the inner {@code CompletableSource}s terminate.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code merge0} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param sources the {@code Publisher} sequence of {@code CompletableSource}s.
-     * @param maxConcurrency the maximum number of concurrent subscriptions
-     * @param delayErrors delay all errors from the main source and from the inner {@code CompletableSource}s?
-     * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is less than 1
-     */
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @BackpressureSupport(BackpressureKind.FULL)
-    private static Completable merge0(@NonNull Publisher<@NonNull ? extends CompletableSource> sources, int maxConcurrency, boolean delayErrors) {
+    public static Completable merge(@NonNull Publisher<@NonNull ? extends CompletableSource> sources,
+            @NonNull CompletableMergeConfig config) {
         Objects.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        return RxJavaPlugins.onAssembly(new CompletableMerge(sources, maxConcurrency, delayErrors));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new CompletableMerge(sources, config.maxConcurrency(), config.delayErrors()));
     }
 
     /**
@@ -979,16 +899,28 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code mergeArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param sources the array of {@code CompletableSource}s
+     * @param config the configuration record for this operator
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
-    public static Completable mergeArrayDelayError(@NonNull CompletableSource... sources) {
+    public static Completable mergeArray(@NonNull CompletableMergeConfig config, @NonNull CompletableSource... sources) {
         Objects.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new CompletableMergeArrayDelayError(sources));
+        Objects.requireNonNull(config, "config is null");
+        if (sources.length == 0) {
+            return complete();
+        } else
+        if (sources.length == 1) {
+            return wrap(sources[0]);
+        }
+        if (config.delayErrors()) {
+            return RxJavaPlugins.onAssembly(new CompletableMergeArrayDelayError(sources /* TODO , config.maxConcurrency() */));
+        }
+        return RxJavaPlugins.onAssembly(new CompletableMergeArray(sources /* TODO , config.maxConcurrency() */));
+
     }
 
     /**
@@ -1002,69 +934,21 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param sources the sequence of {@code CompletableSource}s
+     * @param config the configuration record for this operator
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable mergeDelayError(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
+    public static Completable merge(@NonNull Iterable<@NonNull ? extends CompletableSource> sources, @NonNull CompletableMergeConfig config) {
         Objects.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new CompletableMergeDelayErrorIterable(sources));
-    }
-
-    /**
-     * Returns a {@code Completable} that subscribes to all {@link CompletableSource}s in the source sequence and delays
-     * any error emitted by either the sources {@link Publisher} or any of the inner {@code CompletableSource}s until all of
-     * them terminate in a way or another.
-     * <p>
-     * <img width="640" height="466" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.mergeDelayError.p.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the {@code Publisher} in an unbounded manner
-     *  (requesting {@link Long#MAX_VALUE} from it).</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param sources the sequence of {@code CompletableSource}s
-     * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @NonNull
-    public static Completable mergeDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
-        return merge0(sources, Integer.MAX_VALUE, true);
-    }
-
-    /**
-     * Returns a {@code Completable} that subscribes to a limited number of inner {@link CompletableSource}s at once in
-     * the source sequence and delays any error emitted by either the sources
-     * {@link Publisher} or any of the inner {@code CompletableSource}s until all of
-     * them terminate in a way or another.
-     * <p>
-     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.mergeDelayError.pn.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator requests {@code maxConcurrency} items from the {@code Publisher}
-     *  upfront and keeps requesting as many more as many inner {@code CompletableSource}s terminate.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param sources the sequence of {@code CompletableSource}s
-     * @param maxConcurrency the maximum number of concurrent subscriptions to have
-     *                       at a time to the inner {@code CompletableSource}s
-     * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @BackpressureSupport(BackpressureKind.FULL)
-    @NonNull
-    public static Completable mergeDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources, int maxConcurrency) {
-        return merge0(sources, maxConcurrency, true);
+        Objects.requireNonNull(config, "config is null");
+        if (config.delayErrors()) {
+            return RxJavaPlugins.onAssembly(new CompletableMergeDelayErrorIterable(sources /* TODO , config.maxConcurrency() */));
+        }
+        return RxJavaPlugins.onAssembly(new CompletableMergeIterable(sources /* TODO , config.maxConcurrency() */));
     }
 
     /**
