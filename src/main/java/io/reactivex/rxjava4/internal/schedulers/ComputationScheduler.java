@@ -86,7 +86,7 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
             if (c == 0) {
                 return SHUTDOWN_WORKER;
             }
-            // simple round robin, improvements to come
+            // simple round-robin, improvements to come
             return eventLoops[(int)(n++ % c)];
         }
 

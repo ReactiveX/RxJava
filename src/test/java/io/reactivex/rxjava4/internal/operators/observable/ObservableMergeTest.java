@@ -659,7 +659,7 @@ public class ObservableMergeTest extends RxJavaTest {
     /**
      * This is the same as the upstreams ones, but now adds the downstream as well by using observeOn.
      *
-     * This requires merge to also obey the Product.request values coming from it's child Observer.
+     * This requires merge to also obey the {@link java.util.concurrent.Flow.Subscription#request(long)} values coming from its child Observer.
      * @throws InterruptedException if the test is interrupted
      */
     @Test
@@ -709,7 +709,7 @@ public class ObservableMergeTest extends RxJavaTest {
      * Thus, we must allow all Observables to be sent. The ScalarSynchronousObservable use case is an exception to this since
      * we can grab the value synchronously.
      *
-     * @throws InterruptedException if the await is interrupted
+     * @throws InterruptedException if the {@link TestObserver#awaitDone(long, TimeUnit)} is interrupted
      */
     @Test
     public void backpressureBothUpstreamAndDownstreamWithRegularObservables() throws InterruptedException {

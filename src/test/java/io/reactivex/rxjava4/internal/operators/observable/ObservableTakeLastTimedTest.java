@@ -260,19 +260,9 @@ public class ObservableTakeLastTimedTest extends RxJavaTest {
 
             final TestObserver<Integer> to = ps.takeLast(1, TimeUnit.DAYS).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r1 = ps::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }

@@ -42,18 +42,18 @@ public class ObservableFromSingleTest extends RxJavaTest {
 
     @Test
     public void cancelComposes() {
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestObserver<Integer> to = Observable.fromSingle(ms)
+        TestObserver<Integer> to = Observable.fromSingle(ss)
         .test();
 
         to.assertEmpty();
 
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         to.dispose();
 
-        assertFalse(ms.hasObservers());
+        assertFalse(ss.hasObservers());
     }
 
     @Test

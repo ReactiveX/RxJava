@@ -340,7 +340,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void fusionOfflie() {
+    public void fusionOffline() {
         AsyncProcessor<Integer> ap = new AsyncProcessor<>();
         ap.onNext(1);
         ap.onComplete();

@@ -52,7 +52,7 @@ The `forEachFuture( )` returns a `FutureTask` for each item emitted by the sou
 ## fromCancellableFuture( ), startCancellableFuture( ), and deferCancellableFuture( )
 #### versions of Future-to-Observable converters that monitor the subscription status of the Observable to determine whether to halt work on the Future
 
-If the a subscriber to the Observable that results when a Future is converted to an Observable later unsubscribes from that Observable, it can be useful to have the ability to stop attempting to retrieve items from the Future. The "cancellable" Future enables you do do this. These three methods will return Observables that, when unsubscribed to, will also "unsubscribe" from the underlying Futures.
+If a subscriber to the Observable that results when a Future is converted to an Observable later unsubscribes from that Observable, it can be useful to have the ability to stop attempting to retrieve items from the Future. The "cancellable" Future enables you do this. These three methods will return Observables that, when unsubscribed to, will also "unsubscribe" from the underlying Futures.
 
 ***
 
@@ -148,7 +148,7 @@ Use the `parallelMerge( )` method to take an Observable that emits a large num
 
 If you combine multiple sets of grouped observables, such as those created by [`groupBy( )` and `groupByUntil( )`](Transforming-Observables#wiki-groupby-and-groupbyuntil), then even if those grouped observables have been grouped by a similar differentiation function, the resulting grouping will be primarily based on which set the observable came from, not on which group the observable belonged to.
 
-An example may make this clearer. Imagine you use `groupBy( )` to group the emissions of an Observable (Observable1) that emits integers into two grouped observables, one emitting the even integers and the other emitting the odd integers. You then repeat this process on a second Observable (Observable2) that emits another set of integers. You hope then to combine the sets of grouped observables emitted by each of these into a single grouped Observable by means of a operator like `from(Observable1, Observable2)`.
+An example may make this clearer. Imagine you use `groupBy( )` to group the emissions of an Observable (Observable1) that emits integers into two grouped observables, one emitting the even integers and the other emitting the odd integers. You then repeat this process on a second Observable (Observable2) that emits another set of integers. You hope then to combine the sets of grouped observables emitted by each of these into a single grouped Observable by means of an operator like `from(Observable1, Observable2)`.
 
 The result will be a grouped observable that emits two groups: the grouped observable resulting from transforming Observable1, and the grouped observable resulting from transforming Observable2. Each of those grouped observables emit observables that in turn emit the odds and evens from the source observables. You can use `pivot( )` to change this around: by applying `pivot( )` to this grouped observable it will transform into one that emits two different groups: the odds group and the evens group, with each of these groups emitting a separate observable corresponding to which source observable its set of integers came from. Here is an illustration:
 

@@ -227,7 +227,7 @@ flowable.subscribe(value -> System.out.println(value));
 
 **ReactiveX documentation:** [http://reactivex.io/documentation/operators/create.html](http://reactivex.io/documentation/operators/create.html)
 
-Construct a **safe** reactive type instance which when subscribed to by a consumer, runs an user-provided function and provides a type-specific `Emitter` for this function to generate the signal(s) the designated business logic requires. This method allows bridging the non-reactive, usually listener/callback-style world, with the reactive world.
+Construct a **safe** reactive type instance which when subscribed to by a consumer, runs a user-provided function and provides a type-specific `Emitter` for this function to generate the signal(s) the designated business logic requires. This method allows bridging the non-reactive, usually listener/callback-style world, with the reactive world.
 
 #### create example:
 
@@ -263,10 +263,10 @@ executor.shutdown();
 
 **ReactiveX documentation:** [http://reactivex.io/documentation/operators/defer.html](http://reactivex.io/documentation/operators/defer.html)
 
-Calls an user-provided `java.util.concurrent.Callable` when a consumer subscribes to the reactive type so that the `Callable` can generate the actual reactive instance to relay signals from towards the consumer. `defer` allows:
+Calls a user-provided `java.util.concurrent.Callable` when a consumer subscribes to the reactive type so that the `Callable` can generate the actual reactive instance to relay signals from towards the consumer. `defer` allows:
 
 - associating a per-consumer state with such generated reactive instances,
-- allows executing side-effects before an actual/generated reactive instance gets subscribed to,
+- allows executing side effects before an actual/generated reactive instance gets subscribed to,
 - turn hot sources (i.e., `Subject`s and `Processor`s) into cold sources by basically making those hot sources not exist until a consumer subscribes. 
 
 #### defer example:
@@ -311,7 +311,7 @@ characters.subscribe(character -> System.out.print(character), error -> error.pr
 
 **ReactiveX documentation:** [http://reactivex.io/documentation/operators/interval.html](http://reactivex.io/documentation/operators/interval.html)
 
-Periodically generates an infinite, ever increasing numbers (of type `Long`). The `intervalRange` variant generates a limited amount of such numbers.
+Periodically generates an infinite, ever-increasing numbers (of type `Long`). The `intervalRange` variant generates a limited amount of such numbers.
 
 #### interval example:
 

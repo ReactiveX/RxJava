@@ -58,7 +58,7 @@ public class FlowableDebounceTest extends RxJavaTest {
             subscriber.onSubscribe(new BooleanSubscription());
             publishNext(subscriber, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
             publishNext(subscriber, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
-            publishNext(subscriber, 900, "three");   // Should be skipped since "four" will arrive before the timout expires.
+            publishNext(subscriber, 900, "three");   // Should be skipped since "four" will arrive before the timeout expires.
             publishNext(subscriber, 999, "four");   // Should be skipped since onComplete will arrive before the timeout expires.
             publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
         });
@@ -92,7 +92,7 @@ public class FlowableDebounceTest extends RxJavaTest {
             subscriber.onSubscribe(new BooleanSubscription());
             publishNext(subscriber, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
             publishNext(subscriber, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
-            publishNext(subscriber, 900, "three");   // Should be skipped since "four" will arrive before the timout expires.
+            publishNext(subscriber, 900, "three");   // Should be skipped since "four" will arrive before the timeout expires.
             publishNext(subscriber, 999, "four");   // Should be skipped since onComplete will arrive before the timeout expires.
             publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
         });

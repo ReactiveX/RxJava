@@ -71,23 +71,23 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void mainBoundaryErrorInnerSuccess() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestObserver<Integer> to = ps.concatMapSingleDelayError(Functions.justFunction(ms), false).test();
+        TestObserver<Integer> to = ps.concatMapSingleDelayError(Functions.justFunction(ss), false).test();
 
         to.assertEmpty();
 
         ps.onNext(1);
 
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         ps.onError(new TestException());
 
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         to.assertEmpty();
 
-        ms.onSuccess(1);
+        ss.onSuccess(1);
 
         to.assertFailure(TestException.class, 1);
     }
@@ -230,9 +230,9 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void mainCompletesWhileInnerActive() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestObserver<Integer> to = ps.concatMapSingleDelayError(Functions.justFunction(ms), false).test();
+        TestObserver<Integer> to = ps.concatMapSingleDelayError(Functions.justFunction(ss), false).test();
 
         to.assertEmpty();
 
@@ -240,11 +240,11 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
         ps.onNext(2);
         ps.onComplete();
 
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         to.assertEmpty();
 
-        ms.onSuccess(1);
+        ss.onSuccess(1);
 
         to.assertResult(1, 1);
     }

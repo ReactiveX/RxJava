@@ -6,7 +6,7 @@
 
 #### RxJava 1.x
 
-Currently RxJava 1.x does not directly implement the Reactive Streams APIs. This is due to RxJava 1.x already existing and not being able to break public APIs. It does however comply semantically with the non-blocking "reactive pull" approach to backpressure and flow control and thus can use a bridge between types. The [RxJavaReactiveStreams module](https://github.com/ReactiveX/RxJavaReactiveStreams) bridges between the RxJava 1.x types and Reactive Streams types for interop between Reactive Streams implementations and passes the Reactive Streams [TCK compliance tests](https://github.com/ReactiveX/RxJavaReactiveStreams/blob/0.x/rxjava-reactive-streams/build.gradle#L8).
+Currently, RxJava 1.x does not directly implement the Reactive Streams APIs. This is due to RxJava 1.x already existing and not being able to break public APIs. It does however comply semantically with the non-blocking "reactive pull" approach to backpressure and flow control and thus can use a bridge between types. The [RxJavaReactiveStreams module](https://github.com/ReactiveX/RxJavaReactiveStreams) bridges between the RxJava 1.x types and Reactive Streams types for interop between Reactive Streams implementations and passes the Reactive Streams [TCK compliance tests](https://github.com/ReactiveX/RxJavaReactiveStreams/blob/0.x/rxjava-reactive-streams/build.gradle#L8).
 
 Its API looks like this:
 
@@ -37,7 +37,7 @@ A strong area of value for Reactive Streams is public APIs exposed in libraries.
 ### Pros of Exposing Reactive Stream APIs instead of RxJava
 
 * Lightweight: Very lightweight dependency on interfaces without any concrete implementations. This keeps dependency graphs and bytesize small.
-* Future Proof: Since the Reactive Stream API is so simple, was collaboratively defined and is [becoming part](https://github.com/reactive-streams/reactive-streams-jvm/issues/195) of [JDK 9](http://cs.oswego.edu/pipermail/concurrency-interest/2015-January/013641.html) it is a future proof API for exposing async access to data. The [`j.u.c.Flow` APIs](http://gee.cs.oswego.edu/dl/jsr166/dist/docs/java/util/concurrent/Flow.html) of JDK 9 match the APIs of Reactive Streams so any types that implement the Reactive Streams `Publisher` will also be able to implement the `Flow.Publisher` type. 
+* Future Proof: Since the Reactive Stream API is so simple, was collaboratively defined and is [becoming part](https://github.com/reactive-streams/reactive-streams-jvm/issues/195) of [JDK 9](http://cs.oswego.edu/pipermail/concurrency-interest/2015-January/013641.html) it is a future-proof API for exposing async access to data. The [`j.u.c.Flow` APIs](http://gee.cs.oswego.edu/dl/jsr166/dist/docs/java/util/concurrent/Flow.html) of JDK 9 match the APIs of Reactive Streams so any types that implement the Reactive Streams `Publisher` will also be able to implement the `Flow.Publisher` type. 
 * Interop: An API exposed with Reactive Streams types can easily be consumed by any implementation such as RxJava, Akka Streams and Reactor.
 
 ### Cons of Exposing Reactive Stream APIs instead of RxJava

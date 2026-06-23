@@ -210,7 +210,7 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
      * <p>
      * If a {@code Subscriber} subscribes while the {@code ReplayProcessor} is active, it will observe all items in the
      * buffer at that point in time and each item observed afterwards, even if the buffer evicts items due to
-     * the size constraint in the mean time. In other words, once a {@code Subscriber} subscribes, it will receive items
+     * the size constraint in the meantime. In other words, once a {@code Subscriber} subscribes, it will receive items
      * without gaps in the sequence.
      *
      * @param <T>
@@ -258,7 +258,7 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
      * <p>
      * If a {@code Subscriber} subscribes while the {@code ReplayProcessor} is active, it will observe only those items
      * from within the buffer that have an age less than the specified time, and each item observed thereafter,
-     * even if the buffer evicts items due to the time constraint in the mean time. In other words, once a
+     * even if the buffer evicts items due to the time constraint in the meantime. In other words, once a
      * {@code Subscriber} subscribes, it observes items without gaps in the sequence except for any outdated items at the
      * beginning of the sequence.
      * <p>
@@ -301,7 +301,7 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
      * <p>
      * If a {@code Subscriber} subscribes while the {@code ReplayProcessor} is active, it will observe only those items
      * from within the buffer that have age less than the specified time and each subsequent item, even if the
-     * buffer evicts items due to the time constraint in the mean time. In other words, once a {@code Subscriber}
+     * buffer evicts items due to the time constraint in the meantime. In other words, once a {@code Subscriber}
      * subscribes, it observes items without gaps in the sequence except for the outdated items at the beginning
      * of the sequence.
      * <p>

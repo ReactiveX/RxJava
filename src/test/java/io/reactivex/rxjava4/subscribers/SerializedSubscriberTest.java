@@ -263,7 +263,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
     /**
      * Test that a notification does not get delayed in the queue waiting for the next event to push it through.
      *
-     * @throws InterruptedException if the await is interrupted
+     * @throws InterruptedException if await() is interrupted
      */
     @Ignore("this is non-deterministic ... haven't figured out what's wrong with the test yet (benjchristensen: July 2014)")
     @Test
@@ -353,7 +353,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
      * The real issue in this example is the async buffer-bloat, so we need backpressure.
      *
      *
-     * @throws InterruptedException if the await is interrupted
+     * @throws InterruptedException if await() is interrupted
      */
     @Ignore("Demonstrates thread starvation problem. Read JavaDoc")
     @Test

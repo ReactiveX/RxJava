@@ -20,7 +20,7 @@ import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 
 /**
- * Makes sure a dispose() call from downstream happens on the specified scheduler.
+ * Makes sure dispose() call from downstream happens on the specified scheduler.
  * 
  * @param <T> the value type
  */

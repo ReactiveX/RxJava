@@ -35,7 +35,7 @@ public final class ObservableScalarXMap {
     }
 
     /**
-     * Tries to subscribe to a possibly Supplier source's mapped ObservableSource.
+     * Tries to subscribe to a possible Supplier source's mapped ObservableSource.
      * @param <T> the input value type
      * @param <R> the output value type
      * @param source the source ObservableSource

@@ -642,7 +642,7 @@ public abstract class Completable implements CompletableSource {
      * <p>
      * <img width="640" height="297" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.fromRunnable.png" alt="">
      * <p>
-     * If the code to be wrapped needs to throw a checked or more broader {@link Throwable} exception, that
+     * If the code to be wrapped needs to throw a checked or broader {@link Throwable} exception, that
      * exception has to be converted to an unchecked exception by the wrapped code itself. Alternatively,
      * use the {@link #fromAction(Action)} method which allows the wrapped code to throw any {@code Throwable}
      * exception and will signal it to observers as-is.
@@ -1299,7 +1299,7 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns a {@code Completable} that emits the a terminated event of either this {@code Completable}
+     * Returns a {@code Completable} that emits a terminated event of either this {@code Completable}
      * or the other {@link CompletableSource}, whichever fires first.
      * <p>
      * <img width="640" height="485" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.ambWith.png" alt="">
@@ -3004,7 +3004,7 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Returns a {@code Completable} which subscribes the downstream subscriber on the specified scheduler, making
-     * sure the subscription side-effects happen on that specific thread of the {@link Scheduler}.
+     * sure the subscription side effects happen on that specific thread of the {@link Scheduler}.
      * <p>
      * <img width="640" height="686" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.subscribeOn.png" alt="">
      * <dl>

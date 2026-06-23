@@ -47,12 +47,7 @@ public class ObservableZipTest extends RxJavaTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
-            @Override
-            public String apply(String t1, String t2) {
-                return t1 + "-" + t2;
-            }
-        };
+        concat2Strings = (t1, t2) -> t1 + "-" + t2;
 
         s1 = PublishSubject.create();
         s2 = PublishSubject.create();
@@ -152,25 +147,11 @@ public class ObservableZipTest extends RxJavaTest {
 
     }
 
-    BiFunction<Object, Object, String> zipr2 = new BiFunction<Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2) {
-            return "" + t1 + t2;
-        }
-
-    };
-    Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2, Object t3) {
-            return "" + t1 + t2 + t3;
-        }
-
-    };
+    BiFunction<Object, Object, String> zipr2 = (t1, t2) -> "" + t1 + t2;
+    Function3<Object, Object, Object, String> zipr3 = (t1, t2, t3) -> "" + t1 + t2 + t3;
 
     /**
-     * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it
+     * Testing internal private logic due to the complexity so I want to use TDD to test as I build it
      * rather than relying purely on the overall functionality expected by the public methods.
      */
     @Test
@@ -539,69 +520,37 @@ public class ObservableZipTest extends RxJavaTest {
     }
 
     private BiFunction<String, String, String> getConcat2Strings() {
-        return new BiFunction<String, String, String>() {
-
-            @Override
-            public String apply(String t1, String t2) {
-                return t1 + "-" + t2;
-            }
-        };
+        return (t1, t2) -> t1 + "-" + t2;
     }
 
     private BiFunction<Integer, Integer, Integer> getDivideZipr() {
-        BiFunction<Integer, Integer, Integer> zipr = new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer i1, Integer i2) {
-                return i1 / i2;
-            }
-
-        };
+        BiFunction<Integer, Integer, Integer> zipr = (i1, i2) -> i1 / i2;
         return zipr;
     }
 
     private Function3<String, String, String, String> getConcat3StringsZipr() {
-        Function3<String, String, String, String> zipr = new Function3<String, String, String, String>() {
-
-            @Override
-            public String apply(String a1, String a2, String a3) {
-                if (a1 == null) {
-                    a1 = "";
-                }
-                if (a2 == null) {
-                    a2 = "";
-                }
-                if (a3 == null) {
-                    a3 = "";
-                }
-                return a1 + a2 + a3;
+        Function3<String, String, String, String> zipr = (a1, a2, a3) -> {
+            if (a1 == null) {
+                a1 = "";
             }
-
+            if (a2 == null) {
+                a2 = "";
+            }
+            if (a3 == null) {
+                a3 = "";
+            }
+            return a1 + a2 + a3;
         };
         return zipr;
     }
 
     private BiFunction<String, Integer, String> getConcatStringIntegerZipr() {
-        BiFunction<String, Integer, String> zipr = new BiFunction<String, Integer, String>() {
-
-            @Override
-            public String apply(String s, Integer i) {
-                return getStringValue(s) + getStringValue(i);
-            }
-
-        };
+        BiFunction<String, Integer, String> zipr = (s, i) -> getStringValue(s) + getStringValue(i);
         return zipr;
     }
 
     private Function3<String, Integer, int[], String> getConcatStringIntegerIntArrayZipr() {
-        Function3<String, Integer, int[], String> zipr = new Function3<String, Integer, int[], String>() {
-
-            @Override
-            public String apply(String s, Integer i, int[] iArray) {
-                return getStringValue(s) + getStringValue(i) + getStringValue(iArray);
-            }
-
-        };
+        Function3<String, Integer, int[], String> zipr = (s, i, iArray) -> getStringValue(s) + getStringValue(i) + getStringValue(iArray);
         return zipr;
     }
 
@@ -719,7 +668,7 @@ public class ObservableZipTest extends RxJavaTest {
         // issue: https://groups.google.com/forum/#!topic/rxjava/79cWTv3TFp0
         // The problem is the original "zip" implementation does not wrap
         // an internal observer with a SafeSubscriber. However, in the "zip",
-        // it may calls "onComplete" twice. That breaks the Rx contract.
+        // it may call "onComplete" twice. That breaks the Rx contract.
 
         // This test tries to emulate this case.
         // As "TestHelper.mockObserver()" will create an instance in the package "rx",
@@ -728,12 +677,7 @@ public class ObservableZipTest extends RxJavaTest {
         final Observer<Integer> observer = TestHelper.mockObserver();
 
         Observable.zip(Observable.just(1),
-                Observable.just(1), new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) {
-                        return a + b;
-                    }
-                }).subscribe(new DefaultObserver<Integer>() {
+                Observable.just(1), Integer::sum).subscribe(new DefaultObserver<Integer>() {
 
             @Override
             public void onComplete() {
@@ -761,22 +705,12 @@ public class ObservableZipTest extends RxJavaTest {
     @Test
     public void start() {
         Observable<String> os = OBSERVABLE_OF_5_INTEGERS
-                .zipWith(OBSERVABLE_OF_5_INTEGERS, new BiFunction<Integer, Integer, String>() {
-
-                    @Override
-                    public String apply(Integer a, Integer b) {
-                        return a + "-" + b;
-                    }
-                });
+                .zipWith(OBSERVABLE_OF_5_INTEGERS, (a, b) -> a + "-" + b);
 
         final ArrayList<String> list = new ArrayList<>();
-        os.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
+        os.subscribe(s -> {
+            System.out.println(s);
+            list.add(s);
         });
 
         assertEquals(5, list.size());
@@ -788,13 +722,7 @@ public class ObservableZipTest extends RxJavaTest {
     @Test
     public void startAsync() throws InterruptedException {
         Observable<String> os = ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1))
-                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)), new BiFunction<Integer, Integer, String>() {
-
-                    @Override
-                    public String apply(Integer a, Integer b) {
-                        return a + "-" + b;
-                    }
-                }).take(5);
+                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)), (a, b) -> a + "-" + b).take(5);
 
         TestObserver<String> to = new TestObserver<>();
         os.subscribe(to);
@@ -813,13 +741,7 @@ public class ObservableZipTest extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch infiniteObservable = new CountDownLatch(1);
         Observable<String> os = OBSERVABLE_OF_5_INTEGERS
-                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservable), new BiFunction<Integer, Integer, String>() {
-
-                    @Override
-                    public String apply(Integer a, Integer b) {
-                        return a + "-" + b;
-                    }
-                });
+                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservable), (a, b) -> a + "-" + b);
 
         final ArrayList<String> list = new ArrayList<>();
         os.subscribe(new DefaultObserver<String>() {
@@ -876,23 +798,12 @@ public class ObservableZipTest extends RxJavaTest {
     public void emitMaterializedNotifications() {
         Observable<Notification<Integer>> oi = Observable.just(1, 2, 3).materialize();
         Observable<Notification<String>> os = Observable.just("a", "b", "c").materialize();
-        Observable<String> o = Observable.zip(oi, os, new BiFunction<Notification<Integer>, Notification<String>, String>() {
-
-            @Override
-            public String apply(Notification<Integer> t1, Notification<String> t2) {
-                return kind(t1) + "_" + value(t1) + "-" + kind(t2) + "_" + value(t2);
-            }
-
-        });
+        Observable<String> o = Observable.zip(oi, os, (t1, t2) -> kind(t1) + "_" + value(t1) + "-" + kind(t2) + "_" + value(t2));
 
         final ArrayList<String> list = new ArrayList<>();
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
+        o.subscribe(s -> {
+            System.out.println(s);
+            list.add(s);
         });
 
         assertEquals(4, list.size());
@@ -905,23 +816,12 @@ public class ObservableZipTest extends RxJavaTest {
     @Test
     public void startEmptyObservables() {
 
-        Observable<String> o = Observable.zip(Observable.<Integer> empty(), Observable.<String> empty(), new BiFunction<Integer, String, String>() {
-
-            @Override
-            public String apply(Integer t1, String t2) {
-                return t1 + "-" + t2;
-            }
-
-        });
+        Observable<String> o = Observable.zip(Observable.<Integer> empty(), Observable.<String> empty(), (t1, t2) -> t1 + "-" + t2);
 
         final ArrayList<String> list = new ArrayList<>();
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
+        o.subscribe(s -> {
+            System.out.println(s);
+            list.add(s);
         });
 
         assertEquals(0, list.size());
@@ -933,12 +833,9 @@ public class ObservableZipTest extends RxJavaTest {
         final Object invoked = new Object();
         Collection<Observable<Object>> observables = Collections.emptyList();
 
-        Observable<Object> o = Observable.zip(observables, new Function<Object[], Object>() {
-            @Override
-            public Object apply(final Object[] args) {
-                assertEquals("No argument should have been passed", 0, args.length);
-                return invoked;
-            }
+        Observable<Object> o = Observable.zip(observables, args -> {
+            Assert.assertEquals("No argument should have been passed", 0, args.length);
+            return invoked;
         });
 
         TestObserver<Object> to = new TestObserver<>();
@@ -957,12 +854,9 @@ public class ObservableZipTest extends RxJavaTest {
         final Object invoked = new Object();
         Collection<Observable<Object>> observables = Collections.emptyList();
 
-        Observable<Object> o = Observable.zip(observables, new Function<Object[], Object>() {
-            @Override
-            public Object apply(final Object[] args) {
-                assertEquals("No argument should have been passed", 0, args.length);
-                return invoked;
-            }
+        Observable<Object> o = Observable.zip(observables, args -> {
+            Assert.assertEquals("No argument should have been passed", 0, args.length);
+            return invoked;
         });
 
         o.blockingLast();
@@ -976,14 +870,7 @@ public class ObservableZipTest extends RxJavaTest {
         Observable<Integer> o2 = createInfiniteObservable(generatedB).take(Observable.bufferSize() * 2);
 
         TestObserver<String> to = new TestObserver<>();
-        Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
-
-            @Override
-            public String apply(Integer t1, Integer t2) {
-                return t1 + "-" + t2;
-            }
-
-        }).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2).subscribe(to);
+        Observable.zip(o1, o2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2).subscribe(to);
 
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -994,25 +881,20 @@ public class ObservableZipTest extends RxJavaTest {
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
-        Observable<Integer> o = Observable.fromIterable(new Iterable<Integer>() {
+        Observable<Integer> o = Observable.fromIterable(() -> new Iterator<Integer>() {
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
+            public void remove() {
+            }
 
-                    @Override
-                    public void remove() {
-                    }
+            @Override
+            public Integer next() {
+                return generated.getAndIncrement();
+            }
 
-                    @Override
-                    public Integer next() {
-                        return generated.getAndIncrement();
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean hasNext() {
+                return true;
             }
         });
         return o;
@@ -1021,52 +903,38 @@ public class ObservableZipTest extends RxJavaTest {
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
 
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS(final AtomicInteger numEmitted) {
-        return Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-            @Override
-            public void subscribe(final Observer<? super Integer> o) {
-                Disposable d = Disposable.empty();
-                o.onSubscribe(d);
-                for (int i = 1; i <= 5; i++) {
-                    if (d.isDisposed()) {
-                        break;
-                    }
-                    numEmitted.incrementAndGet();
-                    o.onNext(i);
-                    Thread.yield();
+        return Observable.unsafeCreate(o -> {
+            Disposable d = Disposable.empty();
+            o.onSubscribe(d);
+            for (int i = 1; i <= 5; i++) {
+                if (d.isDisposed()) {
+                    break;
                 }
-                o.onComplete();
+                numEmitted.incrementAndGet();
+                o.onNext(i);
+                Thread.yield();
             }
-
+            o.onComplete();
         });
     }
 
     Observable<Integer> ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(final CountDownLatch latch) {
-        return Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-            @Override
-            public void subscribe(final Observer<? super Integer> o) {
-                final Disposable d = Disposable.empty();
-                o.onSubscribe(d);
-                Thread t = new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        System.out.println("-------> subscribe to infinite sequence");
-                        System.out.println("Starting thread: " + Thread.currentThread());
-                        int i = 1;
-                        while (!d.isDisposed()) {
-                            o.onNext(i++);
-                            Thread.yield();
-                        }
-                        o.onComplete();
-                        latch.countDown();
-                        System.out.println("Ending thread: " + Thread.currentThread());
-                    }
-                });
-                t.start();
-
-            }
+        return Observable.unsafeCreate(o -> {
+            final Disposable d = Disposable.empty();
+            o.onSubscribe(d);
+            Thread t = new Thread(() -> {
+                System.out.println("-------> subscribe to infinite sequence");
+                System.out.println("Starting thread: " + Thread.currentThread());
+                int i = 1;
+                while (!d.isDisposed()) {
+                    o.onNext(i++);
+                    Thread.yield();
+                }
+                o.onComplete();
+                latch.countDown();
+                System.out.println("Ending thread: " + Thread.currentThread());
+            });
+            t.start();
 
         });
     }
@@ -1075,21 +943,9 @@ public class ObservableZipTest extends RxJavaTest {
     public void issue1812() {
         // https://github.com/ReactiveX/RxJava/issues/1812
         Observable<Integer> zip1 = Observable.zip(Observable.range(0, 1026), Observable.range(0, 1026),
-                new BiFunction<Integer, Integer, Integer>() {
-
-                    @Override
-                    public Integer apply(Integer i1, Integer i2) {
-                        return i1 + i2;
-                    }
-                });
+                Integer::sum);
         Observable<Integer> zip2 = Observable.zip(zip1, Observable.range(0, 1026),
-                new BiFunction<Integer, Integer, Integer>() {
-
-                    @Override
-                    public Integer apply(Integer i1, Integer i2) {
-                        return i1 + i2;
-                    }
-                });
+                Integer::sum);
         List<Integer> expected = new ArrayList<>();
         for (int i = 0; i < 1026; i++) {
             expected.add(i * 3);
@@ -1104,15 +960,10 @@ public class ObservableZipTest extends RxJavaTest {
 
         // now try and generate a hang by zipping src with itself repeatedly. A
         // time limit of 9 seconds ( 1 second less than the test timeout) is
-        // used so that this test will not timeout on slow machines.
+        // used so that this test will not time out on slow machines.
         int i = 0;
         while (System.currentTimeMillis() - startTime < 9000 && i++ < 100000) {
-            int value = Observable.zip(src, src, new BiFunction<Integer, Integer, Integer>() {
-                @Override
-                public Integer apply(Integer t1, Integer t2) {
-                    return t1 + t2 * 10;
-                }
-            }).blockingSingle(0);
+            int value = Observable.zip(src, src, (t1, t2) -> t1 + t2 * 10).blockingSingle(0);
 
             Assert.assertEquals(11, value);
         }
@@ -1122,13 +973,8 @@ public class ObservableZipTest extends RxJavaTest {
     public void zip2() {
         Observable.zip(Observable.just(1),
                 Observable.just(2),
-            new BiFunction<Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b) throws Exception {
-                    return "" + a + b;
-                }
-            }
-        )
+                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b
+                )
         .test()
         .assertResult("12");
     }
@@ -1137,13 +983,8 @@ public class ObservableZipTest extends RxJavaTest {
     public void zip3() {
         Observable.zip(Observable.just(1),
                 Observable.just(2), Observable.just(3),
-            new Function3<Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                    return "" + a + b + c;
-                }
-            }
-        )
+                        (Function3<Integer, Integer, Integer, Object>) (a, b, c) -> "" + a + b + c
+                )
         .test()
         .assertResult("123");
     }
@@ -1153,13 +994,8 @@ public class ObservableZipTest extends RxJavaTest {
         Observable.zip(Observable.just(1),
                 Observable.just(2), Observable.just(3),
                 Observable.just(4),
-            new Function4<Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d) throws Exception {
-                    return "" + a + b + c + d;
-                }
-            }
-        )
+                        (Function4<Integer, Integer, Integer, Integer, Object>) (a, b, c, d) -> "" + a + b + c + d
+                )
         .test()
         .assertResult("1234");
     }
@@ -1169,13 +1005,8 @@ public class ObservableZipTest extends RxJavaTest {
         Observable.zip(Observable.just(1),
                 Observable.just(2), Observable.just(3),
                 Observable.just(4), Observable.just(5),
-            new Function5<Integer, Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e) throws Exception {
-                    return "" + a + b + c + d + e;
-                }
-            }
-        )
+                        (Function5<Integer, Integer, Integer, Integer, Integer, Object>) (a, b, c, d, e) -> "" + a + b + c + d + e
+                )
         .test()
         .assertResult("12345");
     }
@@ -1186,13 +1017,8 @@ public class ObservableZipTest extends RxJavaTest {
                 Observable.just(2), Observable.just(3),
                 Observable.just(4), Observable.just(5),
                 Observable.just(6),
-            new Function6<Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f) throws Exception {
-                    return "" + a + b + c + d + e + f;
-                }
-            }
-        )
+                        (Function6<Integer, Integer, Integer, Integer, Integer, Integer, Object>) (a, b, c, d, e, f) -> "" + a + b + c + d + e + f
+                )
         .test()
         .assertResult("123456");
     }
@@ -1203,14 +1029,8 @@ public class ObservableZipTest extends RxJavaTest {
                 Observable.just(2), Observable.just(3),
                 Observable.just(4), Observable.just(5),
                 Observable.just(6), Observable.just(7),
-            new Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g)
-                        throws Exception {
-                    return "" + a + b + c + d + e + f + g;
-                }
-            }
-        )
+                        (Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>) (a, b, c, d, e, f, g) -> "" + a + b + c + d + e + f + g
+                )
         .test()
         .assertResult("1234567");
     }
@@ -1222,14 +1042,9 @@ public class ObservableZipTest extends RxJavaTest {
                 Observable.just(4), Observable.just(5),
                 Observable.just(6), Observable.just(7),
                 Observable.just(8),
-            new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
-                        Integer h) throws Exception {
-                    return "" + a + b + c + d + e + f + g + h;
-                }
-            }
-        )
+                        (Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>)
+                        (a, b, c, d, e, f, g, h) -> "" + a + b + c + d + e + f + g + h
+                )
         .test()
         .assertResult("12345678");
     }
@@ -1241,14 +1056,9 @@ public class ObservableZipTest extends RxJavaTest {
                 Observable.just(4), Observable.just(5),
                 Observable.just(6), Observable.just(7),
                 Observable.just(8), Observable.just(9),
-            new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
-                        Integer h, Integer i) throws Exception {
-                    return "" + a + b + c + d + e + f + g + h + i;
-                }
-            }
-        )
+                        (Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>)
+                        (a, b, c, d, e, f, g, h, i) -> "" + a + b + c + d + e + f + g + h + i
+                )
         .test()
         .assertResult("123456789");
     }
@@ -1257,12 +1067,7 @@ public class ObservableZipTest extends RxJavaTest {
     public void zip2DelayError() {
         Observable.zip(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(2),
-            new BiFunction<Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b) throws Exception {
-                    return "" + a + b;
-                }
-            }, true
+                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true
         )
         .test()
         .assertFailure(TestException.class, "12");
@@ -1272,12 +1077,7 @@ public class ObservableZipTest extends RxJavaTest {
     public void zip2Prefetch() {
         Observable.zip(Observable.range(1, 9),
                 Observable.range(21, 9),
-            new BiFunction<Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b) throws Exception {
-                    return "" + a + b;
-                }
-            }, false, 2
+                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, false, 2
         )
         .takeLast(1)
         .test()
@@ -1288,12 +1088,7 @@ public class ObservableZipTest extends RxJavaTest {
     public void zip2DelayErrorPrefetch() {
         Observable.zip(Observable.range(1, 9).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.range(21, 9),
-            new BiFunction<Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b) throws Exception {
-                    return "" + a + b;
-                }
-            }, true, 2
+                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true, 2
         )
         .skip(8)
         .test()
@@ -1312,49 +1107,24 @@ public class ObservableZipTest extends RxJavaTest {
 
         Arrays.fill(arr, Observable.just(1));
 
-        Observable.zip(Arrays.asList(arr), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return Arrays.toString(a);
-            }
-        })
+        Observable.zip(Arrays.asList(arr), (Function<Object[], Object>) Arrays::toString)
         .test()
         .assertResult("[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]");
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.zip(Observable.just(1), Observable.just(1), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }));
+        TestHelper.checkDisposed(Observable.zip(Observable.just(1), Observable.just(1), (BiFunction<Integer, Integer, Object>) Integer::sum));
     }
 
     @Test
     public void noCrossBoundaryFusion() {
         for (int i = 0; i < 500; i++) {
             TestObserver<List<Object>> to = Observable.zip(
-                    Observable.just(1).observeOn(Schedulers.single()).map(new Function<Integer, Object>() {
-                        @Override
-                        public Object apply(Integer v) throws Exception {
-                            return Thread.currentThread().getName().substring(0, 4);
-                        }
-                    }),
-                    Observable.just(1).observeOn(Schedulers.computation()).map(new Function<Integer, Object>() {
-                        @Override
-                        public Object apply(Integer v) throws Exception {
-                            return Thread.currentThread().getName().substring(0, 4);
-                        }
-                    }),
-                    new BiFunction<Object, Object, List<Object>>() {
-                        @Override
-                        public List<Object> apply(Object t1, Object t2) throws Exception {
-                            return Arrays.asList(t1, t2);
-                        }
-                    }
-            )
+                    Observable.just(1).observeOn(Schedulers.single()).map((Function<Integer, Object>) _ -> Thread.currentThread().getName().substring(0, 4)),
+                    Observable.just(1).observeOn(Schedulers.computation()).map((Function<Integer, Object>) _ -> Thread.currentThread().getName().substring(0, 4)),
+                            Arrays::asList
+                    )
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertValueCount(1);
@@ -1387,12 +1157,7 @@ public class ObservableZipTest extends RxJavaTest {
             }
         };
 
-        Observable.zip(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) throws Exception {
-                return t1 + t2;
-            }
-        })
+        Observable.zip(ps1, ps2, Integer::sum)
         .subscribe(to);
 
         ps1.onNext(1);
@@ -1405,24 +1170,11 @@ public class ObservableZipTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         List<Observable<Object>> observableList = new ArrayList<>();
-        observableList.add(Observable.create(new ObservableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(ObservableEmitter<Object> e)
-                    throws Exception { throw new TestException(); }
-        }));
-        observableList.add(Observable.create(new ObservableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(ObservableEmitter<Object> e)
-                    throws Exception { counter.getAndIncrement(); }
-        }));
+        observableList.add(Observable.create(_ -> { throw new TestException(); }));
+        observableList.add(Observable.create(_ -> counter.getAndIncrement()));
 
         Observable.zip(observableList,
-                new Function<Object[], Object>() {
-                    @Override
-                    public Object apply(Object[] a) throws Exception {
-                        return a;
-                    }
-                })
+                        (Function<Object[], Object>) a -> a)
         .test()
         .assertFailure(TestException.class)
         ;
@@ -1432,19 +1184,9 @@ public class ObservableZipTest extends RxJavaTest {
 
     @Test
     public void observableSourcesInIterable() {
-        ObservableSource<Integer> source = new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> observer) {
-                Observable.just(1).subscribe(observer);
-            }
-        };
+        ObservableSource<Integer> source = observer -> Observable.just(1).subscribe(observer);
 
-        Observable.zip(Arrays.asList(source, source), new Function<Object[], Integer>() {
-            @Override
-            public Integer apply(Object[] t) throws Throwable {
-                return 2;
-            }
-        })
+        Observable.zip(Arrays.asList(source, source), _ -> 2)
         .test()
         .assertResult(2);
     }

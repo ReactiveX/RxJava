@@ -214,7 +214,7 @@ public class FlowableAmbTest extends RxJavaTest {
         final AtomicLong count = new AtomicLong();
         Consumer<Subscription> incrementer = _ -> count.incrementAndGet();
 
-        //this aync stream should emit first
+        //this async stream should emit first
         Flowable<Integer> f1 = Flowable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         //this stream emits second
@@ -230,7 +230,7 @@ public class FlowableAmbTest extends RxJavaTest {
 
     @Test
     public void secondaryRequestsPropagatedToChildren() throws InterruptedException {
-        //this aync stream should emit first
+        //this async stream should emit first
         Flowable<Integer> f1 = Flowable.fromArray(1, 2, 3)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         //this stream emits second

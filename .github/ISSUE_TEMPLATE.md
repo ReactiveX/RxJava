@@ -1,4 +1,4 @@
-Thanks for using RxJava but before you post an issue, please consider the following points:
+Thanks for using RxJava, but before you post an issue, please consider the following points:
 
   - [ ] Please include the library version number, including the minor and patch version, in the issue text. In addition, if you'd include the major version in the title (such as `3.x`) that would be great.
 

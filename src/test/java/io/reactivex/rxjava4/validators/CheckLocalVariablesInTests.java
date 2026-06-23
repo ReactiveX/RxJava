@@ -201,6 +201,11 @@ public class CheckLocalVariablesInTests {
     }
 
     @Test
+    public void singleSubjectAsMs() throws Exception {
+        findPattern("SingleSubject<.*>\\s+ms");
+    }
+
+    @Test
     public void singleSourceAsCs() throws Exception {
         findPattern("SingleSource<.*>\\s+cs");
     }
@@ -208,6 +213,11 @@ public class CheckLocalVariablesInTests {
     @Test
     public void maybeSourceAsSs() throws Exception {
         findPattern("MaybeSource<.*>\\s+ss");
+    }
+
+    @Test
+    public void maybeSubjectAsSs() throws Exception {
+        findPattern("MaybeSubject<.*>\\s+ss");
     }
 
     @Test
@@ -223,6 +233,16 @@ public class CheckLocalVariablesInTests {
     @Test
     public void completableSourceAsMs() throws Exception {
         findPattern("CompletableSource<.*>\\s+ms");
+    }
+
+    @Test
+    public void completableSubjectAsSs() throws Exception {
+        findPattern("CompletableSubject<.*>\\s+ss");
+    }
+
+    @Test
+    public void completableSubjectAsMs() throws Exception {
+        findPattern("CompletableSubject<.*>\\s+ms");
     }
 
     @Test

@@ -38,9 +38,9 @@ public interface QueueDrain<T, U> {
 
     /**
      * Accept the value and return true if forwarded.
-     * @param a the subscriber
-     * @param v the value
+     * @param subscriber the subscriber
+     * @param value the value
      * @return true if the value was delivered
      */
-    boolean accept(Subscriber<? super U> a, T v);
+    boolean accept(Subscriber<? super U> subscriber, T value);
 }

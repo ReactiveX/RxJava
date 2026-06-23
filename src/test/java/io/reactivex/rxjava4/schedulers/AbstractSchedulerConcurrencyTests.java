@@ -112,7 +112,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                                 } catch (InterruptedException e) {
                                     // we expect the countDown if unsubscribe is not working
                                     // or to be interrupted if unsubscribe is successful since
-                                    // the unsubscribe will interrupt it as it is calling Future.cancel(true)
+                                    // unsubscribe will interrupt it as it is calling Future.cancel(true)
                                     // so we will ignore the stacktrace
                                 }
                             }
@@ -198,7 +198,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                                 } catch (InterruptedException e) {
                                     // we expect the countDown if unsubscribe is not working
                                     // or to be interrupted if unsubscribe is successful since
-                                    // the unsubscribe will interrupt it as it is calling Future.cancel(true)
+                                    // unsubscribe will interrupt it as it is calling Future.cancel(true)
                                     // so we will ignore the stacktrace
                                 }
                             }

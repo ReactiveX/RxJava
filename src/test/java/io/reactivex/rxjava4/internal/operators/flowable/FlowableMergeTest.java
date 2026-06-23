@@ -680,7 +680,7 @@ public class FlowableMergeTest extends RxJavaTest {
     /**
      * This is the same as the upstreams ones, but now adds the downstream as well by using observeOn.
      *
-     * This requires merge to also obey the Product.request values coming from it's child subscriber.
+     * This requires merge to also obey the {@link Subscription#request(long)} values coming from it's child subscriber.
      * @throws InterruptedException if the test is interrupted
      */
     @Test
@@ -765,7 +765,7 @@ public class FlowableMergeTest extends RxJavaTest {
      * Thus, we must allow all Flowables to be sent. The ScalarSynchronousFlowable use case is an exception to this since
      * we can grab the value synchronously.
      *
-     * @throws InterruptedException if the await is interrupted
+     * @throws InterruptedException if the {@link TestSubscriber#awaitDone(long, TimeUnit)} is interrupted
      */
     @Test
     public void backpressureBothUpstreamAndDownstreamWithRegularFlowables() throws InterruptedException {

@@ -110,7 +110,7 @@ public class FlowableSubscriberTest {
         Subscriber<? super String> ns = o.apply(s);
 
         final AtomicLong r = new AtomicLong();
-        // set set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
+        // set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
         // and then it should request up with the value set on the final Subscriber (s)
         ns.onSubscribe(new Subscription() /* NFI */ {
 
@@ -158,7 +158,7 @@ public class FlowableSubscriberTest {
         Subscriber<? super String> ns = o.apply(s);
 
         final AtomicLong r = new AtomicLong();
-        // set set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
+        // set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
         // and then it should request up with the value set on the final Subscriber (s)
         ns.onSubscribe(new Subscription() /* NFI */ {
 
@@ -225,7 +225,7 @@ public class FlowableSubscriberTest {
         Subscriber<? super String> ns = o.apply(s);
 
         final AtomicLong r = new AtomicLong();
-        // set set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
+        // set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
         // and then it should request up with the value set on the final Subscriber (s)
         ns.onSubscribe(new Subscription() /* NFI */ {
 

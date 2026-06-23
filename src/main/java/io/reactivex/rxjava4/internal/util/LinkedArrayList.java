@@ -19,7 +19,7 @@ import java.util.*;
  * A list implementation which combines an ArrayList with a LinkedList to
  * avoid copying values when the capacity needs to be increased.
  * <p>
- * The class is non final to allow embedding it directly and thus saving on object allocation.
+ * The class is non-final to allow embedding it directly and thus saving on object allocation.
  */
 public class LinkedArrayList {
     /** The capacity of each array segment. */
@@ -34,7 +34,7 @@ public class LinkedArrayList {
     Object[] tail;
     /**
      * The total size of the list; written after elements have been added (release) and
-     * and when read, the value indicates how many elements can be safely read (acquire).
+     * when read, the value indicates how many elements can be safely read (acquire).
      */
     volatile int size;
     /** The next available slot in the current tail. */

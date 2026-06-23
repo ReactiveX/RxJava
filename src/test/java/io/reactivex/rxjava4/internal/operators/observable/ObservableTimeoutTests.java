@@ -233,29 +233,18 @@ public class ObservableTimeoutTests extends RxJavaTest {
 
         final TestObserverEx<String> observer = new TestObserverEx<>();
 
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                Observable.unsafeCreate(new ObservableSource<String>() {
-
-                    @Override
-                    public void subscribe(Observer<? super String> observer) {
-                        observer.onSubscribe(Disposable.empty());
-                        try {
-                            timeoutSetuped.countDown();
-                            exit.await();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        observer.onNext("a");
-                        observer.onComplete();
-                    }
-
-                }).timeout(1, TimeUnit.SECONDS, testScheduler)
-                        .subscribe(observer);
+        new Thread(() -> Observable.unsafeCreate((ObservableSource<String>) observer1 -> {
+            observer1.onSubscribe(Disposable.empty());
+            try {
+                timeoutSetuped.countDown();
+                exit.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        }).start();
+            observer1.onNext("a");
+            observer1.onComplete();
+        }).timeout(1, TimeUnit.SECONDS, testScheduler)
+                .subscribe(observer)).start();
 
         timeoutSetuped.await();
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -270,12 +259,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Disposable upstream = mock(Disposable.class);
 
-        Observable<String> never = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(upstream);
-            }
-        });
+        Observable<String> never = Observable.unsafeCreate(observer -> observer.onSubscribe(upstream));
 
         TestScheduler testScheduler = new TestScheduler();
         Observable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
@@ -457,19 +441,9 @@ public class ObservableTimeoutTests extends RxJavaTest {
 
             TestObserverEx<Integer> to = ps.timeout(1, TimeUnit.SECONDS, sch).to(TestHelper.<Integer>testConsumer());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(1);
-                }
-            };
+            Runnable r1 = () -> ps.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    sch.advanceTimeBy(1, TimeUnit.SECONDS);
-                }
-            };
+            Runnable r2 = () -> sch.advanceTimeBy(1, TimeUnit.SECONDS);
 
             TestHelper.race(r1, r2);
 
@@ -496,19 +470,9 @@ public class ObservableTimeoutTests extends RxJavaTest {
 
             TestObserverEx<Integer> to = ps.timeout(1, TimeUnit.SECONDS, sch, Observable.just(2)).to(TestHelper.<Integer>testConsumer());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(1);
-                }
-            };
+            Runnable r1 = () -> ps.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    sch.advanceTimeBy(1, TimeUnit.SECONDS);
-                }
-            };
+            Runnable r2 = () -> sch.advanceTimeBy(1, TimeUnit.SECONDS);
 
             TestHelper.race(r1, r2);
 

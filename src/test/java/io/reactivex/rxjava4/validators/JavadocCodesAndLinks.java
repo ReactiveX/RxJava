@@ -25,7 +25,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * Scan the Javadocs of a source and check if mentions of other classes,
  * interfaces and enums are using at-link and at-code wrapping for style.
  * <p>
- * The check ignores html tag content on a line, &#64;see and &#64;throws entries
+ * The check ignores HTML tag content on a line, &#64;see and &#64;throws entries
  * and &lt;code&gt;&lt;/code&gt; lines.
  */
 public class JavadocCodesAndLinks {
@@ -93,7 +93,7 @@ public class JavadocCodesAndLinks {
 
         List<String> docs = new ArrayList<>();
 
-        // i = 1 skip the header javadoc
+        // i = 1 skip the header Javadoc
         for (int i = 1; i < lines.size(); i++) {
 
             if (lines.get(i).trim().equals("/**")) {

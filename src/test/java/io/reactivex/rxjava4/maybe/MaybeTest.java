@@ -392,7 +392,7 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void cast() {
         TestObserver<Number> to = Maybe.just(1).cast(Number.class).test();
-        // don'n inline this due to the generic type
+        // don't inline this due to the generic type
         to.assertResult(1);
     }
 

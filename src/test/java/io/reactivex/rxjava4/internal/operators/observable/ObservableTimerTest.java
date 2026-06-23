@@ -27,7 +27,6 @@ import org.mockito.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.operators.observable.ObservableTimer.TimerObserver;
 import io.reactivex.rxjava4.observables.ConnectableObservable;
 import io.reactivex.rxjava4.observers.*;
@@ -320,16 +319,13 @@ public class ObservableTimerTest extends RxJavaTest {
             for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.cached(), Schedulers.from(exec, true) }) {
                 final AtomicBoolean interrupted = new AtomicBoolean();
                 TestObserver<Long> to = Observable.timer(1, TimeUnit.MILLISECONDS, s)
-                .map(new Function<Long, Long>() {
-                    @Override
-                    public Long apply(Long v) throws Exception {
-                        try {
-                        Thread.sleep(3000);
-                        } catch (InterruptedException ex) {
-                            interrupted.set(true);
-                        }
-                        return v;
+                .map(v -> {
+                    try {
+                    Thread.sleep(3000);
+                    } catch (InterruptedException ex) {
+                        interrupted.set(true);
                     }
+                    return v;
                 })
                 .test();
 

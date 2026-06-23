@@ -337,7 +337,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void fusionOfflie() {
+    public void fusionOffline() {
         AsyncSubject<Integer> ap = new AsyncSubject<>();
         ap.onNext(1);
         ap.onComplete();

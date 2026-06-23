@@ -23,7 +23,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.subjects.PublishSubject;
@@ -185,12 +184,7 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.skipLast(1, TimeUnit.DAYS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.skipLast(1, TimeUnit.DAYS));
     }
 
     @Test
@@ -201,19 +195,9 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
 
             final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r1 = ps::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -227,19 +211,9 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
 
             final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler, true).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r1 = ps::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -271,19 +245,9 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
 
             final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(1);
-                }
-            };
+            Runnable r1 = () -> ps.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -297,20 +261,12 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
 
             final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler, true).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(1);
-                    ps.onComplete();
-                }
+            Runnable r1 = () -> {
+                ps.onNext(1);
+                ps.onComplete();
             };
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }

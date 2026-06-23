@@ -220,7 +220,7 @@ public final class UnicastProcessor<@NonNull T> extends FlowableProcessor<T> {
      *
      * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
-     * @param onTerminate the non null callback
+     * @param onTerminate the non-null callback
      * @return an UnicastProcessor instance
      * @throws NullPointerException if {@code onTerminate} is {@code null}
      * @throws IllegalArgumentException if {@code capacityHint} is non-positive
@@ -241,7 +241,7 @@ public final class UnicastProcessor<@NonNull T> extends FlowableProcessor<T> {
      * <p>History: 2.0.8 - experimental
      * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
-     * @param onTerminate the non null callback
+     * @param onTerminate the non-null callback
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastProcessor instance
      * @throws NullPointerException if {@code onTerminate} is {@code null}

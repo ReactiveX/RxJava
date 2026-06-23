@@ -244,7 +244,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     /**
-     * Should be able to unsubscribe all Subscribers, have it stop emitting, then subscribe new ones and it start emitting again.
+     * Should be able to unsubscribe all Subscribers, have it stop emitting, then subscribe new ones and it starts emitting again.
      */
     @Test
     public void reSubscribe() {

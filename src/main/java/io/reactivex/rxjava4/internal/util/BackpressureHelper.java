@@ -29,12 +29,12 @@ public final class BackpressureHelper {
 
     /**
      * Adds two long values and caps the sum at {@link Long#MAX_VALUE}.
-     * @param a the first value
-     * @param b the second value
+     * @param aValue the first value
+     * @param bValue the second value
      * @return the sum capped at {@link Long#MAX_VALUE}
      */
-    public static long addCap(long a, long b) {
-        long u = a + b;
+    public static long addCap(long aValue, long bValue) {
+        long u = aValue + bValue;
         if (u < 0L) {
             return Long.MAX_VALUE;
         }
@@ -43,14 +43,14 @@ public final class BackpressureHelper {
 
     /**
      * Multiplies two long values and caps the product at {@link Long#MAX_VALUE}.
-     * @param a the first value
-     * @param b the second value
+     * @param aValue the first value
+     * @param bValue the second value
      * @return the product capped at {@link Long#MAX_VALUE}
      */
-    public static long multiplyCap(long a, long b) {
-        long u = a * b;
-        if (((a | b) >>> 31) != 0) {
-            if (u / a != b) {
+    public static long multiplyCap(long aValue, long bValue) {
+        long u = aValue * bValue;
+        if (((aValue | bValue) >>> 31) != 0) {
+            if (u / aValue != bValue) {
                 return Long.MAX_VALUE;
             }
         }

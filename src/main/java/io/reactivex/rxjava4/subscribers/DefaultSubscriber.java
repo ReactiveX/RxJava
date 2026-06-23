@@ -22,7 +22,7 @@ import io.reactivex.rxjava4.internal.util.EndConsumerHelper;
 /**
  * Abstract base implementation of a {@link java.util.concurrent.Flow.Subscriber Subscriber} with
  * support for requesting via {@code #request(long)}, cancelling via
- * via {@code #cancel()} (both synchronously) and calls {@code #onStart()}
+ * {@code #cancel()} (both synchronously) and calls {@code #onStart()}
  * when the subscription happens.
  *
  * <p>All pre-implemented final methods are thread-safe.

@@ -285,7 +285,7 @@ extends BaseTestConsumer<T, U> {
 
     /**
      * Fail with the given message and add the sequence of errors as suppressed ones.
-     * <p>Note this is deliberately the only fail method. Most of the times an assertion
+     * <p>Note this is deliberately the only fail method. Usually an assertion
      * would fail but it is possible it was due to an exception somewhere. This construct
      * will capture those potential errors and report it along with the original failure.
      *

@@ -28,7 +28,7 @@ import io.reactivex.rxjava4.parallel.ParallelFlowable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**
- * Dispatches the values from upstream in a round robin fashion to subscribers which are
+ * Dispatches the values from upstream in a round-robin fashion to subscribers which are
  * ready to consume elements. A value from upstream is sent to only one of the subscribers.
  *
  * @param <T> the value type
@@ -91,8 +91,8 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
         volatile boolean cancelled;
 
         /**
-         * Counts how many subscribers were setup to delay triggering the
-         * drain of upstream until all of them have been setup.
+         * Counts how many subscribers were set up to delay triggering the
+         * drain of upstream until all of them have been set up.
          */
         final AtomicInteger subscriberCount = new AtomicInteger();
 

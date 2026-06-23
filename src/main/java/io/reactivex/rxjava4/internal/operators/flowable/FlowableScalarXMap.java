@@ -34,7 +34,7 @@ public final class FlowableScalarXMap {
     }
 
     /**
-     * Tries to subscribe to a possibly Supplier source's mapped Publisher.
+     * Tries to subscribe to a possible Supplier source's mapped Publisher.
      * @param <T> the input value type
      * @param <R> the output value type
      * @param source the source Publisher

@@ -153,7 +153,7 @@ public class FlowableZipTest extends RxJavaTest {
     Function3<Object, Object, Object, String> zipr3 = (t1, t2, t3) -> "" + t1 + t2 + t3;
 
     /**
-     * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it rather than
+     * Testing internal private logic due to the complexity, so I want to use TDD to test as a build it rather than
      * relying purely on the overall functionality expected by the public methods.
      */
     @Test
@@ -670,7 +670,7 @@ public class FlowableZipTest extends RxJavaTest {
         // issue: https://groups.google.com/forum/#!topic/rxjava/79cWTv3TFp0
         // The problem is the original "zip" implementation does not wrap
         // an internal subscriber with a SafeSubscriber. However, in the "zip",
-        // it may calls "onComplete" twice. That breaks the Rx contract.
+        // it may call "onComplete" twice. That breaks the Rx contract.
 
         // This test tries to emulate this case.
         // As "TestHelper.mockSubscriber()" will create an instance in the package "rx",
@@ -1051,7 +1051,7 @@ public class FlowableZipTest extends RxJavaTest {
 
         // now try and generate a hang by zipping src with itself repeatedly. A
         // time limit of 9 seconds ( 1 second less than the test timeout) is
-        // used so that this test will not timeout on slow machines.
+        // used so that this test will not time out on slow machines.
         int i = 0;
         while (System.currentTimeMillis() - startTime < 9000 && i++ < 100000) {
             int value = Flowable.zip(src, src, (t1, t2) -> t1 + t2 * 10).blockingSingle(0);

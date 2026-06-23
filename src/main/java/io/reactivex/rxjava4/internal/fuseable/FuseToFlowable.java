@@ -17,7 +17,7 @@ import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.Flowable;
 
 /**
- * Interface indicating a operator implementation can be macro-fused back to Flowable in case
+ * Interface indicating an operator implementation can be macro-fused back to Flowable in case
  * the operator goes from Flowable to some other reactive type and then the sequence calls
  * for toFlowable again:
  * <pre>

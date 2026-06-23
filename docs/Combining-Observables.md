@@ -39,7 +39,7 @@ Combines multiple Observables into one.
 
 **ReactiveX documentation:** [http://reactivex.io/documentation/operators/merge.html](http://reactivex.io/documentation/operators/merge.html)
 
-Combines multiple Observables into one. Any `onError` notifications passed from any of the source observables will immediately be passed through to through to the observers and will terminate the merged `Observable`.
+Combines multiple Observables into one. Any `onError` notifications passed from any of the source observables will immediately be passed through to the observers and will terminate the merged `Observable`.
 
 #### merge Example
 

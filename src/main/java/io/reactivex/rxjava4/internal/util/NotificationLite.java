@@ -149,9 +149,9 @@ public enum NotificationLite {
     }
 
     /**
-     * Checks if the given object represents a error notification.
+     * Checks if the given object represents an error notification.
      * @param o the object to check
-     * @return true if the object represents a error notification
+     * @return true if the object represents an error notification
      */
     public static boolean isError(Object o) {
         return o instanceof ErrorNotification;

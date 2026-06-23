@@ -21,7 +21,7 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**
- * Atomic container for Throwables including combining and having a
+ * Atomic container for {@link Throwable}s including combining and having a
  * terminal state via ExceptionHelper.
  * <p>
  * Watch out for the leaked AtomicReference methods!

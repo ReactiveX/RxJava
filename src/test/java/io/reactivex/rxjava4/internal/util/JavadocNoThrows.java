@@ -22,7 +22,7 @@ import io.reactivex.rxjava4.parallel.ParallelFlowable;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 /**
- * Scan the JavaDocs of the base classes and list those which do not have the {@code @throws} tag.
+ * Scan the Javadocs of the base classes and list those which do not have the {@code @throws} tag.
  * The lack is not an error by itself but worth looking at.
  */
 public final class JavadocNoThrows {

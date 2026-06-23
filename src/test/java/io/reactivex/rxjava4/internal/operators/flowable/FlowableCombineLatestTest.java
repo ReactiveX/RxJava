@@ -755,7 +755,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
         TestSubscriber<Integer> ts = TestSubscriber.create(1);
         Flowable<Integer> source = Flowable.just(1)
-            // if haven't caught exception in combineLatest operator then would incorrectly
+            // if it hasn't caught exception in combineLatest operator then it would incorrectly
             // be picked up by this call to doOnError
             .doOnError(_ -> errorOccurred.set(true));
         Flowable

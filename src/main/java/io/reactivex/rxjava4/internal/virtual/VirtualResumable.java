@@ -25,7 +25,7 @@ public class VirtualResumable extends AtomicReference<Object> {
     private static final long serialVersionUID = -3462467580179834124L;
 
     /**
-     * Indicates the await can resume without parking the virtual thread.
+     * Indicates the {@link #await()} can resume without parking the virtual thread.
      */
     static final Object READY = "Ready";
 

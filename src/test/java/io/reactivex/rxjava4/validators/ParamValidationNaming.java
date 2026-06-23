@@ -245,20 +245,20 @@ public class ParamValidationNaming {
                         continue;
                     }
 
-                    // find JavaDoc of throws
+                    // find Javadoc of throws
                     boolean found = false;
                     for (int k = midx - 1; k >= 0; k--) {
                         String linek = lines.get(k).trim();
                         if (linek.startsWith("/** {@inheritDoc} */")) {
                             found = true;
-                            // the docs in in the sealed doc class, skip the check
+                            // the docs in the sealed doc class, skip the check
                             break;
                         }
                         if (linek.startsWith("/**")) {
                             break;
                         }
                         if (linek.startsWith("}")) {
-                            found = true; // no method JavaDoc present
+                            found = true; // no method Javadoc present
                             break;
                         }
                         if (linek.startsWith(validatorStr.javadoc)) {
@@ -318,7 +318,7 @@ public class ParamValidationNaming {
                         }
                     }
 
-                    // find JavaDoc of throws
+                    // find Javadoc of throws
                     boolean found = false;
                     for (int k = midx - 1; k >= 0; k--) {
                         String linek = lines.get(k).trim();
@@ -326,7 +326,7 @@ public class ParamValidationNaming {
                             break;
                         }
                         if (linek.startsWith("}")) {
-                            found = true; // no JavaDoc
+                            found = true; // no Javadoc
                             break;
                         }
                         if (linek.startsWith(validatorStr.javadoc)) {
@@ -380,7 +380,7 @@ public class ParamValidationNaming {
                                         break;
                                     }
                                     if (linek.startsWith("}")) {
-                                        found = true; // no method JavaDoc present
+                                        found = true; // no method Javadoc present
                                         break;
                                     }
                                     if (linek.startsWith(validatorStr.javadoc)) {

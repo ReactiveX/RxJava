@@ -19,7 +19,7 @@ This page lists various utility operators for working with Observables.
 * [**`finallyDo( )`**](http://reactivex.io/documentation/operators/do.html) — register an action to take when an Observable completes
 * [**`doFinally( )`**](http://reactivex.io/documentation/operators/do.html) — register an action to call when an Observable terminates or it gets disposed
 * [**`delay( )`**](http://reactivex.io/documentation/operators/delay.html) — shift the emissions from an Observable forward in time by a specified amount
-* [**`delaySubscription( )`**](http://reactivex.io/documentation/operators/delay.html) — hold an Subscriber's subscription request for a specified amount of time before passing it on to the source Observable
+* [**`delaySubscription( )`**](http://reactivex.io/documentation/operators/delay.html) — hold a Subscriber's subscription request for a specified amount of time before passing it on to the source Observable
 * [**`timeInterval( )`**](http://reactivex.io/documentation/operators/timeinterval.html) — emit the time lapsed between consecutive emissions of a source Observable
 * [**`using( )`**](http://reactivex.io/documentation/operators/using.html) — create a disposable resource that has the same lifespan as an Observable
 * [**`single( )`**](http://reactivex.io/documentation/operators/first.html) — if the Observable completes after emitting a single item, return that item, otherwise throw an exception

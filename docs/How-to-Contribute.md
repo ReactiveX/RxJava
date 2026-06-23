@@ -20,7 +20,7 @@ In Eclipse
 * choose File - Import - General - Existing Projects into Workspace
 * Browse to RxJava folder
 * click Finish.
-* Right click on the project in Package Explorer, select Properties - Java Compiler - Errors/Warnings - click Enable project specific settings.
+* Right-click on the project in Package Explorer, select Properties - Java Compiler - Errors/Warnings - click Enable project specific settings.
 * Still in Errors/Warnings, go to Deprecated and restricted API and set Forbidden reference (access-rules) to Warning.
 
 ### Import as Gradle project

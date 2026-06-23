@@ -97,7 +97,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         ts.cancel();
 
-        // a should receive no more
+        // inOrderA should receive no more
         inOrderA.verifyNoMoreInteractions();
 
         channel.onNext(4711);

@@ -23,7 +23,7 @@ import io.reactivex.rxjava4.annotations.*;
  * Note that the class leaks all methods of {@link java.util.concurrent.atomic.AtomicLong}.
  * Use {@link #complete(Object)} to signal the single value.
  * <p>
- * The this atomic integer stores a bit field:<br>
+ * This atomic integer stores a bit field:<br>
  * bit 0: indicates that there is a value available<br>
  * bit 1: indicates that there was a request made<br>
  * bit 2: indicates there was a cancellation, exclusively set<br>
@@ -75,7 +75,7 @@ public class DeferredScalarSubscription<@NonNull T> extends BasicIntQueueSubscri
         if (SubscriptionHelper.validate(n)) {
             for (;;) {
                 int state = get();
-                // if the any bits 1-31 are set, we are either in fusion mode (FUSED_*)
+                // if any bits 1-31 are set, we are either in fusion mode (FUSED_*)
                 // or request has been called (HAS_REQUEST_*)
                 if ((state & ~NO_REQUEST_HAS_VALUE) != 0) {
                     return;

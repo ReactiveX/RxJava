@@ -18,16 +18,16 @@ Producer is in charge. Consumer has to do whatever it needs to keep up.
 
 ##### Hot
 
-When used to refer to a data source (such as an `Observable`), it means it does not have side-effects when subscribed to.
+When used to refer to a data source (such as an `Observable`), it means it does not have side effects when subscribed to.
 
 For example, an `Observable` of mouse events. Subscribing to that `Observable` does not cause the mouse events, but starts receiving them.
 
-(Note: Yes, there are *some* side-effects of adding a listener, but they are inconsequential as far as the 'hot' usage is concerned).
+(Note: Yes, there are *some* side effects of adding a listener, but they are inconsequential as far as the 'hot' usage is concerned).
 
 
 ##### Cold
 
-When used to refer to a data source (such as an `Observable`), it means it has side-effects when subscribed to.
+When used to refer to a data source (such as an `Observable`), it means it has side effects when subscribed to.
 
 For example, an `Observable` of data from a remote API (such as an RPC call). Each time that `Observable` is subscribed to causes a new network call to occur.
 
@@ -162,7 +162,7 @@ Flow control support:
 
 You get a `Flowable` from:
 
-- Converting a Observable with a backpressure strategy.
+- Converting an Observable with a backpressure strategy.
 - Create from sync/async `onSubscribe` API (which participate in backpressure semantics).
 
 *Type Signature*
@@ -273,7 +273,7 @@ Interactive consumer of events (with consumer-driven flow control). Involved in 
 
 ##### Subject
 
-A "hot", push-based data source that allows a producer to emit events to it and consumers to subscribe to events in a multicast manner. It is "hot" because consumers subscribing to it does not cause side-effects, or affect the data flow in any way. It is push-based and reactive because the producer is fully in charge.
+A "hot", push-based data source that allows a producer to emit events to it and consumers to subscribe to events in a multicast manner. It is "hot" because consumers subscribing to it does not cause side effects, or affect the data flow in any way. It is push-based and reactive because the producer is fully in charge.
 
 A `Subject` is used to decouple unsubscription. Termination is fully in the control of the producer. `onError` and `onComplete` are still terminal events.
 `Subject`s are stateful and retain their terminal state (for replaying to all/future subscribers).
@@ -315,7 +315,7 @@ An operator follows a specific lifecycle (union of the producer/consumer contrac
 
 - It must propagate the `subscribe` event upstream (to the producer).
 - It must obey the RxJava contract (serialize all events, `onError`/`onComplete` are terminal).
-- If it has resources to cleanup it is responsible for watching `onError`, `onComplete`, and `cancel/dispose`, and doing the necessary cleanup.
+- If it has resources to clean up it is responsible for watching `onError`, `onComplete`, and `cancel/dispose`, and doing the necessary cleanup.
 - It must propagate the `cancel/dispose` upstream.
 
 In the addition of the previous rules, an operator for `Flowable`:
@@ -365,14 +365,14 @@ The `Flowable` will contain the following `create` methods:
 
    - `create(SyncGenerator<T, S>)`: safe, synchronous generation of signals, one-by-one.
    - `create(AsyncOnSubscribe<T, S>)`: batch-create signals based on request patterns.
-   - `create(Consumer<? super FlowEmitter<T>>)`: relay multiple values or error from multi-valued reactive-sources (i.e. button-clicks) while also give flow control options right there (buffer, drop, error, etc.).
+   - `create(Consumer<? super FlowEmitter<T>>)`: relay multiple values or error from multivalued reactive-sources (i.e. button-clicks) while also give flow control options right there (buffer, drop, error, etc.).
    - `createSingle(Consumer<? super SingleEmitter<T>>)`: relay a single value or error from other reactive sources (i.e. addListener callbacks).
    - `createEmpty(Consumer<? super CompletionEmitter>)`: signal a completion or error from valueless reactive sources.
    
 The `Observable` will contain the following `create` methods:
 
    - `create(SyncGenerator<T, S>)`: safe, synchronous generation of signals, one-by-one.
-   - `create(Consumer<? super FlowEmitter<T>>)`: relay multiple values or error from multi-valued reactive-sources (i.e. button-clicks) while also give flow control options right there (buffer, drop, error, etc.).
+   - `create(Consumer<? super FlowEmitter<T>>)`: relay multiple values or error from multivalued reactive-sources (i.e. button-clicks) while also give flow control options right there (buffer, drop, error, etc.).
    - `createSingle(Consumer<? super SingleEmitter<T>>)`: relay a single value or error from other reactive sources (i.e. addListener callbacks).
    - `createEmpty(Consumer<? super CompletionEmitter>)`: signal a completion or error from valueless reactive sources.
 
@@ -460,7 +460,7 @@ interface CompletableEmitter<T> {
 
 ```
 
-By extending the base classes, operator implementations would loose the tracking/wrapping features of 1.x. To avoid this, the methods `subscribe(C)` will be final and operators have to implement a protected `subscribeActual` (or any other reasonable name).
+By extending the base classes, operator implementations would lose the tracking/wrapping features of 1.x. To avoid this, the methods `subscribe(C)` will be final and operators have to implement a protected `subscribeActual` (or any other reasonable name).
 
 ```java
 @Override
@@ -534,7 +534,7 @@ Interoperating with other libraries, at this level is possible. Reactor-Core use
 
 ##### Micro-fusion
 
-Micro-fusion goes a step deeper and tries to reuse internal structures, mostly queues, in operator pairs, saving on allocation and sometimes on atomic operations. It's property is that, in a way, subverts the standard Reactive-Streams protocol between subsequent operators that both support fusion. However, from the outside world's view, they still work according to the RS protocol.
+Micro-fusion goes a step deeper and tries to reuse internal structures, mostly queues, in operator pairs, saving on allocation and sometimes on atomic operations. Its property is that, in a way, subverts the standard Reactive-Streams protocol between subsequent operators that both support fusion. However, from the outside world's view, they still work according to the RS protocol.
 
 Currently, two main kinds of micro-fusion opportunities are available.
 
@@ -564,7 +564,7 @@ protected void subscribeActual(Subscriber<? super T> s) {
 
 The second category is when two (or more) operators share the same underlying queue and each append activity at the exit point (i.e. `poll()`) of the queue. This can work in two modes: synchronous and asynchronous.
 
-In synchronous mode, the elements of the sequence is already available (i.e. a fixed `range()` or `fromArray()`, or can be synchronously calculated in a pull fashion in `fromIterable`. In this mode, the requesting and regular onError-path is bypassed and is forbidden. Sources have to return null from `pull()` and false from `isEmpty()` if they have no more values and throw from these methods if they want to indicate an exceptional case.
+In synchronous mode, the elements of the sequence is already available (i.e. a fixed `range()` or `fromArray()`), or can be synchronously calculated in a pull fashion in `fromIterable`. In this mode, the requesting and regular onError-path is bypassed and is forbidden. Sources have to return null from `pull()` and false from `isEmpty()` if they have no more values and throw from these methods if they want to indicate an exceptional case.
 
 In asynchronous mode, elements may become available at any time, therefore, `pull` returning null, as with regular queue-drain, is just the indication of temporary lack of source values. Completion and error still has to go through `onComplete` and `onError` as usual, requesting still happens as usual but when a value is available in the shared queue, it is indicated by an `onNext(null)` call. This can trigger a chain of `drain` calls without moving values in or out of different queues.
 
