@@ -20,7 +20,7 @@ import io.reactivex.rxjava4.functions.Supplier;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**
- * Executes an Runnable and signals its exception or completes normally.
+ * Executes a Runnable and signals its exception or completes normally.
  *
  * @param <T> the value type
  */

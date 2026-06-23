@@ -1,4 +1,4 @@
-An Observable typically does not _throw_ exceptions. Instead it notifies any observers that an unrecoverable error has occurred by terminating the Observable sequence with an `onError` notification.
+An Observable typically does not _throw_ exceptions. Instead, it notifies any observers that an unrecoverable error has occurred by terminating the Observable sequence with an `onError` notification.
 
 There are some exceptions to this. For example, if the `onError()` call _itself_ fails, the Observable will not attempt to notify the observer of this by again calling `onError` but will throw a `RuntimeException`, an `OnErrorFailedException`, or an `OnErrorNotImplementedException`.
 

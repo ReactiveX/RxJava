@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 
 /**
  * Signals the only element of the source via the underlying CompletableFuture,
- * signals the a default item if the upstream is empty or signals {@link IllegalArgumentException}
+ * signals a default item if the upstream is empty or signals {@link IllegalArgumentException}
  * if the upstream has more than one item.
  *
  * @param <T> the element type

@@ -281,7 +281,7 @@ Operator | ![Flowable](https://raw.github.com/wiki/ReactiveX/RxJava/images/opmat
 <a name='notes-39'></a><sup>39</sup> Always empty thus always 0.<br/>
 <a name='notes-40'></a><sup>40</sup> At most one item signaled so no subsequent items to work with.<br/>
 <a name='notes-41'></a><sup>41</sup> Always empty thus no items to work with.<br/>
-<a name='notes-42'></a><sup>42</sup> Always empty. Use [`andThen()`](#andThen) to chose the follow-up sequence.<br/>
+<a name='notes-42'></a><sup>42</sup> Always empty. Use [`andThen()`](#andThen) to choose the follow-up sequence.<br/>
 <a name='notes-43'></a><sup>43</sup> At most one item, always distinct.<br/>
 <a name='notes-44'></a><sup>44</sup> Different terminology. Use [`doAfterSuccess()`](#doAfterSuccess).<br/>
 <a name='notes-45'></a><sup>45</sup> Different terminology. Use [`doAfterNext()`](#doAfterNext).<br/>

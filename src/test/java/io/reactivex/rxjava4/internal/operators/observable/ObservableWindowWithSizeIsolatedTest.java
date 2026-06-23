@@ -52,7 +52,7 @@ public class ObservableWindowWithSizeIsolatedTest extends RxJavaTest {
         to.awaitDone(1000, TimeUnit.MILLISECONDS);
         to.assertTerminated();
         to.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        // make sure we don't emit all values ... the unsubscribe should propagate
+        // make sure we don't emit all values ... unsubscribe should propagate
         assertTrue(count.get() < 100000, "count: " + count.get());
     }
 }

@@ -78,7 +78,7 @@ public final class MpscLinkedQueue<T> implements SimplePlainQueue<T> {
      * <li>If it is not null set it as the consumer node and return it's now evacuated value.
      * </ol>
      * This means the consumerNode.value is always null, which is also the starting point for the queue. Because null
-     * values are not allowed to be offered this is the only node with it's value set to null at any one time.
+     * values are not allowed to be offered this is the only node with its value set to null at any one time.
      *
      * @see java.util.Queue#poll()
      */

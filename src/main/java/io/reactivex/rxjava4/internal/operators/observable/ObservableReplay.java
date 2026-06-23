@@ -454,7 +454,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
         /**
          * Convenience method to auto-cast the index object.
-         * @param <U> type index to be casted to
+         * @param <U> type index to be cast to
          * @return the index Object or null
          */
         @SuppressWarnings("unchecked")

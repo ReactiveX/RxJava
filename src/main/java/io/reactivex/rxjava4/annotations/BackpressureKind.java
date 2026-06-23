@@ -28,7 +28,7 @@ public enum BackpressureKind {
      */
     FULL,
     /**
-     * The operator performs special backpressure management; see the associated javadoc.
+     * The operator performs special backpressure management; see the associated Javadoc.
      */
     SPECIAL,
     /**

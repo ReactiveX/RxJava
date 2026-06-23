@@ -82,7 +82,7 @@ public class FlowableUsingTest extends RxJavaTest {
         inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
 
-        // The resouce should be closed
+        // The resource should be closed
         verify(resource, times(1)).dispose();
     }
 

@@ -155,7 +155,7 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @param source the source {@code Publisher}
      * @param parallelism the number of parallel rails
      * @param prefetch the number of values to prefetch from the source
-     * the source until there is a rail ready to process it.
+     * until there is a rail ready to process it.
      * @return the new {@code ParallelFlowable} instance
      * @throws NullPointerException if {@code source} is {@code null}
      * @throws IllegalArgumentException if {@code parallelism} or {@code prefetch} is non-positive

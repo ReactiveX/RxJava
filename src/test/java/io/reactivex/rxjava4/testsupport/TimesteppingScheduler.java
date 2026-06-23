@@ -19,7 +19,7 @@ import io.reactivex.rxjava4.core.Scheduler;
 import io.reactivex.rxjava4.disposables.*;
 
 /**
- * Basic scheduler that produces an ever increasing {@link #now(TimeUnit)} value.
+ * Basic scheduler that produces an ever-increasing {@link #now(TimeUnit)} value.
  * Use this scheduler only as a time source!
  */
 public final class TimesteppingScheduler extends Scheduler {

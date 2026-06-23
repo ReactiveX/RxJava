@@ -2669,7 +2669,7 @@ public enum TestHelper {
 
     /**
      * Tests the given mapping of a bad Observable by emitting the good values, then an error/completion and then
-     * a bad value followed by a TestException and and a completion.
+     * a bad value followed by a TestException and a completion.
      * @param <T> the value type
      * @param mapper the mapper that receives a bad Observable and returns a reactive base type (detected via reflection).
      * @param error if true, the good value emission is followed by a TestException("error"), if false then onComplete is called
@@ -2834,7 +2834,7 @@ public enum TestHelper {
 
     /**
      * Tests the given mapping of a bad Observable by emitting the good values, then an error/completion and then
-     * a bad value followed by a TestException and and a completion.
+     * a bad value followed by a TestException and a completion.
      * @param <T> the value type
      * @param mapper the mapper that receives a bad Observable and returns a reactive base type (detected via reflection).
      * @param error if true, the good value emission is followed by a TestException("error"), if false then onComplete is called
@@ -3218,7 +3218,7 @@ public enum TestHelper {
     /**
      * Strips the {@link QueueFuseable#BOUNDARY} mode flag when the downstream calls {@link QueueSubscription#requestFusion(int)}.
      * <p>
-     * By default, many operators use {@link QueueFuseable#BOUNDARY} to indicate upstream side-effects
+     * By default, many operators use {@link QueueFuseable#BOUNDARY} to indicate upstream side effects
      * should not leak over a fused boundary. However, some tests want to verify if {@link QueueSubscription#poll()} crashes
      * are handled correctly and the most convenient way is to crash {@link Flowable#map} that won't fuse with {@code BOUNDARY}
      * flag. This transformer strips this flag and thus allows the function of {@code map} to be executed as part of the
@@ -3334,7 +3334,7 @@ public enum TestHelper {
     /**
      * Strips the {@link QueueFuseable#BOUNDARY} mode flag when the downstream calls {@link QueueDisposable#requestFusion(int)}.
      * <p>
-     * By default, many operators use {@link QueueFuseable#BOUNDARY} to indicate upstream side-effects
+     * By default, many operators use {@link QueueFuseable#BOUNDARY} to indicate upstream side effects
      * should not leak over a fused boundary. However, some tests want to verify if {@link QueueDisposable#poll()} crashes
      * are handled correctly and the most convenient way is to crash {@link Observable#map} that won't fuse with {@code BOUNDARY}
      * flag. This transformer strips this flag and thus allows the function of {@code map} to be executed as part of the

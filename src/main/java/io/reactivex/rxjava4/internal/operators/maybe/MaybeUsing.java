@@ -25,7 +25,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**
  * Creates a resource and a dependent Maybe for each incoming Observer and optionally
- * disposes the resource eagerly (before the terminal event is send out).
+ * disposes the resource eagerly (before the terminal event is sent out).
  *
  * @param <T> the value type
  * @param <D> the resource type

@@ -210,7 +210,7 @@ This overload calls a (shared) action in case an overflow happens. Its usefulnes
 
 ### onBackpressureBuffer(int capacity, Action onOverflow, BackpressureOverflowStrategy strategy)
 
-This overload is actually more useful as it let's one define what to do in case the capacity has been reached. The `BackpressureOverflow.Strategy` is an interface actually but the class `BackpressureOverflow` offers 4 static fields with implementations of it representing typical actions:
+This overload is actually more useful as it lets one define what to do in case the capacity has been reached. The `BackpressureOverflow.Strategy` is an interface actually but the class `BackpressureOverflow` offers 4 static fields with implementations of it representing typical actions:
 
   - `ON_OVERFLOW_ERROR`: this is the default behavior of the previous two overloads, signalling a `BufferOverflowException`
   - `ON_OVERFLOW_DEFAULT`: currently it is the same as `ON_OVERFLOW_ERROR`
@@ -406,7 +406,7 @@ The first callbacks allows one to create a per-subscriber state, such as the `Fi
 
 The second callback takes this state object and provides an output `Observer` whose `onXXX` methods can be called to emit values. This callback is executed as many times as the downstream requested. At each invocation, it has to call `onNext` at most once optionally followed by either `onError` or `onComplete`. In the example we call `onComplete()` if the read byte is negative, indicating and end of file, and call `onError` in case the read throws an `IOException`. 
 
-The final callback gets invoked when the downstream unsubscribes (closing the inputstream) or when the previous callback called the terminal methods; it allows freeing up resources. Since not all sources need all these features, the static methods of `Flowable.generate` let's one create instances without them.
+The final callback gets invoked when the downstream unsubscribes (closing the inputstream) or when the previous callback called the terminal methods; it allows freeing up resources. Since not all sources need all these features, the static methods of `Flowable.generate` lets one create instances without them.
 
 Unfortunately, many method calls across the JVM and other libraries throw checked exceptions and need to be wrapped into `try-catch`es as the functional interfaces used by this class don't allow throwing checked exceptions.
 
@@ -500,4 +500,4 @@ The second scenario usually involves some asynchronous, callback-based API that 
     }, BackpressureMode.LATEST);
 ```
 
-In this case, the delegation works the same way. Unfortunately, usually, these classical callback-style APIs don't support cancellation, but if they do, one can setup their cancellation just like in the previoius examples (with perhaps a more involved way though). Note the use of the `LATEST` backpressure mode; if we know there will be only a single value, we don't need the `BUFFER` strategy as it allocates a default 128 element long buffer (that grows as necessary) that is never going to be fully utilized.
+In this case, the delegation works the same way. Unfortunately, usually, these classical callback-style APIs don't support cancellation, but if they do, one can set up their cancellation just like in the previoius examples (with perhaps a more involved way though). Note the use of the `LATEST` backpressure mode; if we know there will be only a single value, we don't need the `BUFFER` strategy as it allocates a default 128 element long buffer (that grows as necessary) that is never going to be fully utilized.

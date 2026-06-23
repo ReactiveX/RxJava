@@ -20,7 +20,7 @@ import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 
 /**
- * Signals the onSuccess, onError or onComplete events on a the specific scheduler.
+ * Signals the onSuccess, onError or onComplete events on the specific scheduler.
  *
  * @param <T> the value type delivered
  */

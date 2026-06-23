@@ -28,9 +28,9 @@ implements Runnable, Callable<Object>, Disposable {
 
     /** Indicates that the parent tracking this task has been notified about its completion. */
     static final Object PARENT_DISPOSED = new Object();
-    /** Indicates the dispose() was called from within the run/call method. */
+    /** Indicates dispose() was called from within the run/call method. */
     static final Object SYNC_DISPOSED = new Object();
-    /** Indicates the dispose() was called from another thread. */
+    /** Indicates dispose() was called from another thread. */
     static final Object ASYNC_DISPOSED = new Object();
 
     static final Object DONE = new Object();

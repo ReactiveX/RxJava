@@ -31,7 +31,7 @@ public class NoAnonymousInnerClassesTest {
         System.out.println("Found " + fs);
 
         // running this particular test from IntelliJ will have the wrong class directory
-        // gradle will generate test classes into a separate directory too
+        // Gradle will generate test classes into a separate directory too
         int idx = fs.indexOf("/test");
         if (idx >= 0) {
             f = new File(fs.substring(0, idx));

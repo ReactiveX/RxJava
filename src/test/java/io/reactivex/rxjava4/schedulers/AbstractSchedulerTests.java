@@ -118,7 +118,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
     /**
      * The order of execution is nondeterministic.
      *
-     * @throws InterruptedException if the await is interrupted
+     * @throws InterruptedException if the {@link CountDownLatch#await()} is interrupted
      */
     @Test
     public final void sequenceOfActions() throws InterruptedException {

@@ -81,9 +81,9 @@ import io.reactivex.rxjava4.schedulers.SchedulerRunnableIntrospection;
  * underlying task-execution scheme supports stopping and restarting itself.
  * <p>
  * If the {@code Scheduler} is shut down or a {@code Worker} is disposed, the {@code schedule} methods
- * should return the {@link Disposable#disposed()} singleton instance indicating the shut down/disposed
+ * should return the {@link Disposable#disposed()} singleton instance indicating the shut-down/disposed
  * state to the caller. Since the shutdown or dispose can happen from any thread, the {@code schedule} implementations
- * should make best effort to cancel tasks immediately after those tasks have been submitted to the
+ * should make the best effort to cancel tasks immediately after those tasks have been submitted to the
  * underlying task-execution scheme if the shutdown/dispose was detected after this submission.
  * <p>
  * All methods on the {@code Scheduler} and {@code Worker} classes should be thread safe.
@@ -225,7 +225,7 @@ public abstract class Scheduler {
      *
      * @param run the task to execute
      *
-     * @return the Disposable instance that let's one cancel this particular task.
+     * @return the Disposable instance that lets one cancel this particular task.
      * @throws NullPointerException if {@code run} is {@code null}
      * @since 2.0
      */
@@ -244,7 +244,7 @@ public abstract class Scheduler {
      * @param run the task to schedule
      * @param delay the delay amount, non-positive values indicate non-delayed scheduling
      * @param unit the unit of measure of the delay amount
-     * @return the Disposable that let's one cancel this particular delayed task.
+     * @return the Disposable that lets one cancel this particular delayed task.
      * @throws NullPointerException if {@code run} or {@code unit} is {@code null}
      * @since 2.0
      */
@@ -277,7 +277,7 @@ public abstract class Scheduler {
      * @param initialDelay the initial delay amount, non-positive values indicate non-delayed scheduling
      * @param period the period at which the task should be re-executed
      * @param unit the unit of measure of the delay amount
-     * @return the Disposable that let's one cancel this particular delayed task.
+     * @return the Disposable that lets one cancel this particular delayed task.
      * @throws NullPointerException if {@code run} or {@code unit} is {@code null}
      * @since 2.0
      */
@@ -369,8 +369,8 @@ public abstract class Scheduler {
      * If the {@code Worker} is disposed, the {@code schedule} methods
      * should return the {@link Disposable#disposed()} singleton instance indicating the disposed
      * state to the caller. Since the {@link #dispose()} call can happen on any thread, the {@code schedule} implementations
-     * should make best effort to cancel tasks immediately after those tasks have been submitted to the
-     * underlying task-execution scheme if the dispose was detected after this submission.
+     * should make the best effort to cancel tasks immediately after those tasks have been submitted to the
+     * underlying task-execution scheme if dispose() was detected after this submission.
      * <p>
      * All methods on the {@code Worker} class should be thread safe.
      */
@@ -391,7 +391,7 @@ public abstract class Scheduler {
         }
 
         /**
-         * Schedules an Runnable for execution at some point in the future specified by a time delay
+         * Schedules a Runnable for execution at some point in the future specified by a time delay
          * relative to the current time.
          * <p>
          * Note to implementors: non-positive {@code delayTime} should be regarded as non-delayed schedule, i.e.,
@@ -400,7 +400,7 @@ public abstract class Scheduler {
          * @param run
          *            the Runnable to schedule
          * @param delay
-         *            time to "wait" before executing the action; non-positive values indicate an non-delayed
+         *            time to "wait" before executing the action; non-positive values indicate a non-delayed
          *            schedule
          * @param unit
          *            the time unit of {@code delayTime}
@@ -430,7 +430,7 @@ public abstract class Scheduler {
          *            the Runnable to execute periodically
          * @param initialDelay
          *            time to wait before executing the action for the first time; non-positive values indicate
-         *            an non-delayed schedule
+         *            a non-delayed schedule
          * @param period
          *            the time interval to wait each time in between executing the action; non-positive values
          *            indicate no delay between repeated schedules

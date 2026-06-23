@@ -137,7 +137,7 @@ and still follows the protocol `onSubscribe (onComplete | onError)?`.
 
 RxJava 2.0.0-RC2 introduced a new base reactive type called `Maybe`. Conceptually, it is a union of `Single` and `Completable` providing the means to capture an emission pattern where there could be 0 or 1 item or an error signalled by some reactive source.
 
-The `Maybe` class is accompanied by `MaybeSource` as its base interface type, `MaybeObserver<T>` as its signal-receiving interface and follows the protocol `onSubscribe (onSuccess | onError | onComplete)?`. Because there could be at most 1 element emitted, the `Maybe` type has no notion of backpressure (because there is no buffer bloat possible as with unknown length `Flowable`s or `Observable`s.
+The `Maybe` class is accompanied by `MaybeSource` as its base interface type, `MaybeObserver<T>` as its signal-receiving interface and follows the protocol `onSubscribe (onSuccess | onError | onComplete)?`. Because there could be at most 1 element emitted, the `Maybe` type has no notion of backpressure (because there is no buffer bloat possible as with unknown length `Flowable`s or `Observable`s).
 
 This means that an invocation of `onSubscribe(Disposable)` is potentially followed by one of the other `onXXX` methods. Unlike `Flowable`, if there is only a single value to be signalled, only `onSuccess` is called and `onComplete` is not.
 
@@ -475,7 +475,7 @@ One important design requirement for 2.x is that no `Throwable` errors should be
 
 Such errors are routed to the `RxJavaPlugins.onError` handler. This handler can be overridden with the method `RxJavaPlugins.setErrorHandler(Consumer<Throwable>)`. Without a specific handler, RxJava defaults to printing the `Throwable`'s stacktrace to the console and calls the current thread's uncaught exception handler.
 
-On desktop Java, this latter handler does nothing on an `ExecutorService` backed `Scheduler` and the application can keep running. However, Android is more strict and terminates the application in such uncaught exception cases. 
+On desktop Java, this latter handler does nothing on an `ExecutorService` backed `Scheduler` and the application can keep running. However, Android is stricter and terminates the application in such uncaught exception cases. 
 
 If this behavior is desirable can be debated, but in any case, if you want to avoid such calls to the uncaught exception handler, the **final application** that uses RxJava 2 (directly or transitively) should set a no-op handler:
 

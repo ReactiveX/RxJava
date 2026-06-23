@@ -1326,7 +1326,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     @Test
     public void mapFactoryWithExpiringGuavaCacheDemonstrationCodeForUseInJavadoc() {
-        //javadoc will be a version of this using lambdas and without assertions
+        // Javadoc will be a version of this using lambdas and without assertions
         final List<Integer> completed = new CopyOnWriteArrayList<>();
 
         AtomicReference<Cache<Integer, Object>> cacheOut = new AtomicReference<>();
@@ -1857,16 +1857,6 @@ public class FlowableGroupByTest extends RxJavaTest {
         issue6974RunPart2(groupByBufferSize, flatMapMaxConcurrency, groups, notifyOnExplicitEviction);
     }
 
-    /*
-     * Disabled: Takes very long. Run it locally only.
-    @Test
-    public void issue6974Part2Case2Loop() {
-        for (int i = 0; i < 1000; i++) {
-            issue6974Part2Case2();
-        }
-    }
-     */
-
     static void issue6974RunPart2NoEvict(int groupByBufferSize, int flatMapMaxConcurrency, int groups,
             boolean notifyOnExplicitEviction) {
 
@@ -1892,16 +1882,6 @@ public class FlowableGroupByTest extends RxJavaTest {
         boolean notifyOnExplicitEviction = false;
         issue6974RunPart2NoEvict(groupByBufferSize, flatMapMaxConcurrency, groups, notifyOnExplicitEviction);
     }
-
-    /*
-     * Disabled: Takes very long. Run it locally only.
-    @Test
-    public void issue6974Part2Case1NoEvictLoop() {
-        for (int i = 0; i < 1000; i++) {
-            issue6974Part2Case1NoEvict();
-        }
-    }
-     */
 
     @Test
     public void issue6974Part2Case1ObserveOn() {
@@ -2007,16 +1987,6 @@ public class FlowableGroupByTest extends RxJavaTest {
         .assertComplete();
     }
 
-    /*
-     * Disabled: Takes very long. Run it locally only.
-    @Test
-    public void issue6974Part2Case1ObserveOnNoCapHideLoop() {
-        for (int i = 0; i < 100; i++) {
-            issue6974Part2Case1ObserveOnNoCapHide();
-        }
-    }
-     */
-
     @Test
     public void issue6974Part2Case1ObserveOnConditional() {
         final int groups = 20;
@@ -2070,16 +2040,6 @@ public class FlowableGroupByTest extends RxJavaTest {
         .assertTerminated(); // MBE is possible if the async group closing is slow
     }
 
-    /*
-     * Disabled: Takes very long. Run it locally only.
-    @Test
-    public void issue6974Part2Case1ObserveOnHideLoop() {
-        for (int i = 0; i < 100; i++) {
-            issue6974Part2Case1ObserveOnHide();
-        }
-    }
-     */
-
     static <T> Function<Consumer<Object>, ConcurrentMap<T, Object>> ttlCapGuava(Duration ttl) {
         return itemEvictConsumer ->
             CacheBuilder
@@ -2117,17 +2077,6 @@ public class FlowableGroupByTest extends RxJavaTest {
         .assertComplete();
     }
 
-    /*
-     * Disabled: Takes very long. Run it locally only.
-    @Test
-    public void issue6982Case1Loop() {
-        for (int i = 0; i < 200; i++) {
-            System.out.println("issue6982Case1Loop "  + i);
-            issue6982Case1();
-        }
-    }
-     */
-
     @Test
     public void issue6982Case2() {
         final int groups = 20;
@@ -2146,15 +2095,4 @@ public class FlowableGroupByTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
     }
-
-    /*
-     * Disabled: Takes very long. Run it locally only.
-    @Test
-    public void issue6982Case2Loop() {
-        for (int i = 0; i < 200; i++) {
-            System.out.println("issue6982Case2Loop "  + i);
-            issue6982Case2();
-        }
-    }
-     */
 }

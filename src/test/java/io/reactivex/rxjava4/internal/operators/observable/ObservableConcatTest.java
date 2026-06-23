@@ -269,7 +269,7 @@ public class ObservableConcatTest extends RxJavaTest {
             ex.printStackTrace();
             fail(ex.getMessage());
         }
-        // The concated Observable should have served up all of the odds.
+        // The concatenated Observable should have served up all of the odds.
         verify(observer, times(1)).onNext("1");
         verify(observer, times(1)).onNext("3");
         verify(observer, times(1)).onNext("5");
@@ -384,7 +384,7 @@ public class ObservableConcatTest extends RxJavaTest {
             concat.subscribe(to);
             //Block main thread to allow Observable "w1" to complete and Observable "w2" to call onNext once.
             callOnce.await();
-            // Unsubcribe
+            // Unsubscribe
             to.dispose();
             //Unblock the Observable to continue.
             okToContinue.countDown();

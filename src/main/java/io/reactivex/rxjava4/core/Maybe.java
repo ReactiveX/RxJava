@@ -1216,7 +1216,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
      * <p>
      * <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromRunnable.png" alt="">
      * <p>
-     * If the code to be wrapped needs to throw a checked or more broader {@link Throwable} exception, that
+     * If the code to be wrapped needs to throw a checked or broader {@link Throwable} exception, that
      * exception has to be converted to an unchecked exception by the wrapped code itself. Alternatively,
      * use the {@link #fromAction(Action)} method which allows the wrapped code to throw any {@code Throwable}
      * exception and will signal it to observers as-is.

@@ -36,7 +36,7 @@ interface Subscription {
 
 In an operator, this allows active checking of the `Subscriber` state before emitting an event. 
 
-In some cases, one needs to react to the child unsubscribing immediately and not just before an emission. To support this case, the `Subscriber` class has an `add(Subscription)` method that let's the operator register `Subscription`s of its own which get unsubscribed when the downstream calls `Subscriber.unsubscribe()`.
+In some cases, one needs to react to the child unsubscribing immediately and not just before an emission. To support this case, the `Subscriber` class has an `add(Subscription)` method that lets the operator register `Subscription`s of its own which get unsubscribed when the downstream calls `Subscriber.unsubscribe()`.
 
 ```java
 InputStream in = ...
@@ -110,11 +110,11 @@ When writing operators, we mostly have to deal with concurrency via the standard
 
 ### RxJava tools
 
-RxJava has a few support classes and utilities that let's one deal with concurrency inside operators.
+RxJava has a few support classes and utilities that lets one deal with concurrency inside operators.
 
 The first one, `BackpressureUtils` deals with managing the cumulative requested and produced element counts for an operator. Its `getAndAddRequested()` method takes an `AtomicLong`, accumulates request amounts atomically and makes sure they don't overflow `Long.MAX_VALUE`. Its pair `produced()` subtracts the amount operators have produced, thus when both are in play, the given `AtomicLong` holds the current outstanding request amount for the downstream.
 
-Operators sometimes have to switch between multiple sources. If a previous source didn't fulfill all its requested amount, the new source has to start with that unfulfilled amount. Otherwise as the downstream didn't receive the requested amount (and no terminal event either), it can't know when to request more. If this switch happens at an `Observable` boundary (think `concat`), the `ProducerArbiter` helps managing the change.
+Operators sometimes have to switch between multiple sources. If a previous source didn't fulfill all its requested amount, the new source has to start with that unfulfilled amount. Otherwise, as the downstream didn't receive the requested amount (and no terminal event either), it can't know when to request more. If this switch happens at an `Observable` boundary (think `concat`), the `ProducerArbiter` helps with managing the change.
 
 If there is only one item to emit eventually, the `SingleProducer` and `SingleDelayedProducer` help work out the backpressure handling:
 
@@ -158,7 +158,7 @@ void drain() {
 }
 ```
 
-Often, the when the downstream requests some amount, that should also trigger a similar drain() call:
+Often, when the downstream requests some amount, that should also trigger a similar drain() call:
 
 ```java
 
@@ -297,7 +297,7 @@ OnSubscribe<T> onSubscribe = (Subscriber<? super T> child) -> {
 
 ## Converting a callback-API to reactive
 
-One of the reasons custom sources are created is when one converts a classical, callback-based 'reactive' API to RxJava. In this case, one has to setup the callback on the non-RxJava source and wire up unsubscription if possible:
+One of the reasons custom sources are created is when one converts a classical, callback-based 'reactive' API to RxJava. In this case, one has to set up the callback on the non-RxJava source and wire up unsubscription if possible:
 
 ```java
 OnSubscribe<Data> onSubscribe = (Subscriber<? super Data> child) -> {
@@ -317,7 +317,7 @@ OnSubscribe<Data> onSubscribe = (Subscriber<? super Data> child) -> {
 
 In this example, the `api` takes a callback and returns a `Closeable`. Our handler signals the data by setting a `SingleProducer` of it to deal with downstream backpressure. If the downstream wants to cancel a running API call, the wrap to `Subscription` will close the query.
 
-However, in case the callback is called more than once, one has to deal with backpressure a different way. At this level, perhaps the most easiest way is to apply `onBackpressureBuffer` or `onBackpressureDrop` on the created `Observable`:
+However, in case the callback is called more than once, one has to deal with backpressure a different way. At this level, perhaps the easiest way is to apply `onBackpressureBuffer` or `onBackpressureDrop` on the created `Observable`:
 
 ```java
 OnSubscribe<Data> onSubscribe = (Subscriber<? super Data> child) -> {

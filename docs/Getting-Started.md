@@ -78,7 +78,7 @@ dependencies {
 }
 ```
 
-JavaDoc snapshots are available at http://reactivex.io/RxJava/4.x/javadoc/snapshot
+Javadoc snapshots are available at http://reactivex.io/RxJava/4.x/javadoc/snapshot
 
 
 ## Building

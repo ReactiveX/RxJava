@@ -151,7 +151,7 @@ public class ObservableAmbTest extends RxJavaTest {
         final AtomicLong count = new AtomicLong();
         Consumer<Disposable> incrementer = _ -> count.incrementAndGet();
 
-        //this aync stream should emit first
+        //this async stream should emit first
         Observable<Integer> o1 = Observable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         //this stream emits second

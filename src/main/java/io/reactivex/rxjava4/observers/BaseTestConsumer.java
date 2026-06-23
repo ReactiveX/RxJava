@@ -88,7 +88,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
 
     /**
      * Fail with the given message and add the sequence of errors as suppressed ones.
-     * <p>Note this is deliberately the only fail method. Most of the times an assertion
+     * <p>Note this is deliberately the only fail method. Usually an assertion
      * would fail but it is possible it was due to an exception somewhere. This construct
      * will capture those potential errors and report it along with the original failure.
      *
@@ -138,7 +138,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Awaits until this {@code TestObserver}/{@code TestSubscriber} receives an {@code onError} or {@code onComplete} events.
+     * Wait until this {@code TestObserver}/{@code TestSubscriber} receives an {@code onError} or {@code onComplete} events.
      * @return this
      * @throws InterruptedException if the current thread is interrupted while waiting
      */
@@ -560,7 +560,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Awaits until the internal latch is counted down.
+     * Wait until the internal latch is counted down.
      * <p>If the wait times out or gets interrupted, the {@code TestObserver}/{@code TestSubscriber} is cancelled.
      * @param time the waiting time
      * @param unit the time unit of the waiting time
@@ -612,7 +612,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Await until the {@code TestObserver}/{@code TestSubscriber} receives the given
+     * Wait until the {@code TestObserver}/{@code TestSubscriber} receives the given
      * number of items or terminates by sleeping 10 milliseconds at a time
      * up to 5000 milliseconds of timeout.
      * <p>History: 2.0.7 - experimental

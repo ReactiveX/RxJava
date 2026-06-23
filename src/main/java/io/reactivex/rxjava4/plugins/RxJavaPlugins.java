@@ -188,7 +188,7 @@ public final class RxJavaPlugins {
     }
 
     /**
-     * Returns the a hook consumer.
+     * Returns the hook consumer.
      * @return the hook consumer, may be null
      */
     @Nullable

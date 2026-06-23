@@ -47,7 +47,7 @@ public final class EndConsumerHelper {
      * @param next the Disposable to check for nullness and dispose if necessary
      * @param observer the class of the consumer to have a personalized
      * error message if the upstream already contains a non-cancelled Disposable.
-     * @return true if successful, false if the upstream was non null
+     * @return true if successful, false if the upstream was non-null
      */
     public static boolean validate(Disposable upstream, Disposable next, Class<?> observer) {
         Objects.requireNonNull(next, "next is null");
@@ -69,7 +69,7 @@ public final class EndConsumerHelper {
      * @param next the Disposable to set on it atomically
      * @param observer the class of the consumer to have a personalized
      * error message if the upstream already contains a non-cancelled Disposable.
-     * @return true if successful, false if the content of the AtomicReference was non null
+     * @return true if successful, false if the content of the AtomicReference was non-null
      */
     public static boolean setOnce(AtomicReference<Disposable> upstream, Disposable next, Class<?> observer) {
         Objects.requireNonNull(next, "next is null");
@@ -92,7 +92,7 @@ public final class EndConsumerHelper {
      * @param next the Subscription to check for nullness and cancel if necessary
      * @param subscriber the class of the consumer to have a personalized
      * error message if the upstream already contains a non-cancelled Subscription.
-     * @return true if successful, false if the upstream was non null
+     * @return true if successful, false if the upstream was non-null
      */
     public static boolean validate(Subscription upstream, Subscription next, Class<?> subscriber) {
         Objects.requireNonNull(next, "next is null");
@@ -114,7 +114,7 @@ public final class EndConsumerHelper {
      * @param next the Subscription to set on it atomically
      * @param subscriber the class of the consumer to have a personalized
      * error message if the upstream already contains a non-cancelled Subscription.
-     * @return true if successful, false if the content of the AtomicReference was non null
+     * @return true if successful, false if the content of the AtomicReference was non-null
      */
     public static boolean setOnce(AtomicReference<Subscription> upstream, Subscription next, Class<?> subscriber) {
         Objects.requireNonNull(next, "next is null");

@@ -224,7 +224,7 @@ Observable.range(0, 5)
 
 **ReactiveX documentation:** [http://reactivex.io/documentation/operators/flatmap.html](http://reactivex.io/documentation/operators/flatmap.html)
 
-Applies the given `io.reactivex.functions.Function` to each item emitted by a reactive source, where that function returns a reactive source, and emits the items that result from concatenating the results of these function applications. A `boolean` value must be specified, which if `true` indicates that all errors from all sources will be delayed until the end, otherwise if `false`, an error from the main source will be signalled when the current source terminates. Unlike [concatMapDelayError](#concatmapdelayerror), this operator eagerly subscribes to all sources.
+Applies the given `io.reactivex.functions.Function` to each item emitted by a reactive source, where that function returns a reactive source, and emits the items that result from concatenating the results of these function applications. A `boolean` value must be specified, which if it is `true`, it indicates that all errors from all sources will be delayed until the end, otherwise if `false`, an error from the main source will be signalled when the current source terminates. Unlike [concatMapDelayError](#concatmapdelayerror), this operator eagerly subscribes to all sources.
 
 ### concatMapEagerDelayError example
 

@@ -283,7 +283,7 @@ public class FlowableConcatTest {
             ex.printStackTrace();
             fail(ex.getMessage());
         }
-        // The concated observable should have served up all of the odds.
+        // The concatenated observable should have served up all of the odds.
         verify(subscriber, times(1)).onNext("1");
         verify(subscriber, times(1)).onNext("3");
         verify(subscriber, times(1)).onNext("5");
@@ -398,7 +398,7 @@ public class FlowableConcatTest {
             concat.subscribe(ts);
             //Block main thread to allow observable "w1" to complete and observable "w2" to call onNext once.
             callOnce.await();
-            // Unsubcribe
+            // Unsubscribe
             ts.cancel();
             //Unblock the observable to continue.
             okToContinue.countDown();

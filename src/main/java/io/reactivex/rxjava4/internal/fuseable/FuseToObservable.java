@@ -17,7 +17,7 @@ import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.Observable;
 
 /**
- * Interface indicating a operator implementation can be macro-fused back to Observable in case
+ * Interface indicating an operator implementation can be macro-fused back to Observable in case
  * the operator goes from Observable to some other reactive type and then the sequence calls
  * for toObservable again:
  * <pre>

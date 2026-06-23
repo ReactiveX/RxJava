@@ -40,7 +40,7 @@ public interface Streamable<@NonNull T> {
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     /**
-     * Realizes the stream and returns an interface that let's one consume it.
+     * Realizes the stream and returns an interface that lets one consume it.
      * @param cancellation where to register and listen for cancellation calls.
      * @return the Streamer instance to consume.
      */
@@ -54,7 +54,7 @@ public interface Streamable<@NonNull T> {
 
     // TODO, why no public final so it is not unnecessarily reimplemented, Java?
     /**
-     * Realizes the stream and returns an interface that let's one consume it.
+     * Realizes the stream and returns an interface that lets one consume it.
      * @return the Streamer instance to consume.
      */
     @CheckReturnValue
@@ -196,7 +196,7 @@ public interface Streamable<@NonNull T> {
     /**
      * Emits the elements of each inner sequence produced by the outher sequence.
      * @param <T> the common element type
-     * @param sources the streamable of inner streamables
+     * @param sources a streamable of inner streamables
      * @param exec the executorservice where to run the virtual wait
      * @return the new Streamable instance.
      */
@@ -285,7 +285,7 @@ public interface Streamable<@NonNull T> {
     /**
      * Consumes elements from this {@code Streamable} via the provided executor service.
      * @param consumer the callback that gets the elements until completion
-     * @return a Disposable that let's one cancel the sequence asynchronously.
+     * @return a Disposable that lets one cancel the sequence asynchronously.
      */
     @CheckReturnValue
     @NonNull
@@ -310,7 +310,7 @@ public interface Streamable<@NonNull T> {
      * Consumes elements from this {@code Streamable} via the provided executor service.
      * @param consumer the callback that gets the elements until completion
      * @param executor the service that hosts the blocking waits.
-     * @return a Disposable that let's one cancel the sequence asynchronously.
+     * @return a Disposable that lets one cancel the sequence asynchronously.
      */
     @CheckReturnValue
     @NonNull

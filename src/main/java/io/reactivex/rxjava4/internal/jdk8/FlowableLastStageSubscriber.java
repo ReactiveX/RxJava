@@ -19,7 +19,7 @@ import static java.util.concurrent.Flow.*;
 
 /**
  * Signals the last element of the source via the underlying CompletableFuture,
- * signals the a default item if the upstream is empty or signals {@link NoSuchElementException}.
+ * signals a default item if the upstream is empty or signals {@link NoSuchElementException}.
  *
  * @param <T> the element type
  * @since 3.0.0

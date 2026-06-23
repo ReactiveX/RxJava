@@ -94,7 +94,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         to.dispose();
 
-        // a should receive no more
+        // inOrderA should receive no more
         inOrderA.verifyNoMoreInteractions();
 
         channel.onNext(4711);

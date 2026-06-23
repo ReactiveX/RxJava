@@ -24,7 +24,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 
 /**
  * Checks the source code of Maybe and finds unnecessary since 2.0 annotations in the
- * method's javadocs.
+ * method's Javadocs.
  */
 public class MaybeNo2Dot0Since {
 

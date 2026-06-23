@@ -92,7 +92,7 @@ public interface DisposableContainer extends Disposable {
 
     /**
      * The container implementation that just ignores everything, for
-     * cases where the dispose signal has no side-effects to work with.
+     * cases where the dispose signal has no side effects to work with.
      * @since 4.0.0
      */
     static DisposableContainer NEVER = new NeverDisposableContainer();

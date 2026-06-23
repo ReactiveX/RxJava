@@ -205,7 +205,7 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
         /*
          * It is possible for a thread to be interrupted or reschedule between the read of the producer and
          * consumer indices, therefore protection is required to ensure size is within valid range. In the
-         * event of concurrent polls/offers to this method the size is OVER estimated as we read consumer
+         * event of concurrent polls/offers to this method the size is overestimated as we read consumer
          * index BEFORE the producer index.
          */
         long after = lvConsumerIndex();
