@@ -19,7 +19,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.rxjava4.core.config.ObservableMergeConfig;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;

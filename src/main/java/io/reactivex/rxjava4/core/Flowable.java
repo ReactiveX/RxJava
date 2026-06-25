@@ -10271,7 +10271,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper) {
-        return flatMap(mapper, new FlatMapConfig());
+        return flatMap(mapper, FlatMapConfig.DEFAULT);
     }
 
     /**

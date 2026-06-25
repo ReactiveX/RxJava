@@ -173,7 +173,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void nullExpected() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
         to.onNext(1);
 
@@ -188,7 +187,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void nullActual() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
         to.onNext(null);
 
@@ -203,7 +201,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void terminalErrorOnce() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
         to.onError(new TestException());
         to.onError(new TestException());
@@ -219,7 +216,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void terminalCompletedOnce() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
         to.onComplete();
         to.onComplete();
@@ -235,7 +231,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void terminalOneKind() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
         to.onError(new TestException());
         to.onComplete();
@@ -253,7 +248,6 @@ public class TestObserverExTest extends RxJavaTest {
     public void createDelegate() {
         TestObserverEx<Integer> to1 = new TestObserverEx<>();
 
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>(to1);
 
         to.assertNotSubscribed();
@@ -311,7 +305,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertError() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         try {
@@ -432,7 +425,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertFailure() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.onSubscribe(Disposable.empty());
@@ -454,7 +446,6 @@ public class TestObserverExTest extends RxJavaTest {
         to.assertFailureAndMessage(TestException.class, "Forced failure", 1);
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void assertFuseable() {
         TestObserverEx<Integer> to = new TestObserverEx<>();
@@ -504,7 +495,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertTerminated() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.assertNotTerminated();
@@ -521,7 +511,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertResult() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.onSubscribe(Disposable.empty());
@@ -559,7 +548,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void await() throws Exception {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.onSubscribe(Disposable.empty());
@@ -582,7 +570,6 @@ public class TestObserverExTest extends RxJavaTest {
 
         to.assertNoErrors().assertComplete();
 
-        @SuppressWarnings("resource")
         final TestObserverEx<Integer> to1 = new TestObserverEx<>();
 
         to1.onSubscribe(Disposable.empty());
@@ -594,7 +581,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void errors() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.onSubscribe(Disposable.empty());
@@ -610,7 +596,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void onNext() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.onSubscribe(Disposable.empty());
@@ -642,7 +627,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void multipleTerminals() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.onSubscribe(Disposable.empty());
@@ -686,7 +670,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertValue() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.onSubscribe(Disposable.empty());
@@ -719,7 +702,6 @@ public class TestObserverExTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void onNextMisbehave() {
         TestObserverEx<Integer> to = new TestObserverEx<>();
@@ -737,7 +719,6 @@ public class TestObserverExTest extends RxJavaTest {
         to.assertFailure(NullPointerException.class, (Integer)null);
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void assertTerminated2() {
         TestObserverEx<Integer> to = new TestObserverEx<>();
@@ -781,7 +762,6 @@ public class TestObserverExTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void onSubscribe() {
         TestObserverEx<Integer> to = new TestObserverEx<>();
@@ -815,7 +795,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertValueSequence() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.onSubscribe(Disposable.empty());
@@ -849,7 +828,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertEmpty() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         try {
@@ -875,7 +853,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void awaitDoneTimed() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         Thread.currentThread().interrupt();
@@ -889,7 +866,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertNotSubscribed() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.assertNotSubscribed();
@@ -906,7 +882,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertErrorMultiple() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         TestException e = new TestException();
@@ -941,7 +916,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void errorInPredicate() {
-        @SuppressWarnings("resource")
         TestObserverEx<Object> to = new TestObserverEx<>();
         to.onError(new RuntimeException());
         try {
@@ -957,7 +931,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertComplete() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.onSubscribe(Disposable.empty());
@@ -985,7 +958,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void completeWithoutOnSubscribe() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         to.onComplete();
@@ -995,7 +967,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void completeDelegateThrows() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>(new Observer<Integer>() {
 
             @Override
@@ -1032,7 +1003,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void errorDelegateThrows() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>(new Observer<Integer>() {
 
             @Override
@@ -1280,7 +1250,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertValuesOnly() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
         to.onSubscribe(Disposable.empty());
         to.assertValuesOnly();
@@ -1294,7 +1263,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertValuesOnlyThrowsOnUnexpectedValue() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
         to.onSubscribe(Disposable.empty());
         to.assertValuesOnly();
@@ -1314,7 +1282,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertValuesOnlyThrowsWhenCompleted() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
         to.onSubscribe(Disposable.empty());
 
@@ -1330,7 +1297,6 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertValuesOnlyThrowsWhenErrored() {
-        @SuppressWarnings("resource")
         TestObserverEx<Integer> to = new TestObserverEx<>();
         to.onSubscribe(Disposable.empty());
 

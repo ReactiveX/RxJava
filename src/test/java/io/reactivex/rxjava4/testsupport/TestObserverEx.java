@@ -19,7 +19,6 @@ import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.operators.QueueDisposable;
 import io.reactivex.rxjava4.operators.QueueFuseable;
 

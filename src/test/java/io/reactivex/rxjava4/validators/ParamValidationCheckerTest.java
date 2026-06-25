@@ -615,8 +615,8 @@ public class ParamValidationCheckerTest {
         VirtualGenerator<Object> vg = _ -> { };
         defaultValues.put(VirtualGenerator.class, vg);
 
-        defaultValues.put(FlatMapConfig.class, new FlatMapConfig());
-        defaultValues.put(GenericConfig.class, new GenericConfig());
+        defaultValues.put(FlatMapConfig.class, FlatMapConfig.DEFAULT);
+        defaultValues.put(GenericConfig.class, GenericConfig.DEFAULT);
         defaultValues.put(CompletableConcatConfig.class, CompletableConcatConfig.DEFAULT);
         defaultValues.put(CompletableMergeConfig.class, CompletableMergeConfig.DEFAULT);
 
@@ -723,7 +723,7 @@ public class ParamValidationCheckerTest {
     }
 
     static void addDefaultInstance(Class<?> clazz, Object o, String tag) {
-        List<Object> list = defaultInstances.computeIfAbsent(clazz, k -> new ArrayList<>());
+        List<Object> list = defaultInstances.computeIfAbsent(clazz, _ -> new ArrayList<>());
         list.add(o);
         list.add(tag);
     }

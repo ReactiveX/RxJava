@@ -37,13 +37,6 @@ public record ObservableMergeConfig(boolean delayErrors, int maxConcurrency, int
     public static final ObservableMergeConfig DELAY_ERROR = new ObservableMergeConfig(true, Observable.bufferSize());
 
     /**
-     * Default config: no error delay, {@link Flowable#bufferSize()} sizes.
-     */
-    public ObservableMergeConfig() {
-        this(false, Flowable.bufferSize(), Flowable.bufferSize());
-    }
-
-    /**
      * Optionally delay error, {@link Flowable#bufferSize()} sizes
      * @param delayErrors should the error be delayed?
      */

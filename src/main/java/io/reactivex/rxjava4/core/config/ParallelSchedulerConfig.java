@@ -36,12 +36,12 @@ public record ParallelSchedulerConfig(
         @Nullable ThreadFactory factory) {
 
     /**
-     * Creates a default config with available CPUs parallelism,
-     * normal priority, tracking and RxParallelScheduler thread name prefix.
+     * Default configuration: Available CPU parallelism, tracking on, normal thread priority
+     * {@code RxParallelScheduler} naming and no custom {@link ThreadFactory}.
      */
-    public ParallelSchedulerConfig() {
-        this(Runtime.getRuntime().availableProcessors(), true, Thread.NORM_PRIORITY, "RxParallelScheduler", null);
-    }
+    public static final ParallelSchedulerConfig DEFAULT = new ParallelSchedulerConfig(
+            Runtime.getRuntime().availableProcessors(), true, Thread.NORM_PRIORITY,
+            "RxParallelScheduler", null);
 
     /**
      * Creates a default config with the given parallelism,

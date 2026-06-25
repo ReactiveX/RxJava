@@ -28,11 +28,14 @@ import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 public record GenericConfig(boolean delayErrors, int bufferSize, int prefetch) {
 
     /**
-     * Default config: no error delay, {@link Flowable#bufferSize()} sizes.
+     * The default config with no error delay and Flowable#bufferSize() as the maximum concurrency setting.
      */
-    public GenericConfig() {
-        this(false, Flowable.bufferSize(), Flowable.bufferSize());
-    }
+    public static final GenericConfig DEFAULT = new GenericConfig(false, Flowable.bufferSize());
+
+    /**
+     * The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.
+     */
+    public static final GenericConfig DELAY_ERRORS = new GenericConfig(true, Flowable.bufferSize());
 
     /**
      * Optionally delay error, {@link Flowable#bufferSize()} sizes.

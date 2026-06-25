@@ -883,7 +883,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -990,7 +989,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
