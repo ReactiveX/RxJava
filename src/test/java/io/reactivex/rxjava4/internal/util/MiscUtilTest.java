@@ -236,4 +236,23 @@ public class MiscUtilTest extends RxJavaTest {
     public void queueDrainHelperUtility() {
         TestHelper.checkUtilityClass(QueueDrainHelper.class);
     }
+
+    @Test
+    public void appendOnlyLinkedArrayListForEachWhileBiFullChunkNoNext() throws Throwable {
+        // Fill exactly capacity elements in one chunk; no next chunk exists (a[c] == null).
+        // The predicate returns false for all elements so the loop must traverse past the full chunk.
+        AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<>(2);
+
+        list.add(1);
+        list.add(2);
+
+        final List<Integer> out = new ArrayList<>();
+
+        list.forEachWhile(null, (state, value) -> {
+            out.add(value);
+            return false; // never terminate early
+        });
+
+        assertEquals(Arrays.asList(1, 2), out);
+    }
 }

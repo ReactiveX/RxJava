@@ -175,6 +175,9 @@ public class AppendOnlyLinkedArrayList<T> {
                 }
             }
             a = (Object[])a[c];
+            if (a == null) {
+                return;
+            }
         }
     }
 }
