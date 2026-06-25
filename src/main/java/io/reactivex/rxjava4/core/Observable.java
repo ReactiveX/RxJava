@@ -20,6 +20,7 @@ import java.util.stream.*;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.*;
+import io.reactivex.rxjava4.core.config.ObservableCombineLatestConfig;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
@@ -231,7 +232,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <@NonNull T, @NonNull R> Observable<R> combineLatest(
             @NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
             @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatest(sources, combiner, bufferSize());
+        return combineLatest(sources, combiner, ObservableCombineLatestConfig.DEFAULT);
     }
 
     /**
@@ -265,10 +266,10 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the collection of source {@code ObservableSource}s
      * @param combiner
      *            the aggregation function used to combine the items emitted by the returned {@code ObservableSource}s
-     * @param bufferSize
-     *            the expected number of row combination items to be buffered internally
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
+     * @throws NullPointerException if {@code sources}, {@code combiner} or {@code config} is {@code null}
      * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
@@ -277,14 +278,14 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T, @NonNull R> Observable<R> combineLatest(
             @NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
-            @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
+            @NonNull Function<? super Object[], ? extends R> combiner, @NonNull ObservableCombineLatestConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        Objects.requireNonNull(config, "config is null");
 
         // the queue holds a pair of values so we need to double the capacity
-        int s = bufferSize << 1;
-        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(null, sources, combiner, s, false));
+        int s = config.bufferSize() << 1;
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(null, sources, combiner, s, config.delayError()));
     }
 
     /**
@@ -328,7 +329,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <@NonNull T, @NonNull R> Observable<R> combineLatestArray(
             @NonNull ObservableSource<? extends T>[] sources,
             @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatestArray(sources, combiner, bufferSize());
+        return combineLatestArray(sources, combiner, ObservableCombineLatestConfig.DEFAULT);
     }
 
     /**
@@ -362,10 +363,10 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the collection of source {@code ObservableSource}s
      * @param combiner
      *            the aggregation function used to combine the items emitted by the {@code ObservableSource}s
-     * @param bufferSize
-     *            the expected number of row combination items to be buffered internally
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
+     * @throws NullPointerException if {@code sources}, {@code combiner} or {@code config} is {@code null}
      * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
@@ -374,17 +375,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T, @NonNull R> Observable<R> combineLatestArray(
             @NonNull ObservableSource<? extends T>[] sources,
-            @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
+            @NonNull Function<? super Object[], ? extends R> combiner,
+            @NonNull ObservableCombineLatestConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return empty();
         }
         Objects.requireNonNull(combiner, "combiner is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        Objects.requireNonNull(config, "config is null");
 
         // the queue holds a pair of values so we need to double the capacity
-        int s = bufferSize << 1;
-        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(sources, null, combiner, s, false));
+        int s = config.bufferSize() << 1;
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(sources, null, combiner, s, config.delayError()));
     }
 
     /**
@@ -425,7 +427,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new ObservableSource[] { source1, source2 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2 },
+                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
     }
 
     /**
@@ -471,7 +474,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new ObservableSource[] { source1, source2, source3 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3 },
+                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
     }
 
     /**
@@ -522,7 +526,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(source4, "source4 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4 },
+                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
     }
 
     /**
@@ -578,7 +583,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source4, "source4 is null");
         Objects.requireNonNull(source5, "source5 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5 },
+                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
     }
 
     /**
@@ -638,7 +644,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source5, "source5 is null");
         Objects.requireNonNull(source6, "source6 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6 },
+                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
     }
 
     /**
@@ -704,7 +711,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source6, "source6 is null");
         Objects.requireNonNull(source7, "source7 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7 },
+                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
     }
 
     /**
@@ -775,7 +783,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source8, "source8 is null");
         Objects.requireNonNull(combiner, "combiner is null");
         return combineLatestArray(new ObservableSource[] { source1, source2, source3,
-                source4, source5, source6, source7, source8 }, Functions.toFunction(combiner), bufferSize());
+                source4, source5, source6, source7, source8 },
+                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
     }
 
     /**
@@ -854,203 +863,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         return combineLatestArray(new ObservableSource[] {
                 source1, source2, source3,
                 source4, source5, source6,
-                source7, source8, source9 }, Functions.toFunction(combiner), bufferSize());
-    }
-
-    /**
-     * Combines an array of {@link ObservableSource}s by emitting an item that aggregates the latest values of each of
-     * the {@code ObservableSource}s each time an item is received from any of the {@code ObservableSource}s, where this
-     * aggregation is defined by a specified function.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.v3.png" alt="">
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@link ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If the provided array of {@code ObservableSource}s is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source {@code ObservableSource}s
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the {@code ObservableSource}s
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T, @NonNull R> Observable<R> combineLatestArrayDelayError(
-            @NonNull ObservableSource<? extends T>[] sources,
-            @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatestArrayDelayError(sources, combiner, bufferSize());
-    }
-
-    /**
-     * Combines an array of {@link ObservableSource}s by emitting an item that aggregates the latest values of each of
-     * the {@code ObservableSource}s each time an item is received from any of the {@code ObservableSource}s, where this
-     * aggregation is defined by a specified function and delays any error from the sources until
-     * all source {@code ObservableSource}s terminate.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@link ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If the provided array of {@code ObservableSource}s is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source {@code ObservableSource}s
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the {@code ObservableSource}s
-     * @param bufferSize
-     *            the expected number of row combination items to be buffered internally
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T, @NonNull R> Observable<R> combineLatestArrayDelayError(@NonNull ObservableSource<? extends T>[] sources,
-            @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
-        Objects.requireNonNull(sources, "sources is null");
-        Objects.requireNonNull(combiner, "combiner is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        if (sources.length == 0) {
-            return empty();
-        }
-        // the queue holds a pair of values so we need to double the capacity
-        int s = bufferSize << 1;
-        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(sources, null, combiner, s, true));
-    }
-
-    /**
-     * Combines an {@link Iterable} of {@link ObservableSource}s by emitting an item that aggregates the latest values of each of
-     * the {@code ObservableSource}s each time an item is received from any of the {@code ObservableSource}s, where this
-     * aggregation is defined by a specified function and delays any error from the sources until
-     * all source {@code ObservableSource}s terminate.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@link ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If the provided iterable of {@code ObservableSource}s is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the {@code Iterable} of source {@code ObservableSource}s
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the {@code ObservableSource}s
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T, @NonNull R> Observable<R> combineLatestDelayError(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
-            @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatestDelayError(sources, combiner, bufferSize());
-    }
-
-    /**
-     * Combines an {@link Iterable} of {@link ObservableSource}s by emitting an item that aggregates the latest values of each of
-     * the {@code ObservableSource}s each time an item is received from any of the {@code ObservableSource}s, where this
-     * aggregation is defined by a specified function and delays any error from the sources until
-     * all source {@code ObservableSource}s terminate.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@link ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If the provided iterable of {@code ObservableSource}s is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source {@code ObservableSource}s
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the {@code ObservableSource}s
-     * @param bufferSize
-     *            the expected number of row combination items to be buffered internally
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T, @NonNull R> Observable<R> combineLatestDelayError(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
-            @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
-        Objects.requireNonNull(sources, "sources is null");
-        Objects.requireNonNull(combiner, "combiner is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-
-        // the queue holds a pair of values so we need to double the capacity
-        int s = bufferSize << 1;
-        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(null, sources, combiner, s, true));
+                source7, source8, source9 },
+                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
     }
 
     /**
@@ -12025,7 +11839,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.v3.png" alt="">
      * <p>
      * Example:
-     *
      * This retries 3 times, each time incrementing the number of seconds it waits.
      *
      * <pre><code>
@@ -15599,18 +15412,13 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public final Flowable<T> toFlowable(@NonNull BackpressureStrategy strategy) {
         Objects.requireNonNull(strategy, "strategy is null");
         Flowable<T> f = new FlowableFromObservable<>(this);
-        switch (strategy) {
-            case DROP:
-                return f.onBackpressureDrop();
-            case LATEST:
-                return f.onBackpressureLatest();
-            case MISSING:
-                return f;
-            case ERROR:
-                return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<>(f));
-            default:
-                return f.onBackpressureBuffer();
-        }
+        return switch (strategy) {
+            case DROP -> f.onBackpressureDrop();
+            case LATEST -> f.onBackpressureLatest();
+            case MISSING -> f;
+            case ERROR -> RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<>(f));
+            default -> f.onBackpressureBuffer();
+        };
     }
 
     /**
