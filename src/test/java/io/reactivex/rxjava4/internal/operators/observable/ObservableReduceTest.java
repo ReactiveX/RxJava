@@ -56,7 +56,8 @@ public class ObservableReduceTest extends RxJavaTest {
 
     @Test
     public void aggregateAsIntSumSourceThrowsObservable() {
-        Observable<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
+        Observable<Integer> result = Observable.concatArray(
+                Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
                 .reduce(0, sum).map(v -> v).toObservable();
 
@@ -132,7 +133,8 @@ public class ObservableReduceTest extends RxJavaTest {
 
     @Test
     public void aggregateAsIntSumSourceThrows() {
-        Single<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
+        Single<Integer> result = Observable.concatArray(
+                Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
                 .reduce(0, sum).map(v -> v);
 

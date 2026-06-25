@@ -26,7 +26,7 @@ import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.operators.mixed.ObservableConcatMapSingle.ConcatMapSingleMainObserver;
-import io.reactivex.rxjava4.internal.util.ErrorMode;
+import io.reactivex.rxjava4.core.ErrorMode;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.subjects.*;

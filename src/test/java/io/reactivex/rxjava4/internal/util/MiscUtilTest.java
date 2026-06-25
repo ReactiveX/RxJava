@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava4.core.ErrorMode;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;

@@ -33,7 +33,6 @@ import io.reactivex.rxjava4.internal.operators.maybe.*;
 import io.reactivex.rxjava4.internal.operators.mixed.*;
 import io.reactivex.rxjava4.internal.operators.observable.ObservableSingleSingle;
 import io.reactivex.rxjava4.internal.operators.single.*;
-import io.reactivex.rxjava4.internal.util.ErrorMode;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.*;

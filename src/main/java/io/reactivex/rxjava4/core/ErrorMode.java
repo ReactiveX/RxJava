@@ -11,10 +11,11 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava4.internal.util;
+package io.reactivex.rxjava4.core;
 
 /**
  * Indicates when an error from the main source should be reported.
+ * @since 4.0.0
  */
 public enum ErrorMode {
     /** Report the error immediately, cancelling the active inner source. */

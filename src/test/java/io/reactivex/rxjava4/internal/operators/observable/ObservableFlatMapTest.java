@@ -151,7 +151,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         Observable<Integer> onComplete = Observable.fromIterable(List.of(4));
         Observable<Integer> onError = Observable.fromIterable(List.of(5));
 
-        Observable<Integer> source = Observable.concat(
+        Observable<Integer> source = Observable.concatArray(
                 Observable.fromIterable(Arrays.asList(10, 20, 30)),
                 Observable.<Integer> error(new RuntimeException("Forced failure!"))
                 );

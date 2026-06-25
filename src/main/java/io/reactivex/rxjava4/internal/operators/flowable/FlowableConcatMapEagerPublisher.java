@@ -18,7 +18,7 @@ import static java.util.concurrent.Flow.*;
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.operators.flowable.FlowableConcatMapEager.ConcatMapEagerDelayErrorSubscriber;
-import io.reactivex.rxjava4.internal.util.ErrorMode;
+import io.reactivex.rxjava4.core.ErrorMode;
 
 /**
  * ConcatMapEager which works with an arbitrary Publisher source.

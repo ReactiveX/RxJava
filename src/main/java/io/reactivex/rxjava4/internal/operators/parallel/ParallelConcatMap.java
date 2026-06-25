@@ -17,7 +17,7 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.operators.flowable.FlowableConcatMap;
-import io.reactivex.rxjava4.internal.util.ErrorMode;
+import io.reactivex.rxjava4.core.ErrorMode;
 import io.reactivex.rxjava4.parallel.ParallelFlowable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
