@@ -365,7 +365,8 @@ public class SourceAnnotationCheck {
 
                 }
 
-                if (strippedArgumentsStr.contains("...") && !hasSafeVarargsAnnotation) {
+                if (strippedArgumentsStr.contains("...") && !hasSafeVarargsAnnotation
+                        && !strippedArgumentsStr.contains("CompletableSource...")) {
                     errorCount++;
                     errors.append("L")
                     .append(j)
