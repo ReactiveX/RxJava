@@ -1080,6 +1080,10 @@ specified boundary <a href="https://docs.oracle.com/en/java/javase/26/docs/api/j
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/GenericConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()" class="member-name-link">bufferSize()</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns the default internal buffer size used by most async operators.</div>
@@ -1338,7 +1342,7 @@ aggregation is defined by a specified function.</div>
 the returned <code>ObservableSource</code>s each time an item is received from any of the returned <code>ObservableSource</code>s, where this
 aggregation is defined by a specified function.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#combineLatest(java.lang.Iterable,io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">combineLatest(Iterable, Function, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#combineLatest(java.lang.Iterable,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableCombineLatestConfig)" class="member-name-link">combineLatest(Iterable, Function, ObservableCombineLatestConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Combines an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of source <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s by emitting an item that aggregates the latest values of each of
 the returned <code>ObservableSource</code>s each time an item is received from any of the returned <code>ObservableSource</code>s, where this
@@ -1410,7 +1414,7 @@ aggregation is defined by a specified function.</div>
 the <code>ObservableSource</code>s each time an item is received from any of the returned <code>ObservableSource</code>s, where this
 aggregation is defined by a specified function.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#combineLatestArray(io.reactivex.rxjava4.core.ObservableSource%5B%5D,io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">combineLatestArray(ObservableSource[], Function, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#combineLatestArray(io.reactivex.rxjava4.core.ObservableSource%5B%5D,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableCombineLatestConfig)" class="member-name-link">combineLatestArray(ObservableSource[], Function, ObservableCombineLatestConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Combines an array of source <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s by emitting an item that aggregates the latest values of each of
 the <code>ObservableSource</code>s each time an item is received from any of the <code>ObservableSource</code>s, where this
@@ -1428,19 +1432,6 @@ aggregation is defined by a specified function.</div>
 the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
 aggregation is defined by a specified function.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#combineLatestArrayDelayError(io.reactivex.rxjava4.core.ObservableSource%5B%5D,io.reactivex.rxjava4.functions.Function)" class="member-name-link">combineLatestArrayDelayError(ObservableSource[], Function)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Combines an array of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s by emitting an item that aggregates the latest values of each of
-the <code>ObservableSource</code>s each time an item is received from any of the <code>ObservableSource</code>s, where this
-aggregation is defined by a specified function.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#combineLatestArrayDelayError(io.reactivex.rxjava4.core.ObservableSource%5B%5D,io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">combineLatestArrayDelayError(ObservableSource[], Function, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Combines an array of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s by emitting an item that aggregates the latest values of each of
-the <code>ObservableSource</code>s each time an item is received from any of the <code>ObservableSource</code>s, where this
-aggregation is defined by a specified function and delays any error from the sources until
-all source <code>ObservableSource</code>s terminate.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#combineLatestArrayDelayError(java.util.concurrent.Flow.Publisher%5B%5D,io.reactivex.rxjava4.functions.Function)" class="member-name-link">combineLatestArrayDelayError(Flow.Publisher[], Function)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Combines a collection of source <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s by emitting an item that aggregates the latest values of each of
@@ -1453,20 +1444,6 @@ aggregation is defined by a specified function.</div>
 the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
 aggregation is defined by a specified function and delays any error from the sources until
 all source <code>Publisher</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#combineLatestDelayError(java.lang.Iterable,io.reactivex.rxjava4.functions.Function)" class="member-name-link">combineLatestDelayError(Iterable, Function)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Combines an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s by emitting an item that aggregates the latest values of each of
-the <code>ObservableSource</code>s each time an item is received from any of the <code>ObservableSource</code>s, where this
-aggregation is defined by a specified function and delays any error from the sources until
-all source <code>ObservableSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#combineLatestDelayError(java.lang.Iterable,io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">combineLatestDelayError(Iterable, Function, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Combines an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s by emitting an item that aggregates the latest values of each of
-the <code>ObservableSource</code>s each time an item is received from any of the <code>ObservableSource</code>s, where this
-aggregation is defined by a specified function and delays any error from the sources until
-all source <code>ObservableSource</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#combineLatestDelayError(java.lang.Iterable,io.reactivex.rxjava4.functions.Function)" class="member-name-link">combineLatestDelayError(Iterable, Function)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -2895,6 +2872,10 @@ current <code>Flowable</code> that are followed by another item within a compute
 <dd>
 <div class="block">The default config with no error delay and Integer#MAX_VALUE as the maximum concurrency setting.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a></dt>
+<dd>
+<div class="block">The default configuration with no error delays and prefetch of 2.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
 <dd>
 <div class="block">The default configuration with no error delays and prefetch of 2.</div>
@@ -3093,6 +3074,10 @@ per-item basis.</div>
 <dd>
 <div class="block">The default configuration with error delays, maxConcurrency and prefetch of Flowable#bufferSize().</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a></dt>
+<dd>
+<div class="block">The default configuration with error delays and prefetch of 2.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
 <dd>
 <div class="block">The default configuration with error delays and prefetch of 2.</div>
@@ -3124,6 +3109,10 @@ per-item basis.</div>
 <dt><a href="io/reactivex/rxjava4/core/config/MaybeConcatEagerConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/MaybeConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">MaybeConcatEagerConfig</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/MaybeConcatEagerConfig.html#param-delayError"><code>delayError</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#param-delayError"><code>delayError</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
 <dd>
@@ -3862,6 +3851,10 @@ immediately.</div>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/MaybeMergeConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/MaybeMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">MaybeMergeConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
@@ -5502,6 +5495,10 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
@@ -6974,6 +6971,22 @@ and/or asynchronous reactive dataflows.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#%3Cinit%3E()" class="member-name-link">Observable()</a> - Constructor for class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record for Observable.combineLatest() operators.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#%3Cinit%3E(boolean)" class="member-name-link">ObservableCombineLatestConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#%3Cinit%3E(boolean,int)" class="member-name-link">ObservableCombineLatestConfig(boolean, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#%3Cinit%3E(int)" class="member-name-link">ObservableCombineLatestConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/ObservableConverter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">ObservableConverter&lt;T,<wbr>R&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
 <div class="block">Convenience interface and callback used by the <a href="io/reactivex/rxjava4/core/Observable.html#to(io.reactivex.rxjava4.core.ObservableConverter)"><code>Observable.to(ObservableConverter)</code></a> operator to turn an <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> into another
@@ -11727,6 +11740,10 @@ transparently relaying signals between the two async representations of a sequen
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/MaybeMergeConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/MaybeMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">MaybeMergeConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
