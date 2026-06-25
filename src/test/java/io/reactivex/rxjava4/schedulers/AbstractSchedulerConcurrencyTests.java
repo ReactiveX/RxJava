@@ -285,36 +285,33 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch completionLatch = new CountDownLatch(1);
         final Worker inner = getScheduler().createWorker();
         try {
-            Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() {
-                @Override
-                public void subscribe(final Subscriber<? super Integer> subscriber) {
-                    inner.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            subscriber.onNext(42);
-                            latch.countDown();
+            Flowable<Integer> obs = Flowable.unsafeCreate((Publisher<Integer>) subscriber -> {
+                inner.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        subscriber.onNext(42);
+                        latch.countDown();
 
-                            // this will recursively schedule this task for execution again
-                            inner.schedule(this);
-                        }
-                    });
+                        // this will recursively schedule this task for execution again
+                        inner.schedule(this);
+                    }
+                });
 
-                    subscriber.onSubscribe(new Subscription() {
+                subscriber.onSubscribe(new Subscription() {
 
-                        @Override
-                        public void cancel() {
-                            inner.dispose();
-                            subscriber.onComplete();
-                            completionLatch.countDown();
-                        }
+                    @Override
+                    public void cancel() {
+                        inner.dispose();
+                        subscriber.onComplete();
+                        completionLatch.countDown();
+                    }
 
-                        @Override
-                        public void request(long n) {
+                    @Override
+                    public void request(long n) {
 
-                        }
-                    });
+                    }
+                });
 
-                }
             });
 
             final AtomicInteger count = new AtomicInteger();

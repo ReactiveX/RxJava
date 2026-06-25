@@ -277,35 +277,32 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
     @Test
     public final void recursiveSchedulerInObservable() {
-        Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(final Subscriber<? super Integer> subscriber) {
-                final Scheduler.Worker inner = getScheduler().createWorker();
+        Flowable<Integer> obs = Flowable.unsafeCreate((Publisher<Integer>) subscriber -> {
+            final Scheduler.Worker inner = getScheduler().createWorker();
 
-                AsyncSubscription as = new AsyncSubscription();
-                subscriber.onSubscribe(as);
-                as.setResource(inner);
+            AsyncSubscription as = new AsyncSubscription();
+            subscriber.onSubscribe(as);
+            as.setResource(inner);
 
-                inner.schedule(new Runnable() {
-                    int i;
+            inner.schedule(new Runnable() {
+                int i;
 
-                    @Override
-                    public void run() {
-                        if (i > 42) {
-                            try {
-                                subscriber.onComplete();
-                            } finally {
-                                inner.dispose();
-                            }
-                            return;
+                @Override
+                public void run() {
+                    if (i > 42) {
+                        try {
+                            subscriber.onComplete();
+                        } finally {
+                            inner.dispose();
                         }
-
-                        subscriber.onNext(i++);
-
-                        inner.schedule(this);
+                        return;
                     }
-                });
-            }
+
+                    subscriber.onNext(i++);
+
+                    inner.schedule(this);
+                }
+            });
         });
 
         final AtomicInteger lastValue = new AtomicInteger();
