@@ -235,7 +235,8 @@ public class ObservableConcatMapSchedulerTest {
         int n = 5000;
         final AtomicInteger counter = new AtomicInteger();
 
-        Observable.range(1, n).concatMap(func, 2, ImmediateThinScheduler.INSTANCE).subscribe(new DefaultObserver<Integer>() {
+        Observable.range(1, n)
+        .concatMap(func, 2, ImmediateThinScheduler.INSTANCE).subscribe(new DefaultObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 // Consume after sleep for 1 ms
@@ -470,7 +471,7 @@ public class ObservableConcatMapSchedulerTest {
     public void immediateInnerNextOuterError() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
+        final TestObserverEx<Integer> to = new TestObserverEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -494,7 +495,7 @@ public class ObservableConcatMapSchedulerTest {
     public void immediateInnerNextOuterError2() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
+        final TestObserverEx<Integer> to = new TestObserverEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -539,7 +540,8 @@ public class ObservableConcatMapSchedulerTest {
     public void badInnerSource() {
         @SuppressWarnings("rawtypes")
         final Observer[] ts0 = { null };
-        TestObserverEx<Integer> to = Observable.just(1).hide().concatMap(Functions.justFunction(new Observable<Integer>() {
+        TestObserverEx<Integer> to = Observable.just(1).hide()
+                .concatMap(Functions.justFunction(new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> o) {
                 ts0[0] = o;
@@ -565,7 +567,8 @@ public class ObservableConcatMapSchedulerTest {
     public void badInnerSourceDelayError() {
         @SuppressWarnings("rawtypes")
         final Observer[] ts0 = { null };
-        TestObserverEx<Integer> to = Observable.just(1).hide().concatMapDelayError(Functions.justFunction(new Observable<Integer>() {
+        TestObserverEx<Integer> to = Observable.just(1).hide()
+                .concatMapDelayError(Functions.justFunction(new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> o) {
                 ts0[0] = o;

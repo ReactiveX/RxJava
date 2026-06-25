@@ -271,7 +271,7 @@ public class SingleTakeUntilTest extends RxJavaTest {
     @Test
     public void flowableCancelDelayed() {
         Single.never()
-        .takeUntil(new Flowable<Integer>() {
+        .takeUntil(new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());

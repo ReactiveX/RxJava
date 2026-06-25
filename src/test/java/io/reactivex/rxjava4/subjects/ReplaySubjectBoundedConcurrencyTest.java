@@ -51,7 +51,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
         // it's been played through once so now it will all be replays
         final CountDownLatch slowLatch = new CountDownLatch(1);
         Thread slowThread = new Thread(() -> {
-            Observer<Long> slow = new DefaultObserver<Long>() {
+            Observer<Long> slow = new DefaultObserver<Long>() /* NFI */ {
 
                 @Override
                 public void onComplete() {
@@ -88,7 +88,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
 
         Thread fastThread = new Thread(() -> {
             final CountDownLatch fastLatch = new CountDownLatch(1);
-            Observer<Long> fast = new DefaultObserver<Long>() {
+            Observer<Long> fast = new DefaultObserver<Long>() /* NFI */ {
 
                 @Override
                 public void onComplete() {
@@ -317,7 +317,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
                 .subscribeOn(s)
                 .observeOn(Schedulers.cached())
 //                .doOnNext(e -> System.out.println(">>> " + j))
-                .subscribe(new DefaultObserver<Object>() {
+                .subscribe(new DefaultObserver<Object>() /* NFI */ {
 
                     @Override
                     protected void onStart() {

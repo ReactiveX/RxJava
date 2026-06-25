@@ -143,7 +143,7 @@ public class ObservableDistinctTest extends RxJavaTest {
     public void fusedClear() {
         Observable.just(1, 1, 2, 1, 3, 2, 4, 5, 4)
         .distinct()
-        .subscribe(new Observer<Integer>() {
+        .subscribe(new Observer<Integer>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 QueueDisposable<?> qd = (QueueDisposable<?>)d;
@@ -192,7 +192,7 @@ public class ObservableDistinctTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

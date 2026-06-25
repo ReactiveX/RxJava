@@ -345,7 +345,7 @@ public class ObservableJoinTest extends RxJavaTest {
     public void badOuterSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -376,7 +376,7 @@ public class ObservableJoinTest extends RxJavaTest {
             TestObserverEx<Integer> to = Observable.just(1)
             .join(Observable.just(2),
                     Functions.justFunction(Observable.never()),
-                    Functions.justFunction(new Observable<Integer>() {
+                    Functions.justFunction(new Observable<Integer>() /* NFI */ {
                         @Override
                         protected void subscribeActual(Observer<? super Integer> observer) {
                             o[0] = observer;

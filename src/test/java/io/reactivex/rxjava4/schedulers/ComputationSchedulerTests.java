@@ -46,7 +46,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         final Scheduler.Worker inner = Schedulers.computation().createWorker();
 
         try {
-            inner.schedule(new Runnable() {
+            inner.schedule(new Runnable() /* NFI */ {
 
                 private HashMap<String, Integer> statefulMap = map;
                 int nonThreadSafeCounter;

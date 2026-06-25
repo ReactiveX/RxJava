@@ -107,7 +107,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithRetry() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+        .map(new Function<Integer, Integer>() /* NFI */ {
             int count;
             @Override
             public Integer apply(Integer v) throws Exception {
@@ -205,7 +205,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithRetryConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+        .map(new Function<Integer, Integer>() /* NFI */ {
             int count;
             @Override
             public Integer apply(Integer v) throws Exception {

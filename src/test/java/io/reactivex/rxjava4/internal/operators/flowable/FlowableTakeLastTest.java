@@ -117,7 +117,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
     }
 
     private Function<Integer, Integer> newSlowProcessor() {
-        return new Function<Integer, Integer>() {
+        return new Function<Integer, Integer>() /* NFI */ {
             int c;
 
             @Override
@@ -149,7 +149,8 @@ public class FlowableTakeLastTest extends RxJavaTest {
     @Test
     public void ignoreRequest1() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000)
+        .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -175,7 +176,8 @@ public class FlowableTakeLastTest extends RxJavaTest {
     @Test
     public void ignoreRequest2() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000)
+        .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -200,7 +202,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
     @Test
     public void ignoreRequest3() {
         // If `takeLast` does not ignore `request` properly, it will enter an infinite loop.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -226,7 +228,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
     @Test
     public void ignoreRequest4() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -252,7 +254,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
     @Test
     public void unsubscribeTakesEffectEarlyOnFastPath() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -280,7 +282,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
     @Test
     public void requestOverflow() {
         final List<Integer> list = new ArrayList<>();
-        Flowable.range(1, 100).takeLast(50).subscribe(new DefaultSubscriber<Integer>() {
+        Flowable.range(1, 100).takeLast(50).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -340,7 +342,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
     @Test
     public void cancelThenRequest() {
         Flowable.never().takeLast(2)
-        .subscribe(new FlowableSubscriber<Object>() {
+        .subscribe(new FlowableSubscriber<Object>() /* NFI */ {
 
             @Override
             public void onNext(@NonNull Object t) {

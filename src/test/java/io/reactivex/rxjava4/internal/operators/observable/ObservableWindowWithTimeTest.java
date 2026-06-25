@@ -121,7 +121,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     }
 
     private <T> Consumer<Observable<T>> observeWindow(final List<T> list, final List<List<T>> lists) {
-        return stringObservable -> stringObservable.subscribe(new DefaultObserver<T>() {
+        return stringObservable -> stringObservable.subscribe(new DefaultObserver<T>() /* NFI */ {
             @Override
             public void onComplete() {
                 lists.add(new ArrayList<>(list));
@@ -425,7 +425,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         final Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -453,7 +453,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         final Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -481,7 +481,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         final Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -509,7 +509,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         final Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -662,7 +662,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         ps.window(100, TimeUnit.MILLISECONDS)
-        .doOnNext(new Consumer<Observable<Integer>>() {
+        .doOnNext(new Consumer<Observable<Integer>>() /* NFI */ {
             int count;
             @Override
             public void accept(Observable<Integer> v) throws Exception {
@@ -703,7 +703,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         ps.window(100, TimeUnit.MILLISECONDS)
-        .doOnNext(new Consumer<Observable<Integer>>() {
+        .doOnNext(new Consumer<Observable<Integer>>() /* NFI */ {
             int count;
             @Override
             public void accept(Observable<Integer> v) throws Exception {
@@ -743,7 +743,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         ps.window(100, TimeUnit.MILLISECONDS, 10)
-        .doOnNext(new Consumer<Observable<Integer>>() {
+        .doOnNext(new Consumer<Observable<Integer>>() /* NFI */ {
             int count;
             @Override
             public void accept(Observable<Integer> v) throws Exception {
@@ -784,7 +784,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         ps.window(100, TimeUnit.MILLISECONDS, 10)
-        .doOnNext(new Consumer<Observable<Integer>>() {
+        .doOnNext(new Consumer<Observable<Integer>>() /* NFI */ {
             int count;
             @Override
             public void accept(Observable<Integer> v) throws Exception {
@@ -824,7 +824,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         ps.window(90, 100, TimeUnit.MILLISECONDS)
-        .doOnNext(new Consumer<Observable<Integer>>() {
+        .doOnNext(new Consumer<Observable<Integer>>() /* NFI */ {
             int count;
             @Override
             public void accept(Observable<Integer> v) throws Exception {
@@ -865,7 +865,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         ps.window(90, 100, TimeUnit.MILLISECONDS)
-        .doOnNext(new Consumer<Observable<Integer>>() {
+        .doOnNext(new Consumer<Observable<Integer>>() /* NFI */ {
             int count;
             @Override
             public void accept(Observable<Integer> v) throws Exception {

@@ -215,7 +215,8 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void fusedEmptyCheck() {
         Maybe.just(1)
-        .flattenAsObservable(_ -> Arrays.asList(1, 2, 3)).subscribe(new Observer<Integer>() {
+        .flattenAsObservable(_ -> Arrays.asList(1, 2, 3))
+        .subscribe(new Observer<Integer>() /* NFI */ {
             QueueDisposable<Integer> qd;
             @SuppressWarnings("unchecked")
             @Override

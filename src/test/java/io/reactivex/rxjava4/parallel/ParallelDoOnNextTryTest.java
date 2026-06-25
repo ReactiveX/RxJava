@@ -127,7 +127,7 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailWithRetry() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+        .doOnNext(new Consumer<Integer>() /* NFI */ {
             int count;
             @Override
             public void accept(Integer v) throws Exception {
@@ -247,7 +247,7 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailWithRetryConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+        .doOnNext(new Consumer<Integer>() /* NFI */ {
             int count;
             @Override
             public void accept(Integer v) throws Exception {

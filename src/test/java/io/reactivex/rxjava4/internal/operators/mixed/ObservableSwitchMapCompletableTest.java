@@ -246,7 +246,7 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
     public void innerErrorThenMainError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

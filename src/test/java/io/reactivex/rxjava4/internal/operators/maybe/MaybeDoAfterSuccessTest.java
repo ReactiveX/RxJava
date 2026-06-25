@@ -34,7 +34,7 @@ public class MaybeDoAfterSuccessTest extends RxJavaTest {
 
     final Consumer<Integer> afterSuccess = e -> values.add(-e);
 
-    final TestObserver<Integer> to = new TestObserver<Integer>() {
+    final TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
         @Override
         public void onNext(Integer t) {
             super.onNext(t);

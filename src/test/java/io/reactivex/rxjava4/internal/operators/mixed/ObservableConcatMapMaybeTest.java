@@ -192,7 +192,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     public void mainErrorAfterInnerError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -221,7 +221,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
             final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestObserverEx<Integer> to = ps.concatMapMaybe(
-                    (Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<Integer>() {
+                    (Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<Integer>() /* NFI */ {
                             @Override
                             protected void subscribeActual(
                                     MaybeObserver<? super Integer> observer) {

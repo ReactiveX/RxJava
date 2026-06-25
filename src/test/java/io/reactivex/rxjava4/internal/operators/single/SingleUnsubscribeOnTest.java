@@ -92,7 +92,7 @@ public class SingleUnsubscribeOnTest extends RxJavaTest {
 
             final Disposable[] ds = { null };
             pp.single(-99).unsubscribeOn(Schedulers.computation())
-            .subscribe(new SingleObserver<Integer>() {
+            .subscribe(new SingleObserver<Integer>() /* NFI */ {
                 @Override
                 public void onSubscribe(Disposable d) {
                     ds[0] = d;

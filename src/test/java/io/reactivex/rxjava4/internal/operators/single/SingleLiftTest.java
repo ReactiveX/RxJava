@@ -23,7 +23,7 @@ public class SingleLiftTest extends RxJavaTest {
     @Test
     public void normal() {
 
-        Single.just(1).lift((SingleOperator<Integer, Integer>) observer -> new SingleObserver<Integer>() {
+        Single.just(1).lift((SingleOperator<Integer, Integer>) observer -> new SingleObserver<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

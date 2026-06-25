@@ -176,7 +176,7 @@ public class SubscriptionHelperTest extends RxJavaTest {
 
             final AtomicLong q = new AtomicLong();
 
-            final Subscription a = new Subscription() {
+            final Subscription a = new Subscription() /* NFI */ {
                 @Override
                 public void request(long n) {
                     q.addAndGet(n);

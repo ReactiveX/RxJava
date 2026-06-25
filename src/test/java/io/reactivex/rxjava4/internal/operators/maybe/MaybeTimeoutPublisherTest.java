@@ -212,7 +212,7 @@ public class MaybeTimeoutPublisherTest extends RxJavaTest {
     public void mainSuccessAfterOtherSignal() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        new Maybe<Integer>() {
+        new Maybe<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());

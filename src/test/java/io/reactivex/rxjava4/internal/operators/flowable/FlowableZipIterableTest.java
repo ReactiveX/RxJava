@@ -227,7 +227,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         InOrder io = inOrder(subscriber);
 
-        Iterable<String> r2 = () -> new Iterator<String>() {
+        Iterable<String> r2 = () -> new Iterator<String>() /* NFI */ {
             int count;
 
             @Override
@@ -270,7 +270,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         InOrder io = inOrder(subscriber);
 
-        Iterable<String> r2 = () -> new Iterator<String>() {
+        Iterable<String> r2 = () -> new Iterator<String>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;
@@ -346,7 +346,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());

@@ -23,7 +23,7 @@ public class SingleDeferTest extends RxJavaTest {
     @Test
     public void normal() {
 
-        Single<Integer> s = Single.defer(new Supplier<Single<Integer>>() {
+        Single<Integer> s = Single.defer(new Supplier<Single<Integer>>() /* NFI */ {
             int counter;
             @Override
             public Single<Integer> get() throws Exception {

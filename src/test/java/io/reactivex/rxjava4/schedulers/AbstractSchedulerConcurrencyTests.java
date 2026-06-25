@@ -52,7 +52,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                 })
                 .subscribeOn(getScheduler())
                 .observeOn(getScheduler())
-                .subscribe(new DefaultSubscriber<Long>() {
+                .subscribe(new DefaultSubscriber<Long>() /* NFI */ {
                     @Override
                     public void onComplete() {
                         System.out.println("--- completed");
@@ -93,37 +93,30 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final AtomicInteger counter = new AtomicInteger();
         final Worker inner = getScheduler().createWorker();
         try {
-            inner.schedule(new Runnable() {
+            inner.schedule(() -> inner.schedule(new Runnable() /* NFI */ {
+
+                int i;
 
                 @Override
                 public void run() {
-                    inner.schedule(new Runnable() {
-
-                        int i;
-
-                        @Override
-                        public void run() {
-                            System.out.println("Run: " + i++);
-                            if (i == 10) {
-                                latch.countDown();
-                                try {
-                                    // wait for unsubscribe to finish so we are not racing it
-                                    unsubscribeLatch.await();
-                                } catch (InterruptedException e) {
-                                    // we expect the countDown if unsubscribe is not working
-                                    // or to be interrupted if unsubscribe is successful since
-                                    // unsubscribe will interrupt it as it is calling Future.cancel(true)
-                                    // so we will ignore the stacktrace
-                                }
-                            }
-
-                            counter.incrementAndGet();
-                            inner.schedule(this);
+                    System.out.println("Run: " + i++);
+                    if (i == 10) {
+                        latch.countDown();
+                        try {
+                            // wait for unsubscribe to finish so we are not racing it
+                            unsubscribeLatch.await();
+                        } catch (InterruptedException e) {
+                            // we expect the countDown if unsubscribe is not working
+                            // or to be interrupted if unsubscribe is successful since
+                            // unsubscribe will interrupt it as it is calling Future.cancel(true)
+                            // so we will ignore the stacktrace
                         }
-                    });
-                }
+                    }
 
-            });
+                    counter.incrementAndGet();
+                    inner.schedule(this);
+                }
+            }));
 
             latch.await();
             inner.dispose();
@@ -141,28 +134,21 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final AtomicInteger counter = new AtomicInteger();
         final Worker inner = getScheduler().createWorker();
         try {
-            inner.schedule(new Runnable() {
+            inner.schedule(() -> inner.schedule(new Runnable() /* NFI */ {
+
+                int i;
 
                 @Override
                 public void run() {
-                    inner.schedule(new Runnable() {
+                    System.out.println("Run: " + i++);
+                    if (i == 10) {
+                        inner.dispose();
+                    }
 
-                        int i;
-
-                        @Override
-                        public void run() {
-                            System.out.println("Run: " + i++);
-                            if (i == 10) {
-                                inner.dispose();
-                            }
-
-                            counter.incrementAndGet();
-                            inner.schedule(this);
-                        }
-                    });
+                    counter.incrementAndGet();
+                    inner.schedule(this);
                 }
-
-            });
+            }));
 
             unsubscribeLatch.countDown();
             Thread.sleep(200); // let time pass to see if the scheduler is still doing work
@@ -180,35 +166,29 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final Worker inner = getScheduler().createWorker();
 
         try {
-            inner.schedule(new Runnable() {
+            inner.schedule(() -> inner.schedule(new Runnable() /* NFI */ {
+
+                long i = 1L;
 
                 @Override
                 public void run() {
-                    inner.schedule(new Runnable() {
-
-                        long i = 1L;
-
-                        @Override
-                        public void run() {
-                            if (i++ == 10) {
-                                latch.countDown();
-                                try {
-                                    // wait for unsubscribe to finish so we are not racing it
-                                    unsubscribeLatch.await();
-                                } catch (InterruptedException e) {
-                                    // we expect the countDown if unsubscribe is not working
-                                    // or to be interrupted if unsubscribe is successful since
-                                    // unsubscribe will interrupt it as it is calling Future.cancel(true)
-                                    // so we will ignore the stacktrace
-                                }
-                            }
-
-                            counter.incrementAndGet();
-                            inner.schedule(this, 10, TimeUnit.MILLISECONDS);
+                    if (i++ == 10) {
+                        latch.countDown();
+                        try {
+                            // wait for unsubscribe to finish so we are not racing it
+                            unsubscribeLatch.await();
+                        } catch (InterruptedException e) {
+                            // we expect the countDown if unsubscribe is not working
+                            // or to be interrupted if unsubscribe is successful since
+                            // unsubscribe will interrupt it as it is calling Future.cancel(true)
+                            // so we will ignore the stacktrace
                         }
-                    }, 10, TimeUnit.MILLISECONDS);
+                    }
+
+                    counter.incrementAndGet();
+                    inner.schedule(this, 10, TimeUnit.MILLISECONDS);
                 }
-            });
+            }, 10, TimeUnit.MILLISECONDS));
 
             latch.await();
             inner.dispose();
@@ -225,7 +205,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(1);
         final Worker inner = getScheduler().createWorker();
         try {
-            inner.schedule(new Runnable() {
+            inner.schedule(new Runnable() /* NFI */ {
 
                 int i;
 
@@ -254,7 +234,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(1);
         final Worker inner = getScheduler().createWorker();
         try {
-            inner.schedule(new Runnable() {
+            inner.schedule(new Runnable() /* NFI */ {
 
                 private long i;
 
@@ -285,10 +265,10 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch completionLatch = new CountDownLatch(1);
         final Worker inner = getScheduler().createWorker();
         try {
-            Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() {
+            Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() /* NFI */ {
                 @Override
                 public void subscribe(final Subscriber<? super Integer> subscriber) {
-                    inner.schedule(new Runnable() {
+                    inner.schedule(new Runnable() /* NFI */ {
                         @Override
                         public void run() {
                             subscriber.onNext(42);
@@ -299,7 +279,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                         }
                     });
 
-                    subscriber.onSubscribe(new Subscription() {
+                    subscriber.onSubscribe(new Subscription() /* NFI */ {
 
                         @Override
                         public void cancel() {
@@ -319,7 +299,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
             final AtomicInteger count = new AtomicInteger();
             final AtomicBoolean completed = new AtomicBoolean(false);
-            ResourceSubscriber<Integer> s = new ResourceSubscriber<Integer>() {
+            ResourceSubscriber<Integer> s = new ResourceSubscriber<Integer>() /* NFI */ {
                 @Override
                 public void onComplete() {
                     System.out.println("Completed");

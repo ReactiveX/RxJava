@@ -83,7 +83,7 @@ public class SingleFromPublisherTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Single.fromPublisher(new Flowable<Integer>() {
+            Single.fromPublisher(new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());

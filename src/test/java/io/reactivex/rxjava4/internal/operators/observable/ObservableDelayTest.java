@@ -551,7 +551,7 @@ public class ObservableDelayTest extends RxJavaTest {
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function<Integer, Integer>() /* NFI */ {
 
                     int c;
 
@@ -580,7 +580,7 @@ public class ObservableDelayTest extends RxJavaTest {
                 .delaySubscription(100, TimeUnit.MILLISECONDS)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function<Integer, Integer>() /* NFI */ {
 
                     int c;
 
@@ -608,7 +608,7 @@ public class ObservableDelayTest extends RxJavaTest {
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay((Function<Integer, Observable<Long>>) _ -> Observable.timer(100, TimeUnit.MILLISECONDS))
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function<Integer, Integer>() /* NFI */ {
 
                     int c;
 
@@ -637,7 +637,7 @@ public class ObservableDelayTest extends RxJavaTest {
                 .delay(Observable.timer(500, TimeUnit.MILLISECONDS)
                 , (Function<Integer, Observable<Long>>) _ -> Observable.timer(100, TimeUnit.MILLISECONDS))
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function<Integer, Integer>() /* NFI */ {
 
                     int c;
 
@@ -794,7 +794,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
         Observable.empty()
         .delay(1, TimeUnit.MILLISECONDS, scheduler)
-        .subscribe(new DisposableObserver<Object>() {
+        .subscribe(new DisposableObserver<Object>() /* NFI */ {
             @Override
             public void onNext(Object value) {
             }
@@ -823,7 +823,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
         Observable.error(new TestException())
         .delay(1, TimeUnit.MILLISECONDS, scheduler)
-        .subscribe(new DisposableObserver<Object>() {
+        .subscribe(new DisposableObserver<Object>() /* NFI */ {
             @Override
             public void onNext(Object value) {
             }

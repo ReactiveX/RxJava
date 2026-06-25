@@ -77,7 +77,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
     public void toMultimapWithMapFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Supplier<Map<Integer, Collection<String>>> mapFactory = () -> new LinkedHashMap<Integer, Collection<String>>() {
+        Supplier<Map<Integer, Collection<String>>> mapFactory = () -> new LinkedHashMap<Integer, Collection<String>>() /* NFI */ {
 
             private static final long serialVersionUID = -2084477070717362859L;
 
@@ -268,7 +268,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
     public void toMultimapWithMapFactory() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Supplier<Map<Integer, Collection<String>>> mapFactory = () -> new LinkedHashMap<Integer, Collection<String>>() {
+        Supplier<Map<Integer, Collection<String>>> mapFactory = () -> new LinkedHashMap<Integer, Collection<String>>() /* NFI */ {
 
             private static final long serialVersionUID = -2084477070717362859L;
 

@@ -34,31 +34,25 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class BlockingFlowableNextTest extends RxJavaTest {
 
     private void fireOnNextInNewThread(final FlowableProcessor<String> o, final String value) {
-        new Thread() /* NFI */ {
-            @Override
-            public void run() {
+        new Thread(() -> {
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     // ignore
                 }
                 o.onNext(value);
-            }
-        }.start();
+        }).start();
     }
 
     private void fireOnErrorInNewThread(final FlowableProcessor<String> o) {
-        new Thread() /* NFI */ {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-                o.onError(new TestException());
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // ignore
             }
-        }.start();
+            o.onError(new TestException());
+        }).start();
     }
 
     @Test

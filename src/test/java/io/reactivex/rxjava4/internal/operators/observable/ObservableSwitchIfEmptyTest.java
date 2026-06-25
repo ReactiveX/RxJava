@@ -57,7 +57,7 @@ public class ObservableSwitchIfEmptyTest extends RxJavaTest {
 
         Observable.<Long>empty()
                 .switchIfEmpty(withProducer)
-                .lift((ObservableOperator<Long, Long>) _ -> new DefaultObserver<Long>() {
+                .lift((ObservableOperator<Long, Long>) _ -> new DefaultObserver<Long>() /* NFI */ {
                     @Override
                     public void onComplete() {
 

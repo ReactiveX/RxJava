@@ -115,7 +115,7 @@ public class MaybeDelaySubscriptionTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable<Integer> f = new Flowable<Integer>() {
+            Flowable<Integer> f = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());

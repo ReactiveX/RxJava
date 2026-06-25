@@ -256,7 +256,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
             src.firstElement()
                 .toObservable()
                 .flatMap((Function<String, Observable<String>>) t1 -> Observable.just(t1 + ", " + t1))
-                .subscribe(new DefaultObserver<String>() {
+                .subscribe(new DefaultObserver<String>() /* NFI */ {
                     @Override
                     public void onNext(String t) {
                         o.onNext(t);
@@ -383,7 +383,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
                 final AtomicReference<Object> o = new AtomicReference<>();
 
                 rs.subscribeOn(s).observeOn(Schedulers.cached())
-                .subscribe(new DefaultObserver<Object>() {
+                .subscribe(new DefaultObserver<Object>() /* NFI */ {
 
                     @Override
                     public void onComplete() {
@@ -613,7 +613,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     @Test
     public void innerDisposed() {
         BehaviorSubject.create()
-        .subscribe(new Observer<Object>() {
+        .subscribe(new Observer<Object>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 assertFalse(d.isDisposed());

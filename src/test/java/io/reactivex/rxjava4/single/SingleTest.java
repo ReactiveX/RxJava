@@ -43,7 +43,8 @@ public class SingleTest extends RxJavaTest {
     @Test
     public void helloWorld2() {
         final AtomicReference<String> v = new AtomicReference<>();
-        Single.just("Hello World!").subscribe(new SingleObserver<String>() {
+        Single.just("Hello World!")
+        .subscribe(new SingleObserver<String>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -254,7 +255,7 @@ public class SingleTest extends RxJavaTest {
     public void unsubscribe2() throws InterruptedException {
         @SuppressWarnings("resource")
         final SerialDisposable sd = new SerialDisposable();
-        SingleObserver<String> ts = new SingleObserver<String>() {
+        var ts = new SingleObserver<String>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -494,7 +495,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void implementationThrows() {
-        new Single<Integer>() {
+        new Single<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(SingleObserver<? super Integer> observer) {
                 throw new NullPointerException();

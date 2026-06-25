@@ -648,7 +648,7 @@ public class ObservableReplayTest extends RxJavaTest {
 
     @Test
     public void boundedReplayBuffer() {
-        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(false) {
+        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(false) /* NFI */ {
             private static final long serialVersionUID = -5182053207244406872L;
 
             @Override
@@ -1114,7 +1114,7 @@ public class ObservableReplayTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -1199,7 +1199,7 @@ public class ObservableReplayTest extends RxJavaTest {
     public void reentrantOnNext() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1221,7 +1221,7 @@ public class ObservableReplayTest extends RxJavaTest {
     public void reentrantOnNextBound() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1243,7 +1243,7 @@ public class ObservableReplayTest extends RxJavaTest {
     public void reentrantOnNextCancel() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1265,7 +1265,7 @@ public class ObservableReplayTest extends RxJavaTest {
     public void reentrantOnNextCancelBounded() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1287,7 +1287,7 @@ public class ObservableReplayTest extends RxJavaTest {
     public void delayedUpstreamOnSubscribe() {
         final Observer<?>[] sub = { null };
 
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 sub[0] = observer;

@@ -290,7 +290,8 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         final Observable<Observable<String>> o1 = Observable.error(new RuntimeException("unit test"));
 
         final CountDownLatch latch = new CountDownLatch(1);
-        Observable.merge(o1, ObservableMergeConfig.DELAY_ERROR).subscribe(new DefaultObserver<String>() {
+        Observable.merge(o1, ObservableMergeConfig.DELAY_ERROR)
+        .subscribe(new DefaultObserver<String>() /* NFI */ {
             @Override
             public void onComplete() {
                 fail("Expected onError path");

@@ -30,7 +30,7 @@ public class StrictSubscriberTest extends RxJavaTest {
     @Test
     public void strictMode() {
         final List<Object> list = new ArrayList<>();
-        Subscriber<Object> sub = new Subscriber<Object>() {
+        Subscriber<Object> sub = new Subscriber<Object>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {
@@ -53,7 +53,7 @@ public class StrictSubscriberTest extends RxJavaTest {
             }
         };
 
-        new Flowable<Object>() {
+        new Flowable<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Object> s) {
                 s.onSubscribe(new BooleanSubscription());
@@ -132,7 +132,7 @@ public class StrictSubscriberTest extends RxJavaTest {
     @Test
     public void deferredRequest() {
         final List<Object> list = new ArrayList<>();
-        Subscriber<Object> sub = new Subscriber<Object>() {
+        Subscriber<Object> sub = new Subscriber<Object>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {
@@ -164,7 +164,7 @@ public class StrictSubscriberTest extends RxJavaTest {
     @Test
     public void requestZero() {
         final List<Object> list = new ArrayList<>();
-        Subscriber<Object> sub = new Subscriber<Object>() {
+        Subscriber<Object> sub = new Subscriber<Object>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {
@@ -196,7 +196,7 @@ public class StrictSubscriberTest extends RxJavaTest {
     @Test
     public void requestNegative() {
         final List<Object> list = new ArrayList<>();
-        Subscriber<Object> sub = new Subscriber<Object>() {
+        Subscriber<Object> sub = new Subscriber<Object>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {
@@ -228,7 +228,7 @@ public class StrictSubscriberTest extends RxJavaTest {
     @Test
     public void cancelAfterOnComplete() {
         final List<Object> list = new ArrayList<>();
-        Subscriber<Object> sub = new Subscriber<Object>() {
+        Subscriber<Object> sub = new Subscriber<Object>() /* NFI */ {
 
             Subscription upstream;
             @Override
@@ -254,7 +254,7 @@ public class StrictSubscriberTest extends RxJavaTest {
             }
         };
 
-        new Flowable<Object>() {
+        new Flowable<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Object> s) {
                 BooleanSubscription b = new BooleanSubscription();
@@ -270,7 +270,7 @@ public class StrictSubscriberTest extends RxJavaTest {
     @Test
     public void cancelAfterOnError() {
         final List<Object> list = new ArrayList<>();
-        Subscriber<Object> sub = new Subscriber<Object>() {
+        Subscriber<Object> sub = new Subscriber<Object>() /* NFI */ {
 
             Subscription upstream;
             @Override
@@ -296,7 +296,7 @@ public class StrictSubscriberTest extends RxJavaTest {
             }
         };
 
-        new Flowable<Object>() {
+        new Flowable<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Object> s) {
                 BooleanSubscription b = new BooleanSubscription();
@@ -314,7 +314,7 @@ public class StrictSubscriberTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<>(ts);
 
-        new Flowable<Integer>() {
+        new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 BooleanSubscription b1 = new BooleanSubscription();

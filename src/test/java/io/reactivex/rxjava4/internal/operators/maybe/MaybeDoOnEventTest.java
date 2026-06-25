@@ -49,7 +49,7 @@ public class MaybeDoOnEventTest extends RxJavaTest {
         try {
             final Disposable bs = Disposable.empty();
 
-            new Maybe<Integer>() {
+            new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(bs);

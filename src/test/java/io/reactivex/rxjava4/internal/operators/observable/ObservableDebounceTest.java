@@ -347,7 +347,7 @@ public class ObservableDebounceTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -405,7 +405,7 @@ public class ObservableDebounceTest extends RxJavaTest {
     public void disposedInOnComplete() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -427,7 +427,7 @@ public class ObservableDebounceTest extends RxJavaTest {
             if (o != 1) {
                 return Observable.never();
             }
-            return new Observable<Integer>() {
+            return new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -452,7 +452,7 @@ public class ObservableDebounceTest extends RxJavaTest {
     public void timedDisposedIgnoredBySource() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(
                     Observer<? super Integer> observer) {

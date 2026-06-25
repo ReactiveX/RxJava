@@ -250,7 +250,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     }
 
     static <T> Emitter<T> wrapToEmitter(final Observer<T> observer) {
-        return new Emitter<T>() {
+        return new Emitter<T>() /* NFI */ {
             @Override
             public void onNext(T value) {
                 observer.onNext(value);

@@ -136,7 +136,7 @@ public class TestSchedulerTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger(0);
 
         try {
-            inner.schedule(new Runnable() {
+            inner.schedule(new Runnable() /* NFI */ {
 
                 @Override
                 public void run() {
@@ -160,7 +160,7 @@ public class TestSchedulerTest extends RxJavaTest {
         try {
             final AtomicInteger counter = new AtomicInteger(0);
 
-            final Disposable subscription = inner.schedule(new Runnable() {
+            final Disposable subscription = inner.schedule(new Runnable() /* NFI */ {
 
                 @Override
                 public void run() {
@@ -186,21 +186,18 @@ public class TestSchedulerTest extends RxJavaTest {
             final Runnable calledOp = mock(Runnable.class);
 
             Flowable<Object> poller;
-            poller = Flowable.unsafeCreate(new Publisher<Object>() {
-                @Override
-                public void subscribe(final Subscriber<? super Object> aSubscriber) {
-                    final BooleanSubscription bs = new BooleanSubscription();
-                    aSubscriber.onSubscribe(bs);
-                    inner.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!bs.isCancelled()) {
-                                calledOp.run();
-                                inner.schedule(this, 5, TimeUnit.SECONDS);
-                            }
+            poller = Flowable.unsafeCreate(aSubscriber -> {
+                final BooleanSubscription bs = new BooleanSubscription();
+                aSubscriber.onSubscribe(bs);
+                inner.schedule(new Runnable() /* NFI */ {
+                    @Override
+                    public void run() {
+                        if (!bs.isCancelled()) {
+                            calledOp.run();
+                            inner.schedule(this, 5, TimeUnit.SECONDS);
                         }
-                    });
-                }
+                    }
+                });
             });
 
             InOrder inOrder = Mockito.inOrder(calledOp);
@@ -225,7 +222,7 @@ public class TestSchedulerTest extends RxJavaTest {
 
     @Test
     public void timedRunnableToString() {
-        TimedRunnable r = new TimedRunnable((TestWorker) new TestScheduler().createWorker(), 5, new Runnable() {
+        TimedRunnable r = new TimedRunnable((TestWorker) new TestScheduler().createWorker(), 5, new Runnable() /* NFI */ {
             @Override
             public void run() {
                 // deliberately no-op

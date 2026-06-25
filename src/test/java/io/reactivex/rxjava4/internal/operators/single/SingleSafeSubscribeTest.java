@@ -75,7 +75,7 @@ public class SingleSafeSubscribeTest {
 
             Disposable d = Disposable.empty();
 
-            new Single<Integer>() {
+            new Single<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(d);
@@ -104,7 +104,7 @@ public class SingleSafeSubscribeTest {
             SingleObserver<Integer> consumer = mock(SingleObserver.class);
             doThrow(new TestException()).when(consumer).onSuccess(any());
 
-            new Single<Integer>() {
+            new Single<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -129,7 +129,7 @@ public class SingleSafeSubscribeTest {
             SingleObserver<Integer> consumer = mock(SingleObserver.class);
             doThrow(new TestException()).when(consumer).onError(any());
 
-            new Single<Integer>() {
+            new Single<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

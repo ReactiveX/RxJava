@@ -310,7 +310,7 @@ public enum TestHelper {
         try {
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            source.subscribe(new FlowableSubscriber<Object>() {
+            source.subscribe(new FlowableSubscriber<Object>() /* NFI */ {
 
                 @Override
                 public void onSubscribe(Subscription s) {
@@ -363,7 +363,7 @@ public enum TestHelper {
         try {
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            FlowableSubscriber<Object> bad = new FlowableSubscriber<Object>() {
+            var bad = new FlowableSubscriber<Object>() /* NFI */ {
 
                 @Override
                 public void onSubscribe(Subscription s) {
@@ -691,7 +691,7 @@ public enum TestHelper {
      */
     public static <T> void checkDisposed(Flowable<T> source) {
         final TestSubscriber<Object> ts = new TestSubscriber<>(0L);
-        source.subscribe(new FlowableSubscriber<Object>() {
+        source.subscribe(new FlowableSubscriber<Object>() /* NFI */ {
             @Override
             public void onSubscribe(Subscription s) {
                 ts.onSubscribe(new BooleanSubscription());
@@ -726,7 +726,7 @@ public enum TestHelper {
     public static void checkDisposed(Maybe<?> source) {
         final Boolean[] b = { null, null };
         final CountDownLatch cdl = new CountDownLatch(1);
-        source.subscribe(new MaybeObserver<Object>() {
+        source.subscribe(new MaybeObserver<Object>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -777,7 +777,7 @@ public enum TestHelper {
     public static void checkDisposed(Observable<?> source) {
         final Boolean[] b = { null, null };
         final CountDownLatch cdl = new CountDownLatch(1);
-        source.subscribe(new Observer<Object>() {
+        source.subscribe(new Observer<Object>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -828,7 +828,7 @@ public enum TestHelper {
     public static void checkDisposed(Single<?> source) {
         final Boolean[] b = { null, null };
         final CountDownLatch cdl = new CountDownLatch(1);
-        source.subscribe(new SingleObserver<Object>() {
+        source.subscribe(new SingleObserver<Object>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -874,7 +874,7 @@ public enum TestHelper {
     public static void checkDisposed(Completable source) {
         final Boolean[] b = { null, null };
         final CountDownLatch cdl = new CountDownLatch(1);
-        source.subscribe(new CompletableObserver() {
+        source.subscribe(new CompletableObserver() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -962,7 +962,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Maybe<T> source = new Maybe<T>() {
+            Maybe<T> source = new Maybe<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
@@ -1016,7 +1016,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Maybe<T> source = new Maybe<T>() {
+            Maybe<T> source = new Maybe<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
@@ -1070,7 +1070,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Maybe<T> source = new Maybe<T>() {
+            Maybe<T> source = new Maybe<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
@@ -1124,7 +1124,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Maybe<T> source = new Maybe<T>() {
+            Maybe<T> source = new Maybe<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
@@ -1178,7 +1178,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Single<T> source = new Single<T>() {
+            Single<T> source = new Single<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
@@ -1232,7 +1232,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Single<T> source = new Single<T>() {
+            Single<T> source = new Single<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
@@ -1286,7 +1286,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Single<T> source = new Single<T>() {
+            Single<T> source = new Single<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
@@ -1339,7 +1339,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Maybe<T> source = new Maybe<T>() {
+            Maybe<T> source = new Maybe<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
@@ -1393,7 +1393,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Single<T> source = new Single<T>() {
+            Single<T> source = new Single<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
@@ -1447,7 +1447,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Flowable<T> source = new Flowable<T>() {
+            Flowable<T> source = new Flowable<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
@@ -1501,7 +1501,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null, null, null };
             final CountDownLatch cdl = new CountDownLatch(2);
 
-            ParallelFlowable<T> source = new ParallelFlowable<T>() {
+            ParallelFlowable<T> source = new ParallelFlowable<T>() /* NFI */ {
                 @Override
                 public void subscribe(Subscriber<? super T>[] subscribers) {
                     for (int i = 0; i < subscribers.length; i++) {
@@ -1564,7 +1564,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null, null, null };
             final CountDownLatch cdl = new CountDownLatch(2);
 
-            ParallelFlowable<T> source = new ParallelFlowable<T>() {
+            ParallelFlowable<T> source = new ParallelFlowable<T>() /* NFI */ {
                 @Override
                 public void subscribe(Subscriber<? super T>[] subscribers) {
                     for (int i = 0; i < subscribers.length; i++) {
@@ -1629,7 +1629,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Observable<T> source = new Observable<T>() {
+            Observable<T> source = new Observable<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super T> observer) {
                     try {
@@ -1683,7 +1683,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Observable<T> source = new Observable<T>() {
+            Observable<T> source = new Observable<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super T> observer) {
                     try {
@@ -1737,7 +1737,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Observable<T> source = new Observable<T>() {
+            Observable<T> source = new Observable<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super T> observer) {
                     try {
@@ -1790,7 +1790,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Observable<T> source = new Observable<T>() {
+            Observable<T> source = new Observable<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super T> observer) {
                     try {
@@ -1844,7 +1844,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Flowable<T> source = new Flowable<T>() {
+            Flowable<T> source = new Flowable<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
@@ -1898,7 +1898,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Flowable<T> source = new Flowable<T>() {
+            Flowable<T> source = new Flowable<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
@@ -1952,7 +1952,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Flowable<T> source = new Flowable<T>() {
+            Flowable<T> source = new Flowable<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
@@ -2005,7 +2005,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Flowable<T> source = new Flowable<T>() {
+            Flowable<T> source = new Flowable<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
@@ -2057,7 +2057,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Completable source = new Completable() {
+            Completable source = new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     try {
@@ -2110,7 +2110,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Completable source = new Completable() {
+            Completable source = new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     try {
@@ -2163,7 +2163,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Completable source = new Completable() {
+            Completable source = new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     try {
@@ -2215,7 +2215,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Completable source = new Completable() {
+            Completable source = new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     try {
@@ -2267,7 +2267,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Completable source = new Completable() {
+            Completable source = new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     try {
@@ -2527,7 +2527,7 @@ public enum TestHelper {
 
         final Boolean[] state = { null, null, null, null };
 
-        source.subscribe(new Observer<T>() {
+        source.subscribe(new Observer<T>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 try {
@@ -2593,7 +2593,7 @@ public enum TestHelper {
 
         final Boolean[] state = { null, null, null, null };
 
-        source.subscribe(new FlowableSubscriber<T>() {
+        source.subscribe(new FlowableSubscriber<T>() /* NFI */ {
             @Override
             public void onSubscribe(Subscription s) {
                 try {
@@ -2681,7 +2681,7 @@ public enum TestHelper {
             final boolean error, final T goodValue, final T badValue, final Object... expected) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            Observable<T> bad = new Observable<T>() {
+            Observable<T> bad = new Observable<T>() /* NFI */ {
                 boolean once;
                 @Override
                 protected void subscribeActual(Observer<? super T> observer) {
@@ -2846,7 +2846,7 @@ public enum TestHelper {
             final boolean error, final T goodValue, final T badValue, final Object... expected) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            Flowable<T> bad = new Flowable<T>() {
+            Flowable<T> bad = new Flowable<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -3014,10 +3014,10 @@ public enum TestHelper {
      * @return the new Observable
      */
     public static <T> Observable<T> rejectObservableFusion() {
-        return new Observable<T>() {
+        return new Observable<T>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super T> observer) {
-                observer.onSubscribe(new QueueDisposable<T>() {
+                observer.onSubscribe(new QueueDisposable<T>() /* NFI */ {
 
                     @Override
                     public int requestFusion(int mode) {
@@ -3068,10 +3068,10 @@ public enum TestHelper {
      * @return the new Observable
      */
     public static <T> Flowable<T> rejectFlowableFusion() {
-        return new Flowable<T>() {
+        return new Flowable<T>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super T> subscriber) {
-                subscriber.onSubscribe(new QueueSubscription<T>() {
+                subscriber.onSubscribe(new QueueSubscription<T>() /* NFI */ {
 
                     @Override
                     public int requestFusion(int mode) {
@@ -3753,7 +3753,7 @@ public enum TestHelper {
      * @return the new FlowableTransformer instance
      */
     public static <T> FlowableTransformer<T, T> conditional() {
-        return f -> new Flowable<T>() {
+        return f -> new Flowable<T>() /* NFI */ {
             @Override
             protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> subscriber) {
                 f.subscribe(new ForwardingConditionalSubscriber<>(subscriber));

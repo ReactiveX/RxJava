@@ -108,7 +108,7 @@ public class FlowableScanTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
                 .scan(0, Integer::sum)
-                .subscribe(new DefaultSubscriber<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
                     @Override
                     public void onStart() {
@@ -142,7 +142,7 @@ public class FlowableScanTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
                 .scan(Integer::sum)
-                .subscribe(new DefaultSubscriber<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
                     @Override
                     public void onStart() {
@@ -176,7 +176,7 @@ public class FlowableScanTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
                 .scan(0, Integer::sum)
-                .subscribe(new DefaultSubscriber<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
                     @Override
                     public void onComplete() {
@@ -302,7 +302,7 @@ public class FlowableScanTest extends RxJavaTest {
             subscriber.onSubscribe(p);
         }).scan(100, Integer::sum);
 
-        f.subscribe(new TestSubscriber<Integer>(1L) {
+        f.subscribe(new TestSubscriber<Integer>(1L) /* NFI */ {
 
             @Override
             public void onNext(Integer integer) {
@@ -511,7 +511,7 @@ public class FlowableScanTest extends RxJavaTest {
 
     @Test
     public void scanTake() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

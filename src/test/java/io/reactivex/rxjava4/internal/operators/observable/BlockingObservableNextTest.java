@@ -34,31 +34,25 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class BlockingObservableNextTest extends RxJavaTest {
 
     private void fireOnNextInNewThread(final Subject<String> o, final String value) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-                o.onNext(value);
+        new Thread(() ->  {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // ignore
             }
-        }.start();
+            o.onNext(value);
+        }).start();
     }
 
     private void fireOnErrorInNewThread(final Subject<String> o) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-                o.onError(new TestException());
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // ignore
             }
-        }.start();
+            o.onError(new TestException());
+        }).start();
     }
 
     static <T> Iterable<T> next(ObservableSource<T> source) {

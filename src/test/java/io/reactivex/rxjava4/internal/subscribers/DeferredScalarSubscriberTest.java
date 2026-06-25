@@ -172,7 +172,7 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
 
     @Test
     public void completeAfterNext() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -194,7 +194,7 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
 
     @Test
     public void completeAfterNextViaRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

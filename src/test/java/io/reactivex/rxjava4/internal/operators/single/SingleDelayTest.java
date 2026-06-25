@@ -173,7 +173,7 @@ public class SingleDelayTest extends RxJavaTest {
 
         try {
             Single.just(1)
-            .delaySubscription(new Flowable<Integer>() {
+            .delaySubscription(new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -209,7 +209,7 @@ public class SingleDelayTest extends RxJavaTest {
 
         try {
             Single.just(1)
-            .delaySubscription(new Observable<Integer>() {
+            .delaySubscription(new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

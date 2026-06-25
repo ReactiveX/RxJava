@@ -106,7 +106,7 @@ public class MaybeAmbTest extends RxJavaTest {
 
     @Test
     public void disposeNoFurtherSignals() {
-        TestObserver<Integer> to = Maybe.ambArray(new Maybe<Integer>() {
+        TestObserver<Integer> to = Maybe.ambArray(new Maybe<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(
                     MaybeObserver<? super Integer> observer) {

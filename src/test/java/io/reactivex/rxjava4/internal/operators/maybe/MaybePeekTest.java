@@ -48,7 +48,7 @@ public class MaybePeekTest extends RxJavaTest {
         final Throwable[] err = { null };
 
         try {
-            TestObserverEx<Integer> to = new Maybe<Integer>() {
+            TestObserverEx<Integer> to = new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -74,7 +74,7 @@ public class MaybePeekTest extends RxJavaTest {
     public void doubleComplete() {
         final int[] compl = { 0 };
 
-        TestObserver<Integer> to = new Maybe<Integer>() {
+        TestObserver<Integer> to = new Maybe<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());

@@ -475,7 +475,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void observableStart() {
         try {
-            RxJavaPlugins.setOnObservableSubscribe((_, t) -> new Observer() {
+            RxJavaPlugins.setOnObservableSubscribe((_, t) -> new Observer() /* NFI */ {
 
                 @Override
                 public void onSubscribe(Disposable d) {
@@ -520,7 +520,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void flowableStart() {
         try {
-            RxJavaPlugins.setOnFlowableSubscribe((_, t) -> new Subscriber() {
+            RxJavaPlugins.setOnFlowableSubscribe((_, t) -> new Subscriber() /* NFI */ {
 
                 @Override
                 public void onSubscribe(Subscription s) {
@@ -566,7 +566,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
         try {
             RxJavaPlugins.setOnParallelSubscribe((_, t) -> {
                     var result = new Subscriber<?>[] {
-                        new Subscriber<Object>() {
+                        new Subscriber<Object>() /* NFI */ {
 
                             @Override
                             public void onSubscribe(Subscription s) {
@@ -639,7 +639,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void singleStart() {
         try {
-            RxJavaPlugins.setOnSingleSubscribe((_, t) -> new SingleObserver<Object>() {
+            RxJavaPlugins.setOnSingleSubscribe((_, t) -> new SingleObserver<Object>() /* NFI */ {
 
                 @Override
                 public void onSubscribe(Disposable d) {
@@ -699,7 +699,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void completableStart() {
         try {
-            RxJavaPlugins.setOnCompletableSubscribe((_, t) -> new CompletableObserver() {
+            RxJavaPlugins.setOnCompletableSubscribe((_, t) -> new CompletableObserver() /* NFI */ {
                 @Override
                 public void onSubscribe(Disposable d) {
                     t.onSubscribe(d);
@@ -968,14 +968,14 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
             assertNull(RxJavaPlugins.onAssembly((ConnectableFlowable)null));
 
-            Observable oos = new Observable() {
+            Observable oos = new Observable( /* NFI */) /* NFI */ {
                 @Override
                 public void subscribeActual(Observer t) {
 
                 }
             };
 
-            Flowable fos = new Flowable() {
+            Flowable fos = new Flowable() /* NFI */ {
                 @Override
                 public void subscribeActual(Subscriber t) {
 
@@ -988,7 +988,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
             assertNull(RxJavaPlugins.onAssembly((Single)null));
 
-            Single sos = new Single() {
+            Single sos = new Single() /* NFI */ {
                 @Override
                 public void subscribeActual(SingleObserver t) {
 
@@ -999,7 +999,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
             assertNull(RxJavaPlugins.onAssembly((Completable)null));
 
-            Completable cos = new Completable() {
+            Completable cos = new Completable() /* NFI */ {
                 @Override
                 public void subscribeActual(CompletableObserver t) {
 
@@ -1010,7 +1010,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
             assertNull(RxJavaPlugins.onAssembly((Maybe)null));
 
-            Maybe myb = new Maybe() {
+            Maybe myb = new Maybe() /* NFI */ {
                 @Override
                 public void subscribeActual(MaybeObserver t) {
 
@@ -1128,7 +1128,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void overrideConnectableObservable() {
         try {
-            RxJavaPlugins.setOnConnectableObservableAssembly(_ -> new ConnectableObservable() {
+            RxJavaPlugins.setOnConnectableObservableAssembly(_ -> new ConnectableObservable() /* NFI */ {
 
                 @Override
                 public void connect(Consumer connection) {
@@ -1172,7 +1172,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void overrideConnectableFlowable() {
         try {
-            RxJavaPlugins.setOnConnectableFlowableAssembly(_ -> new ConnectableFlowable() {
+            RxJavaPlugins.setOnConnectableFlowableAssembly(_ -> new ConnectableFlowable() /* NFI */ {
 
                 @Override
                 public void connect(Consumer connection) {
@@ -1325,7 +1325,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @SuppressWarnings("rawtypes")
     public void maybeStart() {
         try {
-            RxJavaPlugins.setOnMaybeSubscribe((_, t) -> new MaybeObserver() {
+            RxJavaPlugins.setOnMaybeSubscribe((_, t) -> new MaybeObserver() /* NFI */ {
                 @Override
                 public void onSubscribe(Disposable d) {
                     t.onSubscribe(d);

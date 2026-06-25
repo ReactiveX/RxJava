@@ -31,7 +31,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
 
     @Test
     public void offerThrows() {
-        ConditionalSubscriber<Integer> cs = new ConditionalSubscriber<Integer>() {
+        var cs = new ConditionalSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {
@@ -55,7 +55,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
             }
         };
 
-        BasicFuseableConditionalSubscriber<Integer, Integer> fcs = new BasicFuseableConditionalSubscriber<Integer, Integer>(cs) {
+        var fcs = new BasicFuseableConditionalSubscriber<Integer, Integer>(cs) /* NFI */ {
 
             @Override
             public boolean tryOnNext(Integer t) {
@@ -92,7 +92,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
         @SuppressWarnings("unchecked")
         ConditionalSubscriber<Integer> ts = mock(ConditionalSubscriber.class);
 
-        BasicFuseableConditionalSubscriber<Integer, Integer> bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) {
+        var bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) /* NFI */ {
 
             @Override
             protected boolean beforeDownstream() {
@@ -140,7 +140,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
         @SuppressWarnings("unchecked")
         ConditionalSubscriber<Integer> ts = mock(ConditionalSubscriber.class);
 
-        BasicFuseableConditionalSubscriber<Integer, Integer> bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) {
+        var bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) /* NFI */ {
 
             @Override
             protected boolean beforeDownstream() {
@@ -180,7 +180,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
         @SuppressWarnings("unchecked")
         ConditionalSubscriber<Integer> ts = mock(ConditionalSubscriber.class);
 
-        BasicFuseableConditionalSubscriber<Integer, Integer> bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) {
+        var bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) /* NFI */ {
 
             @Override
             protected boolean beforeDownstream() {
@@ -220,7 +220,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
         @SuppressWarnings("unchecked")
         ConditionalSubscriber<Integer> ts = mock(ConditionalSubscriber.class);
 
-        BasicFuseableConditionalSubscriber<Integer, Integer> bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) {
+        BasicFuseableConditionalSubscriber<Integer, Integer> bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) /* NFI */ {
 
             @Override
             protected boolean beforeDownstream() {

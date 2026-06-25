@@ -187,7 +187,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     public void eventsAfterDematerializedTerminal() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Notification<Object>>() {
+            new Observable<Notification<Object>>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Notification<Object>> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -211,7 +211,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     @Test
     @SuppressWarnings("unchecked")
     public void nonNotificationInstanceAfterDispose() {
-        new Observable<Object>() {
+        new Observable<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());

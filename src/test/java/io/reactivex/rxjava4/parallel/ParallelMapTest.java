@@ -176,7 +176,7 @@ public class ParallelMapTest extends RxJavaTest {
 
     @Test
     public void conditionalCancelIgnored() {
-        Flowable<Integer> f = new Flowable<Integer>() {
+        Flowable<Integer> f = new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(@NonNull Subscriber<@NonNull ? super @NonNull Integer> s) {
                 @SuppressWarnings("unchecked")

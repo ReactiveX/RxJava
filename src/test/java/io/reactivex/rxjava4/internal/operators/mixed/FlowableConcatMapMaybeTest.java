@@ -203,7 +203,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     public void queueOverflow() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -254,7 +254,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
             final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestSubscriberEx<Integer> ts = pp.concatMapMaybe(
-                    (Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<Integer>() {
+                    (Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<Integer>() /* NFI */ {
                             @Override
                             protected void subscribeActual(
                                     MaybeObserver<? super Integer> observer) {

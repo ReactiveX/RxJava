@@ -216,7 +216,8 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void fusedEmptyCheck() {
         Single.just(1)
-        .flattenAsFlowable((Function<Object, Iterable<Integer>>) _ -> Arrays.asList(1, 2, 3)).subscribe(new FlowableSubscriber<Integer>() {
+        .flattenAsFlowable((Function<Object, Iterable<Integer>>) _ -> Arrays.asList(1, 2, 3))
+        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
             QueueSubscription<Integer> qs;
             @SuppressWarnings("unchecked")
             @Override
@@ -349,7 +350,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Single.just(1)
-        .flattenAsFlowable((Function<Integer, Iterable<Integer>>) _ -> (Iterable<Integer>) () -> new Iterator<Integer>() {
+        .flattenAsFlowable((Function<Integer, Iterable<Integer>>) _ -> (Iterable<Integer>) () -> new Iterator<Integer>() /* NFI */ {
             int count;
             @Override
             public boolean hasNext() {
@@ -383,7 +384,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Single.just(1)
-        .flattenAsFlowable((Function<Integer, Iterable<Integer>>) _ -> (Iterable<Integer>) () -> new Iterator<Integer>() {
+        .flattenAsFlowable((Function<Integer, Iterable<Integer>>) _ -> (Iterable<Integer>) () -> new Iterator<Integer>() /* NFI */ {
             int count;
             @Override
             public boolean hasNext() {
@@ -446,7 +447,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
 
     @Test
     public void slowPatchCancelAfterOnNext() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(@NonNull Integer t) {
                 super.onNext(t);

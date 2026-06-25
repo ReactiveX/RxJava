@@ -247,7 +247,7 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
     public void innerErrorThenMainError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());

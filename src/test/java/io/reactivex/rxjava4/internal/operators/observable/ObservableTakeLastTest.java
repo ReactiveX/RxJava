@@ -110,7 +110,7 @@ public class ObservableTakeLastTest extends RxJavaTest {
     }
 
     private Function<Integer, Integer> newSlowProcessor() {
-        return new Function<Integer, Integer>() {
+        return new Function<Integer, Integer>() /* NFI */ {
             int c;
 
             @Override
@@ -140,7 +140,8 @@ public class ObservableTakeLastTest extends RxJavaTest {
     @Test
     public void unsubscribeTakesEffectEarlyOnFastPath() {
         final AtomicInteger count = new AtomicInteger();
-        Observable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
+        Observable.range(0, 100000).takeLast(100000)
+        .subscribe(new DefaultObserver<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {

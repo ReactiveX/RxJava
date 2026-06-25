@@ -87,7 +87,7 @@ public class ObservableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void consumerDisposed() {
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 Disposable bs1 = Disposable.empty();
@@ -108,7 +108,7 @@ public class ObservableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 Disposable bs1 = Disposable.empty();
@@ -129,7 +129,7 @@ public class ObservableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void badSource2() {
-        Flowable.empty().concatWith(new Single<Integer>() {
+        Flowable.empty().concatWith(new Single<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(SingleObserver<? super Integer> observer) {
                 Disposable bs1 = Disposable.empty();

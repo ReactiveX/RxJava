@@ -267,7 +267,9 @@ public class ObservableObserveOnTest extends RxJavaTest {
         final CountDownLatch nextLatch = new CountDownLatch(1);
         final AtomicLong completeTime = new AtomicLong();
         // use subscribeOn to make async, observeOn to move
-        Observable.range(1, 2).subscribeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(new DefaultObserver<Integer>() {
+        Observable.range(1, 2).subscribeOn(Schedulers.newThread())
+        .observeOn(Schedulers.newThread())
+        .subscribe(new DefaultObserver<Integer>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -357,7 +359,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
     @Test
     public void backpressureWithTakeBefore() {
         final AtomicInteger generated = new AtomicInteger();
-        Observable<Integer> o = Observable.fromIterable(() -> new Iterator<Integer>() {
+        Observable<Integer> o = Observable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -430,7 +432,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestScheduler scheduler = new TestScheduler();
-            TestObserver<Integer> to = new Observable<Integer>() {
+            TestObserver<Integer> to = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -574,7 +576,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
         final CountDownLatch cdl = new CountDownLatch(1);
 
         us.observeOn(Schedulers.single())
-        .subscribe(new Observer<Integer>() {
+        .subscribe(new Observer<Integer>() /* NFI */ {
             Disposable upstream;
             int count;
             @Override
@@ -610,7 +612,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
     @Test
     public void nonFusedPollThrows() {
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -618,7 +620,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
                 @SuppressWarnings("unchecked")
                 ObserveOnObserver<Integer> oo = (ObserveOnObserver<Integer>)observer;
 
-                oo.queue = new SimpleQueue<Integer>() {
+                oo.queue = new SimpleQueue<Integer>() /* NFI */ {
 
                     @Override
                     public boolean offer(Integer value) {
@@ -663,7 +665,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
         bs.observeOn(ImmediateThinScheduler.INSTANCE)
         .concatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v + 1))
-        .subscribeWith(new TestObserver<Integer>() {
+        .subscribeWith(new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

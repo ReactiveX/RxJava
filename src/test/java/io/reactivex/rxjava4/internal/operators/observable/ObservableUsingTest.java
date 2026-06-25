@@ -97,7 +97,7 @@ public class ObservableUsingTest extends RxJavaTest {
 
     private void performTestUsingWithSubscribingTwice(boolean disposeEagerly) {
         // When subscribe is called, a new resource should be created.
-        Supplier<Resource> resourceFactory = () -> new Resource() {
+        Supplier<Resource> resourceFactory = () -> new Resource() /* NFI */ {
 
             boolean first = true;
 
@@ -285,7 +285,7 @@ public class ObservableUsingTest extends RxJavaTest {
     }
 
     private static Supplier<Resource> createResourceFactory(final List<String> events) {
-        return () -> new Resource() {
+        return () -> new Resource() /* NFI */ {
 
             @Override
             public String getTextFromWeb() {
@@ -387,7 +387,7 @@ public class ObservableUsingTest extends RxJavaTest {
     public void eagerDisposedOnComplete() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() {
+        Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -402,7 +402,7 @@ public class ObservableUsingTest extends RxJavaTest {
     public void eagerDisposedOnError() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() {
+        Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());

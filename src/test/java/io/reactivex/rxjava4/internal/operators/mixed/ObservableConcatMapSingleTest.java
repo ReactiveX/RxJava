@@ -124,7 +124,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     public void mainErrorAfterInnerError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -153,7 +153,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
             final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestObserverEx<Integer> to = ps.concatMapSingle(
-                    (Function<Integer, SingleSource<Integer>>) _ -> new Single<Integer>() {
+                    (Function<Integer, SingleSource<Integer>>) _ -> new Single<Integer>() /* NFI */ {
                             @Override
                             protected void subscribeActual(
                                     SingleObserver<? super Integer> observer) {

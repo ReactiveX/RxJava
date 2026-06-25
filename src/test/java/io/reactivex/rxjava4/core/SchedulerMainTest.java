@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
-public class SchedulerTest {
+public class SchedulerMainTest {
     private static final String DRIFT_USE_NANOTIME = "rxjava4.scheduler.use-nanotime";
 
     @After

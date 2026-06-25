@@ -142,7 +142,7 @@ public class ObservableOnErrorResumeWithTest extends RxJavaTest {
         Observable.range(0, 100000)
                 .onErrorResumeWith(Observable.just(1))
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function<Integer, Integer>() /* NFI */ {
                     int c;
 
                     @Override

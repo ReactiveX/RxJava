@@ -673,7 +673,7 @@ public class ObservableBufferTest extends RxJavaTest {
         final Observer<Object> o = TestHelper.mockObserver();
 
         final CountDownLatch cdl = new CountDownLatch(1);
-        DisposableObserver<Object> observer = new DisposableObserver<Object>() {
+        DisposableObserver<Object> observer = new DisposableObserver<Object>() /* NFI */ {
             @Override
             public void onNext(Object t) {
                 o.onNext(t);
@@ -770,7 +770,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void supplierThrows4() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() /* NFI */ {
             int count;
             @Override
             public Collection<Integer> get() throws Exception {
@@ -789,7 +789,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void supplierThrows5() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() /* NFI */ {
             int count;
             @Override
             public Collection<Integer> get() throws Exception {
@@ -808,7 +808,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void supplierThrows6() {
         Observable.<Integer>never()
-        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
+        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() /* NFI */ {
             int count;
             @Override
             public Collection<Integer> get() throws Exception {
@@ -827,7 +827,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void supplierReturnsNull() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() /* NFI */ {
             int count;
             @Override
             public Collection<Integer> get() throws Exception {
@@ -846,7 +846,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void supplierReturnsNull2() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() /* NFI */ {
             int count;
             @Override
             public Collection<Integer> get() throws Exception {
@@ -865,7 +865,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void supplierReturnsNull3() {
         Observable.<Integer>never()
-        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
+        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() /* NFI */ {
             int count;
             @Override
             public Collection<Integer> get() throws Exception {
@@ -914,7 +914,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void bufferSupplierCrash2() {
         Observable.range(1, 2)
-        .buffer(1, new Supplier<List<Integer>>() {
+        .buffer(1, new Supplier<List<Integer>>() /* NFI */ {
             int calls;
             @Override
             public List<Integer> get() throws Exception {
@@ -931,7 +931,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void bufferSkipSupplierCrash2() {
         Observable.range(1, 2)
-        .buffer(2, 1, new Supplier<List<Integer>>() {
+        .buffer(2, 1, new Supplier<List<Integer>>() /* NFI */ {
             int calls;
             @Override
             public List<Integer> get() throws Exception {
@@ -1022,7 +1022,7 @@ public class ObservableBufferTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<List<Integer>> to = ps
-        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, new Supplier<List<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, new Supplier<List<Integer>>() /* NFI */ {
             int calls;
             @Override
             public List<Integer> get() throws Exception {
@@ -1200,7 +1200,7 @@ public class ObservableBufferTest extends RxJavaTest {
     public void openClosebadSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Object>() {
+            new Observable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
                     Disposable bs1 = Disposable.empty();
@@ -1317,7 +1317,7 @@ public class ObservableBufferTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Observable.never()
-            .buffer(new Observable<Object>() {
+            .buffer(new Observable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
 
@@ -1361,7 +1361,7 @@ public class ObservableBufferTest extends RxJavaTest {
         try {
             Observable.never()
             .buffer(Observable.just(1).concatWith(Observable.<Integer>never()),
-                    Functions.justFunction(new Observable<Object>() {
+                    Functions.justFunction(new Observable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
 
@@ -1411,7 +1411,7 @@ public class ObservableBufferTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
 
-        TestObserver<List<Integer>> to = ps.buffer(b, new Supplier<List<Integer>>() {
+        TestObserver<List<Integer>> to = ps.buffer(b, new Supplier<List<Integer>>() /* NFI */ {
             int calls;
             @Override
             public List<Integer> get() throws Exception {
@@ -1429,7 +1429,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
     @Test
     public void bufferExactBoundaryBadSource() {
-        Observable<Integer> ps = new Observable<Integer>() {
+        Observable<Integer> ps = new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -1440,7 +1440,7 @@ public class ObservableBufferTest extends RxJavaTest {
         };
 
         final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<>();
-        Observable<Integer> b = new Observable<Integer>() {
+        Observable<Integer> b = new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -1540,7 +1540,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         @SuppressWarnings("resource")
         BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<>(
-                to, new Supplier<List<Integer>>() {
+                to, new Supplier<List<Integer>>() /* NFI */ {
             int calls;
 
             @Override

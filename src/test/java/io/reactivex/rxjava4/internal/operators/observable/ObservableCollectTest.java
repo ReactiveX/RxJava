@@ -100,7 +100,7 @@ public final class ObservableCollectTest extends RxJavaTest {
     public void collectorFailureDoesNotResultInErrorAndOnNextEmissionsObservable() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
-        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() {
+        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() /* NFI */ {
 
             boolean once = true;
 
@@ -199,7 +199,7 @@ public final class ObservableCollectTest extends RxJavaTest {
     public void collectorFailureDoesNotResultInErrorAndOnNextEmissions() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
-        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() {
+        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() /* NFI */ {
 
             boolean once = true;
 

@@ -91,7 +91,7 @@ public class MaybeSafeSubscribeTest {
 
             Disposable d = Disposable.empty();
 
-            new Maybe<Integer>() {
+            new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(d);
@@ -121,7 +121,7 @@ public class MaybeSafeSubscribeTest {
             MaybeObserver<Integer> consumer = mock(MaybeObserver.class);
             doThrow(new TestException()).when(consumer).onSuccess(any());
 
-            new Maybe<Integer>() {
+            new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -146,7 +146,7 @@ public class MaybeSafeSubscribeTest {
             MaybeObserver<Integer> consumer = mock(MaybeObserver.class);
             doThrow(new TestException()).when(consumer).onError(any());
 
-            new Maybe<Integer>() {
+            new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -176,7 +176,7 @@ public class MaybeSafeSubscribeTest {
             MaybeObserver<Integer> consumer = mock(MaybeObserver.class);
             doThrow(new TestException()).when(consumer).onComplete();
 
-            new Maybe<Integer>() {
+            new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

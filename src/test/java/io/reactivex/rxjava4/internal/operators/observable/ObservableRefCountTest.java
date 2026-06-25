@@ -497,7 +497,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     @Test
     public void noOpConnect() {
         final int[] calls = { 0 };
-        Observable<Integer> o = new ConnectableObservable<Integer>() {
+        Observable<Integer> o = new ConnectableObservable<Integer>() /* NFI */ {
             @Override
             public void connect(Consumer<? super Disposable> connection) {
                 calls[0]++;

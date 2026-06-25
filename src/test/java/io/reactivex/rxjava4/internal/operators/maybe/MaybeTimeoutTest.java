@@ -329,7 +329,7 @@ public class MaybeTimeoutTest extends RxJavaTest {
     public void mainSuccessAfterOtherSignal() {
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        new Maybe<Integer>() {
+        new Maybe<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());

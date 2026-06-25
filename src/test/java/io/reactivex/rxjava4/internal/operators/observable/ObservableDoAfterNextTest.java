@@ -35,7 +35,7 @@ public class ObservableDoAfterNextTest extends RxJavaTest {
 
     final Consumer<Integer> afterNext = e -> values.add(-e);
 
-    final TestObserver<Integer> to = new TestObserver<Integer>() {
+    final TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
         @Override
         public void onNext(Integer t) {
             super.onNext(t);

@@ -98,7 +98,7 @@ public class FlowableUsingTest extends RxJavaTest {
 
     private void performTestUsingWithSubscribingTwice(boolean disposeEagerly) {
         // When subscribe is called, a new resource should be created.
-        Supplier<Resource> resourceFactory = () -> new Resource() {
+        Supplier<Resource> resourceFactory = () -> new Resource() /* NFI */ {
 
             boolean first = true;
 
@@ -286,7 +286,7 @@ public class FlowableUsingTest extends RxJavaTest {
     }
 
     private static Supplier<Resource> createResourceFactory(final List<String> events) {
-        return () -> new Resource() {
+        return () -> new Resource() /* NFI */ {
 
             @Override
             public String getTextFromWeb() {
@@ -437,7 +437,7 @@ public class FlowableUsingTest extends RxJavaTest {
     public void eagerDisposedOnComplete() {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        Flowable.using(Functions.justSupplier(1), Functions.justFunction(new Flowable<Integer>() {
+        Flowable.using(Functions.justSupplier(1), Functions.justFunction(new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
@@ -452,7 +452,7 @@ public class FlowableUsingTest extends RxJavaTest {
     public void eagerDisposedOnError() {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        Flowable.using(Functions.justSupplier(1), Functions.justFunction(new Flowable<Integer>() {
+        Flowable.using(Functions.justSupplier(1), Functions.justFunction(new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());

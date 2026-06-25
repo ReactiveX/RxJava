@@ -56,17 +56,14 @@ public class CompositeDisposableTest extends RxJavaTest {
 
         final List<Thread> threads = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final Thread t = new Thread() /* NFI */ {
-                @Override
-                public void run() {
-                    try {
-                        start.await();
-                        cd.dispose();
-                    } catch (final InterruptedException e) {
-                        fail(e.getMessage());
-                    }
+            final Thread t = new Thread(() -> {
+                try {
+                    start.await();
+                    cd.dispose();
+                } catch (final InterruptedException e) {
+                    fail(e.getMessage());
                 }
-            };
+            });
             t.start();
             threads.add(t);
         }
@@ -201,17 +198,14 @@ public class CompositeDisposableTest extends RxJavaTest {
 
         final List<Thread> threads = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final Thread t = new Thread() /* NFI */ {
-                @Override
-                public void run() {
-                    try {
-                        start.await();
-                        cd.dispose();
-                    } catch (final InterruptedException e) {
-                        fail(e.getMessage());
-                    }
+            final Thread t = new Thread(() -> {
+                try {
+                    start.await();
+                    cd.dispose();
+                } catch (final InterruptedException e) {
+                    fail(e.getMessage());
                 }
-            };
+            });
             t.start();
             threads.add(t);
         }

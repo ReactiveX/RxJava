@@ -656,7 +656,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void onCompletedCrashCountsDownLatch() {
-        TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>() {
+        TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override
             public void onComplete() {
                 throw new TestException();
@@ -675,13 +675,13 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void onErrorCrashCountsDownLatch() {
-        TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>() {
+        var ts0 = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override
             public void onError(Throwable e) {
                 throw new TestException();
             }
         };
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(ts0);
+        var ts = new TestSubscriberEx<>(ts0);
 
         try {
             ts.onError(new RuntimeException());
@@ -694,7 +694,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void createDelegate() {
-        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
+        var ts1 = new TestSubscriberEx<>();
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(ts1);
 
@@ -1427,7 +1427,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void completeDelegateThrows() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(new FlowableSubscriber<Integer>() {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(new FlowableSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {
@@ -1463,7 +1463,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void errorDelegateThrows() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(new FlowableSubscriber<Integer>() {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(new FlowableSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {

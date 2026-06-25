@@ -590,7 +590,7 @@ public class SerializedProcessorTest extends RxJavaTest {
     public void onErrorQueued() {
         FlowableProcessor<Integer> sp = PublishProcessor.<Integer>create().toSerialized();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(@NonNull Integer t) {
                 super.onNext(t);

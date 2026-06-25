@@ -202,7 +202,7 @@ public class MaybeSubjectTest extends RxJavaTest {
     @Test
     public void disposeTwice() {
         MaybeSubject.create()
-        .subscribe(new MaybeObserver<Object>() {
+        .subscribe(new MaybeObserver<Object>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 assertFalse(d.isDisposed());

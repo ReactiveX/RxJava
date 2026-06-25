@@ -135,7 +135,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     public void queueOverflow() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -186,7 +186,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
             final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestSubscriberEx<Integer> ts = pp.concatMapSingle(
-                    (Function<Integer, SingleSource<Integer>>) _ -> new Single<Integer>() {
+                    (Function<Integer, SingleSource<Integer>>) _ -> new Single<Integer>() /* NFI */ {
                             @Override
                             protected void subscribeActual(
                                     SingleObserver<? super Integer> observer) {

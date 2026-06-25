@@ -201,7 +201,7 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
     @Test
     public void request() {
-        TestResourceSubscriber<Integer> tc = new TestResourceSubscriber<Integer>() {
+        var tc = new TestResourceSubscriber<Integer>() /* NFI */ {
             @Override
             protected void onStart() {
                 start++;

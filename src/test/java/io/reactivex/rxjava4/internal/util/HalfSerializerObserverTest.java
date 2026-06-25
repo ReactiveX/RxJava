@@ -38,7 +38,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         final TestObserver to = new TestObserver();
 
-        Observer observer = new Observer() {
+        Observer observer = new Observer() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 to.onSubscribe(d);
@@ -82,7 +82,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         final TestObserver to = new TestObserver();
 
-        Observer observer = new Observer() {
+        Observer observer = new Observer() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 to.onSubscribe(d);
@@ -126,7 +126,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         final TestObserver to = new TestObserver();
 
-        Observer observer = new Observer() {
+        Observer observer = new Observer() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 to.onSubscribe(d);
@@ -171,7 +171,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         final TestObserver to = new TestObserver();
 
-        Observer observer = new Observer() {
+        Observer observer = new Observer() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 to.onSubscribe(d);

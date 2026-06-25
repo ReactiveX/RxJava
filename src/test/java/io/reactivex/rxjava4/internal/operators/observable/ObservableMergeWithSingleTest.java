@@ -116,7 +116,8 @@ public class ObservableMergeWithSingleTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
         final SingleSubject<Integer> cs = SingleSubject.create();
 
-        TestObserver<Integer> to = ps.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
+        TestObserver<Integer> to = ps.mergeWith(cs)
+                .subscribeWith(new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -140,7 +141,8 @@ public class ObservableMergeWithSingleTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
         final SingleSubject<Integer> cs = SingleSubject.create();
 
-        TestObserver<Integer> to = ps.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
+        TestObserver<Integer> to = ps.mergeWith(cs)
+                .subscribeWith(new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -163,7 +165,7 @@ public class ObservableMergeWithSingleTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final AtomicReference<Observer<?>> observerRef = new AtomicReference<>();
-            TestObserver<Integer> to = new Observable<Integer>() {
+            TestObserver<Integer> to = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -209,7 +211,7 @@ public class ObservableMergeWithSingleTest extends RxJavaTest {
 
     @Test
     public void isDisposed() {
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -231,7 +233,8 @@ public class ObservableMergeWithSingleTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
         final SingleSubject<Integer> cs = SingleSubject.create();
 
-        TestObserver<Integer> to = ps.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
+        TestObserver<Integer> to = ps.mergeWith(cs)
+                .subscribeWith(new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

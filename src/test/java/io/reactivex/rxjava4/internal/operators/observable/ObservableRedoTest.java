@@ -27,7 +27,8 @@ public class ObservableRedoTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1)
-        .repeatWhen((Function<Observable<Object>, ObservableSource<Object>>) o -> o.map(new Function<Object, Object>() {
+        .repeatWhen((Function<Observable<Object>, ObservableSource<Object>>) o ->
+        o.map(new Function<Object, Object>() /* NFI */ {
             int count;
             @Override
             public Object apply(Object v) throws Exception {

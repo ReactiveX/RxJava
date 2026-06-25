@@ -44,7 +44,7 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
 
         final TestSubscriber ts = new TestSubscriber();
 
-        FlowableSubscriber s = new FlowableSubscriber() {
+        FlowableSubscriber s = new FlowableSubscriber() /* NFI */ {
             @Override
             public void onSubscribe(Subscription s) {
                 ts.onSubscribe(s);
@@ -88,7 +88,7 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
 
         final TestSubscriber ts = new TestSubscriber();
 
-        FlowableSubscriber s = new FlowableSubscriber() {
+        FlowableSubscriber s = new FlowableSubscriber() /* NFI */ {
             @Override
             public void onSubscribe(Subscription s) {
                 ts.onSubscribe(s);
@@ -132,7 +132,7 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
 
         final TestSubscriber ts = new TestSubscriber();
 
-        FlowableSubscriber s = new FlowableSubscriber() {
+        FlowableSubscriber s = new FlowableSubscriber() /* NFI */ {
             @Override
             public void onSubscribe(Subscription s) {
                 ts.onSubscribe(s);
@@ -177,7 +177,7 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
 
         final TestSubscriber ts = new TestSubscriber();
 
-        FlowableSubscriber s = new FlowableSubscriber() {
+        FlowableSubscriber s = new FlowableSubscriber() /* NFI */ {
             @Override
             public void onSubscribe(Subscription s) {
                 ts.onSubscribe(s);

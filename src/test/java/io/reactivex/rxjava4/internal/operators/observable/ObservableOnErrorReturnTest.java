@@ -128,7 +128,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
         Observable.range(0, 100000)
                 .onErrorReturn(_ -> 1)
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function<Integer, Integer>() /* NFI */ {
                     int c;
 
                     @Override

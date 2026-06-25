@@ -142,37 +142,6 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         assertEquals(expectedCount, count.get());
     }
 
-    // FIXME crashing ObservableSource can't propagate to an Observer
-//    @Test
-//    public void testFatalError() {
-//        try {
-//            Observable.just(1, 2, 3)
-//                    .flatMap(new Function<Integer, Observable<?>>() {
-//                        @Override
-//                        public Observable<?> apply(Integer integer) {
-//                            return Observable.create(new ObservableSource<Object>() {
-//                                @Override
-//                                public void accept(Observer<Object> o) {
-//                                    throw new NullPointerException("Test NPE");
-//                                }
-//                            });
-//                        }
-//                    })
-//                    .doOnNext(new Consumer<Object>() {
-//                        @Override
-//                        public void accept(Object o) {
-//                            System.out.println("Won't come here");
-//                        }
-//                    })
-//                    .subscribe();
-//            fail("should have thrown an exception");
-//        } catch (OnErrorNotImplementedException e) {
-//            assertTrue(e.getCause() instanceof NullPointerException);
-//            assertEquals(e.getCause().getMessage(), "Test NPE");
-//            System.out.println("Received exception: " + e);
-//        }
-//    }
-
     @Test
     public void onErrorThrows() {
         TestObserverEx<Object> to = new TestObserverEx<>();

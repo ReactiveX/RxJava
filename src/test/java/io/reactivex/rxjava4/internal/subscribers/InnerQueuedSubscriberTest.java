@@ -26,7 +26,7 @@ public class InnerQueuedSubscriberTest extends RxJavaTest {
 
     @Test
     public void requestInBatches() {
-        InnerQueuedSubscriberSupport<Integer> support = new InnerQueuedSubscriberSupport<Integer>() {
+        InnerQueuedSubscriberSupport<Integer> support = new InnerQueuedSubscriberSupport<Integer>() /* NFI */ {
             @Override
             public void innerNext(InnerQueuedSubscriber<Integer> inner, Integer value) {
             }
@@ -48,7 +48,7 @@ public class InnerQueuedSubscriberTest extends RxJavaTest {
 
         final List<Long> requests = new ArrayList<>();
 
-        inner.onSubscribe(new Subscription() {
+        inner.onSubscribe(new Subscription() /* NFI */ {
             @Override
             public void request(long n) {
                 requests.add(n);

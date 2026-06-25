@@ -363,7 +363,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriberEx<Integer> ts = pp
-            .timeout(Functions.justFunction(new Flowable<Integer>() {
+            .timeout(Functions.justFunction(new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -392,7 +392,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriberEx<Integer> ts = pp
-            .timeout(Functions.justFunction(new Flowable<Integer>() {
+            .timeout(Functions.justFunction(new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -426,7 +426,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
     public void badSourceTimeout() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -495,7 +495,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Subscriber<?>[] sub = { null, null };
 
-                final Flowable<Integer> pp2 = new Flowable<Integer>() {
+                final Flowable<Integer> pp2 = new Flowable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -539,7 +539,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Subscriber<?>[] sub = { null, null };
 
-                final Flowable<Integer> pp2 = new Flowable<Integer>() {
+                final Flowable<Integer> pp2 = new Flowable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -584,7 +584,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Subscriber<?>[] sub = { null, null };
 
-                final Flowable<Integer> pp2 = new Flowable<Integer>() {
+                final Flowable<Integer> pp2 = new Flowable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -629,7 +629,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Subscriber<?>[] sub = { null, null };
 
-                final Flowable<Integer> pp2 = new Flowable<Integer>() {
+                final Flowable<Integer> pp2 = new Flowable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -672,7 +672,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Subscriber<?>[] sub = { null, null };
 
-                final Flowable<Integer> pp2 = new Flowable<Integer>() {
+                final Flowable<Integer> pp2 = new Flowable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -741,7 +741,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             BehaviorProcessor.createDefault(1)
-            .timeout(Functions.justFunction(new Flowable<Integer>() {
+            .timeout(Functions.justFunction(new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     BooleanSubscription bs1 = new BooleanSubscription();

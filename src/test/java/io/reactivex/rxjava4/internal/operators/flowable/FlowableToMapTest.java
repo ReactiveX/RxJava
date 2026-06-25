@@ -133,7 +133,7 @@ public class FlowableToMapTest extends RxJavaTest {
     public void toMapWithFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() {
+        Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() /* NFI */ {
 
             private static final long serialVersionUID = -3296811238780863394L;
 
@@ -272,7 +272,7 @@ public class FlowableToMapTest extends RxJavaTest {
     public void toMapWithFactory() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() {
+        Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() /* NFI */ {
 
             private static final long serialVersionUID = -3296811238780863394L;
 

@@ -231,7 +231,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void fusedEmptyCheck() {
         Maybe.just(1)
-        .flattenAsFlowable(_ -> Arrays.asList(1, 2, 3)).subscribe(new FlowableSubscriber<Integer>() {
+        .flattenAsFlowable(_ -> Arrays.asList(1, 2, 3)).subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
             QueueSubscription<Integer> qs;
             @SuppressWarnings("unchecked")
             @Override
@@ -364,7 +364,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Maybe.just(1)
-        .flattenAsFlowable(_ -> (Iterable<Integer>) () -> new Iterator<Integer>() {
+        .flattenAsFlowable(_ -> (Iterable<Integer>) () -> new Iterator<Integer>() /* NFI */ {
             int count;
             @Override
             public boolean hasNext() {
@@ -398,7 +398,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Maybe.just(1)
-        .flattenAsFlowable(_ -> (Iterable<Integer>) () -> new Iterator<Integer>() {
+        .flattenAsFlowable(_ -> (Iterable<Integer>) () -> new Iterator<Integer>() /* NFI */ {
             int count;
             @Override
             public boolean hasNext() {

@@ -105,7 +105,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -131,7 +131,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
     public void badSourceDelayError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -249,7 +249,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
         try {
             Observable.just(1).hide()
-            .concatMapDelayError((Function<Integer, ObservableSource<Integer>>) _ -> new Observable<Integer>() {
+            .concatMapDelayError((Function<Integer, ObservableSource<Integer>>) _ -> new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     o[0] = observer;
@@ -275,7 +275,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
         Observable.fromArray(Observable.just(1), Observable.just(2))
         .hide()
         .concatMap(Functions.<Observable<Integer>>identity())
-        .subscribe(new Observer<Integer>() {
+        .subscribe(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -305,7 +305,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
         Observable.fromArray(Observable.just(1), Observable.<Integer>error(new TestException()))
         .hide()
         .concatMap(Functions.<Observable<Integer>>identity())
-        .subscribe(new Observer<Integer>() {
+        .subscribe(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -335,7 +335,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             TestObserver<Integer> to = ps.concatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1), 1)
-            .subscribeWith(new TestObserver<Integer>() {
+            .subscribeWith(new TestObserver<Integer>() /* NFI */ {
                 @Override
                 public void onNext(Integer t) {
                     super.onNext(t);
@@ -365,7 +365,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps.concatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1).hide(), 1)
-        .subscribeWith(new TestObserver<Integer>() {
+        .subscribeWith(new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

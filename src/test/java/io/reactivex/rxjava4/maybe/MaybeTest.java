@@ -270,7 +270,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void defer() {
-        Maybe<Integer> source = Maybe.defer(new Supplier<Maybe<Integer>>() {
+        Maybe<Integer> source = Maybe.defer(new Supplier<Maybe<Integer>>() /* NFI */ {
             int count;
             @Override
             public Maybe<Integer> get() throws Exception {
@@ -1926,7 +1926,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void subscribeWith() {
-        MaybeObserver<Integer> mo = new MaybeObserver<Integer>() {
+        MaybeObserver<Integer> mo = new MaybeObserver<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -2570,7 +2570,7 @@ public class MaybeTest extends RxJavaTest {
 
         long middle = usedMemoryNow();
 
-        MaybeObserver<Object> observer = new MaybeObserver<Object>() {
+        MaybeObserver<Object> observer = new MaybeObserver<Object>() /* NFI */ {
             @SuppressWarnings("unused")
             Disposable u;
 

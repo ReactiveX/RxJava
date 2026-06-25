@@ -224,7 +224,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
             final AtomicInteger i = new AtomicInteger();
             final CountDownLatch latch = new CountDownLatch(1);
-            inner.schedule(new Runnable() {
+            inner.schedule(new Runnable() /* NFI */ {
 
                 @Override
                 public void run() {
@@ -252,7 +252,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             final AtomicInteger i = new AtomicInteger();
             final CountDownLatch latch = new CountDownLatch(1);
 
-            inner.schedule(new Runnable() {
+            inner.schedule(new Runnable() /* NFI */ {
 
                 int state;
 
@@ -277,35 +277,32 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
     @Test
     public final void recursiveSchedulerInObservable() {
-        Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(final Subscriber<? super Integer> subscriber) {
-                final Scheduler.Worker inner = getScheduler().createWorker();
+        Flowable<Integer> obs = Flowable.unsafeCreate(subscriber -> {
+            final Scheduler.Worker inner = getScheduler().createWorker();
 
-                AsyncSubscription as = new AsyncSubscription();
-                subscriber.onSubscribe(as);
-                as.setResource(inner);
+            AsyncSubscription as = new AsyncSubscription();
+            subscriber.onSubscribe(as);
+            as.setResource(inner);
 
-                inner.schedule(new Runnable() {
-                    int i;
+            inner.schedule(new Runnable() /* NFI */ {
+                int i;
 
-                    @Override
-                    public void run() {
-                        if (i > 42) {
-                            try {
-                                subscriber.onComplete();
-                            } finally {
-                                inner.dispose();
-                            }
-                            return;
+                @Override
+                public void run() {
+                    if (i > 42) {
+                        try {
+                            subscriber.onComplete();
+                        } finally {
+                            inner.dispose();
                         }
-
-                        subscriber.onNext(i++);
-
-                        inner.schedule(this);
+                        return;
                     }
-                });
-            }
+
+                    subscriber.onNext(i++);
+
+                    inner.schedule(this);
+                }
+            });
         });
 
         final AtomicInteger lastValue = new AtomicInteger();
@@ -491,7 +488,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             final SequentialDisposable sd = new SequentialDisposable();
 
             try {
-                sd.replace(s.schedulePeriodicallyDirect(new Runnable() {
+                sd.replace(s.schedulePeriodicallyDirect(new Runnable() /* NFI */ {
                     int count;
 
                     @Override
@@ -527,7 +524,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             Scheduler.Worker w = s.createWorker();
 
             try {
-                sd.replace(w.schedulePeriodically(new Runnable() {
+                sd.replace(w.schedulePeriodically(new Runnable() /* NFI */ {
                     int count;
 
                     @Override

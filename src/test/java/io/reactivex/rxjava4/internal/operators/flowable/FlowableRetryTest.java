@@ -45,7 +45,7 @@ public class FlowableRetryTest extends RxJavaTest {
     public void iterativeBackoff() {
         Subscriber<String> consumer = TestHelper.mockSubscriber();
 
-        Flowable<String> producer = Flowable.unsafeCreate(new Publisher<String>() {
+        Flowable<String> producer = Flowable.unsafeCreate(new Publisher<String>() /* NFI */ {
 
             private AtomicInteger count = new AtomicInteger(4);
             long last = System.currentTimeMillis();
@@ -338,7 +338,7 @@ public class FlowableRetryTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Subscriber<? super String> subscriber) {
-            subscriber.onSubscribe(new Subscription() {
+            subscriber.onSubscribe(new Subscription() /* NFI */ {
                 final AtomicLong req = new AtomicLong();
                 // 0 = not set, 1 = fast path, 2 = backpressure
                 final AtomicInteger path = new AtomicInteger(0);
@@ -405,7 +405,7 @@ public class FlowableRetryTest extends RxJavaTest {
         final AtomicInteger subsCount = new AtomicInteger(0);
         Publisher<String> onSubscribe = s -> {
             subsCount.incrementAndGet();
-            s.onSubscribe(new Subscription() {
+            s.onSubscribe(new Subscription() /* NFI */ {
 
                 @Override
                 public void request(long n) {
@@ -508,7 +508,7 @@ public class FlowableRetryTest extends RxJavaTest {
         @Override
         public void subscribe(final Subscriber<? super Long> subscriber) {
             final AtomicBoolean terminate = new AtomicBoolean(false);
-            subscriber.onSubscribe(new Subscription() {
+            subscriber.onSubscribe(new Subscription() /* NFI */ {
                 @Override
                 public void request(long n) {
                     // TODO Auto-generated method stub
@@ -524,25 +524,22 @@ public class FlowableRetryTest extends RxJavaTest {
             efforts.getAndIncrement();
             active.getAndIncrement();
             maxActive.set(Math.max(active.get(), maxActive.get()));
-            final Thread thread = new Thread(context) {
-                @Override
-                public void run() {
-                    long nr = 0;
-                    try {
-                        while (!terminate.get()) {
-                            Thread.sleep(emitDelay);
-                            if (nextBeforeFailure.getAndDecrement() > 0) {
-                                subscriber.onNext(nr++);
-                            } else {
-                                active.decrementAndGet();
-                                subscriber.onError(new RuntimeException("expected-failed"));
-                                break;
-                            }
+            final Thread thread = new Thread(() -> {
+                long nr = 0;
+                try {
+                    while (!terminate.get()) {
+                        Thread.sleep(emitDelay);
+                        if (nextBeforeFailure.getAndDecrement() > 0) {
+                            subscriber.onNext(nr++);
+                        } else {
+                            active.decrementAndGet();
+                            subscriber.onError(new RuntimeException("expected-failed"));
+                            break;
                         }
-                    } catch (InterruptedException t) {
                     }
+                } catch (InterruptedException t) {
                 }
-            };
+            }, context);
             thread.start();
         }
     }

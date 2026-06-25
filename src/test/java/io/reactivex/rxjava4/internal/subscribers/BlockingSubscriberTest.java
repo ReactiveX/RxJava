@@ -89,7 +89,7 @@ public class BlockingSubscriberTest extends RxJavaTest {
 
         final AtomicBoolean b = new AtomicBoolean();
 
-        Subscription s = new Subscription() {
+        Subscription s = new Subscription() /* NFI */ {
             @Override
             public void request(long n) {
                 bf.cancelled = true;
@@ -115,7 +115,7 @@ public class BlockingSubscriberTest extends RxJavaTest {
 
         bf.cancelled = true;
 
-        Subscription s = new Subscription() {
+        Subscription s = new Subscription() /* NFI */ {
             @Override
             public void request(long n) {
                 b.set(true);

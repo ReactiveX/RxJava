@@ -45,7 +45,7 @@ public class ObservableRetryTest extends RxJavaTest {
     public void iterativeBackoff() {
         Observer<String> consumer = TestHelper.mockObserver();
 
-        Observable<String> producer = Observable.unsafeCreate(new ObservableSource<String>() {
+        Observable<String> producer = Observable.unsafeCreate(new ObservableSource<String>() /* NFI */ {
 
             private AtomicInteger count = new AtomicInteger(4);
             long last = System.currentTimeMillis();
@@ -463,25 +463,22 @@ public class ObservableRetryTest extends RxJavaTest {
             efforts.getAndIncrement();
             active.getAndIncrement();
             maxActive.set(Math.max(active.get(), maxActive.get()));
-            final Thread thread = new Thread(context) {
-                @Override
-                public void run() {
-                    long nr = 0;
-                    try {
-                        while (!terminate.get()) {
-                            Thread.sleep(emitDelay);
-                            if (nextBeforeFailure.getAndDecrement() > 0) {
-                                observer.onNext(nr++);
-                            } else {
-                                active.decrementAndGet();
-                                observer.onError(new RuntimeException("expected-failed"));
-                                break;
-                            }
+            final Thread thread = new Thread(() -> {
+                long nr = 0;
+                try {
+                    while (!terminate.get()) {
+                        Thread.sleep(emitDelay);
+                        if (nextBeforeFailure.getAndDecrement() > 0) {
+                            observer.onNext(nr++);
+                        } else {
+                            active.decrementAndGet();
+                            observer.onError(new RuntimeException("expected-failed"));
+                            break;
                         }
-                    } catch (InterruptedException t) {
                     }
+                } catch (InterruptedException t) {
                 }
-            };
+            }, context);
             thread.start();
         }
     }

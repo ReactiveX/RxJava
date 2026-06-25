@@ -99,7 +99,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
     }
 
     private Consumer<Flowable<String>> observeWindow(final List<String> list, final List<List<String>> lists) {
-        return stringFlowable -> stringFlowable.subscribe(new DefaultSubscriber<String>() {
+        return stringFlowable -> stringFlowable.subscribe(new DefaultSubscriber<String>() /* NFI */ {
             @Override
             public void onComplete() {
                 lists.add(new ArrayList<>(list));
@@ -191,7 +191,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
     public void reentrant() {
         final FlowableProcessor<Integer> pp = PublishProcessor.<Integer>create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -298,7 +298,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             BehaviorProcessor.createDefault(1)
-            .window(BehaviorProcessor.createDefault(1), _ -> new Flowable<Integer>() {
+            .window(BehaviorProcessor.createDefault(1), _ -> new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(
                         Subscriber<? super Integer> s) {
