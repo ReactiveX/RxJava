@@ -274,27 +274,26 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                             subscriber.onNext(42);
                             latch.countDown();
 
-                            // this will recursively schedule this task for execution again
-                            inner.schedule(this);
-                        }
-                    });
+                        // this will recursively schedule this task for execution again
+                        inner.schedule(this);
+                    }
+                });
 
-                    subscriber.onSubscribe(new Subscription() /* NFI */ {
+                subscriber.onSubscribe(new Subscription() /* NFI */ {
 
-                        @Override
-                        public void cancel() {
-                            inner.dispose();
-                            subscriber.onComplete();
-                            completionLatch.countDown();
-                        }
+                    @Override
+                    public void cancel() {
+                        inner.dispose();
+                        subscriber.onComplete();
+                        completionLatch.countDown();
+                    }
 
-                        @Override
-                        public void request(long n) {
+                    @Override
+                    public void request(long n) {
 
-                        }
-                    });
+                    }
+                });
 
-                }
             });
 
             final AtomicInteger count = new AtomicInteger();
