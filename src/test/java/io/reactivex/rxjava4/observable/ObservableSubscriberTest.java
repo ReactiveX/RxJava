@@ -33,7 +33,8 @@ public class ObservableSubscriberTest extends RxJavaTest {
     @Test
     public void onStartCalledOnceViaSubscribe() {
         final AtomicInteger c = new AtomicInteger();
-        Observable.just(1, 2, 3, 4).take(2).subscribe(new DefaultObserver<Integer>() {
+        Observable.just(1, 2, 3, 4).take(2)
+        .subscribe(new DefaultObserver<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -62,7 +63,8 @@ public class ObservableSubscriberTest extends RxJavaTest {
     @Test
     public void onStartCalledOnceViaUnsafeSubscribe() {
         final AtomicInteger c = new AtomicInteger();
-        Observable.just(1, 2, 3, 4).take(2).subscribe(new DefaultObserver<Integer>() {
+        Observable.just(1, 2, 3, 4).take(2)
+        .subscribe(new DefaultObserver<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -91,7 +93,8 @@ public class ObservableSubscriberTest extends RxJavaTest {
     @Test
     public void onStartCalledOnceViaLift() {
         final AtomicInteger c = new AtomicInteger();
-        Observable.just(1, 2, 3, 4).lift((ObservableOperator<Integer, Integer>) child -> new DefaultObserver<Integer>() {
+        Observable.just(1, 2, 3, 4)
+        .lift((ObservableOperator<Integer, Integer>) child -> new DefaultObserver<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {

@@ -140,7 +140,7 @@ public class SafeSubscriberTest extends RxJavaTest {
         @Override
         public void subscribe(Subscriber<? super String> subscriber) {
             this.subscriber = subscriber;
-            subscriber.onSubscribe(new Subscription() {
+            subscriber.onSubscribe(new Subscription() /* NFI */ {
 
                 @Override
                 public void cancel() {
@@ -222,7 +222,7 @@ public class SafeSubscriberTest extends RxJavaTest {
         }
     }
 
-    static final Subscription THROWING_DISPOSABLE = new Subscription() {
+    static final Subscription THROWING_DISPOSABLE = new Subscription() /* NFI */ {
 
         @Override
         public void cancel() {
@@ -237,7 +237,7 @@ public class SafeSubscriberTest extends RxJavaTest {
     };
 
     private static Subscriber<String> OBSERVER_ONNEXT_FAIL(final AtomicReference<Throwable> onError) {
-        return new DefaultSubscriber<String>() {
+        return new DefaultSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -258,7 +258,7 @@ public class SafeSubscriberTest extends RxJavaTest {
     }
 
     private static Subscriber<String> OBSERVER_ONNEXT_ONERROR_FAIL() {
-        return new DefaultSubscriber<String>() {
+        return new DefaultSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -279,7 +279,7 @@ public class SafeSubscriberTest extends RxJavaTest {
     }
 
     private static Subscriber<String> subscriberOnErrorFail() {
-        return new DefaultSubscriber<String>() {
+        return new DefaultSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -300,7 +300,7 @@ public class SafeSubscriberTest extends RxJavaTest {
     }
 
     private static Subscriber<String> OBSERVER_ONCOMPLETED_FAIL(final AtomicReference<Throwable> onError) {
-        return new DefaultSubscriber<String>() {
+        return new DefaultSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -329,7 +329,7 @@ public class SafeSubscriberTest extends RxJavaTest {
 
     @Test
     public void actual() {
-        Subscriber<Integer> actual = new DefaultSubscriber<Integer>() {
+        Subscriber<Integer> actual = new DefaultSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
             }

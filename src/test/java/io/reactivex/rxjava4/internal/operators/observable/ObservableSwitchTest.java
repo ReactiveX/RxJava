@@ -372,7 +372,7 @@ public class ObservableSwitchTest extends RxJavaTest {
         .share()
         ;
 
-        TestObserverEx<String> to = new TestObserverEx<String>() {
+        TestObserverEx<String> to = new TestObserverEx<String>() /* NFI */ {
             @Override
             public void onNext(String t) {
                 super.onNext(t);
@@ -678,7 +678,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void badMainSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -718,7 +718,7 @@ public class ObservableSwitchTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Observable.just(1).hide()
-            .switchMap(Functions.justFunction(new Observable<Integer>() {
+            .switchMap(Functions.justFunction(new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -741,7 +741,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void innerCompletesReentrant() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -762,7 +762,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void innerErrorsReentrant() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -807,7 +807,7 @@ public class ObservableSwitchTest extends RxJavaTest {
             try {
 
                 final AtomicReference<Observer<? super Integer>> obs1 = new AtomicReference<>();
-                final Observable<Integer> ps1 = new Observable<Integer>() {
+                final Observable<Integer> ps1 = new Observable<Integer>() /* NFI */ {
                     @Override
                     protected void subscribeActual(
                             Observer<? super Integer> observer) {
@@ -815,7 +815,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                     }
                 };
                 final AtomicReference<Observer<? super Integer>> obs2 = new AtomicReference<>();
-                final Observable<Integer> ps2 = new Observable<Integer>() {
+                final Observable<Integer> ps2 = new Observable<Integer>() /* NFI */ {
                     @Override
                     protected void subscribeActual(
                             Observer<? super Integer> observer) {
@@ -1027,7 +1027,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void mainCompleteCancelRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             AtomicReference<Observer<? super Integer>> ref = new AtomicReference<>();
-            Observable<Integer> o = new Observable<Integer>() {
+            Observable<Integer> o = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
                     ref.set(observer);
@@ -1052,14 +1052,14 @@ public class ObservableSwitchTest extends RxJavaTest {
 
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             AtomicReference<Observer<? super Integer>> ref1 = new AtomicReference<>();
-            Observable<Integer> o1 = new Observable<Integer>() {
+            Observable<Integer> o1 = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
                     ref1.set(observer);
                 }
             };
             AtomicReference<Observer<? super Integer>> ref2 = new AtomicReference<>();
-            Observable<Integer> o2 = new Observable<Integer>() {
+            Observable<Integer> o2 = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
                     ref2.set(observer);
@@ -1083,14 +1083,14 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void innerNoSubscriptionYet() {
         AtomicReference<Observer<? super Integer>> ref1 = new AtomicReference<>();
-        Observable<Integer> o1 = new Observable<Integer>() {
+        Observable<Integer> o1 = new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
                 ref1.set(observer);
             }
         };
         AtomicReference<Observer<? super Integer>> ref2 = new AtomicReference<>();
-        Observable<Integer> o2 = new Observable<Integer>() {
+        Observable<Integer> o2 = new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
                 ref2.set(observer);

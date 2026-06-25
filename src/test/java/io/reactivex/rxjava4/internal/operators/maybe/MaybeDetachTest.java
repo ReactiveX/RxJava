@@ -61,7 +61,7 @@ public class MaybeDetachTest extends RxJavaTest {
         Disposable d = Disposable.empty();
         final WeakReference<Disposable> wr = new WeakReference<>(d);
 
-        TestObserver<Object> to = new Maybe<Object>() {
+        TestObserver<Object> to = new Maybe<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(MaybeObserver<? super Object> observer) {
                 observer.onSubscribe(wr.get());
@@ -87,7 +87,7 @@ public class MaybeDetachTest extends RxJavaTest {
         Disposable d = Disposable.empty();
         final WeakReference<Disposable> wr = new WeakReference<>(d);
 
-        TestObserver<Integer> to = new Maybe<Integer>() {
+        TestObserver<Integer> to = new Maybe<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
@@ -113,7 +113,7 @@ public class MaybeDetachTest extends RxJavaTest {
         Disposable d = Disposable.empty();
         final WeakReference<Disposable> wr = new WeakReference<>(d);
 
-        TestObserver<Integer> to = new Maybe<Integer>() {
+        TestObserver<Integer> to = new Maybe<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
@@ -139,7 +139,7 @@ public class MaybeDetachTest extends RxJavaTest {
         Disposable d = Disposable.empty();
         final WeakReference<Disposable> wr = new WeakReference<>(d);
 
-        TestObserver<Integer> to = new Maybe<Integer>() {
+        TestObserver<Integer> to = new Maybe<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());

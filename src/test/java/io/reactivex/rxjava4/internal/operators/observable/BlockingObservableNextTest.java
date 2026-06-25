@@ -34,7 +34,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class BlockingObservableNextTest extends RxJavaTest {
 
     private void fireOnNextInNewThread(final Subject<String> o, final String value) {
-        new Thread(() -> {
+        new Thread(() ->  {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {

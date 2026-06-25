@@ -347,7 +347,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void cancelAndDrainRaceFlowable() {
-        Flowable<Object> neverNever = new Flowable<Object>() {
+        Flowable<Object> neverNever = new Flowable<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Object> s) {
             }
@@ -376,7 +376,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void sourceOverflowsFlowable() {
-        Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
+        Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Object> s) {
                 s.onSubscribe(new BooleanSubscription());
@@ -394,7 +394,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void doubleErrorFlowable() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
+            Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -437,7 +437,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void cancelAndDrainRace() {
-        Flowable<Object> neverNever = new Flowable<Object>() {
+        Flowable<Object> neverNever = new Flowable<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Object> s) {
             }
@@ -465,7 +465,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void sourceOverflows() {
-        Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
+        Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Object> s) {
                 s.onSubscribe(new BooleanSubscription());
@@ -482,7 +482,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void doubleError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
+            Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> s) {
                     s.onSubscribe(new BooleanSubscription());

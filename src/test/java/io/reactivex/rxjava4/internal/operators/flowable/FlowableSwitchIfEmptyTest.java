@@ -52,7 +52,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
     @Test
     public void switchWithProducer() throws Exception {
         final AtomicBoolean emitted = new AtomicBoolean(false);
-        Flowable<Long> withProducer = Flowable.unsafeCreate(subscriber -> subscriber.onSubscribe(new Subscription() {
+        Flowable<Long> withProducer = Flowable.unsafeCreate(subscriber -> subscriber.onSubscribe(new Subscription() /* NFI */ {
             @Override
             public void request(long n) {
                 if (n > 0 && emitted.compareAndSet(false, true)) {
@@ -84,7 +84,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
 
         Flowable.<Long>empty()
                 .switchIfEmpty(withProducer)
-                .lift((FlowableOperator<Long, Long>) _ -> new DefaultSubscriber<Long>() {
+                .lift((FlowableOperator<Long, Long>) _ -> new DefaultSubscriber<Long>() /* NFI */ {
                     @Override
                     public void onComplete() {
 
@@ -153,7 +153,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
     @Test
     public void requestsNotLost() throws InterruptedException {
         final TestSubscriber<Long> ts = new TestSubscriber<>(0L);
-        Flowable.unsafeCreate((Publisher<Long>) subscriber -> subscriber.onSubscribe(new Subscription() {
+        Flowable.unsafeCreate((Publisher<Long>) subscriber -> subscriber.onSubscribe(new Subscription() /* NFI */ {
             final AtomicBoolean completed = new AtomicBoolean(false);
             @Override
             public void request(long n) {

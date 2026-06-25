@@ -370,7 +370,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         publishCompleted(o3, 55);
 
         final TestSubscriberEx<String> testSubscriber = new TestSubscriberEx<>();
-        Flowable.switchOnNext(o).subscribe(new DefaultSubscriber<String>() {
+        Flowable.switchOnNext(o).subscribe(new DefaultSubscriber<String>() /* NFI */ {
 
             private int requested;
 
@@ -431,7 +431,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         .share()
         ;
 
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>() {
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>() /* NFI */ {
             @Override
             public void onNext(String t) {
                 super.onNext(t);
@@ -742,7 +742,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void badMainSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -782,7 +782,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.just(1).hide()
-            .switchMap(Functions.justFunction(new Flowable<Integer>() {
+            .switchMap(Functions.justFunction(new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -805,7 +805,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void innerCompletesReentrant() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -826,7 +826,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void innerErrorsReentrant() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -873,7 +873,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void innerOverflow() {
         Flowable.just(1).hide()
-        .switchMap(Functions.justFunction(new Flowable<Integer>() {
+        .switchMap(Functions.justFunction(new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());

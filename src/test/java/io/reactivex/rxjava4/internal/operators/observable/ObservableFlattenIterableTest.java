@@ -44,7 +44,7 @@ public class ObservableFlattenIterableTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
         Observable.range(1, 5)
         .doOnNext(_ -> counter.getAndIncrement())
-        .flatMapIterable((Function<Integer, Iterable<Integer>>) _ -> (Iterable<Integer>) () -> new Iterator<Integer>() {
+        .flatMapIterable((Function<Integer, Iterable<Integer>>) _ -> (Iterable<Integer>) () -> new Iterator<Integer>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;

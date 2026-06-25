@@ -249,7 +249,7 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
     public void queueOverflow() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());

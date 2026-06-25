@@ -271,7 +271,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void innerObserver() {
         Observable.range(1, 3)
-        .flatMapCompletable(_ -> new Completable() {
+        .flatMapCompletable(_ -> new Completable() /* NFI */ {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -296,7 +296,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         Observable.range(1, 10)
         .flatMapCompletable(_ -> Completable.complete())
         .toObservable()
-        .subscribe(new Observer<Object>() {
+        .subscribe(new Observer<Object>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 QueueDisposable<?> qd = (QueueDisposable<?>)d;
@@ -326,7 +326,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void innerObserverObservable() {
         Observable.range(1, 3)
-        .flatMapCompletable(_ -> new Completable() {
+        .flatMapCompletable(_ -> new Completable() /* NFI */ {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(Disposable.empty());

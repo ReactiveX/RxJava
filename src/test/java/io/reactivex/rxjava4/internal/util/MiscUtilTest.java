@@ -248,7 +248,7 @@ public class MiscUtilTest extends RxJavaTest {
 
         final List<Integer> out = new ArrayList<>();
 
-        list.forEachWhile(null, (state, value) -> {
+        list.forEachWhile(null, (_, value) -> {
             out.add(value);
             return false; // never terminate early
         });

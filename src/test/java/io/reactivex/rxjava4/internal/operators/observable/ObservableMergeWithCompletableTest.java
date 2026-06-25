@@ -106,7 +106,7 @@ public class ObservableMergeWithCompletableTest extends RxJavaTest {
 
     @Test
     public void isDisposed() {
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());

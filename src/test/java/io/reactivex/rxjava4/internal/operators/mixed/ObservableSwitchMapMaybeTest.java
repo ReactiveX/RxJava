@@ -286,7 +286,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
     public void mainErrorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -310,7 +310,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
         try {
             final AtomicReference<MaybeObserver<? super Integer>> moRef = new AtomicReference<>();
 
-            TestObserverEx<Integer> to = new Observable<Integer>() {
+            TestObserverEx<Integer> to = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -318,7 +318,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
                     observer.onError(new TestException("outer"));
                 }
             }
-            .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<Integer>() {
+            .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(
                         MaybeObserver<? super Integer> observer) {
@@ -478,7 +478,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
     public void drainReentrant() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

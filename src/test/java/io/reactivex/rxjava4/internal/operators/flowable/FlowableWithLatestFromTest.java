@@ -589,7 +589,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
     public void manyErrors() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -613,7 +613,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.just(1)
-            .withLatestFrom(new Flowable<Integer>() {
+            .withLatestFrom(new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());

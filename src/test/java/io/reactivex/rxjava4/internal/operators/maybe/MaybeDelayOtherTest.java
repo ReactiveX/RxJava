@@ -220,7 +220,7 @@ public class MaybeDelayOtherTest extends RxJavaTest {
 
     @Test
     public void otherPublisherNextSlipsThrough() {
-        Maybe.just(1).delay(new Flowable<Integer>() {
+        Maybe.just(1).delay(new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());

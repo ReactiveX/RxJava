@@ -35,7 +35,7 @@ public class ObservableErrorHandlingTests extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<>();
         Observable<Long> o = Observable.interval(50, TimeUnit.MILLISECONDS);
-        Observer<Long> observer = new DefaultObserver<Long>() {
+        Observer<Long> observer = new DefaultObserver<Long>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -71,7 +71,7 @@ public class ObservableErrorHandlingTests extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<>();
         Observable<Long> o = Observable.interval(50, TimeUnit.MILLISECONDS);
-        Observer<Long> observer = new DefaultObserver<Long>() {
+        Observer<Long> observer = new DefaultObserver<Long>() /* NFI */ {
 
             @Override
             public void onComplete() {

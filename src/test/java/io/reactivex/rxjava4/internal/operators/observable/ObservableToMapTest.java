@@ -134,7 +134,7 @@ public class ObservableToMapTest extends RxJavaTest {
     public void toMapWithFactoryObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() {
+        Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() /* NFI */ {
 
             private static final long serialVersionUID = -3296811238780863394L;
 
@@ -273,7 +273,7 @@ public class ObservableToMapTest extends RxJavaTest {
     public void toMapWithFactory() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() {
+        Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() /* NFI */ {
 
             private static final long serialVersionUID = -3296811238780863394L;
 

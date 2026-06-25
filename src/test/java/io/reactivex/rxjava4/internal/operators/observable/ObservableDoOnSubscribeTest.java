@@ -82,7 +82,7 @@ public class ObservableDoOnSubscribeTest extends RxJavaTest {
         try {
             final Disposable bs = Disposable.empty();
 
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(bs);

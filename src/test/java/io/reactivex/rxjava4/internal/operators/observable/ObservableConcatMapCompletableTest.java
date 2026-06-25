@@ -83,7 +83,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -160,7 +160,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
         Observable.just(1)
         .hide()
         .concatMapCompletable(completableComplete())
-        .subscribe(new CompletableObserver() {
+        .subscribe(new CompletableObserver() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -186,7 +186,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
         Observable.just(1)
         .hide()
         .concatMapCompletable(completableError())
-        .subscribe(new CompletableObserver() {
+        .subscribe(new CompletableObserver() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

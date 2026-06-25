@@ -111,7 +111,7 @@ public class ObservableToFutureTest extends RxJavaTest {
 
     @Test
     public void cancellationDuringFutureGet() throws Exception {
-        Future<Object> future = new Future<Object>() {
+        Future<Object> future = new Future<Object>() /* NFI */ {
             private AtomicBoolean isCancelled = new AtomicBoolean(false);
             private AtomicBoolean isDone = new AtomicBoolean(false);
 

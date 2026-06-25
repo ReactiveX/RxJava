@@ -61,7 +61,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     @Test
     public void fusedEmptyCheck() {
         Maybe.mergeArray(Maybe.just(1), Maybe.<Integer>empty(), Maybe.just(2))
-        .subscribe(new FlowableSubscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
             QueueSubscription<Integer> qs;
             @Override
             public void onSubscribe(Subscription s) {
@@ -159,7 +159,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
 
     @Test
     public void mergeBadSource() {
-        Maybe.mergeArray(new Maybe<Integer>() {
+        Maybe.mergeArray(new Maybe<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -176,7 +176,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     @Test
     public void smallOffer2Throws() {
         Maybe.mergeArray(Maybe.never(), Maybe.never())
-        .subscribe(new FlowableSubscriber<Object>() {
+        .subscribe(new FlowableSubscriber<Object>() /* NFI */ {
 
             @SuppressWarnings("rawtypes")
             @Override
@@ -211,7 +211,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
         Maybe<Integer>[] a = new Maybe[1024];
         Arrays.fill(a, Maybe.never());
         Maybe.mergeArray(a)
-        .subscribe(new FlowableSubscriber<Object>() {
+        .subscribe(new FlowableSubscriber<Object>() /* NFI */ {
 
             @SuppressWarnings("rawtypes")
             @Override

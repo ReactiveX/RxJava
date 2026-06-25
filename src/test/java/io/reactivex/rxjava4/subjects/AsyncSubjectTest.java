@@ -428,7 +428,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         AsyncSubject<Object> p = AsyncSubject.create();
 
         final TestObserver<Object> to2 = new TestObserver<>();
-        TestObserver<Object> to1 = new TestObserver<Object>() {
+        TestObserver<Object> to1 = new TestObserver<Object>() /* NFI */ {
             @Override
             public void onNext(Object t) {
                 to2.dispose();
@@ -452,7 +452,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         AsyncSubject<Object> p = AsyncSubject.create();
 
         final TestObserver<Object> to2 = new TestObserver<>();
-        TestObserver<Object> to1 = new TestObserver<Object>() {
+        TestObserver<Object> to1 = new TestObserver<Object>() /* NFI */ {
             @Override
             public void onError(Throwable t) {
                 to2.dispose();
@@ -474,7 +474,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         AsyncSubject<Object> p = AsyncSubject.create();
 
         final TestObserver<Object> to2 = new TestObserver<>();
-        TestObserver<Object> to1 = new TestObserver<Object>() {
+        TestObserver<Object> to1 = new TestObserver<Object>() /* NFI */ {
             @Override
             public void onComplete() {
                 to2.dispose();

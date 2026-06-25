@@ -106,7 +106,7 @@ public class ObservableGroupByTest extends RxJavaTest {
         grouped.flatMap((Function<GroupedObservable<Integer, String>, Observable<String>>) o -> {
             groupCounter.incrementAndGet();
             return o.map(v -> "Event => key: " + o.getKey() + " value: " + v);
-        }).subscribe(new DefaultObserver<String>() {
+        }).subscribe(new DefaultObserver<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -180,7 +180,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
             return eventGroupedObservable.map(event -> "Source: " + event.source + "  Message: " + event.message);
 
-        }).subscribe(new DefaultObserver<String>() {
+        }).subscribe(new DefaultObserver<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -246,7 +246,7 @@ public class ObservableGroupByTest extends RxJavaTest {
                             .take(20) // limit to only 20 events on this group
                             .map(event -> "testUnsubscribe => Source: " + event.source + "  Message: " + event.message);
 
-                }).subscribe(new DefaultObserver<String>() {
+                }).subscribe(new DefaultObserver<String>() /* NFI */ {
 
                     @Override
                     public void onComplete() {
@@ -344,7 +344,7 @@ public class ObservableGroupByTest extends RxJavaTest {
                         return group;
                     }
                 })
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultObserver<Integer>() /* NFI */ {
 
                     @Override
                     public void onComplete() {
@@ -378,7 +378,7 @@ public class ObservableGroupByTest extends RxJavaTest {
         final AtomicInteger eventCounter = new AtomicInteger();
         Observable.range(0, 100)
                 .groupBy(i -> i % 2)
-                .subscribe(new DefaultObserver<GroupedObservable<Integer, Integer>>() {
+                .subscribe(new DefaultObserver<GroupedObservable<Integer, Integer>>() /* NFI */ {
 
                     @Override
                     public void onComplete() {
@@ -705,7 +705,7 @@ public class ObservableGroupByTest extends RxJavaTest {
         Observable<String> m = source.groupBy(keysel, valuesel)
         .flatMap((Function<GroupedObservable<String, String>, Observable<String>>) g -> {
             System.out.println("-----------> NEXT: " + g.getKey());
-            return g.take(2).map(new Function<String, String>() {
+            return g.take(2).map(new Function<String, String>() /* NFI */ {
 
                 int count;
 
@@ -813,7 +813,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
         Observable.range(1, 4000).groupBy(IS_EVEN2)
         .flatMap(g -> g.doOnComplete(() -> System.out.println("//////////////////// COMPLETED-A"))
-                .observeOn(Schedulers.computation()).map(new Function<Integer, String>() {
+                .observeOn(Schedulers.computation()).map(new Function<Integer, String>() /* NFI */ {
 
             int c;
 
@@ -896,7 +896,7 @@ public class ObservableGroupByTest extends RxJavaTest {
         final TestObserverEx<Integer> inner2 = new TestObserverEx<>();
 
         final TestObserverEx<GroupedObservable<Integer, Integer>> outer
-                = new TestObserverEx<>(new DefaultObserver<GroupedObservable<Integer, Integer>>() {
+                = new TestObserverEx<>(new DefaultObserver<GroupedObservable<Integer, Integer>>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -962,7 +962,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     public void reentrantComplete() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -984,7 +984,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     public void reentrantCompleteCancel() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

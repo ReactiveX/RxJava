@@ -57,7 +57,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
      */
     @Test
     public void rawIterable() {
-        Iterable<String> it = () -> new Iterator<String>() {
+        Iterable<String> it = () -> new Iterator<String>() /* NFI */ {
 
             int i;
 
@@ -134,7 +134,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
     @Test
     public void doesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = () -> new Iterator<Integer>() {
+        Iterable<Integer> iterable = () -> new Iterator<Integer>() /* NFI */ {
 
             int count = 1;
 
@@ -165,7 +165,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
     @Test
     public void doesNotCallIteratorHasNextMoreThanRequiredFastPath() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = () -> new Iterator<Integer>() {
+        Iterable<Integer> iterable = () -> new Iterator<Integer>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -189,7 +189,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
             }
 
         };
-        Observable.fromIterable(iterable).subscribe(new DefaultObserver<Integer>() {
+        Observable.fromIterable(iterable).subscribe(new DefaultObserver<Integer>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -240,7 +240,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
     public void hasNextCancels() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        Observable.fromIterable(() -> new Iterator<Integer>() {
+        Observable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
             int count;
 
             @Override
@@ -282,7 +282,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
     @Test
     public void fusionClear() {
         Observable.fromIterable(Arrays.asList(1, 2, 3))
-        .subscribe(new Observer<Integer>() {
+        .subscribe(new Observer<Integer>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 @SuppressWarnings("unchecked")
@@ -322,7 +322,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
     public void disposeAfterHasNext() {
         TestObserver<Integer> to = new TestObserver<>();
 
-        Observable.fromIterable(() -> new Iterator<Integer>() {
+        Observable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
             int count;
             @Override
             public boolean hasNext() {

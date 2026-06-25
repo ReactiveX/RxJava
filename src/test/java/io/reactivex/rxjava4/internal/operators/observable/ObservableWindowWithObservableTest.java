@@ -46,7 +46,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
         final List<Observer<Object>> values = new ArrayList<>();
 
-        Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() {
+        Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() /* NFI */ {
             @Override
             public void onNext(Observable<Integer> args) {
                 final Observer<Object> mo = TestHelper.mockObserver();
@@ -103,7 +103,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
         final List<Observer<Object>> values = new ArrayList<>();
 
-        Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() {
+        Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() /* NFI */ {
             @Override
             public void onNext(Observable<Integer> args) {
                 final Observer<Object> mo = TestHelper.mockObserver();
@@ -159,7 +159,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
         final List<Observer<Object>> values = new ArrayList<>();
 
-        Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() {
+        Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() /* NFI */ {
             @Override
             public void onNext(Observable<Integer> args) {
                 final Observer<Object> mo = TestHelper.mockObserver();
@@ -209,7 +209,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
         final List<Observer<Object>> values = new ArrayList<>();
 
-        Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() {
+        Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() /* NFI */ {
             @Override
             public void onNext(Observable<Integer> args) {
                 final Observer<Object> mo = TestHelper.mockObserver();
@@ -278,7 +278,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
     public void reentrant() {
         final Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -337,7 +337,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
             final AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
 
             TestObserverEx<Observable<Object>> to = Observable.error(new TestException("main"))
-            .window(new Observable<Object>() {
+            .window(new Observable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -373,14 +373,14 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
                 final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<>();
                 final AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
 
-                TestObserverEx<Observable<Object>> to = new Observable<Object>() {
+                TestObserverEx<Observable<Object>> to = new Observable<Object>() /* NFI */ {
                     @Override
                     protected void subscribeActual(Observer<? super Object> observer) {
                         observer.onSubscribe(Disposable.empty());
                         refMain.set(observer);
                     }
                 }
-                .window(new Observable<Object>() {
+                .window(new Observable<Object>() /* NFI */ {
                     @Override
                     protected void subscribeActual(Observer<? super Object> observer) {
                         observer.onSubscribe(Disposable.empty());
@@ -413,14 +413,14 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
             final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<>();
             final AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
 
-            TestObserver<Observable<Object>> to = new Observable<Object>() {
+            TestObserver<Observable<Object>> to = new Observable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
                     observer.onSubscribe(Disposable.empty());
                     refMain.set(observer);
                 }
             }
-            .window(new Observable<Object>() {
+            .window(new Observable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -446,14 +446,14 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
         final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<>();
         final AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
 
-        TestObserverEx<Observable<Object>> to = new Observable<Object>() {
+        TestObserverEx<Observable<Object>> to = new Observable<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());
                 refMain.set(observer);
             }
         }
-        .window(new Observable<Object>() {
+        .window(new Observable<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -478,18 +478,18 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
             final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<>();
             final AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
 
-            final TestObserver<Observable<Object>> to = new Observable<Object>() {
+            final TestObserver<Observable<Object>> to = new Observable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
                     observer.onSubscribe(Disposable.empty());
                     refMain.set(observer);
                 }
             }
-            .window(new Observable<Object>() {
+            .window(new Observable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
                     final AtomicInteger counter = new AtomicInteger();
-                    observer.onSubscribe(new Disposable() {
+                    observer.onSubscribe(new Disposable() /* NFI */ {
 
                         @Override
                         public void dispose() {
@@ -529,18 +529,18 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
             final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<>();
             final AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
 
-            final TestObserver<Observable<Object>> to = new Observable<Object>() {
+            final TestObserver<Observable<Object>> to = new Observable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
                     observer.onSubscribe(Disposable.empty());
                     refMain.set(observer);
                 }
             }
-            .window(new Observable<Object>() {
+            .window(new Observable<Object>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
                     final AtomicInteger counter = new AtomicInteger();
-                    observer.onSubscribe(new Disposable() {
+                    observer.onSubscribe(new Disposable() /* NFI */ {
 
                         @Override
                         public void dispose() {

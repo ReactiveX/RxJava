@@ -251,7 +251,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
         TestScheduler sch = new TestScheduler();
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

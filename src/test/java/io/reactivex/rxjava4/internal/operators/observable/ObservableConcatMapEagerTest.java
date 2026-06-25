@@ -585,7 +585,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         final UnicastSubject<Integer> us = UnicastSubject.create();
         us.onNext(1);
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

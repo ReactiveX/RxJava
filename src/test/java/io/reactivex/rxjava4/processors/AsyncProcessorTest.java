@@ -434,7 +434,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         AsyncProcessor<Object> p = AsyncProcessor.create();
 
         final TestSubscriber<Object> ts2 = new TestSubscriber<>();
-        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() {
+        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() /* NFI */ {
             @Override
             public void onNext(Object t) {
                 ts2.cancel();
@@ -458,7 +458,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         AsyncProcessor<Object> p = AsyncProcessor.create();
 
         final TestSubscriber<Object> ts2 = new TestSubscriber<>();
-        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() {
+        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() /* NFI */ {
             @Override
             public void onError(Throwable t) {
                 ts2.cancel();
@@ -480,7 +480,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         AsyncProcessor<Object> p = AsyncProcessor.create();
 
         final TestSubscriber<Object> ts2 = new TestSubscriber<>();
-        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() {
+        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() /* NFI */ {
             @Override
             public void onComplete() {
                 ts2.cancel();

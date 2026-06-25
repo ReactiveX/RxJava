@@ -252,7 +252,7 @@ public class SingleDoOnTest extends RxJavaTest {
         try {
             final Disposable bs = Disposable.empty();
 
-            new Single<Integer>() {
+            new Single<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(bs);

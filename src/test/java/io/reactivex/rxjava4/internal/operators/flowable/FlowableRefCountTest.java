@@ -528,7 +528,7 @@ public class FlowableRefCountTest extends RxJavaTest {
     @Test
     public void noOpConnect() {
         final int[] calls = { 0 };
-        Flowable<Integer> f = new ConnectableFlowable<Integer>() {
+        Flowable<Integer> f = new ConnectableFlowable<Integer>() /* NFI */ {
             @Override
             public void connect(Consumer<? super Disposable> connection) {
                 calls[0]++;

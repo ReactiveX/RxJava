@@ -159,7 +159,7 @@ public class FlowableTakeTest2 extends RxJavaTest implements LongConsumer, Actio
     public void cancelIgnored() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     BooleanSubscription bs = new BooleanSubscription();

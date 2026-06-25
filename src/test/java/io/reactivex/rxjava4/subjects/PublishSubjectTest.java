@@ -296,7 +296,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
             src.firstElement()
                 .toObservable()
                 .flatMap((Function<String, Observable<String>>) t1 -> Observable.just(t1 + ", " + t1))
-                .subscribe(new DefaultObserver<String>() {
+                .subscribe(new DefaultObserver<String>() /* NFI */ {
                     @Override
                     public void onNext(String t) {
                         o.onNext(t);
@@ -374,7 +374,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     @Test
     public void crossCancel() {
         final TestObserver<Integer> to1 = new TestObserver<>();
-        TestObserver<Integer> to2 = new TestObserver<Integer>() {
+        var to2 = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -398,7 +398,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     @SuppressUndeliverable
     public void crossCancelOnError() {
         final TestObserver<Integer> to1 = new TestObserver<>();
-        TestObserver<Integer> to2 = new TestObserver<Integer>() {
+        TestObserver<Integer> to2 = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onError(Throwable t) {
                 super.onError(t);
@@ -421,7 +421,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     @Test
     public void crossCancelOnComplete() {
         final TestObserver<Integer> to1 = new TestObserver<>();
-        TestObserver<Integer> to2 = new TestObserver<Integer>() {
+        TestObserver<Integer> to2 = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onComplete() {
                 super.onComplete();
@@ -447,7 +447,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
 
         TestObserver<Integer> to = ps.test();
 
-        ps.subscribe(new Observer<Integer>() {
+        ps.subscribe(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

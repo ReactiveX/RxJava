@@ -112,7 +112,7 @@ public class SimpleQueueTest extends RxJavaTest {
 
         final AtomicInteger c = new AtomicInteger(3);
 
-        Thread t1 = new Thread(new Runnable() {
+        Thread t1 = new Thread(new Runnable() /* NFI */ {
             int i;
             @Override
             public void run() {
@@ -126,7 +126,7 @@ public class SimpleQueueTest extends RxJavaTest {
         });
         t1.start();
 
-        Thread t2 = new Thread(new Runnable() {
+        Thread t2 = new Thread(new Runnable() /* NFI */ {
             int i = 10000;
             @Override
             public void run() {
@@ -140,7 +140,7 @@ public class SimpleQueueTest extends RxJavaTest {
         });
         t2.start();
 
-        Runnable r3 = new Runnable() {
+        Runnable r3 = new Runnable() /* NFI */ {
             int i = 20000;
             @Override
             public void run() {

@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.*;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -136,7 +135,7 @@ public class TestSchedulerTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger(0);
 
         try {
-            inner.schedule(new Runnable() {
+            inner.schedule(new Runnable() /* NFI */ {
 
                 @Override
                 public void run() {
@@ -160,7 +159,7 @@ public class TestSchedulerTest extends RxJavaTest {
         try {
             final AtomicInteger counter = new AtomicInteger(0);
 
-            final Disposable subscription = inner.schedule(new Runnable() {
+            final Disposable subscription = inner.schedule(new Runnable() /* NFI */ {
 
                 @Override
                 public void run() {
@@ -186,10 +185,10 @@ public class TestSchedulerTest extends RxJavaTest {
             final Runnable calledOp = mock(Runnable.class);
 
             Flowable<Object> poller;
-            poller = Flowable.unsafeCreate((Publisher<Object>) aSubscriber -> {
+            poller = Flowable.unsafeCreate(aSubscriber -> {
                 final BooleanSubscription bs = new BooleanSubscription();
                 aSubscriber.onSubscribe(bs);
-                inner.schedule(new Runnable() {
+                inner.schedule(new Runnable() /* NFI */ {
                     @Override
                     public void run() {
                         if (!bs.isCancelled()) {
@@ -222,7 +221,7 @@ public class TestSchedulerTest extends RxJavaTest {
 
     @Test
     public void timedRunnableToString() {
-        TimedRunnable r = new TimedRunnable((TestWorker) new TestScheduler().createWorker(), 5, new Runnable() {
+        TimedRunnable r = new TimedRunnable((TestWorker) new TestScheduler().createWorker(), 5, new Runnable() /* NFI */ {
             @Override
             public void run() {
                 // deliberately no-op

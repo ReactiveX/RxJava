@@ -120,7 +120,7 @@ public class SingleMiscTest extends RxJavaTest {
         final AtomicBoolean flag = new AtomicBoolean();
 
         Single.just(1)
-        .doOnSuccess(new Consumer<Integer>() {
+        .doOnSuccess(new Consumer<Integer>() /* NFI */ {
             int c;
             @Override
             public void accept(Integer v) throws Exception {
@@ -137,7 +137,7 @@ public class SingleMiscTest extends RxJavaTest {
 
     @Test
     public void retry() {
-        Single.fromCallable(new Callable<Object>() {
+        Single.fromCallable(new Callable<Object>() /* NFI */ {
             int c;
             @Override
             public Object call() throws Exception {
@@ -154,7 +154,7 @@ public class SingleMiscTest extends RxJavaTest {
 
     @Test
     public void retryBiPredicate() {
-        Single.fromCallable(new Callable<Object>() {
+        Single.fromCallable(new Callable<Object>() /* NFI */ {
             int c;
             @Override
             public Object call() throws Exception {
@@ -188,7 +188,7 @@ public class SingleMiscTest extends RxJavaTest {
 
     @Test
     public void retryPredicate() {
-        Single.fromCallable(new Callable<Object>() {
+        Single.fromCallable(new Callable<Object>() /* NFI */ {
             int c;
             @Override
             public Object call() throws Exception {

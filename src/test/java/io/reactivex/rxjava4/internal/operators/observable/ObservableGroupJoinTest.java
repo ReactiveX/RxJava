@@ -143,7 +143,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                 PPF::new);
 
         q.subscribe(
-                new Observer<PPF>() {
+                new Observer<PPF>() /* NFI */ {
                     @Override
                     public void onNext(final PPF ppf) {
                         ppf.fruits.filter(t1 -> ppf.person.id == t1.personId).subscribe(t1 -> observer.onNext(Arrays.asList(ppf.person.name, t1.fruit)));

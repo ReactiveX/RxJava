@@ -245,7 +245,7 @@ public class MaybeCacheTest extends RxJavaTest {
 
         final Disposable[] dout = { null };
 
-        source.subscribe(new MaybeObserver<Integer>() {
+        source.subscribe(new MaybeObserver<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

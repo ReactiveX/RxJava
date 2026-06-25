@@ -71,7 +71,7 @@ public class SingleSubscribeTest extends RxJavaTest {
     @Test
     public void subscribeThrows() {
         try {
-            new Single<Integer>() {
+            new Single<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super Integer> observer) {
                     throw new IllegalArgumentException();

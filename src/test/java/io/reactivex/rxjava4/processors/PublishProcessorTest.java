@@ -296,7 +296,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
             System.out.printf("Turn: %d%n", i);
             src.firstElement().toFlowable()
                 .flatMap((Function<String, Flowable<String>>) t1 -> Flowable.just(t1 + ", " + t1))
-                .subscribe(new DefaultSubscriber<String>() {
+                .subscribe(new DefaultSubscriber<String>() /* NFI */ {
                     @Override
                     public void onNext(String t) {
                         subscriber.onNext(t);
@@ -394,7 +394,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     @Test
     public void crossCancel() {
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -418,7 +418,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     @SuppressUndeliverable
     public void crossCancelOnError() {
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onError(Throwable t) {
                 super.onError(t);
@@ -441,7 +441,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     @Test
     public void crossCancelOnComplete() {
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onComplete() {
                 super.onComplete();
@@ -482,7 +482,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
         TestSubscriber<Integer> ts = pp.test();
 
-        pp.subscribe(new FlowableSubscriber<Integer>() {
+        pp.subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {

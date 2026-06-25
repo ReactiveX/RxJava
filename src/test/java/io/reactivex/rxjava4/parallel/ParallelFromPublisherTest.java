@@ -38,7 +38,7 @@ public class ParallelFromPublisherTest extends RxJavaTest {
 
     @Test
     public void sourceOverflow() {
-        new Flowable<Integer>() {
+        new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
@@ -216,7 +216,7 @@ public class ParallelFromPublisherTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void requestUnboundedRace() {
-        FlowableSubscriber<Integer> fs = new FlowableSubscriber<Integer>() {
+        FlowableSubscriber<Integer> fs = new FlowableSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onNext(@NonNull Integer t) {
@@ -249,7 +249,7 @@ public class ParallelFromPublisherTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void requestRace() {
-        FlowableSubscriber<Integer> fs = new FlowableSubscriber<Integer>() {
+        FlowableSubscriber<Integer> fs = new FlowableSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onNext(@NonNull Integer t) {

@@ -333,7 +333,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
     public void clearIsEmpty() {
         Observable.range(1, 5)
         .doFinally(this)
-        .subscribe(new Observer<Integer>() {
+        .subscribe(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -380,7 +380,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
         Observable.range(1, 5)
         .doFinally(this)
         .filter(Functions.alwaysTrue())
-        .subscribe(new Observer<Integer>() {
+        .subscribe(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

@@ -21,7 +21,7 @@ import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 
-public class SingleCacheTest extends RxJavaTest {
+public class SingleCacheMainTest extends RxJavaTest {
 
     @Test
     public void normal() {
@@ -91,7 +91,7 @@ public class SingleCacheTest extends RxJavaTest {
 
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
 
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
+        var ts2 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -114,9 +114,9 @@ public class SingleCacheTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         Single<Integer> cache = ps.single(-99).cache();
 
-        final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
+        final var ts1 = new TestSubscriber<>();
 
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
+        var ts2 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onError(Throwable t) {
                 super.onError(t);

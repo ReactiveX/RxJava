@@ -453,7 +453,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
     static class TestObservable<T> implements ObservableSource<T> {
 
-        private final Disposable upstream = new Disposable() {
+        private final Disposable upstream = new Disposable() /* NFI */ {
             @Override
             public void dispose() {
                     subscribed = false;
@@ -663,7 +663,7 @@ public class ObservableConcatTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Observable.range(1, n)
-        .concatMap(func).subscribe(new DefaultObserver<Integer>() {
+        .concatMap(func).subscribe(new DefaultObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 // Consume after sleep for 1 ms
@@ -975,7 +975,7 @@ public class ObservableConcatTest extends RxJavaTest {
         final Disposable[] disposable = { null };
 
         Observable.concatArray(Observable.just(1), Observable.just(2))
-        .subscribe(new Observer<>() {
+        .subscribe(new Observer<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -1005,7 +1005,7 @@ public class ObservableConcatTest extends RxJavaTest {
         Observable.concatArray(
                 ObservableConcatConfig.DELAY_ERROR,
                 Observable.just(1), Observable.just(2))
-        .subscribe(new Observer<>() {
+        .subscribe(new Observer<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -1033,7 +1033,7 @@ public class ObservableConcatTest extends RxJavaTest {
         final Disposable[] disposable = { null };
 
         Observable.concatArray(Observable.just(1), Observable.<Integer>error(new TestException()))
-        .subscribe(new Observer<Integer>() {
+        .subscribe(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -1063,7 +1063,7 @@ public class ObservableConcatTest extends RxJavaTest {
         Observable.concatArray(
                 ObservableConcatConfig.DELAY_ERROR,
                 Observable.just(1), Observable.<Integer>error(new TestException()))
-        .subscribe(new Observer<Integer>() {
+        .subscribe(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

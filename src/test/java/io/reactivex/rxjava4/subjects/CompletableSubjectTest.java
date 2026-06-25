@@ -162,7 +162,7 @@ public class CompletableSubjectTest extends RxJavaTest {
     @Test
     public void disposeTwice() {
         CompletableSubject.create()
-        .subscribe(new CompletableObserver() {
+        .subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 assertFalse(d.isDisposed());

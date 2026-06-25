@@ -216,7 +216,7 @@ public class FlowableThrottleFirstTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());

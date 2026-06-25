@@ -100,7 +100,7 @@ public class MaybeUnsubscribeOnTest extends RxJavaTest {
 
             final Disposable[] ds = { null };
             pp.singleElement().unsubscribeOn(Schedulers.computation())
-            .subscribe(new MaybeObserver<Integer>() {
+            .subscribe(new MaybeObserver<Integer>() /* NFI */ {
                 @Override
                 public void onSubscribe(Disposable d) {
                     ds[0] = d;

@@ -278,7 +278,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final CountDownLatch running = new CountDownLatch(2);
 
-                TestSubscriberEx<String> ts = new TestSubscriberEx<>(new DefaultSubscriber<String>() {
+                var ts = new TestSubscriberEx<>(new DefaultSubscriber<String>() /* NFI */ {
 
                     @Override
                     public void onComplete() {
@@ -359,7 +359,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
     @Test
     public void threadStarvation() throws InterruptedException {
 
-        TestSubscriber<String> ts = new TestSubscriber<>(new DefaultSubscriber<String>() {
+        TestSubscriber<String> ts = new TestSubscriber<>(new DefaultSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -387,7 +387,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
         AtomicInteger p2 = new AtomicInteger();
 
         subscriber.onSubscribe(new BooleanSubscription());
-        ResourceSubscriber<String> as1 = new ResourceSubscriber<String>() {
+        ResourceSubscriber<String> as1 = new ResourceSubscriber<String>() /* NFI */ {
             @Override
             public void onNext(String t) {
                 subscriber.onNext(t);
@@ -404,7 +404,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
             }
         };
 
-        ResourceSubscriber<String> as2 = new ResourceSubscriber<String>() {
+        ResourceSubscriber<String> as2 = new ResourceSubscriber<String>() /* NFI */ {
             @Override
             public void onNext(String t) {
                 subscriber.onNext(t);
@@ -835,7 +835,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
         try {
             final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<>();
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
                 @Override
                 public void onNext(Integer v) {
                     serial.get().onError(new TestException());
@@ -862,7 +862,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
     public void completeReentry() {
         final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<>();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer v) {
                 serial.get().onComplete();
@@ -1078,7 +1078,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
     @SuppressUndeliverable
     public void onErrorQueuedUp() {
         AtomicReference<SerializedSubscriber<Integer>> ssRef = new AtomicReference<>();
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

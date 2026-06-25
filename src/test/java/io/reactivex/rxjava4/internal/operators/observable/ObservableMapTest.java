@@ -182,86 +182,12 @@ public class ObservableMapTest extends RxJavaTest {
         Observable.range(1, 1).lastElement().map(i -> i / 0).blockingGet();
     }
 
-    // FIXME RS subscribers can't throw
-//    @Test(expected = OnErrorNotImplementedException.class)
-//    public void verifyExceptionIsThrownIfThereIsNoExceptionHandler() {
-//
-//        ObservableSource<Object> creator = new ObservableSource<Object>() {
-//
-//            @Override
-//            public void subscribeActual(Observer<? super Object> observer) {
-//                observer.onSubscribe(EmptyDisposable.INSTANCE);
-//                observer.onNext("a");
-//                observer.onNext("b");
-//                observer.onNext("c");
-//                observer.onComplete();
-//            }
-//        };
-//
-//        Function<Object, Observable<Object>> manyMapper = new Function<Object, Observable<Object>>() {
-//
-//            @Override
-//            public Observable<Object> apply(Object object) {
-//                return Observable.just(object);
-//            }
-//        };
-//
-//        Function<Object, Object> mapper = new Function<Object, Object>() {
-//            private int count = 0;
-//
-//            @Override
-//            public Object apply(Object object) {
-//                ++count;
-//                if (count > 2) {
-//                    throw new RuntimeException();
-//                }
-//                return object;
-//            }
-//        };
-//
-//        Consumer<Object> onNext = new Consumer<Object>() {
-//
-//            @Override
-//            public void accept(Object object) {
-//                System.out.println(object.toString());
-//            }
-//        };
-//
-//        try {
-//            Observable.unsafeCreate(creator).flatMap(manyMapper).map(mapper).subscribe(onNext);
-//        } catch (RuntimeException e) {
-//            e.printStackTrace();
-//            throw e;
-//        }
-//    }
-
     private static Map<String, String> getMap(String prefix) {
         Map<String, String> m = new HashMap<>();
         m.put("firstName", prefix + "First");
         m.put("lastName", prefix + "Last");
         return m;
     }
-
-    // FIXME RS subscribers can't throw
-//    @Test(expected = OnErrorNotImplementedException.class)
-//    public void testShouldNotSwallowOnErrorNotImplementedException() {
-//        Observable.just("a", "b").flatMap(new Function<String, Observable<String>>() {
-//            @Override
-//            public Observable<String> apply(String s) {
-//                return Observable.just(s + "1", s + "2");
-//            }
-//        }).flatMap(new Function<String, Observable<String>>() {
-//            @Override
-//            public Observable<String> apply(String s) {
-//                return Observable.error(new Exception("test"));
-//            }
-//        }).forEach(new Consumer<String>() {
-//            @Override
-//            public void accept(String s) {
-//                System.out.println(s);
-//            }
-//        });
-//    }
 
     @Test
     public void dispose() {

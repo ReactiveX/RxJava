@@ -44,7 +44,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void requestMaxInt() {
-        QueueDrainHelper.request(new Subscription() {
+        QueueDrainHelper.request(new Subscription() /* NFI */ {
             @Override
             public void request(long n) {
                 assertEquals(Integer.MAX_VALUE, n);
@@ -58,7 +58,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void requestMinInt() {
-        QueueDrainHelper.request(new Subscription() {
+        QueueDrainHelper.request(new Subscription() /* NFI */ {
             @Override
             public void request(long n) {
                 assertEquals(Long.MAX_VALUE, n);
@@ -72,7 +72,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void requestAlmostMaxInt() {
-        QueueDrainHelper.request(new Subscription() {
+        QueueDrainHelper.request(new Subscription() /* NFI */ {
             @Override
             public void request(long n) {
                 assertEquals(Integer.MAX_VALUE - 1, n);
@@ -154,7 +154,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void postCompleteCancelledAfterOne() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -179,7 +179,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -234,7 +234,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -293,7 +293,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -348,7 +348,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -402,7 +402,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -456,7 +456,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -510,7 +510,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -564,7 +564,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -607,7 +607,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -654,7 +654,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -697,7 +697,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -740,7 +740,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -783,7 +783,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;

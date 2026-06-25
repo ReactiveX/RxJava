@@ -150,13 +150,13 @@ public class MaybeZipArrayTest extends RxJavaTest {
         AtomicReference<MaybeObserver<? super Integer>> ref1 = new AtomicReference<>();
         AtomicReference<MaybeObserver<? super Integer>> ref2 = new AtomicReference<>();
 
-        Maybe<Integer> m1 = new Maybe<Integer>() {
+        Maybe<Integer> m1 = new Maybe<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                 ref1.set(observer);
             }
         };
-        Maybe<Integer> m2 = new Maybe<Integer>() {
+        Maybe<Integer> m2 = new Maybe<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                 ref2.set(observer);

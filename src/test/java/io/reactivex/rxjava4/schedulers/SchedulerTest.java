@@ -223,11 +223,11 @@ public class SchedulerTest extends RxJavaTest {
 
     @Test
     public void defaultSchedulePeriodicallyDirectRejects() {
-        Scheduler s = new Scheduler() {
+        Scheduler s = new Scheduler() /* NFI */ {
             @NonNull
             @Override
             public Worker createWorker() {
-                return new Worker() {
+                return new Worker() /* NFI */ {
                     @NonNull
                     @Override
                     public Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
@@ -309,10 +309,10 @@ public class SchedulerTest extends RxJavaTest {
         final Runnable runnable = () -> {
         };
 
-        Scheduler scheduler = new Scheduler() {
+        Scheduler scheduler = new Scheduler() /* NFI */ {
             @Override
             public Worker createWorker() {
-                return new Worker() {
+                return new Worker() /* NFI */ {
                     @Override
                     public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
                         SchedulerRunnableIntrospection outerWrapper = (SchedulerRunnableIntrospection) run;

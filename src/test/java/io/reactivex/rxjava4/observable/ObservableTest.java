@@ -327,7 +327,7 @@ public class ObservableTest extends RxJavaTest {
         // FIXME custom built???
         Observable.just("1", "2", "three", "4")
         .subscribeOn(Schedulers.newThread())
-        .safeSubscribe(new DefaultObserver<String>() {
+        .safeSubscribe(new DefaultObserver<String>() /* NFI */ {
             @Override
             public void onComplete() {
                 System.out.println("completed");
@@ -374,7 +374,7 @@ public class ObservableTest extends RxJavaTest {
 
         // FIXME custom built???
         Observable.just("1", "2", "three", "4")
-        .safeSubscribe(new DefaultObserver<String>() {
+        .safeSubscribe(new DefaultObserver<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -416,7 +416,7 @@ public class ObservableTest extends RxJavaTest {
         final AtomicReference<Throwable> error = new AtomicReference<>();
         // FIXME custom built???
         Observable.just("1", "2").concatWith(Observable.<String>error(NumberFormatException::new))
-        .subscribe(new DefaultObserver<String>() {
+        .subscribe(new DefaultObserver<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -584,7 +584,7 @@ public class ObservableTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<>();
         Observable.just("1", "2", "three", "4").take(3)
-        .safeSubscribe(new DefaultObserver<String>() {
+        .safeSubscribe(new DefaultObserver<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -900,28 +900,6 @@ public class ObservableTest extends RxJavaTest {
         verify(w, never()).onNext(any(Integer.class));
         verify(w, never()).onError(any(Throwable.class));
     }
-
-// FIXME this test doesn't make sense
-//    @Test // cf. https://github.com/ReactiveX/RxJava/issues/2599
-//    public void testSubscribingSubscriberAsObserverMaintainsSubscriptionChain() {
-//        TestObserver<Object> observer = new TestObserver<T>();
-//        Subscription subscription = Observable.just("event").subscribe((Observer<Object>) observer);
-//        subscription.unsubscribe();
-//
-//        subscriber.assertUnsubscribed();
-//    }
-
-// FIXME subscribers can't throw
-//    @Test(expected=OnErrorNotImplementedException.class)
-//    public void testForEachWithError() {
-//        Observable.error(new Exception("boo"))
-//        //
-//        .forEach(new Action1<Object>() {
-//            @Override
-//            public void call(Object t) {
-//                //do nothing
-//            }});
-//    }
 
     @Test
     public void extend() {

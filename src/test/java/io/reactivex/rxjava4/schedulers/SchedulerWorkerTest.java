@@ -32,7 +32,7 @@ public class SchedulerWorkerTest extends RxJavaTest {
         @Override
         public Worker createWorker() {
             final Worker w = Schedulers.computation().createWorker();
-            return new Worker() {
+            return new Worker() /* NFI */ {
 
                 @Override
                 public void dispose() {

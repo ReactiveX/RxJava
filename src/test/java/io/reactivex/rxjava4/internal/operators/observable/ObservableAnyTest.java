@@ -408,7 +408,7 @@ public class ObservableAnyTest extends RxJavaTest {
     public void predicateThrowsSuppressOthers() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -436,7 +436,7 @@ public class ObservableAnyTest extends RxJavaTest {
     public void badSourceSingle() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

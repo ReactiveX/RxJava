@@ -265,7 +265,7 @@ public class FlowableTakeTest extends RxJavaTest {
     public void producerRequestThroughTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<>(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() {
+        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() /* NFI */ {
 
             @Override
             public void request(long n) {
@@ -284,7 +284,7 @@ public class FlowableTakeTest extends RxJavaTest {
     public void producerRequestThroughTakeIsModified() {
         TestSubscriber<Integer> ts = new TestSubscriber<>(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() {
+        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() /* NFI */ {
 
             @Override
             public void request(long n) {
@@ -348,7 +348,7 @@ public class FlowableTakeTest extends RxJavaTest {
     public void takeFinalValueThrows() {
         Flowable<Integer> source = Flowable.just(1).take(1);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();

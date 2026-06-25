@@ -211,7 +211,7 @@ public class SingleTimeoutTest extends RxJavaTest {
     public void timeoutBeforeOnSubscribeFromMain() {
         Disposable d = Disposable.empty();
 
-        new Single<Integer>() {
+        new Single<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(@NonNull SingleObserver<? super @NonNull Integer> observer) {
                 try {

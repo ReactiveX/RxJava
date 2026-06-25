@@ -42,7 +42,7 @@ public class ObservableMapNotificationTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(new Observable<Integer>() {
+        TestHelper.checkDisposed(new Observable<Integer>() /* NFI */ {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {

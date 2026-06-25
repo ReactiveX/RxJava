@@ -245,7 +245,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -268,7 +268,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Observable.just(1)
-            .flatMapMaybe(Functions.justFunction(new Maybe<Integer>() {
+            .flatMapMaybe(Functions.justFunction(new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -290,7 +290,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         final PublishSubject<Integer> ps1 = PublishSubject.create();
         final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -317,7 +317,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         final PublishSubject<Integer> ps2 = PublishSubject.create();
         final PublishSubject<Integer> ps3 = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -344,7 +344,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     public void disposeInner() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        Observable.just(1).flatMapMaybe((Function<Integer, MaybeSource<Object>>) _ -> new Maybe<Object>() {
+        Observable.just(1).flatMapMaybe((Function<Integer, MaybeSource<Object>>) _ -> new Maybe<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(MaybeObserver<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());

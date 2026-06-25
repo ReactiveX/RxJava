@@ -136,7 +136,7 @@ public class SingleCreateTest extends RxJavaTest {
                 // expected
             }
         })
-        .subscribe(new SingleObserver<Object>() {
+        .subscribe(new SingleObserver<Object>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -168,7 +168,7 @@ public class SingleCreateTest extends RxJavaTest {
 
             assertTrue(d.isDisposed());
         })
-        .subscribe(new SingleObserver<Object>() {
+        .subscribe(new SingleObserver<Object>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -196,7 +196,7 @@ public class SingleCreateTest extends RxJavaTest {
                 // expected
             }
         })
-        .subscribe(new SingleObserver<Object>() {
+        .subscribe(new SingleObserver<Object>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
             }
@@ -226,7 +226,7 @@ public class SingleCreateTest extends RxJavaTest {
 
             assertTrue(d.isDisposed());
         })
-        .subscribe(new SingleObserver<Object>() {
+        .subscribe(new SingleObserver<Object>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 

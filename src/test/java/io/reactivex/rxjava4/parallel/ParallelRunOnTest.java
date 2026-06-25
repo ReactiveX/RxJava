@@ -75,7 +75,7 @@ public class ParallelRunOnTest extends RxJavaTest {
 
     @Test
     public void missingBackpressure() {
-        new ParallelFlowable<Integer>() {
+        new ParallelFlowable<Integer>() /* NFI */ {
             @Override
             public int parallelism() {
                 return 1;
@@ -238,7 +238,7 @@ public class ParallelRunOnTest extends RxJavaTest {
     @Test
     public void normalCancelAfterRequest1() {
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -259,7 +259,7 @@ public class ParallelRunOnTest extends RxJavaTest {
     @Test
     public void conditionalCancelAfterRequest1() {
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

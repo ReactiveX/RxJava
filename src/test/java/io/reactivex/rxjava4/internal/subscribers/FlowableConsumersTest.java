@@ -290,7 +290,7 @@ public class FlowableConsumersTest implements Consumer<Object>, Action {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             subscribeAutoDispose(
-                    new Flowable<Integer>() {
+                    new Flowable<Integer>() /* NFI */ {
                         @Override
                         protected void subscribeActual(
                                 Subscriber<? super Integer> s) {

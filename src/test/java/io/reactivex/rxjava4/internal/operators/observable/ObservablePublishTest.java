@@ -82,7 +82,8 @@ public class ObservablePublishTest extends RxJavaTest {
         Observable<Integer> fast = is.observeOn(Schedulers.computation())
         .doOnComplete(() -> System.out.println("^^^^^^^^^^^^^ completed FAST"));
 
-        Observable<Integer> slow = is.observeOn(Schedulers.computation()).map(new Function<Integer, Integer>() {
+        Observable<Integer> slow = is.observeOn(Schedulers.computation())
+                .map(new Function<Integer, Integer>() /* NFI */ {
             int c;
 
             @Override
@@ -146,7 +147,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
         final TestObserver<Integer> to2 = new TestObserver<>();
 
-        final TestObserver<Integer> to1 = new TestObserver<Integer>() {
+        final TestObserver<Integer> to1 = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (values().size() == 2) {
@@ -433,7 +434,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
         ConnectableObservable<Integer> co = ps.publish();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -471,7 +472,7 @@ public class ObservablePublishTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -565,7 +566,7 @@ public class ObservablePublishTest extends RxJavaTest {
     public void delayedUpstreamOnSubscribe() {
         final Observer<?>[] sub = { null };
 
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 sub[0] = observer;

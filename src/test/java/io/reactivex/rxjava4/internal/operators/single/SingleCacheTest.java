@@ -62,7 +62,7 @@ public class SingleCacheTest extends RxJavaTest {
 
         final Single<Integer> cached = pp.single(-99).cache();
 
-        SingleObserver<Integer> doubleDisposer = new SingleObserver<Integer>() {
+        SingleObserver<Integer> doubleDisposer = new SingleObserver<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

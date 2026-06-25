@@ -667,7 +667,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
     @Test
     public void boundedReplayBuffer() {
-        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(false) {
+        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(false) /* NFI */ {
             private static final long serialVersionUID = -9081211580719235896L;
 
             @Override
@@ -704,7 +704,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
     @Test(expected = IllegalStateException.class)
     public void boundedRemoveFirstOneItemOnly() {
-        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(false) {
+        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(false) /* NFI */ {
             private static final long serialVersionUID = -9081211580719235896L;
 
             @Override
@@ -1014,7 +1014,7 @@ public class FlowableReplayTest extends RxJavaTest {
         .doOnNext(_ -> count.getAndIncrement())
         .replay().autoConnect();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
@@ -1037,7 +1037,7 @@ public class FlowableReplayTest extends RxJavaTest {
                     .replay()
                     .autoConnect();
 
-                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
                         @Override
                         public void onError(Throwable t) {
                             super.onError(t);
@@ -1060,7 +1060,7 @@ public class FlowableReplayTest extends RxJavaTest {
                     .replay()
                     .autoConnect();
 
-                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
                         @Override
                         public void onComplete() {
                             super.onComplete();
@@ -1322,7 +1322,7 @@ public class FlowableReplayTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -1407,7 +1407,7 @@ public class FlowableReplayTest extends RxJavaTest {
     public void reentrantOnNext() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1429,7 +1429,7 @@ public class FlowableReplayTest extends RxJavaTest {
     public void reentrantOnNextBound() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1451,7 +1451,7 @@ public class FlowableReplayTest extends RxJavaTest {
     public void reentrantOnNextCancel() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1473,7 +1473,7 @@ public class FlowableReplayTest extends RxJavaTest {
     public void reentrantOnNextCancelBounded() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1582,9 +1582,9 @@ public class FlowableReplayTest extends RxJavaTest {
     public void delayedUpstreamOnSubscribe() {
         final Subscriber<?>[] sub = { null };
 
-        new Flowable<Integer>() {
+        new Flowable<Integer>() /* NFI */ {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(Subscriber<? super Integer> s) /* NFI */ {
                 sub[0] = s;
             }
         }
@@ -1871,7 +1871,7 @@ public class FlowableReplayTest extends RxJavaTest {
         .doOnNext(_ -> count.getAndIncrement())
         .replay(1000).autoConnect();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
@@ -1894,7 +1894,7 @@ public class FlowableReplayTest extends RxJavaTest {
                     .replay(1000)
                     .autoConnect();
 
-                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
                         @Override
                         public void onError(Throwable t) {
                             super.onError(t);
@@ -1917,7 +1917,7 @@ public class FlowableReplayTest extends RxJavaTest {
                     .replay(1000)
                     .autoConnect();
 
-                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
                         @Override
                         public void onComplete() {
                             super.onComplete();
@@ -1969,7 +1969,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
         AtomicLong requested = new AtomicLong();
 
-        ref.get().onSubscribe(new Subscription() {
+        ref.get().onSubscribe(new Subscription() /* NFI */ {
             @Override
             public void request(long n) {
                 BackpressureHelper.add(requested, n);

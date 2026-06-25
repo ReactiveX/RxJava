@@ -57,7 +57,7 @@ public class BasicFuseableSubscriberTest extends RxJavaTest {
     @Test
     public void implementationStopsOnSubscribe() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
-        BasicFuseableSubscriber<Integer, Integer> bfs = new BasicFuseableSubscriber<Integer, Integer>(ts) {
+        var bfs = new BasicFuseableSubscriber<Integer, Integer>(ts) /* NFI */ {
 
             @Override
             protected boolean beforeDownstream() {

@@ -214,7 +214,7 @@ public class SingleUsingTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Single.using(Functions.justSupplier(1), (Function<Integer, SingleSource<Integer>>) _ -> new Single<Integer>() {
+            Single.using(Functions.justSupplier(1), (Function<Integer, SingleSource<Integer>>) _ -> new Single<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

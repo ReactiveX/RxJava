@@ -677,7 +677,7 @@ public class ObservableZipTest extends RxJavaTest {
         final Observer<Integer> observer = TestHelper.mockObserver();
 
         Observable.zip(Observable.just(1),
-                Observable.just(1), Integer::sum).subscribe(new DefaultObserver<Integer>() {
+                Observable.just(1), Integer::sum).subscribe(new DefaultObserver<Integer>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -744,7 +744,7 @@ public class ObservableZipTest extends RxJavaTest {
                 .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservable), (a, b) -> a + "-" + b);
 
         final ArrayList<String> list = new ArrayList<>();
-        os.subscribe(new DefaultObserver<String>() {
+        os.subscribe(new DefaultObserver<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -881,7 +881,7 @@ public class ObservableZipTest extends RxJavaTest {
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
-        Observable<Integer> o = Observable.fromIterable(() -> new Iterator<Integer>() {
+        Observable<Integer> o = Observable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -1141,7 +1141,7 @@ public class ObservableZipTest extends RxJavaTest {
         final PublishSubject<Integer> ps1 = PublishSubject.create();
         final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

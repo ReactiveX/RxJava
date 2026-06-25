@@ -306,7 +306,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
     public void mainErrorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -330,7 +330,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
         try {
             final AtomicReference<MaybeObserver<? super Integer>> moRef = new AtomicReference<>();
 
-            TestSubscriberEx<Integer> ts = new Flowable<Integer>() {
+            TestSubscriberEx<Integer> ts = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -338,7 +338,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
                     s.onError(new TestException("outer"));
                 }
             }
-            .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<Integer>() {
+            .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(
                         MaybeObserver<? super Integer> observer) {
@@ -488,7 +488,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
 
     @Test
     public void requestMoreOnNext() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

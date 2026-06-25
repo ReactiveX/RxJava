@@ -103,7 +103,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
         Observable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(new Observer<Object>() {
+        .blockingSubscribe(new Observer<Object>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -138,7 +138,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
         Observable.range(1, 5).concatWith(Observable.<Integer>error(ex))
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(new Observer<Object>() {
+        .blockingSubscribe(new Observer<Object>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -222,7 +222,7 @@ public class ObservableBlockingTest extends RxJavaTest {
             obsRef.get().onNext(1);
         }, 200, TimeUnit.MILLISECONDS);
 
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());

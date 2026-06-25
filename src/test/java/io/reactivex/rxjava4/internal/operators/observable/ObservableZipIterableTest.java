@@ -228,7 +228,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = () -> new Iterator<String>() {
+        Iterable<String> r2 = () -> new Iterator<String>() /* NFI */ {
             int count;
 
             @Override
@@ -271,7 +271,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = () -> new Iterator<String>() {
+        Iterable<String> r2 = () -> new Iterator<String>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;
@@ -346,7 +346,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

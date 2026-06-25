@@ -232,7 +232,7 @@ public class FlowableTimerTest extends RxJavaTest {
     public void onceObserverThrows() {
         Flowable<Long> source = Flowable.timer(100, TimeUnit.MILLISECONDS, scheduler);
 
-        source.safeSubscribe(new DefaultSubscriber<Long>() {
+        source.safeSubscribe(new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             public void onNext(Long t) {
@@ -263,7 +263,7 @@ public class FlowableTimerTest extends RxJavaTest {
 
         InOrder inOrder = inOrder(subscriber);
 
-        source.safeSubscribe(new DefaultSubscriber<Long>() {
+        source.safeSubscribe(new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             public void onNext(Long t) {

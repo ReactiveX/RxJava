@@ -366,7 +366,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
             }
             TestObserverEx<Integer> to = new TestObserverEx<>();
             Observable.range(0, 1000)
-            .flatMap(new Function<Integer, Observable<Integer>>() {
+            .flatMap(new Function<Integer, Observable<Integer>>() /* NFI */ {
                 final Random rnd = new Random();
                 @Override
                 public Observable<Integer> apply(Integer t) {
@@ -490,7 +490,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     public void scalarReentrant() {
         final PublishSubject<Observable<Integer>> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -513,7 +513,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     public void scalarReentrant2() {
         final PublishSubject<Observable<Integer>> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -666,7 +666,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
         Observable.range(1, 5)
         .doOnNext(_ -> counter.getAndIncrement())
-        .flatMap((Function<Integer, Observable<Integer>>) _ -> Observable.<Integer>fromIterable(() -> new Iterator<Integer>() {
+        .flatMap((Function<Integer, Observable<Integer>>) _ ->
+        Observable.<Integer>fromIterable(() -> new Iterator<Integer>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;
@@ -695,7 +696,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             TestObserver<Integer> to = ps.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1), 1)
-            .subscribeWith(new TestObserver<Integer>() {
+            .subscribeWith(new TestObserver<Integer>() /* NFI */ {
                 @Override
                 public void onNext(Integer t) {
                     super.onNext(t);
@@ -725,7 +726,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1).hide(), 1)
-        .subscribeWith(new TestObserver<Integer>() {
+        .subscribeWith(new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -858,7 +859,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void signalsAfterMapperCrash() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

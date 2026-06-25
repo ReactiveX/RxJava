@@ -114,7 +114,7 @@ public class MaybeConcatArrayTest extends RxJavaTest {
             final MaybeObserver<?>[] o = { null };
             Maybe.concatArray(MaybeConcatConfig.DELAY_ERROR, Maybe.just(1),
                     Maybe.error(new IOException()),
-            new Maybe<Integer>() {
+            new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

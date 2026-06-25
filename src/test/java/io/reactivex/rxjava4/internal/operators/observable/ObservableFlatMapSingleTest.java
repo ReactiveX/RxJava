@@ -207,7 +207,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Integer>() {
+            new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -230,7 +230,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Observable.just(1)
-            .flatMapSingle(Functions.justFunction(new Single<Integer>() {
+            .flatMapSingle(Functions.justFunction(new Single<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -252,7 +252,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
         final PublishSubject<Integer> ps1 = PublishSubject.create();
         final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -277,7 +277,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     public void disposeInner() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        Observable.just(1).flatMapSingle((Function<Integer, SingleSource<Object>>) _ -> new Single<Object>() {
+        Observable.just(1).flatMapSingle((Function<Integer, SingleSource<Object>>) _ -> new Single<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(SingleObserver<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());
