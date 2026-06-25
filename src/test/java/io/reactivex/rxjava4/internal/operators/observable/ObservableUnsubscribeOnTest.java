@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.operators.observable;
 
 import static org.junit.Assert.*;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -127,6 +128,7 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
 
     private static class ThreadSubscription extends AtomicBoolean implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = -5011338112974328771L;
 
         private volatile Thread thread;

@@ -78,8 +78,7 @@ public final class Timed<T> {
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof Timed) {
-            Timed<?> o = (Timed<?>) other;
+        if (other instanceof Timed<?> o) {
             return Objects.equals(value, o.value)
                     && time == o.time
                     && Objects.equals(unit, o.unit);

@@ -203,7 +203,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
         ts.assertError(CompositeException.class);
         ts.assertNotComplete();
 
-        CompositeException ce = (CompositeException)ts.errors().get(0);
+        CompositeException ce = (CompositeException)ts.errors().getFirst();
         List<Throwable> cex = ce.getExceptions();
 
         assertEquals(3, cex.size());
@@ -238,7 +238,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
         ts.assertError(CompositeException.class);
         ts.assertNotComplete();
 
-        assertEquals(2, ((CompositeException)ts.errors().get(0)).getExceptions().size());
+        assertEquals(2, ((CompositeException)ts.errors().getFirst()).getExceptions().size());
     }
 
 }

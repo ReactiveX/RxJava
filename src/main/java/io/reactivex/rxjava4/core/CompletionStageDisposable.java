@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.core;
 
+import java.io.Serial;
 import java.lang.ref.Cleaner;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
@@ -41,6 +42,7 @@ public final class CompletionStageDisposable<T> implements AutoCloseable {
     static final class State extends AtomicBoolean implements Runnable {
 
         /** */
+        @Serial
         private static final long serialVersionUID = 262854674341831347L;
 
         Throwable allocationTrace;

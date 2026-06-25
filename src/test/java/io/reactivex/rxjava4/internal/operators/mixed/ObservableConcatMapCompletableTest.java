@@ -85,7 +85,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
         .assertFailure(CompositeException.class)
         ;
 
-        assertEquals(5, ((CompositeException)to.errors().get(0)).getExceptions().size());
+        assertEquals(5, ((CompositeException)to.errors().getFirst()).getExceptions().size());
     }
 
     @Test

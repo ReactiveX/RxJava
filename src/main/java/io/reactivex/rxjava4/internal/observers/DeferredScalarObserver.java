@@ -17,6 +17,8 @@ import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 
+import java.io.Serial;
+
 /**
  * A fuseable Observer that can generate 0 or 1 resulting value.
  * @param <T> the input value type
@@ -26,6 +28,7 @@ public abstract class DeferredScalarObserver<T, R>
 extends DeferredScalarDisposable<R>
 implements Observer<T> {
 
+    @Serial
     private static final long serialVersionUID = -266195175408988651L;
 
     /** The upstream disposable. */

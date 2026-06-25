@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscriptions;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import static java.util.concurrent.Flow.*;
@@ -28,6 +29,7 @@ import io.reactivex.rxjava4.disposables.Disposable;
  */
 public final class ArrayCompositeSubscription extends AtomicReferenceArray<Subscription> implements Disposable {
 
+    @Serial
     private static final long serialVersionUID = 2746389416410565408L;
 
     public ArrayCompositeSubscription(int capacity) {

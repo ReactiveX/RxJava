@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.processors;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -492,6 +493,7 @@ public final class UnicastProcessor<@NonNull T> extends FlowableProcessor<T> {
 
     final class UnicastQueueSubscription extends BasicIntQueueSubscription<T> {
 
+        @Serial
         private static final long serialVersionUID = -4896760517184205454L;
 
         @Nullable

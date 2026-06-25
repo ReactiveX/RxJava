@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -52,6 +53,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
     static final class SwitchMapSubscriber<T, R> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -3491074160481096299L;
         final Subscriber<? super R> downstream;
         final Function<? super T, ? extends Publisher<? extends R>> mapper;
@@ -330,6 +332,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
     static final class SwitchMapInnerSubscriber<T, R>
     extends AtomicReference<Subscription> implements FlowableSubscriber<R> {
 
+        @Serial
         private static final long serialVersionUID = 3837284832786408377L;
         final SwitchMapSubscriber<T, R> parent;
         final long index;

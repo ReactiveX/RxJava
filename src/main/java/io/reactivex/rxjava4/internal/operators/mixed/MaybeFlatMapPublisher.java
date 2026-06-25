@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.mixed;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -54,6 +55,7 @@ public final class MaybeFlatMapPublisher<T, R> extends Flowable<R> {
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<R>, MaybeObserver<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -8948264376121066672L;
 
         final Subscriber<? super R> downstream;

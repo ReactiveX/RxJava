@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
+import java.io.Serial;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -51,6 +52,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
     extends BasicIntQueueDisposable<R>
     implements SingleObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = -8938804753851907758L;
 
         final Observer<? super R> downstream;

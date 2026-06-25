@@ -44,7 +44,7 @@ public class ExceptionsTest extends RxJavaTest {
         });
 
         TestHelper.assertError(errors, 0, RuntimeException.class);
-        assertTrue(errors.get(0).toString(), errors.get(0).getMessage().contains("hello"));
+        assertTrue(errors.getFirst().toString(), errors.getFirst().getMessage().contains("hello"));
         RxJavaPlugins.reset();
     }
 

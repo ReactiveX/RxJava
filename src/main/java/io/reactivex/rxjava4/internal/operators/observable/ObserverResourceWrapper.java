@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.Observer;
@@ -21,6 +22,7 @@ import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 
 public final class ObserverResourceWrapper<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
 
+    @Serial
     private static final long serialVersionUID = -8612022020200669122L;
 
     final Observer<? super T> downstream;

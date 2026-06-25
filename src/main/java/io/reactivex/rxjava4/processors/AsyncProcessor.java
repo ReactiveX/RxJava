@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.processors;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.Flow.*;
@@ -338,6 +339,7 @@ public final class AsyncProcessor<@NonNull T> extends FlowableProcessor<T> {
     }
 
     static final class AsyncSubscription<@NonNull T> extends DeferredScalarSubscription<T> {
+        @Serial
         private static final long serialVersionUID = 5629876084736248016L;
 
         final AsyncProcessor<T> parent;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.processors;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
@@ -467,6 +468,7 @@ public final class BehaviorProcessor<@NonNull T> extends FlowableProcessor<T> {
 
     static final class BehaviorSubscription<@NonNull T> extends AtomicLong implements Subscription, NonThrowingPredicate<Object> {
 
+        @Serial
         private static final long serialVersionUID = 3293175281126227086L;
 
         final Subscriber<? super T> downstream;

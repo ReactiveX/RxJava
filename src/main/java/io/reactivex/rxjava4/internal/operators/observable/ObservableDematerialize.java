@@ -72,8 +72,7 @@ public final class ObservableDematerialize<T, R> extends AbstractObservableWithU
         @Override
         public void onNext(T item) {
             if (done) {
-                if (item instanceof Notification) {
-                    Notification<?> notification = (Notification<?>)item;
+                if (item instanceof Notification<?> notification) {
                     if (notification.isOnError()) {
                         RxJavaPlugins.onError(notification.getError());
                     }

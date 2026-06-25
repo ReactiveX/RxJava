@@ -151,7 +151,7 @@ public class ResourceObserverTest extends RxJavaTest {
 
         assertTrue(tc.isDisposed());
         assertEquals(1, tc.start);
-        assertEquals(1, tc.values.get(0).intValue());
+        assertEquals(1, tc.values.getFirst().intValue());
         assertTrue(tc.errors.isEmpty());
     }
 

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -127,6 +128,7 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = -3031974433025990931L;
 
         final EqualCoordinator<T> parent;

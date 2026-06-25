@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.mixed;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -53,6 +54,7 @@ public final class MaybeFlatMapObservable<T, R> extends Observable<R> {
     extends AtomicReference<Disposable>
     implements Observer<R>, MaybeObserver<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -8948264376121066672L;
 
         final Observer<? super R> downstream;

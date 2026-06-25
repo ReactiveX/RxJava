@@ -25,6 +25,8 @@ import io.reactivex.rxjava4.operators.SimpleQueue;
 import io.reactivex.rxjava4.operators.SpscLinkedArrayQueue;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
+
 public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream<T, T> {
     final Scheduler scheduler;
     final boolean delayError;
@@ -50,6 +52,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
     static final class ObserveOnObserver<T> extends BasicIntQueueDisposable<T>
     implements Observer<T>, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 6576896619930983584L;
         final Observer<? super T> downstream;
         final Scheduler.Worker worker;

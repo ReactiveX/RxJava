@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -55,6 +56,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
     abstract static class SampleTimedSubscriber<T> extends AtomicReference<T> implements FlowableSubscriber<T>, Subscription, Runnable {
 
+        @Serial
         private static final long serialVersionUID = -3517602651313910099L;
 
         final Subscriber<? super T> downstream;
@@ -150,6 +152,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
     static final class SampleTimedNoLast<T> extends SampleTimedSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -7139995637533111443L;
 
         SampleTimedNoLast(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<? super T> onDropped) {
@@ -169,6 +172,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
     static final class SampleTimedEmitLast<T> extends SampleTimedSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -7139995637533111443L;
 
         final AtomicInteger wip;

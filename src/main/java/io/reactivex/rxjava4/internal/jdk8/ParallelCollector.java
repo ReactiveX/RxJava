@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 import java.util.function.*;
@@ -63,6 +64,7 @@ public final class ParallelCollector<T, A, R> extends Flowable<R> {
 
     static final class ParallelCollectorSubscriber<T, A, R> extends DeferredScalarSubscription<R> {
 
+        @Serial
         private static final long serialVersionUID = -5370107872170712765L;
 
         final ParallelCollectorInnerSubscriber<T, A, R>[] subscribers;
@@ -176,6 +178,7 @@ public final class ParallelCollector<T, A, R> extends Flowable<R> {
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -7954444275102466525L;
 
         final ParallelCollectorSubscriber<T, A, R> parent;
@@ -241,6 +244,7 @@ public final class ParallelCollector<T, A, R> extends Flowable<R> {
 
     static final class SlotPair<T> extends AtomicInteger {
 
+        @Serial
         private static final long serialVersionUID = 473971317683868662L;
 
         T first;

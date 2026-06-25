@@ -101,7 +101,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(to.errors().getFirst());
 
         for (int i = 0; i < 11; i++) {
             TestHelper.assertError(errors, i, TestException.class);
@@ -115,7 +115,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(to.errors().getFirst());
 
         for (int i = 0; i < 10; i++) {
             TestHelper.assertError(errors, i, TestException.class);
@@ -218,7 +218,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(to.errors().getFirst());
 
         for (int i = 0; i < 11; i++) {
             TestHelper.assertError(errors, i, TestException.class);
@@ -232,7 +232,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(to.errors().getFirst());
 
         for (int i = 0; i < 10; i++) {
             TestHelper.assertError(errors, i, TestException.class);

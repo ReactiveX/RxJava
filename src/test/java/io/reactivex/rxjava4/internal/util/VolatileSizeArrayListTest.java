@@ -104,7 +104,7 @@ public class VolatileSizeArrayListTest extends RxJavaTest {
         assertEquals(list.hashCode(), list3.hashCode());
         assertEquals(list.toString(), list3.toString());
 
-        list.remove(0);
+        list.removeFirst();
         assertEquals(6, list.size());
 
         list.clear();

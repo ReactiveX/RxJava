@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -47,6 +48,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
     abstract static class SamplePublisherSubscriber<T> extends AtomicReference<T> implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -3517602651313910099L;
 
         final Subscriber<? super T> downstream;
@@ -169,6 +171,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
     static final class SampleMainNoLast<T> extends SamplePublisherSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -3029755663834015785L;
 
         SampleMainNoLast(Subscriber<? super T> actual, Publisher<?> other) {
@@ -188,6 +191,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
     static final class SampleMainEmitLast<T> extends SamplePublisherSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -3029755663834015785L;
 
         final AtomicInteger wip;

@@ -64,7 +64,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         scheduler.advanceTimeTo(95, TimeUnit.MILLISECONDS);
         assertEquals(1, lists.size());
-        assertEquals(lists.get(0), list("one", "two"));
+        assertEquals(lists.getFirst(), list("one", "two"));
 
         scheduler.advanceTimeTo(195, TimeUnit.MILLISECONDS);
         assertEquals(3, lists.size());
@@ -97,7 +97,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         scheduler.advanceTimeTo(101, TimeUnit.MILLISECONDS);
         assertEquals(1, lists.size());
-        assertEquals(lists.get(0), list("one", "two", "three"));
+        assertEquals(lists.getFirst(), list("one", "two", "three"));
 
         scheduler.advanceTimeTo(201, TimeUnit.MILLISECONDS);
         assertEquals(2, lists.size());
@@ -546,7 +546,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         .assertNoErrors()
         .assertNotComplete();
 
-        to.values().get(0).test().assertResult();
+        to.values().getFirst().test().assertResult();
     }
 
     @Test

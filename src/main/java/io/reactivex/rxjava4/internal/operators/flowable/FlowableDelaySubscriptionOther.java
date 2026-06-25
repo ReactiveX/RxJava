@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -45,6 +46,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
 
     static final class MainSubscriber<T> extends AtomicLong implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = 2259811067697317255L;
 
         final Subscriber<? super T> downstream;
@@ -101,6 +103,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
 
         final class OtherSubscriber extends AtomicReference<Subscription> implements FlowableSubscriber<Object> {
 
+            @Serial
             private static final long serialVersionUID = -3892798459447644106L;
 
             @Override

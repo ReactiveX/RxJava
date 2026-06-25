@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -43,6 +44,7 @@ public final class FlowableConcatArray<T> extends Flowable<T> {
 
     static final class ConcatArraySubscriber<T> extends SubscriptionArbiter implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -8158322871608889516L;
 
         final Subscriber<? super T> downstream;
@@ -105,7 +107,7 @@ public final class FlowableConcatArray<T> extends Flowable<T> {
                         List<Throwable> list = errors;
                         if (list != null) {
                             if (list.size() == 1) {
-                                downstream.onError(list.get(0));
+                                downstream.onError(list.getFirst());
                             } else {
                                 downstream.onError(new CompositeException(list));
                             }

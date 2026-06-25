@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -93,6 +94,7 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
 
     static final class TargetObserver<R>
     extends AtomicReference<Disposable> implements Observer<R>, Disposable {
+        @Serial
         private static final long serialVersionUID = 854110278590336484L;
 
         final Observer<? super R> downstream;

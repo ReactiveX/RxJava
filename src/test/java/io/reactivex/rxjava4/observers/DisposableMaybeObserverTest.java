@@ -74,7 +74,7 @@ public class DisposableMaybeObserverTest extends RxJavaTest {
 
         assertFalse(tc.isDisposed());
         assertEquals(1, tc.start);
-        assertEquals(1, tc.values.get(0).intValue());
+        assertEquals(1, tc.values.getFirst().intValue());
         assertTrue(tc.errors.isEmpty());
         assertEquals(0, tc.complete);
     }

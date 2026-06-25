@@ -136,7 +136,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
         ts.assertError(MissingBackpressureException.class);
         ts.assertNotComplete();
 
-        Assert.assertEquals("create: " + MissingBackpressureException.DEFAULT_MESSAGE, ts.errors().get(0).getMessage());
+        Assert.assertEquals("create: " + MissingBackpressureException.DEFAULT_MESSAGE, ts.errors().getFirst().getMessage());
     }
 
     @Test

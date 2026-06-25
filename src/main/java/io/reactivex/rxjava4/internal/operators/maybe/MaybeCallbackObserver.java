@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.MaybeObserver;
@@ -33,6 +34,7 @@ public final class MaybeCallbackObserver<T>
 extends AtomicReference<Disposable>
 implements MaybeObserver<T>, Disposable, LambdaConsumerIntrospection {
 
+    @Serial
     private static final long serialVersionUID = -6076952298809384986L;
 
     final Consumer<? super T> onSuccess;

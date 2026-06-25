@@ -143,7 +143,7 @@ public class SingleSubscribeTest extends RxJavaTest {
                     });
 
             TestHelper.assertError(list, 0, CompositeException.class);
-            List<Throwable> cel = TestHelper.compositeList(list.get(0));
+            List<Throwable> cel = TestHelper.compositeList(list.getFirst());
             TestHelper.assertError(cel, 0, TestException.class, "Outer failure");
             TestHelper.assertError(cel, 1, TestException.class, "Inner failure");
         } finally {
@@ -177,7 +177,7 @@ public class SingleSubscribeTest extends RxJavaTest {
                     });
 
             TestHelper.assertError(list, 0, CompositeException.class);
-            List<Throwable> cel = TestHelper.compositeList(list.get(0));
+            List<Throwable> cel = TestHelper.compositeList(list.getFirst());
             TestHelper.assertError(cel, 0, TestException.class, "Outer failure");
             TestHelper.assertError(cel, 1, TestException.class, "Inner failure");
         } finally {

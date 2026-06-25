@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.Flow.*;
@@ -58,6 +59,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
     extends AtomicInteger
     implements Disposable, EqualCoordinatorHelper {
 
+        @Serial
         private static final long serialVersionUID = -6178010334400373240L;
 
         final SingleObserver<? super Boolean> downstream;

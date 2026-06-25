@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -58,6 +59,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
     extends AtomicInteger
     implements Observer<T>, Disposable, InnerQueuedObserverSupport<R> {
 
+        @Serial
         private static final long serialVersionUID = 8080567949447303262L;
 
         final Observer<? super R> downstream;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -54,6 +55,7 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -5955289211445418871L;
 
         final MaybeObserver<? super T> downstream;
@@ -140,6 +142,7 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
     extends AtomicReference<Disposable>
     implements MaybeObserver<Object> {
 
+        @Serial
         private static final long serialVersionUID = 8663801314800248617L;
 
         final TimeoutMainMaybeObserver<T, U> parent;
@@ -172,6 +175,7 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
     extends AtomicReference<Disposable>
     implements MaybeObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = 8663801314800248617L;
 
         final MaybeObserver<? super T> downstream;

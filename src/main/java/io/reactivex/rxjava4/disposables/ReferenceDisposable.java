@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.disposables;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,6 +27,7 @@ import io.reactivex.rxjava4.annotations.NonNull;
  */
 abstract class ReferenceDisposable<T> extends AtomicReference<T> implements Disposable {
 
+    @Serial
     private static final long serialVersionUID = 6537757548749041217L;
 
     ReferenceDisposable(T value) {

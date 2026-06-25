@@ -17,11 +17,14 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 
+import java.io.Serial;
+
 /**
  * A Disposable container that handles a {@link Subscription}.
  */
 final class SubscriptionDisposable extends ReferenceDisposable<Subscription> {
 
+    @Serial
     private static final long serialVersionUID = -707001650852963139L;
 
     SubscriptionDisposable(Subscription value) {

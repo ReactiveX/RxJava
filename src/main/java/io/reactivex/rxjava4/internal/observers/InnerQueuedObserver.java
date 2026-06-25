@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.observers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.Observer;
@@ -33,6 +34,7 @@ public final class InnerQueuedObserver<T>
 extends AtomicReference<Disposable>
 implements Observer<T>, Disposable {
 
+    @Serial
     private static final long serialVersionUID = -5417183359794346637L;
 
     final InnerQueuedObserverSupport<T> parent;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.NoSuchElementException;
 
 import static java.util.concurrent.Flow.*;
@@ -41,6 +42,7 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
     static final class SingleElementSubscriber<T> extends DeferredScalarSubscription<T>
     implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -5526049321428043809L;
 
         final T defaultValue;

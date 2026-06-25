@@ -18,6 +18,8 @@ import static java.util.concurrent.Flow.*;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.subscriptions.*;
 
+import java.io.Serial;
+
 public final class FlowableTakeLastOne<T> extends AbstractFlowableWithUpstream<T, T> {
 
     public FlowableTakeLastOne(Flowable<T> source) {
@@ -32,6 +34,7 @@ public final class FlowableTakeLastOne<T> extends AbstractFlowableWithUpstream<T
     static final class TakeLastOneSubscriber<T> extends DeferredScalarSubscription<T>
     implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -5467847744262967226L;
 
         Subscription upstream;

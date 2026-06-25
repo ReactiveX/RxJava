@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -55,6 +56,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
     }
 
     static final class FlatMapCompletableMainObserver<T> extends AtomicInteger implements Disposable, Observer<T> {
+        @Serial
         private static final long serialVersionUID = 8443155186132538303L;
 
         final CompletableObserver downstream;
@@ -158,6 +160,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
         }
 
         final class InnerObserver extends AtomicReference<Disposable> implements CompletableObserver, Disposable {
+            @Serial
             private static final long serialVersionUID = 8606673141535671828L;
 
             @Override

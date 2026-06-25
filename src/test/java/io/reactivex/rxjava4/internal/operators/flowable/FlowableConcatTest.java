@@ -808,7 +808,7 @@ public class FlowableConcatTest {
 
         ts.assertFailure(CompositeException.class, 1, 2, 3, 4);
 
-        CompositeException composite = (CompositeException)ts.errors().get(0);
+        CompositeException composite = (CompositeException)ts.errors().getFirst();
         List<Throwable> list = composite.getExceptions();
         assertTrue(list.get(0).toString(), list.get(0) instanceof NullPointerException);
         assertTrue(list.get(1).toString(), list.get(1) instanceof TestException);

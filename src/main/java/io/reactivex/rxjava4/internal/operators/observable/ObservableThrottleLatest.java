@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -68,6 +69,7 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
     extends AtomicInteger
     implements Observer<T>, Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = -8296689127439125014L;
 
         final Observer<? super T> downstream;

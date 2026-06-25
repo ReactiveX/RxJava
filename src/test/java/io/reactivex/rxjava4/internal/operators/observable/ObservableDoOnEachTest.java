@@ -155,7 +155,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         to.assertNotComplete();
         to.assertError(CompositeException.class);
 
-        CompositeException ex = (CompositeException)to.errors().get(0);
+        CompositeException ex = (CompositeException)to.errors().getFirst();
 
         List<Throwable> exceptions = ex.getExceptions();
         assertEquals(2, exceptions.size());
@@ -346,7 +346,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(to.errors().getFirst());
 
         TestHelper.assertError(errors, 0, TestException.class, "Outer");
         TestHelper.assertError(errors, 1, TestException.class, "Inner");

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.mixed;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -187,6 +188,7 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
         static final class SwitchMapInnerObserver extends AtomicReference<Disposable>
         implements CompletableObserver {
 
+            @Serial
             private static final long serialVersionUID = -8003404460084760287L;
 
             final SwitchMapCompletableObserver<?> parent;

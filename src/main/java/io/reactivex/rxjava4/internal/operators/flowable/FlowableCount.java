@@ -18,6 +18,8 @@ import static java.util.concurrent.Flow.*;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.subscriptions.*;
 
+import java.io.Serial;
+
 public final class FlowableCount<T> extends AbstractFlowableWithUpstream<T, Long> {
 
     public FlowableCount(Flowable<T> source) {
@@ -32,6 +34,7 @@ public final class FlowableCount<T> extends AbstractFlowableWithUpstream<T, Long
     static final class CountSubscriber extends DeferredScalarSubscription<Long>
     implements FlowableSubscriber<Object> {
 
+        @Serial
         private static final long serialVersionUID = 4973004223787171406L;
 
         Subscription upstream;

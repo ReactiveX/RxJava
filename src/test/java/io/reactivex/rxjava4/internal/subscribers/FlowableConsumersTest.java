@@ -220,7 +220,7 @@ public class FlowableConsumersTest implements Consumer<Object>, Action {
 
             assertTrue(errors.toString(), errors.isEmpty());
 
-            assertTrue(events.toString(), events.get(0) instanceof IOException);
+            assertTrue(events.toString(), events.getFirst() instanceof IOException);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -239,7 +239,7 @@ public class FlowableConsumersTest implements Consumer<Object>, Action {
             assertTrue(events.toString(), events.isEmpty());
 
             TestHelper.assertError(errors, 0, CompositeException.class);
-            List<Throwable> inners = TestHelper.compositeList(errors.get(0));
+            List<Throwable> inners = TestHelper.compositeList(errors.getFirst());
             TestHelper.assertError(inners, 0, IllegalArgumentException.class);
             TestHelper.assertError(inners, 1, IOException.class);
         } finally {
@@ -260,7 +260,7 @@ public class FlowableConsumersTest implements Consumer<Object>, Action {
             assertTrue(events.toString(), events.isEmpty());
 
             TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
-            assertTrue(errors.get(0).getCause() instanceof IOException);
+            assertTrue(errors.getFirst().getCause() instanceof IOException);
         } finally {
             RxJavaPlugins.reset();
         }

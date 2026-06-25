@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -71,6 +72,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
     }
 
     abstract static class BaseRangeSubscription<T> extends BasicQueueSubscription<T> {
+        @Serial
         private static final long serialVersionUID = -2252972430506210021L;
 
         Iterator<? extends T> iterator;
@@ -146,6 +148,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
     static final class IteratorSubscription<T> extends BaseRangeSubscription<T> {
 
+        @Serial
         private static final long serialVersionUID = -6022804456014692607L;
 
         final Subscriber<? super T> downstream;
@@ -282,6 +285,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
     static final class IteratorConditionalSubscription<T> extends BaseRangeSubscription<T> {
 
+        @Serial
         private static final long serialVersionUID = -6022804456014692607L;
 
         final ConditionalSubscriber<? super T> downstream;

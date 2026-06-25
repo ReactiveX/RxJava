@@ -19,6 +19,8 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.subscribers.SinglePostCompleteSubscriber;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
+
 public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T, Notification<T>> {
 
     public FlowableMaterialize(Flowable<T> source) {
@@ -32,6 +34,7 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
 
     static final class MaterializeSubscriber<T> extends SinglePostCompleteSubscriber<T, Notification<T>> {
 
+        @Serial
         private static final long serialVersionUID = -3740826063558713822L;
 
         MaterializeSubscriber(Subscriber<? super Notification<T>> downstream) {

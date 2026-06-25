@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -53,6 +54,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
     static final class WindowBoundaryMainSubscriber<T, B, V>
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription, Runnable {
+        @Serial
         private static final long serialVersionUID = 8646217640096099753L;
 
         final Subscriber<? super Flowable<T>> downstream;
@@ -339,6 +341,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
         static final class WindowStartSubscriber<B> extends AtomicReference<Subscription>
         implements FlowableSubscriber<B> {
 
+            @Serial
             private static final long serialVersionUID = -3326496781427702834L;
 
             final WindowBoundaryMainSubscriber<?, B, ?> parent;

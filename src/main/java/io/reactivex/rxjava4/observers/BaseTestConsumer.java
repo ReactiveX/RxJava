@@ -128,7 +128,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
         AssertionError ae = new AssertionError(b.toString());
         if (!errors.isEmpty()) {
             if (errors.size() == 1) {
-                ae.initCause(errors.get(0));
+                ae.initCause(errors.getFirst());
             } else {
                 CompositeException ce = new CompositeException(errors);
                 ae.initCause(ce);
@@ -308,7 +308,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
         if (s != 1) {
             throw fail("\nexpected: " + valueAndClass(value) + "\ngot: " + values);
         }
-        T v = values.get(0);
+        T v = values.getFirst();
         if (!Objects.equals(value, v)) {
             throw fail("\nexpected: " + valueAndClass(value) + "\ngot: " + valueAndClass(v));
         }

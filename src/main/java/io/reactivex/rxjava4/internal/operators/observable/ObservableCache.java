@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -113,6 +114,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     static final class Multicaster<T> extends AtomicReference<CacheDisposable<T>[]> implements Observer<T> {
 
         /** */
+        @Serial
         private static final long serialVersionUID = 8514643269016498691L;
 
         /**
@@ -353,6 +355,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     static final class CacheDisposable<T> extends AtomicInteger
     implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = 6770240836423125754L;
 
         final Observer<? super T> downstream;

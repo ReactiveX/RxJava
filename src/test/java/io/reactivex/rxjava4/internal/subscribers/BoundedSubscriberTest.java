@@ -44,7 +44,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
         Flowable.just(1).subscribe(subscriber);
 
-        assertTrue(received.toString(), received.get(0) instanceof TestException);
+        assertTrue(received.toString(), received.getFirst() instanceof TestException);
         assertEquals(received.toString(), 1, received.size());
 
         assertTrue(subscriber.isDisposed());
@@ -62,7 +62,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
         Flowable.just(1).subscribe(subscriber);
 
-        assertTrue(received.toString(), received.get(0) instanceof TestException);
+        assertTrue(received.toString(), received.getFirst() instanceof TestException);
         assertEquals(received.toString(), 1, received.size());
 
         assertTrue(subscriber.isDisposed());
@@ -88,7 +88,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
             assertTrue(subscriber.isDisposed());
 
             TestHelper.assertError(errors, 0, CompositeException.class);
-            List<Throwable> ce = TestHelper.compositeList(errors.get(0));
+            List<Throwable> ce = TestHelper.compositeList(errors.getFirst());
             TestHelper.assertError(ce, 0, TestException.class, "Outer");
             TestHelper.assertError(ce, 1, TestException.class, "Inner");
         } finally {
@@ -143,7 +143,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
         assertFalse("Has observers?!", pp.hasSubscribers());
         assertFalse("No errors?!", errors.isEmpty());
 
-        assertTrue(errors.toString(), errors.get(0) instanceof TestException);
+        assertTrue(errors.toString(), errors.getFirst() instanceof TestException);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
         assertFalse("Has observers?!", pp.hasSubscribers());
         assertFalse("No errors?!", errors.isEmpty());
 
-        assertTrue(errors.toString(), errors.get(0) instanceof TestException);
+        assertTrue(errors.toString(), errors.getFirst() instanceof TestException);
     }
 
     @Test

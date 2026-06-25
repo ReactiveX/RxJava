@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.parallel;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -61,8 +62,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
         @SuppressWarnings("unchecked")
         final Subscriber<T>[] parents = new Subscriber[n];
 
-        if (scheduler instanceof SchedulerMultiWorkerSupport) {
-            SchedulerMultiWorkerSupport multiworker = (SchedulerMultiWorkerSupport) scheduler;
+        if (scheduler instanceof SchedulerMultiWorkerSupport multiworker) {
             multiworker.createWorkers(n, new MultiWorkerCallback(subscribers, parents));
         } else {
             for (int i = 0; i < n; i++) {
@@ -112,6 +112,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
     abstract static class BaseRunOnSubscriber<T> extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 9222303586456402150L;
 
         final int prefetch;
@@ -204,6 +205,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
 
     static final class RunOnSubscriber<T> extends BaseRunOnSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = 1075119423897941642L;
 
         final Subscriber<? super T> downstream;
@@ -328,6 +330,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
 
     static final class RunOnConditionalSubscriber<T> extends BaseRunOnSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = 1075119423897941642L;
 
         final ConditionalSubscriber<? super T> downstream;

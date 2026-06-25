@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 import java.util.stream.Stream;
@@ -94,6 +95,7 @@ public final class FlowableFlatMapStream<T, R> extends Flowable<R> {
     static final class FlatMapStreamSubscriber<T, R> extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -5127032662980523968L;
 
         final Subscriber<? super R> downstream;

@@ -29,6 +29,7 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.Flow.*;
@@ -53,6 +54,7 @@ public final class DisposableAutoReleaseSubscriber<T>
 extends AtomicReference<Subscription>
 implements FlowableSubscriber<T>, Disposable, LambdaConsumerIntrospection {
 
+    @Serial
     private static final long serialVersionUID = 8924480688481408726L;
 
     final AtomicReference<DisposableContainer> composite;

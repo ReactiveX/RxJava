@@ -351,7 +351,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().getFirst());
 
         TestHelper.assertError(errors, 0, TestException.class, "Outer");
         TestHelper.assertError(errors, 1, TestException.class, "Inner");
@@ -398,7 +398,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().getFirst());
 
         TestHelper.assertError(errors, 0, TestException.class, "Outer");
         TestHelper.assertError(errors, 1, TestException.class, "Inner");

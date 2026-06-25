@@ -21,6 +21,7 @@ import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.subscriptions.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
 import java.util.Objects;
 
 public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T, U> {
@@ -50,6 +51,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
 
     static final class CollectSubscriber<T, U> extends DeferredScalarSubscription<U> implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -3589550218733891694L;
 
         final BiConsumer<? super U, ? super T> collector;

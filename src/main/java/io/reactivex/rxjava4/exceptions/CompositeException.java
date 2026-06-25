@@ -34,6 +34,7 @@ import io.reactivex.rxjava4.annotations.NonNull;
  */
 public final class CompositeException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 3026362227162912146L;
 
     private final List<Throwable> exceptions;
@@ -164,7 +165,7 @@ public final class CompositeException extends RuntimeException {
 
                 cause = new ExceptionOverview(aggregateMessage.toString().trim());
             } else {
-                cause = exceptions.get(0);
+                cause = exceptions.getFirst();
             }
         }
         return cause;
@@ -276,6 +277,7 @@ public final class CompositeException extends RuntimeException {
      */
     static final class ExceptionOverview extends RuntimeException {
 
+        @Serial
         private static final long serialVersionUID = 3875212506787802066L;
 
         ExceptionOverview(String message) {

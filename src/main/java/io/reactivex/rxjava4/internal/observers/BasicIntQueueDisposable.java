@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.observers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.operators.QueueDisposable;
@@ -26,6 +27,7 @@ public abstract class BasicIntQueueDisposable<T>
 extends AtomicInteger
 implements QueueDisposable<T> {
 
+    @Serial
     private static final long serialVersionUID = -1001730202384742097L;
 
     @Override

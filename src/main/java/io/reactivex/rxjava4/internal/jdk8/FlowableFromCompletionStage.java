@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
+import java.io.Serial;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
@@ -51,6 +52,7 @@ public final class FlowableFromCompletionStage<T> extends Flowable<T> {
     extends DeferredScalarSubscription<T>
     implements BiConsumer<T, Throwable> {
 
+        @Serial
         private static final long serialVersionUID = 4665335664328839859L;
 
         final BiConsumerAtomicReference<T> whenReference;
@@ -82,6 +84,7 @@ public final class FlowableFromCompletionStage<T> extends Flowable<T> {
     static final class BiConsumerAtomicReference<T> extends AtomicReference<BiConsumer<T, Throwable>>
     implements BiConsumer<T, Throwable> {
 
+        @Serial
         private static final long serialVersionUID = 45838553147237545L;
 
         @Override

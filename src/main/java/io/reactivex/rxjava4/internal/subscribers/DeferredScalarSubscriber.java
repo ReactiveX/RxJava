@@ -18,6 +18,8 @@ import static java.util.concurrent.Flow.*;
 import io.reactivex.rxjava4.core.FlowableSubscriber;
 import io.reactivex.rxjava4.internal.subscriptions.*;
 
+import java.io.Serial;
+
 /**
  * A subscriber, extending a DeferredScalarSubscription,
  *  that is unbounded-in and can generate 0 or 1 resulting value.
@@ -27,6 +29,7 @@ import io.reactivex.rxjava4.internal.subscriptions.*;
 public abstract class DeferredScalarSubscriber<T, R> extends DeferredScalarSubscription<R>
 implements FlowableSubscriber<T> {
 
+    @Serial
     private static final long serialVersionUID = 2984505488220891551L;
 
     /** The upstream subscription. */

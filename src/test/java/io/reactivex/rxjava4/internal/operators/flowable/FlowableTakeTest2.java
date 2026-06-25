@@ -54,7 +54,7 @@ public class FlowableTakeTest2 extends RxJavaTest implements LongConsumer, Actio
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
-        assertEquals(6, requests.get(0).intValue());
+        assertEquals(6, requests.getFirst().intValue());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class FlowableTakeTest2 extends RxJavaTest implements LongConsumer, Actio
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
-        assertEquals(5, requests.get(0).intValue());
+        assertEquals(5, requests.getFirst().intValue());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class FlowableTakeTest2 extends RxJavaTest implements LongConsumer, Actio
         .assertResult();
 
         assertEquals(1, requests.size());
-        assertEquals(CANCELLED, requests.get(0));
+        assertEquals(CANCELLED, requests.getFirst());
     }
 
     @Test

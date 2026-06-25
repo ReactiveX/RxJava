@@ -21,6 +21,7 @@ import io.reactivex.rxjava4.internal.subscriptions.*;
 import io.reactivex.rxjava4.internal.util.BackpressureHelper;
 import io.reactivex.rxjava4.operators.ConditionalSubscriber;
 
+import java.io.Serial;
 import java.util.Objects;
 
 public final class FlowableFromArray<T> extends Flowable<T> {
@@ -41,6 +42,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
     }
 
     abstract static class BaseArraySubscription<T> extends BasicQueueSubscription<T> {
+        @Serial
         private static final long serialVersionUID = -2252972430506210021L;
 
         final T[] array;
@@ -106,6 +108,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
 
     static final class ArraySubscription<T> extends BaseArraySubscription<T> {
 
+        @Serial
         private static final long serialVersionUID = 2587302975077663557L;
 
         final Subscriber<? super T> downstream;
@@ -189,6 +192,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
 
     static final class ArrayConditionalSubscription<T> extends BaseArraySubscription<T> {
 
+        @Serial
         private static final long serialVersionUID = 2587302975077663557L;
 
         final ConditionalSubscriber<? super T> downstream;

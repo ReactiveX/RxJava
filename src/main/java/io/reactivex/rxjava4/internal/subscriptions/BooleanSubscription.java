@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscriptions;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.concurrent.Flow.*;
@@ -23,6 +24,7 @@ import static java.util.concurrent.Flow.*;
  */
 public final class BooleanSubscription extends AtomicBoolean implements Subscription {
 
+    @Serial
     private static final long serialVersionUID = -8127758972444290902L;
 
     @Override

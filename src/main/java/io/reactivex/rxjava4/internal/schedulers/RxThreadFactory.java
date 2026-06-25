@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.schedulers;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 
+import java.io.Serial;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -24,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
 
+    @Serial
     private static final long serialVersionUID = -7789753024099756196L;
 
     final String prefix;

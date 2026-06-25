@@ -18,6 +18,7 @@
 
 package io.reactivex.rxjava4.internal.queue;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.annotations.Nullable;
@@ -153,6 +154,7 @@ public final class MpscLinkedQueue<T> implements SimplePlainQueue<T> {
 
     static final class LinkedQueueNode<E> extends AtomicReference<LinkedQueueNode<E>> {
 
+        @Serial
         private static final long serialVersionUID = 2404266111789071508L;
 
         private E value;

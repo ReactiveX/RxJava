@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -46,6 +47,7 @@ public final class MaybeTimer extends Maybe<Long> {
 
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 2875964065294031672L;
         final MaybeObserver<? super Long> downstream;
 

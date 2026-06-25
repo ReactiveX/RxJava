@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -53,6 +54,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
     static final class WindowBoundaryMainObserver<T, B, V>
     extends AtomicInteger
     implements Observer<T>, Disposable, Runnable {
+        @Serial
         private static final long serialVersionUID = 8646217640096099753L;
 
         final Observer<? super Observable<T>> downstream;
@@ -324,6 +326,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         static final class WindowStartObserver<B> extends AtomicReference<Disposable>
         implements Observer<B> {
 
+            @Serial
             private static final long serialVersionUID = -3326496781427702834L;
 
             final WindowBoundaryMainObserver<?, B, ?> parent;

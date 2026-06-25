@@ -172,7 +172,7 @@ public class ReplayProcessorBoundedConcurrencyTest extends RxJavaTest {
             sums.add(v);
         }
 
-        long expected = sums.get(0);
+        long expected = sums.getFirst();
         boolean success = true;
         for (long l : sums) {
             if (l != expected) {

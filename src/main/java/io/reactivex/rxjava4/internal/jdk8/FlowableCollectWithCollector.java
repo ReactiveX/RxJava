@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -67,6 +68,7 @@ public final class FlowableCollectWithCollector<T, A, R> extends Flowable<R> {
     extends DeferredScalarSubscription<R>
     implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -229544830565448758L;
 
         final BiConsumer<A, T> accumulator;

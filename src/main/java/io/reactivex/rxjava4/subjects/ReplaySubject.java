@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.subjects;
 
+import java.io.Serial;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -617,6 +618,7 @@ public final class ReplaySubject<T> extends Subject<T> {
 
     static final class ReplayDisposable<T> extends AtomicInteger implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = 466549804534799122L;
         final Observer<? super T> downstream;
         final ReplaySubject<T> state;
@@ -648,6 +650,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     extends AtomicReference<Object>
     implements ReplayBuffer<T> {
 
+        @Serial
         private static final long serialVersionUID = -733876083048047795L;
 
         final List<Object> buffer;
@@ -815,6 +818,7 @@ public final class ReplaySubject<T> extends Subject<T> {
 
     static final class Node<T> extends AtomicReference<Node<T>> {
 
+        @Serial
         private static final long serialVersionUID = 6404226426336033100L;
 
         final T value;
@@ -826,6 +830,7 @@ public final class ReplaySubject<T> extends Subject<T> {
 
     static final class TimedNode<T> extends AtomicReference<TimedNode<T>> {
 
+        @Serial
         private static final long serialVersionUID = 6404226426336033100L;
 
         final T value;
@@ -841,6 +846,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     extends AtomicReference<Object>
     implements ReplayBuffer<T> {
 
+        @Serial
         private static final long serialVersionUID = 1107649250281456395L;
 
         final int maxSize;
@@ -1047,6 +1053,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     extends AtomicReference<Object>
     implements ReplayBuffer<T> {
 
+        @Serial
         private static final long serialVersionUID = -8056260896137901749L;
 
         final int maxSize;

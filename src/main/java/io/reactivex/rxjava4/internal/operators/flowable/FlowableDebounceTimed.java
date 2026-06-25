@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -53,6 +54,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
     static final class DebounceTimedSubscriber<T> extends AtomicLong
     implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -9102637559663639004L;
         final Subscriber<? super T> downstream;
         final long timeout;
@@ -181,6 +183,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
 
     static final class DebounceEmitter<T> extends AtomicReference<Disposable> implements Runnable, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 6812032969491025141L;
 
         final T value;

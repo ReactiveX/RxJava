@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -60,6 +61,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
     static final class EqualCoordinator<T> extends DeferredScalarSubscription<Boolean>
     implements EqualCoordinatorHelper {
 
+        @Serial
         private static final long serialVersionUID = -6178010334400373240L;
 
         final BiPredicate<? super T, ? super T> comparer;
@@ -245,6 +247,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = 4804128302091633067L;
 
         final EqualCoordinatorHelper parent;

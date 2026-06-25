@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -60,6 +61,7 @@ public final class ObservableIntervalRange extends Observable<Long> {
     extends AtomicReference<Disposable>
     implements Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 1891866368734007884L;
 
         final Observer<? super Long> downstream;

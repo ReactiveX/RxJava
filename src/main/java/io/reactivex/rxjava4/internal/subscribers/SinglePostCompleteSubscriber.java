@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.concurrent.Flow.*;
@@ -29,6 +30,7 @@ import io.reactivex.rxjava4.internal.util.BackpressureHelper;
  * @param <R> the output value type
  */
 public abstract class SinglePostCompleteSubscriber<T, R> extends AtomicLong implements FlowableSubscriber<T>, Subscription {
+    @Serial
     private static final long serialVersionUID = 7917814472626990048L;
 
     /** The downstream consumer. */

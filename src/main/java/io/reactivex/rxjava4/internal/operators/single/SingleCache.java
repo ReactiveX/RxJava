@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -152,6 +153,7 @@ public final class SingleCache<T> extends Single<T> implements SingleObserver<T>
     extends AtomicBoolean
     implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = 7514387411091976596L;
 
         final SingleObserver<? super T> downstream;

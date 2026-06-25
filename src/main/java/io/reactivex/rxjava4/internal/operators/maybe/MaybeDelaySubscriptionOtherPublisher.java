@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.Flow.*;
@@ -119,6 +120,7 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
     static final class DelayMaybeObserver<T> extends AtomicReference<Disposable>
     implements MaybeObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = 706635022205076709L;
 
         final MaybeObserver<? super T> downstream;

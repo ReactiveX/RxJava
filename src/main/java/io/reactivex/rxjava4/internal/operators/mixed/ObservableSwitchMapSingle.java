@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.mixed;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -59,6 +60,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
     static final class SwitchMapSingleMainObserver<T, R> extends AtomicInteger
     implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -5402190102429853762L;
 
         final Observer<? super R> downstream;
@@ -236,6 +238,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
         static final class SwitchMapSingleObserver<R>
         extends AtomicReference<Disposable> implements SingleObserver<R> {
 
+            @Serial
             private static final long serialVersionUID = 8042919737683345351L;
 
             final SwitchMapSingleMainObserver<?, R> parent;

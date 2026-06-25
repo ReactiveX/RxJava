@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -41,6 +42,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
 
     static final class SkipUntilMainSubscriber<T> extends AtomicInteger
     implements ConditionalSubscriber<T>, Subscription {
+        @Serial
         private static final long serialVersionUID = -6270983465606289181L;
 
         final Subscriber<? super T> downstream;
@@ -110,6 +112,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
         final class OtherSubscriber extends AtomicReference<Subscription>
         implements FlowableSubscriber<Object> {
 
+            @Serial
             private static final long serialVersionUID = -5592042965931999169L;
 
             @Override

@@ -184,7 +184,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
         .assertFailure(CompositeException.class)
         ;
 
-        CompositeException ce = (CompositeException)to.errors().get(0);
+        CompositeException ce = (CompositeException)to.errors().getFirst();
         assertEquals(5, ce.getExceptions().size());
     }
 

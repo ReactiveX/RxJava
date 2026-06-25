@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.schedulers;
 
+import java.io.Serial;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -233,6 +234,7 @@ public final class TestScheduler extends Scheduler {
 
         final class QueueRemove extends AtomicReference<TimedRunnable> implements Disposable {
 
+            @Serial
             private static final long serialVersionUID = -7874968252110604360L;
 
             QueueRemove(TimedRunnable timedAction) {

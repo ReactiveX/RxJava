@@ -20,6 +20,7 @@ import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.subscribers.SinglePostCompleteSubscriber;
 
+import java.io.Serial;
 import java.util.Objects;
 
 public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUpstream<T, R> {
@@ -47,6 +48,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
     static final class MapNotificationSubscriber<T, R>
     extends SinglePostCompleteSubscriber<T, R> {
 
+        @Serial
         private static final long serialVersionUID = 2757120512858778108L;
         final Function<? super T, ? extends R> onNextMapper;
         final Function<? super Throwable, ? extends R> onErrorMapper;

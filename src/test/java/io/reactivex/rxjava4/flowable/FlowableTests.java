@@ -901,7 +901,7 @@ public class FlowableTests extends RxJavaTest {
                 subscriber.assertNoErrors();
                 subscriber.assertComplete();
                 subscriber.assertValue(value);
-                return subscriber.values().get(0);
+                return subscriber.values().getFirst();
             });
         assertSame(returned, value);
     }
@@ -915,7 +915,7 @@ public class FlowableTests extends RxJavaTest {
                 subscriber.assertNoErrors();
                 subscriber.assertComplete();
                 subscriber.assertValue(value);
-                return subscriber.values().get(0);
+                return subscriber.values().getFirst();
             });
         assertSame(returned, value);
     }

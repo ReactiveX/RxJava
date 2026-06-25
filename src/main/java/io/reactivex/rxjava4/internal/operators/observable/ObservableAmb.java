@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -139,6 +140,7 @@ public final class ObservableAmb<T> extends Observable<T> {
 
     static final class AmbInnerObserver<T> extends AtomicReference<Disposable> implements Observer<T> {
 
+        @Serial
         private static final long serialVersionUID = -1185974347409665484L;
         final AmbCoordinator<T> parent;
         final int index;

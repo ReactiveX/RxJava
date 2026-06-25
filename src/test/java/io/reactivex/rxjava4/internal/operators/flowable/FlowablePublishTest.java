@@ -1143,7 +1143,7 @@ public class FlowablePublishTest extends RxJavaTest {
                             Arrays::asList
         )
         .toFlowable())
-        .takeWhile(v -> v.get(0) < 20)
+        .takeWhile(v -> v.getFirst() < 20)
         .test();
 
         ts
@@ -1180,7 +1180,7 @@ public class FlowablePublishTest extends RxJavaTest {
                             Arrays::asList
         )
         .toFlowable())
-        .takeWhile(v -> v.get(0) < 20)
+        .takeWhile(v -> v.getFirst() < 20)
         .test();
 
         ts

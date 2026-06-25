@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -48,6 +49,7 @@ public final class MaybeFlatMapCompletable<T> extends Completable {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, CompletableObserver, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -2177128922851101253L;
 
         final CompletableObserver downstream;

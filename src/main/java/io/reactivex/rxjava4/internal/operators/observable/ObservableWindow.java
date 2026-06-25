@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.*;
 
@@ -46,6 +47,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
     extends AtomicInteger
     implements Observer<T>, Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = -7481782523886138128L;
         final Observer<? super Observable<T>> downstream;
         final long count;
@@ -149,6 +151,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
     static final class WindowSkipObserver<T> extends AtomicInteger
     implements Observer<T>, Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 3366976432059579510L;
         final Observer<? super Observable<T>> downstream;
         final long count;

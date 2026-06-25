@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
+import java.io.Serial;
 import java.util.concurrent.Callable;
 
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -24,6 +25,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  */
 public final class ScheduledDirectTask extends AbstractDirectTask implements Callable<Void> {
 
+    @Serial
     private static final long serialVersionUID = 1811839108042568751L;
 
     public ScheduledDirectTask(Runnable runnable, boolean interruptOnCancel) {

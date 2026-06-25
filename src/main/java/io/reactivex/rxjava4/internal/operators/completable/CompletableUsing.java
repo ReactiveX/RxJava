@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -87,6 +88,7 @@ public final class CompletableUsing<R> extends Completable {
     extends AtomicReference<Object>
     implements CompletableObserver, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -674404550052917487L;
 
         final CompletableObserver downstream;

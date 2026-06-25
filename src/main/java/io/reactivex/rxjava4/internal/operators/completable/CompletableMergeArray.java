@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -53,6 +54,7 @@ public final class CompletableMergeArray extends Completable {
     }
 
     static final class InnerCompletableObserver extends AtomicInteger implements CompletableObserver, Disposable {
+        @Serial
         private static final long serialVersionUID = -8360547806504310570L;
 
         final CompletableObserver downstream;

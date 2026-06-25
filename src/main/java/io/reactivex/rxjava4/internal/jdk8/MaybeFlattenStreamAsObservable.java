@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -54,6 +55,7 @@ public final class MaybeFlattenStreamAsObservable<T, R> extends Observable<R> {
     extends BasicIntQueueDisposable<R>
     implements MaybeObserver<T>, SingleObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = 7363336003027148283L;
 
         final Observer<? super R> downstream;

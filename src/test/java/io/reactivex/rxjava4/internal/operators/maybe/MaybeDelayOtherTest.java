@@ -191,7 +191,7 @@ public class MaybeDelayOtherTest extends RxJavaTest {
 
         to.assertFailure(CompositeException.class);
 
-        List<Throwable> list = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> list = TestHelper.compositeList(to.errors().getFirst());
         assertEquals(2, list.size());
 
         TestHelper.assertError(list, 0, TestException.class, "Main");

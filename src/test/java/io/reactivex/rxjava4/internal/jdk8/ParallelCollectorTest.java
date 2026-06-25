@@ -53,8 +53,8 @@ public class ParallelCollectorTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertEquals(5, ts.values().get(0).size());
-        assertTrue(ts.values().get(0).containsAll(set(5)));
+        assertEquals(5, ts.values().getFirst().size());
+        assertTrue(ts.values().getFirst().containsAll(set(5)));
     }
 
     @Test
@@ -234,9 +234,9 @@ public class ParallelCollectorTest extends RxJavaTest {
             .assertNoErrors()
             .assertComplete();
 
-            assertEquals(1000, ts.values().get(0).size());
+            assertEquals(1000, ts.values().getFirst().size());
 
-            assertTrue(ts.values().get(0).containsAll(set(1000)));
+            assertTrue(ts.values().getFirst().containsAll(set(1000)));
         }
     }
 
@@ -255,9 +255,9 @@ public class ParallelCollectorTest extends RxJavaTest {
             .assertNoErrors()
             .assertComplete();
 
-            assertEquals(1000, ts.values().get(0).size());
+            assertEquals(1000, ts.values().getFirst().size());
 
-            assertTrue(ts.values().get(0).containsAll(set(1000)));
+            assertTrue(ts.values().getFirst().containsAll(set(1000)));
         }
     }
 

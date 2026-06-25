@@ -79,7 +79,7 @@ public class ObservableForEachTest extends RxJavaTest {
             });
 
             TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
-            Throwable c = errors.get(0).getCause();
+            Throwable c = errors.getFirst().getCause();
             assertTrue("" + c, c instanceof TestException);
         } finally {
             RxJavaPlugins.reset();
@@ -97,7 +97,7 @@ public class ObservableForEachTest extends RxJavaTest {
 
             TestHelper.assertError(errors, 0, CompositeException.class);
 
-            List<Throwable> ce = TestHelper.compositeList(errors.get(0));
+            List<Throwable> ce = TestHelper.compositeList(errors.getFirst());
 
             TestHelper.assertError(ce, 0, TestException.class, "Outer");
             TestHelper.assertError(ce, 1, TestException.class, "Inner");

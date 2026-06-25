@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.parallel;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -62,6 +63,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
     abstract static class JoinSubscriptionBase<T> extends AtomicInteger
     implements Subscription {
 
+        @Serial
         private static final long serialVersionUID = 3100232009247827843L;
 
         final Subscriber<? super T> downstream;
@@ -133,6 +135,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
     static final class JoinSubscription<T> extends JoinSubscriptionBase<T> {
 
+        @Serial
         private static final long serialVersionUID = 6312374661811000451L;
 
         JoinSubscription(Subscriber<? super T> actual, int n, int prefetch) {
@@ -313,6 +316,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
     static final class JoinSubscriptionDelayError<T> extends JoinSubscriptionBase<T> {
 
+        @Serial
         private static final long serialVersionUID = -5737965195918321883L;
 
         JoinSubscriptionDelayError(Subscriber<? super T> actual, int n, int prefetch) {
@@ -475,6 +479,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = 8410034718427740355L;
 
         final JoinSubscriptionBase<T> parent;

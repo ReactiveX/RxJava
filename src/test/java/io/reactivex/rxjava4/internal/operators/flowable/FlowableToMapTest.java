@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.Serial;
 import java.util.*;
 
 import org.junit.*;
@@ -135,6 +136,7 @@ public class FlowableToMapTest extends RxJavaTest {
 
         Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() /* NFI */ {
 
+            @Serial
             private static final long serialVersionUID = -3296811238780863394L;
 
             @Override
@@ -274,6 +276,7 @@ public class FlowableToMapTest extends RxJavaTest {
 
         Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() /* NFI */ {
 
+            @Serial
             private static final long serialVersionUID = -3296811238780863394L;
 
             @Override

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.*;
@@ -60,6 +61,7 @@ public final class MaybeCreate<T> extends Maybe<T> {
             this.downstream = downstream;
         }
 
+        @Serial
         private static final long serialVersionUID = -2467358622224974244L;
 
         @Override

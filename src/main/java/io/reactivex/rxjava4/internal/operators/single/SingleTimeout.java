@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.operators.single;
 
 import static io.reactivex.rxjava4.internal.util.ExceptionHelper.timeoutMessage;
 
+import java.io.Serial;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -58,6 +59,7 @@ public final class SingleTimeout<T> extends Single<T> {
     static final class TimeoutMainObserver<T> extends AtomicReference<Disposable>
     implements SingleObserver<T>, Runnable, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 37497744973048446L;
 
         final SingleObserver<? super T> downstream;
@@ -75,6 +77,7 @@ public final class SingleTimeout<T> extends Single<T> {
         static final class TimeoutFallbackObserver<T> extends AtomicReference<Disposable>
         implements SingleObserver<T> {
 
+            @Serial
             private static final long serialVersionUID = 2071387740092105509L;
             final SingleObserver<? super T> downstream;
 

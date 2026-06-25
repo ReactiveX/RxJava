@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -132,6 +133,7 @@ implements HasUpstreamObservableSource<T> {
     extends AtomicReference<InnerDisposable<T>[]>
     implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -3251430252873581268L;
 
         final AtomicBoolean connect;
@@ -264,6 +266,7 @@ implements HasUpstreamObservableSource<T> {
     extends AtomicReference<PublishConnection<T>>
     implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = 7463222674719692880L;
 
         final Observer<? super T> downstream;

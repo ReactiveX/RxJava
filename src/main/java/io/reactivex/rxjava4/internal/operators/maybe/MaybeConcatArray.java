@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -47,6 +48,7 @@ public final class MaybeConcatArray<T> extends Flowable<T> {
     extends AtomicInteger
     implements MaybeObserver<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = 3520831347801429610L;
 
         final Subscriber<? super T> downstream;

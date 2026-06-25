@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -44,6 +45,7 @@ public final class CompletableMerge extends Completable {
     extends AtomicInteger
     implements FlowableSubscriber<CompletableSource>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -2108443387387077490L;
 
         final CompletableObserver downstream;
@@ -163,6 +165,7 @@ public final class CompletableMerge extends Completable {
         final class MergeInnerObserver
         extends AtomicReference<Disposable>
         implements CompletableObserver, Disposable {
+            @Serial
             private static final long serialVersionUID = 251330541679988317L;
 
             @Override

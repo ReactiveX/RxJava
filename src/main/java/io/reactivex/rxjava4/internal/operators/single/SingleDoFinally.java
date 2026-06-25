@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.core.*;
@@ -46,6 +47,7 @@ public final class SingleDoFinally<T> extends Single<T> {
 
     static final class DoFinallyObserver<T> extends AtomicInteger implements SingleObserver<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 4109457741734051389L;
 
         final SingleObserver<? super T> downstream;

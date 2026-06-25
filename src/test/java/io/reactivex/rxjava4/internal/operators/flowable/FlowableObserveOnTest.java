@@ -508,7 +508,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         List<Throwable> errors = testSubscriber.errors();
         assertEquals(1, errors.size());
         System.out.println("Errors: " + errors);
-        Throwable t = errors.get(0);
+        Throwable t = errors.getFirst();
         if (t instanceof QueueOverflowException) {
             // success, we expect this
         } else {
@@ -570,7 +570,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             // assert that the values are sequential, that cutting in didn't allow skipping some but emitting others.
             // example [0, 1, 2] not [0, 1, 4]
             List<Long> onNextEvents = ts.values();
-            assertTrue(onNextEvents.isEmpty() || onNextEvents.size() == onNextEvents.get(onNextEvents.size() - 1) + 1);
+            assertTrue(onNextEvents.isEmpty() || onNextEvents.size() == onNextEvents.getLast() + 1);
             // we should emit the error without emitting the full buffer size
             assertTrue(onNextEvents.size() < Flowable.bufferSize());
         }
@@ -596,7 +596,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         ts.awaitDone(5, TimeUnit.SECONDS);
         System.out.println("Errors: " + ts.errors());
         assertEquals(1, ts.errors().size());
-        assertEquals(MissingBackpressureException.class, ts.errors().get(0).getClass());
+        assertEquals(MissingBackpressureException.class, ts.errors().getFirst().getClass());
     }
 
     @Test
@@ -621,7 +621,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(1, ts.errors().size());
-        assertEquals(MissingBackpressureException.class, ts.errors().get(0).getClass());
+        assertEquals(MissingBackpressureException.class, ts.errors().getFirst().getClass());
     }
 
     @Test

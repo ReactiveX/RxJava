@@ -17,11 +17,14 @@ import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 
+import java.io.Serial;
+
 /**
  * A Disposable container that manages an {@link Action} instance.
  */
 final class ActionDisposable extends ReferenceDisposable<Action> {
 
+    @Serial
     private static final long serialVersionUID = -8219729196779211169L;
 
     ActionDisposable(Action value) {

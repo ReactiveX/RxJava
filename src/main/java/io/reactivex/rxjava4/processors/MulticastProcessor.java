@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.processors;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -585,6 +586,7 @@ public final class MulticastProcessor<@NonNull T> extends FlowableProcessor<T> {
 
     static final class MulticastSubscription<@NonNull T> extends AtomicLong implements Subscription {
 
+        @Serial
         private static final long serialVersionUID = -363282618957264509L;
 
         final Subscriber<? super T> downstream;

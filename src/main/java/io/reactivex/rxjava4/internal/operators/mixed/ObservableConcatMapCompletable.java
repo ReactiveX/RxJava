@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.mixed;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -61,6 +62,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
     static final class ConcatMapCompletableObserver<T>
     extends ConcatMapXMainObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = 3610901111000061034L;
 
         final CompletableObserver downstream;
@@ -169,6 +171,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
         static final class ConcatMapInnerObserver extends AtomicReference<Disposable>
         implements CompletableObserver {
 
+            @Serial
             private static final long serialVersionUID = 5638352172918776687L;
 
             final ConcatMapCompletableObserver<?> parent;

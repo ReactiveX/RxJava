@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.*;
@@ -69,6 +70,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
     static final class MergeMaybeObserver<T>
     extends BasicIntQueueSubscription<T> implements MaybeObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = -660395290758764731L;
 
         final Subscriber<? super T> downstream;
@@ -315,6 +317,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
     extends AtomicReferenceArray<T>
     implements SimpleQueueWithConsumerIndex<T> {
 
+        @Serial
         private static final long serialVersionUID = -7969063454040569579L;
         final AtomicInteger producerIndex;
 
@@ -401,6 +404,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
     static final class ClqSimpleQueue<T> extends ConcurrentLinkedQueue<T> implements SimpleQueueWithConsumerIndex<T> {
 
+        @Serial
         private static final long serialVersionUID = -4025173261791142821L;
 
         int consumerIndex;

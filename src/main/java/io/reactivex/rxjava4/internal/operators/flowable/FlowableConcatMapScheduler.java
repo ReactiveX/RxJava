@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -66,6 +67,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
     extends AtomicInteger
     implements FlowableSubscriber<T>, ConcatMapSupport<R>, Subscription, Runnable {
 
+        @Serial
         private static final long serialVersionUID = -3511336836796789179L;
 
         final ConcatMapInner<R> inner;
@@ -175,6 +177,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
     static final class ConcatMapImmediate<T, R>
     extends BaseConcatMapSubscriber<T, R> {
 
+        @Serial
         private static final long serialVersionUID = 7898995095634264146L;
 
         final Subscriber<? super R> downstream;
@@ -366,6 +369,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
     static final class ConcatMapDelayed<T, R>
     extends BaseConcatMapSubscriber<T, R> {
 
+        @Serial
         private static final long serialVersionUID = -2945777694260521066L;
 
         final Subscriber<? super R> downstream;

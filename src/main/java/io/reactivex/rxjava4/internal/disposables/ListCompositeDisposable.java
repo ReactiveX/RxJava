@@ -179,7 +179,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
         }
         if (errors != null) {
             if (errors.size() == 1) {
-                throw ExceptionHelper.wrapOrThrow(errors.get(0));
+                throw ExceptionHelper.wrapOrThrow(errors.getFirst());
             }
             throw new CompositeException(errors);
         }

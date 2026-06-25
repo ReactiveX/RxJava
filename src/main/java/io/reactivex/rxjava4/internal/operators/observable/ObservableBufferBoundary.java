@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -53,6 +54,7 @@ extends AbstractObservableWithUpstream<T, U> {
     static final class BufferBoundaryObserver<T, C extends Collection<? super T>, Open, Close>
     extends AtomicInteger implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -8466418554264089604L;
 
         final Observer<? super C> downstream;
@@ -279,6 +281,7 @@ extends AbstractObservableWithUpstream<T, U> {
         extends AtomicReference<Disposable>
         implements Observer<Open>, Disposable {
 
+            @Serial
             private static final long serialVersionUID = -8498650778633225126L;
 
             final BufferBoundaryObserver<?, ?, Open, ?> parent;
@@ -325,6 +328,7 @@ extends AbstractObservableWithUpstream<T, U> {
     extends AtomicReference<Disposable>
     implements Observer<Object>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -8498650778633225126L;
 
         final BufferBoundaryObserver<T, C, ?, ?> parent;

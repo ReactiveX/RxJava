@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.util;
 
-import java.io.Serializable;
+import java.io.*;
 
 import java.util.Objects;
 import static java.util.concurrent.Flow.*;
@@ -33,6 +33,7 @@ public enum NotificationLite {
      */
     static final class ErrorNotification implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = -8759979445933046293L;
         final Throwable e;
         ErrorNotification(Throwable e) {
@@ -51,8 +52,7 @@ public enum NotificationLite {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof ErrorNotification) {
-                ErrorNotification n = (ErrorNotification) obj;
+            if (obj instanceof ErrorNotification n) {
                 return Objects.equals(e, n.e);
             }
             return false;
@@ -64,6 +64,7 @@ public enum NotificationLite {
      */
     static final class SubscriptionNotification implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = -1322257508628817540L;
         final Subscription upstream;
         SubscriptionNotification(Subscription s) {
@@ -81,6 +82,7 @@ public enum NotificationLite {
      */
     static final class DisposableNotification implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = -7482590109178395495L;
         final Disposable upstream;
 

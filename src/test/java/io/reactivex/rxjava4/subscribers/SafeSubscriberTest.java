@@ -558,7 +558,7 @@ public class SafeSubscriberTest extends RxJavaTest {
             so.onNext(1);
 
             TestHelper.assertError(list, 0, CompositeException.class);
-            List<Throwable> ce = TestHelper.compositeList(list.get(0));
+            List<Throwable> ce = TestHelper.compositeList(list.getFirst());
             TestHelper.assertError(ce, 0, TestException.class, "onNext(1)");
             TestHelper.assertError(ce, 1, TestException.class, "onError(io.reactivex.rxjava4.exceptions.TestException: onNext(1))");
         } finally {
@@ -620,7 +620,7 @@ public class SafeSubscriberTest extends RxJavaTest {
             so.onSubscribe(cd);
 
             TestHelper.assertError(list, 0, CompositeException.class);
-            List<Throwable> ce = TestHelper.compositeList(list.get(0));
+            List<Throwable> ce = TestHelper.compositeList(list.getFirst());
             TestHelper.assertError(ce, 0, TestException.class, "onSubscribe()");
             TestHelper.assertError(ce, 1, TestException.class, "cancel()");
         } finally {
@@ -639,7 +639,7 @@ public class SafeSubscriberTest extends RxJavaTest {
             so.onNext(1);
 
             TestHelper.assertError(list, 0, CompositeException.class);
-            List<Throwable> ce = TestHelper.compositeList(list.get(0));
+            List<Throwable> ce = TestHelper.compositeList(list.getFirst());
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");
             TestHelper.assertError(ce, 1, TestException.class, "onSubscribe()");
         } finally {
@@ -670,7 +670,7 @@ public class SafeSubscriberTest extends RxJavaTest {
             so.onNext(1);
 
             TestHelper.assertError(list, 0, CompositeException.class);
-            List<Throwable> ce = TestHelper.compositeList(list.get(0));
+            List<Throwable> ce = TestHelper.compositeList(list.getFirst());
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");
             TestHelper.assertError(ce, 1, TestException.class, "onError(java.lang.NullPointerException: Subscription not set!)");
         } finally {
@@ -700,7 +700,7 @@ public class SafeSubscriberTest extends RxJavaTest {
             so.onError(new TestException());
 
             TestHelper.assertError(list, 0, CompositeException.class);
-            List<Throwable> ce = TestHelper.compositeList(list.get(0));
+            List<Throwable> ce = TestHelper.compositeList(list.getFirst());
             TestHelper.assertError(ce, 0, TestException.class);
             TestHelper.assertError(ce, 1, NullPointerException.class, "Subscription not set!");
         } finally {
@@ -719,7 +719,7 @@ public class SafeSubscriberTest extends RxJavaTest {
             so.onError(new TestException());
 
             TestHelper.assertError(list, 0, CompositeException.class);
-            List<Throwable> ce = TestHelper.compositeList(list.get(0));
+            List<Throwable> ce = TestHelper.compositeList(list.getFirst());
             TestHelper.assertError(ce, 0, TestException.class);
             TestHelper.assertError(ce, 1, NullPointerException.class, "Subscription not set!");
             TestHelper.assertError(ce, 2, TestException.class);
@@ -757,7 +757,7 @@ public class SafeSubscriberTest extends RxJavaTest {
             so.onComplete();
 
             TestHelper.assertError(list, 0, CompositeException.class);
-            List<Throwable> ce = TestHelper.compositeList(list.get(0));
+            List<Throwable> ce = TestHelper.compositeList(list.getFirst());
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");
             TestHelper.assertError(ce, 1, TestException.class, "onSubscribe()");
         } finally {
@@ -776,7 +776,7 @@ public class SafeSubscriberTest extends RxJavaTest {
             so.onComplete();
 
             TestHelper.assertError(list, 0, CompositeException.class);
-            List<Throwable> ce = TestHelper.compositeList(list.get(0));
+            List<Throwable> ce = TestHelper.compositeList(list.getFirst());
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");
             TestHelper.assertError(ce, 1, TestException.class);
         } finally {
@@ -830,7 +830,7 @@ public class SafeSubscriberTest extends RxJavaTest {
             so.request(1);
 
             TestHelper.assertError(list, 0, CompositeException.class);
-            List<Throwable> ce = TestHelper.compositeList(list.get(0));
+            List<Throwable> ce = TestHelper.compositeList(list.getFirst());
             TestHelper.assertError(ce, 0, TestException.class, "request()");
             TestHelper.assertError(ce, 1, TestException.class, "cancel()");
         } finally {

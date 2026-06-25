@@ -86,7 +86,7 @@ public class SingleUsingTest extends RxJavaTest {
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> ce = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> ce = TestHelper.compositeList(to.errors().getFirst());
         TestHelper.assertError(ce, 0, TestException.class, "Mapper");
         TestHelper.assertError(ce, 1, TestException.class, "Disposer");
     }
@@ -168,7 +168,7 @@ public class SingleUsingTest extends RxJavaTest {
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> ce = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> ce = TestHelper.compositeList(to.errors().getFirst());
         TestHelper.assertError(ce, 0, TestException.class, "Mapper-run");
         TestHelper.assertError(ce, 1, TestException.class, "Disposer");
     }

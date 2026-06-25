@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.ArrayDeque;
 
 import static java.util.concurrent.Flow.*;
@@ -35,6 +36,7 @@ public final class FlowableSkipLast<T> extends AbstractFlowableWithUpstream<T, T
 
     static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -3807491841935125653L;
         final Subscriber<? super T> downstream;
         final int skip;

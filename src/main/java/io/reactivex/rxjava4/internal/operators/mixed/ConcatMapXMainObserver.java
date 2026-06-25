@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.mixed;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.core.ErrorMode;
@@ -34,6 +35,7 @@ import io.reactivex.rxjava4.operators.SpscLinkedArrayQueue;
 public abstract class ConcatMapXMainObserver<T> extends AtomicInteger
 implements Observer<T>, Disposable {
 
+    @Serial
     private static final long serialVersionUID = -3214213361171757852L;
 
     final AtomicThrowable errors;

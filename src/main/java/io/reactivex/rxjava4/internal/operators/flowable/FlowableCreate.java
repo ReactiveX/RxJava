@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
@@ -82,6 +83,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
     extends AtomicInteger
     implements FlowableEmitter<T> {
 
+        @Serial
         private static final long serialVersionUID = 4883307006032401862L;
 
         final BaseEmitter<T> emitter;
@@ -240,6 +242,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
     abstract static class BaseEmitter<T>
     extends AtomicLong
     implements FlowableEmitter<T>, Subscription {
+        @Serial
         private static final long serialVersionUID = 7326289992464377023L;
 
         final Subscriber<? super T> downstream;
@@ -356,6 +359,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class MissingEmitter<T> extends BaseEmitter<T> {
 
+        @Serial
         private static final long serialVersionUID = 3776720187248809713L;
 
         MissingEmitter(Subscriber<? super T> downstream) {
@@ -387,6 +391,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     abstract static class NoOverflowBaseAsyncEmitter<T> extends BaseEmitter<T> {
 
+        @Serial
         private static final long serialVersionUID = 4127754106204442833L;
 
         NoOverflowBaseAsyncEmitter(Subscriber<? super T> downstream) {
@@ -417,6 +422,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class DropAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
 
+        @Serial
         private static final long serialVersionUID = 8360058422307496563L;
 
         DropAsyncEmitter(Subscriber<? super T> downstream) {
@@ -432,6 +438,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class ErrorAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
 
+        @Serial
         private static final long serialVersionUID = 338953216916120960L;
 
         ErrorAsyncEmitter(Subscriber<? super T> downstream) {
@@ -447,6 +454,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class BufferAsyncEmitter<T> extends BaseEmitter<T> {
 
+        @Serial
         private static final long serialVersionUID = 2427151001689639875L;
 
         final SpscLinkedArrayQueue<T> queue;
@@ -585,6 +593,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class LatestAsyncEmitter<T> extends BaseEmitter<T> {
 
+        @Serial
         private static final long serialVersionUID = 4023437720691792495L;
 
         final AtomicReference<T> queue;

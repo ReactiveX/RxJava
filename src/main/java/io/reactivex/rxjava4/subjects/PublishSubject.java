@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.subjects;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.annotations.*;
@@ -289,6 +290,7 @@ public final class PublishSubject<T> extends Subject<T> {
      */
     static final class PublishDisposable<T> extends AtomicBoolean implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = 3562861878281475070L;
         /** The actual subscriber. */
         final Observer<? super T> downstream;

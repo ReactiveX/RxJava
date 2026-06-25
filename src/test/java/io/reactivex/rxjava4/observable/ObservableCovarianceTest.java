@@ -113,7 +113,7 @@ public class ObservableCovarianceTest extends RxJavaTest {
 
     static Function<List<List<Movie>>, Observable<Movie>> calculateDelta = listOfLists -> {
         if (listOfLists.size() == 1) {
-            return Observable.fromIterable(listOfLists.get(0));
+            return Observable.fromIterable(listOfLists.getFirst());
         } else {
             // diff the two
             List<Movie> newList = listOfLists.get(1);

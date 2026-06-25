@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -59,6 +60,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
 
     static final class MergeSubscriber<T, U> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -2117620485640801370L;
 
         final Subscriber<? super U> downstream;
@@ -577,6 +579,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
     static final class InnerSubscriber<T, U> extends AtomicReference<Subscription>
     implements FlowableSubscriber<U>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -4606175640614850599L;
         final long id;
         final MergeSubscriber<T, U> parent;

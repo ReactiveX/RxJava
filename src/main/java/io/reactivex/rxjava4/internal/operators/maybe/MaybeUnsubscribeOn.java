@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.*;
@@ -41,6 +42,7 @@ public final class MaybeUnsubscribeOn<T> extends AbstractMaybeWithUpstream<T, T>
     static final class UnsubscribeOnMaybeObserver<T> extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 3256698449646456986L;
 
         final MaybeObserver<? super T> downstream;

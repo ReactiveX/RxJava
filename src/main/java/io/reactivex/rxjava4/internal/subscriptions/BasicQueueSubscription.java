@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscriptions;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.rxjava4.operators.QueueSubscription;
@@ -24,6 +25,7 @@ import io.reactivex.rxjava4.operators.QueueSubscription;
  */
 public abstract class BasicQueueSubscription<T> extends AtomicLong implements QueueSubscription<T> {
 
+    @Serial
     private static final long serialVersionUID = -6671519529404341862L;
 
     @Override

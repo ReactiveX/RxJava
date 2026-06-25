@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscriptions;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.Flow.*;
@@ -26,6 +27,7 @@ import io.reactivex.rxjava4.operators.QueueSubscription;
  */
 public final class ScalarSubscription<T> extends AtomicInteger implements QueueSubscription<T> {
 
+    @Serial
     private static final long serialVersionUID = -3830916580126663321L;
     /** The single value to emit, set to null. */
     final T value;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.parallel;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -56,6 +57,7 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
     extends AtomicInteger
     implements Subscription {
 
+        @Serial
         private static final long serialVersionUID = 3481980673745556697L;
 
         final Subscriber<? super T> downstream;
@@ -259,6 +261,7 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<List<T>> {
 
+        @Serial
         private static final long serialVersionUID = 6751017204873808094L;
 
         final SortedJoinSubscription<T> parent;

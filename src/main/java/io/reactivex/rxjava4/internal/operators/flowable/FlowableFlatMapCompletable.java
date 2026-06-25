@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -55,6 +56,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
     static final class FlatMapCompletableMainSubscriber<T> extends BasicIntQueueSubscription<T>
     implements FlowableSubscriber<T> {
+        @Serial
         private static final long serialVersionUID = 8443155186132538303L;
 
         final Subscriber<? super T> downstream;
@@ -199,6 +201,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
         }
 
         final class InnerConsumer extends AtomicReference<Disposable> implements CompletableObserver, Disposable {
+            @Serial
             private static final long serialVersionUID = 8606673141535671828L;
 
             @Override

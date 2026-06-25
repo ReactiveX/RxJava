@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -145,6 +146,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
     static final class RefConnection extends AtomicReference<Disposable>
     implements Runnable, Consumer<Disposable> {
 
+        @Serial
         private static final long serialVersionUID = -4552101107598366241L;
 
         final ObservableRefCount<?> parent;
@@ -180,6 +182,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
     static final class RefCountObserver<T>
     extends AtomicBoolean implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -7419642935409022375L;
 
         final Observer<? super T> downstream;

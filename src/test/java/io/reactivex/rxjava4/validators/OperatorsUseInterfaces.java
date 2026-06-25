@@ -99,8 +99,7 @@ public class OperatorsUseInterfaces {
                             if (argType instanceof GenericArrayType) {
                                 argType = ((GenericArrayType)argType).getGenericComponentType();
                             }
-                            if (argType instanceof ParameterizedType) {
-                                ParameterizedType lastArg = (ParameterizedType)argType;
+                            if (argType instanceof ParameterizedType lastArg) {
 
                                 if (CLASSES.contains(lastArg.getRawType())) {
                                     errors++;

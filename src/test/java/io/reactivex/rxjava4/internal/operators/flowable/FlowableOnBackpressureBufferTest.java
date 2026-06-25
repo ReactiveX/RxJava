@@ -93,7 +93,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         ts.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(500, ts.values().size());
         ts.assertNoErrors();
-        assertEquals(0, ts.values().get(0).intValue());
+        assertEquals(0, ts.values().getFirst().intValue());
         assertEquals(499, ts.values().get(499).intValue());
     }
 
@@ -376,6 +376,6 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
         ts.assertFailure(MissingBackpressureException.class);
 
-        assertTrue(ts.errors().get(0).getCause() instanceof TestException);
+        assertTrue(ts.errors().getFirst().getCause() instanceof TestException);
     }
 }

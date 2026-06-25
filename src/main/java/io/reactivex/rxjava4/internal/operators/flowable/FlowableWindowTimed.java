@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
@@ -73,6 +74,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
     abstract static class AbstractWindowSubscriber<T>
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription {
+        @Serial
         private static final long serialVersionUID = 5724293814035355511L;
 
         final Subscriber<? super Flowable<T>> downstream;
@@ -172,6 +174,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             extends AbstractWindowSubscriber<T>
             implements Runnable {
 
+        @Serial
         private static final long serialVersionUID = 1155822639622580836L;
 
         final Scheduler scheduler;
@@ -331,6 +334,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
     static final class WindowExactBoundedSubscriber<T>
     extends AbstractWindowSubscriber<T>
     implements Runnable {
+        @Serial
         private static final long serialVersionUID = -6130475889925953722L;
 
         final Scheduler scheduler;
@@ -453,8 +457,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         upstreamCancelled = true;
                         continue;
                     } else if (!isEmpty) {
-                        if (o instanceof WindowBoundaryRunnable) {
-                            WindowBoundaryRunnable boundary = (WindowBoundaryRunnable) o;
+                        if (o instanceof WindowBoundaryRunnable boundary) {
                             if (boundary.index == emitted || !restartTimerOnMaxSize) {
                                 this.count = 0;
                                 window = createNewWindow(window);
@@ -544,6 +547,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
     static final class WindowSkipSubscriber<T>
     extends AbstractWindowSubscriber<T>
     implements Runnable {
+        @Serial
         private static final long serialVersionUID = -7852870764194095894L;
 
         final long timeskip;
@@ -667,7 +671,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                             }
                         } else if (o == WINDOW_CLOSE) {
                             if (!windows.isEmpty()) {
-                                windows.remove(0).onComplete();
+                                windows.removeFirst().onComplete();
                             }
                         } else {
                             @SuppressWarnings("unchecked")

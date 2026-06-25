@@ -35,6 +35,8 @@ import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 
+import java.io.Serial;
+
 /**
  * Wraps lambda callbacks and when the upstream terminates or this observer gets disposed,
  * removes itself from a {@link io.reactivex.rxjava4.disposables.CompositeDisposable}.
@@ -46,6 +48,7 @@ public final class DisposableAutoReleaseObserver<T>
 extends AbstractDisposableAutoRelease
 implements Observer<T> {
 
+    @Serial
     private static final long serialVersionUID = 8924480688481408726L;
 
     final Consumer<? super T> onNext;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.subjects;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.annotations.*;
@@ -287,6 +288,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
 
     static final class SingleDisposable<T>
     extends AtomicReference<SingleSubject<T>> implements Disposable {
+        @Serial
         private static final long serialVersionUID = -7650903191002190468L;
 
         final SingleObserver<? super T> downstream;

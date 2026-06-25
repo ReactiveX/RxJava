@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -59,6 +60,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
     static final class SourceObserver<T, U> extends AtomicInteger implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 8828587559905699186L;
         final Observer<? super U> downstream;
         final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
@@ -232,6 +234,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
         static final class InnerObserver<U> extends AtomicReference<Disposable> implements Observer<U> {
 
+            @Serial
             private static final long serialVersionUID = -7449079488798789337L;
 
             final Observer<? super U> downstream;
@@ -273,6 +276,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
     extends AtomicInteger
     implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -6951100001833242599L;
 
         final Observer<? super R> downstream;
@@ -479,6 +483,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
         static final class DelayErrorInnerObserver<R> extends AtomicReference<Disposable> implements Observer<R> {
 
+            @Serial
             private static final long serialVersionUID = 2620149119579502636L;
 
             final Observer<? super R> downstream;

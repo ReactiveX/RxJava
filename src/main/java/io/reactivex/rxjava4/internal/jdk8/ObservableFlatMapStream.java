@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -73,6 +74,7 @@ public final class ObservableFlatMapStream<T, R> extends Observable<R> {
     static final class FlatMapStreamObserver<T, R> extends AtomicInteger
     implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -5127032662980523968L;
 
         final Observer<? super R> downstream;

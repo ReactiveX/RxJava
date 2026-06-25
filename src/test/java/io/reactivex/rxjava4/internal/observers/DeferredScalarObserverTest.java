@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.observers;
 
 import static org.junit.Assert.*;
 
+import java.io.Serial;
 import java.util.List;
 
 import org.junit.Test;
@@ -32,6 +33,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     static final class TakeFirst extends DeferredScalarObserver<Integer, Integer> {
 
+        @Serial
         private static final long serialVersionUID = -2793723002312330530L;
 
         TakeFirst(Observer<? super Integer> downstream) {
@@ -183,6 +185,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     static final class TakeLast extends DeferredScalarObserver<Integer, Integer> {
 
+        @Serial
         private static final long serialVersionUID = -2793723002312330530L;
 
         TakeLast(Observer<? super Integer> downstream) {

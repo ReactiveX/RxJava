@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,6 +48,7 @@ public final class FlowableTimer extends Flowable<Long> {
     static final class TimerSubscriber extends AtomicReference<Disposable>
     implements Subscription, Runnable {
 
+        @Serial
         private static final long serialVersionUID = -2809475196591179431L;
 
         final Subscriber<? super Long> downstream;

@@ -1129,7 +1129,7 @@ public class ObservableZipTest extends RxJavaTest {
             .awaitDone(5, TimeUnit.SECONDS)
             .assertValueCount(1);
 
-            List<Object> list = to.values().get(0);
+            List<Object> list = to.values().getFirst();
 
             assertTrue(list.toString(), list.contains("RxSi"));
             assertTrue(list.toString(), list.contains("RxCo"));

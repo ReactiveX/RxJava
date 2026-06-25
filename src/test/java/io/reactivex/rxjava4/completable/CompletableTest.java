@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.Publisher;
@@ -102,6 +103,7 @@ public class CompletableTest extends RxJavaTest {
      */
     static final class NormalCompletable extends AtomicInteger {
 
+        @Serial
         private static final long serialVersionUID = 7192337844700923752L;
 
         public final Completable completable = Completable.unsafeCreate(observer -> {
@@ -124,6 +126,7 @@ public class CompletableTest extends RxJavaTest {
      */
     static final class ErrorCompletable extends AtomicInteger {
 
+        @Serial
         private static final long serialVersionUID = 7192337844700923752L;
 
         public final Completable completable = Completable.unsafeCreate(observer -> {
@@ -2636,7 +2639,7 @@ public class CompletableTest extends RxJavaTest {
         ts.assertNotComplete();
         ts.assertError(CompositeException.class);
 
-        CompositeException ex = (CompositeException)ts.errors().get(0);
+        CompositeException ex = (CompositeException)ts.errors().getFirst();
 
         List<Throwable> listEx = ex.getExceptions();
 
@@ -3041,7 +3044,7 @@ public class CompletableTest extends RxJavaTest {
         ts.assertNotComplete();
         ts.assertError(CompositeException.class);
 
-        CompositeException ex = (CompositeException)ts.errors().get(0);
+        CompositeException ex = (CompositeException)ts.errors().getFirst();
 
         List<Throwable> listEx = ex.getExceptions();
 
@@ -3121,7 +3124,7 @@ public class CompletableTest extends RxJavaTest {
         ts.assertNotComplete();
         ts.assertError(CompositeException.class);
 
-        CompositeException composite = (CompositeException)ts.errors().get(0);
+        CompositeException composite = (CompositeException)ts.errors().getFirst();
 
         List<Throwable> errors = composite.getExceptions();
         Assert.assertEquals(2, errors.size());

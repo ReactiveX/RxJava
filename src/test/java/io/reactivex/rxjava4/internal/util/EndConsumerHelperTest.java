@@ -80,7 +80,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isCancelled());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -119,7 +119,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
 
         // with this consumer, the class name should be predictable
-        assertEquals(EndConsumerHelper.composeMessage("io.reactivex.rxjava4.internal.util.EndConsumerHelperTest$EndDefaultSubscriber"), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage("io.reactivex.rxjava4.internal.util.EndConsumerHelperTest$EndDefaultSubscriber"), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -155,7 +155,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isCancelled());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -191,7 +191,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isCancelled());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -226,7 +226,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isDisposed());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -262,7 +262,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isDisposed());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -298,7 +298,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isDisposed());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -330,7 +330,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isDisposed());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -362,7 +362,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isDisposed());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -398,7 +398,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isDisposed());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -434,7 +434,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isDisposed());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -466,7 +466,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isDisposed());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 
@@ -498,7 +498,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
         assertTrue(sub2.isDisposed());
 
         TestHelper.assertError(errors, 0, ProtocolViolationException.class);
-        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.get(0).getMessage());
+        assertEquals(EndConsumerHelper.composeMessage(consumer.getClass().getName()), errors.getFirst().getMessage());
         assertEquals(errors.toString(), 1, errors.size());
     }
 

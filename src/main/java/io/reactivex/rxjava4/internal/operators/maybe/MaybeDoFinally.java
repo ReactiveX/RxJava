@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.core.*;
@@ -44,6 +45,7 @@ public final class MaybeDoFinally<T> extends AbstractMaybeWithUpstream<T, T> {
 
     static final class DoFinallyObserver<T> extends AtomicInteger implements MaybeObserver<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 4109457741734051389L;
 
         final MaybeObserver<? super T> downstream;

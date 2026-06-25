@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.virtual;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
@@ -65,6 +66,7 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
     static final class ExecutorVirtualCreateSubscription<T> extends AtomicLong
     implements Subscription, Callable<Void>, Runnable, VirtualEmitter<T> {
 
+        @Serial
         private static final long serialVersionUID = -6959205135542203083L;
 
         Subscriber<? super T> downstream;

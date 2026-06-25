@@ -21,6 +21,8 @@ import io.reactivex.rxjava4.functions.Predicate;
 import io.reactivex.rxjava4.internal.subscriptions.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
+
 public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolean> {
 
     final Predicate<? super T> predicate;
@@ -37,6 +39,7 @@ public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolea
 
     static final class AllSubscriber<T> extends DeferredScalarSubscription<Boolean> implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -3521127104134758517L;
         final Predicate<? super T> predicate;
 

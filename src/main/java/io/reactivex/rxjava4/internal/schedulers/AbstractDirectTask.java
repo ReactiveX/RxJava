@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
+import java.io.Serial;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -28,6 +29,7 @@ abstract class AbstractDirectTask
 extends AtomicReference<Future<?>>
 implements Disposable, SchedulerRunnableIntrospection {
 
+    @Serial
     private static final long serialVersionUID = 1811839108042568751L;
 
     protected final Runnable runnable;

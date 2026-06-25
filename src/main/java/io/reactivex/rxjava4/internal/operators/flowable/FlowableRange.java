@@ -21,6 +21,8 @@ import io.reactivex.rxjava4.internal.subscriptions.*;
 import io.reactivex.rxjava4.internal.util.BackpressureHelper;
 import io.reactivex.rxjava4.operators.ConditionalSubscriber;
 
+import java.io.Serial;
+
 /**
  * Emits a range of integer values.
  */
@@ -43,6 +45,7 @@ public final class FlowableRange extends Flowable<Integer> {
     }
 
     abstract static class BaseRangeSubscription extends BasicQueueSubscription<Integer> {
+        @Serial
         private static final long serialVersionUID = -2252972430506210021L;
 
         final int end;
@@ -107,6 +110,7 @@ public final class FlowableRange extends Flowable<Integer> {
 
     static final class RangeSubscription extends BaseRangeSubscription {
 
+        @Serial
         private static final long serialVersionUID = 2587302975077663557L;
 
         final Subscriber<? super Integer> downstream;
@@ -175,6 +179,7 @@ public final class FlowableRange extends Flowable<Integer> {
 
     static final class RangeConditionalSubscription extends BaseRangeSubscription {
 
+        @Serial
         private static final long serialVersionUID = 2587302975077663557L;
 
         final ConditionalSubscriber<? super Integer> downstream;

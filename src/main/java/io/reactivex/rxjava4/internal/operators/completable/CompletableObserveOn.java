@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.*;
@@ -38,6 +39,7 @@ public final class CompletableObserveOn extends Completable {
     extends AtomicReference<Disposable>
     implements CompletableObserver, Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 8571289934935992137L;
 
         final CompletableObserver downstream;

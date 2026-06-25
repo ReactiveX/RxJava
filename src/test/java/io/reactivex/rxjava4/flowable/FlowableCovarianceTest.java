@@ -114,7 +114,7 @@ public class FlowableCovarianceTest extends RxJavaTest {
 
     static Function<List<List<Movie>>, Flowable<Movie>> calculateDelta = listOfLists -> {
         if (listOfLists.size() == 1) {
-            return Flowable.fromIterable(listOfLists.get(0));
+            return Flowable.fromIterable(listOfLists.getFirst());
         } else {
             // diff the two
             List<Movie> newList = listOfLists.get(1);

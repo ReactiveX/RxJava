@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -79,6 +80,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
     static final class LatestCoordinator<T, R> extends AtomicInteger implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = 8567835998786448817L;
         final Observer<? super R> downstream;
         final Function<? super Object[], ? extends R> combiner;
@@ -281,6 +283,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
     }
 
     static final class CombinerObserver<T, R> extends AtomicReference<Disposable> implements Observer<T> {
+        @Serial
         private static final long serialVersionUID = -4823716997131257941L;
 
         final LatestCoordinator<T, R> parent;

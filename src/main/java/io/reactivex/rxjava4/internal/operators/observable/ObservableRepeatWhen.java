@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -62,6 +63,7 @@ public final class ObservableRepeatWhen<T> extends AbstractObservableWithUpstrea
 
     static final class RepeatWhenObserver<T> extends AtomicInteger implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 802743776666017014L;
 
         final Observer<? super T> downstream;
@@ -156,6 +158,7 @@ public final class ObservableRepeatWhen<T> extends AbstractObservableWithUpstrea
 
         final class InnerRepeatObserver extends AtomicReference<Disposable> implements Observer<Object> {
 
+            @Serial
             private static final long serialVersionUID = 3254781284376480842L;
 
             @Override

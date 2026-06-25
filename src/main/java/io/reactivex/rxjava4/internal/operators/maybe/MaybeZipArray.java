@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -65,6 +66,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
 
     static final class ZipCoordinator<T, R> extends AtomicInteger implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = -5556924161382950569L;
 
         final MaybeObserver<? super R> downstream;
@@ -160,6 +162,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = 3323743579927613702L;
 
         final ZipCoordinator<T, ?> parent;

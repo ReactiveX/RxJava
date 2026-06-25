@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -44,6 +45,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
     static final class DebounceSubscriber<T, U> extends AtomicLong
     implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = 6725975399620862591L;
         final Subscriber<? super T> downstream;
         final Function<? super T, ? extends Publisher<U>> debounceSelector;

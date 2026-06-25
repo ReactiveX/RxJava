@@ -15,6 +15,8 @@ package io.reactivex.rxjava4.internal.schedulers;
 
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
+
 /**
  * A Callable to be submitted to an ExecutorService that runs a Runnable
  * action periodically and manages completion/cancellation.
@@ -22,6 +24,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  */
 public final class ScheduledDirectPeriodicTask extends AbstractDirectTask implements Runnable {
 
+    @Serial
     private static final long serialVersionUID = 1811839108042568751L;
 
     public ScheduledDirectPeriodicTask(Runnable runnable, boolean interruptOnCancel) {

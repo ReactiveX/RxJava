@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.concurrent.Flow.*;
@@ -49,6 +50,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
 
     static final class BackpressureBufferSubscriber<T> extends BasicIntQueueSubscription<T> implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -2514538129242366402L;
 
         final Subscriber<? super T> downstream;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -54,6 +55,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
     static final class MergeObserver<T, U> extends AtomicInteger implements Disposable, Observer<T> {
 
+        @Serial
         private static final long serialVersionUID = -2117620485640801370L;
 
         final Observer<? super U> downstream;
@@ -479,6 +481,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
     static final class InnerObserver<T, U> extends AtomicReference<Disposable>
     implements Observer<U> {
 
+        @Serial
         private static final long serialVersionUID = -4606175640614850599L;
         final long id;
         final MergeObserver<T, U> parent;

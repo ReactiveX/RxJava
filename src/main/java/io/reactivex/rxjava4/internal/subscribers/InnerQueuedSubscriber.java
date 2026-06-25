@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.Flow.*;
@@ -33,6 +34,7 @@ public final class InnerQueuedSubscriber<T>
 extends AtomicReference<Subscription>
 implements FlowableSubscriber<T>, Subscription {
 
+    @Serial
     private static final long serialVersionUID = 22876611072430776L;
 
     final InnerQueuedSubscriberSupport<T> parent;

@@ -1448,8 +1448,8 @@ public class FlowableGroupByTest extends RxJavaTest {
             V v;
             if (maxSize > 0 && list.size() == maxSize) {
                 //remove first
-                K k = list.get(0);
-                list.remove(0);
+                K k = list.getFirst();
+                list.removeFirst();
                 v = map.remove(k);
             } else {
                 v = null;
@@ -1666,7 +1666,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
         ts.assertFailure(MissingBackpressureException.class);
 
-        assertTrue("" + ts.errors().get(0).getCause(), ts.errors().get(0).getCause() instanceof TestException);
+        assertTrue("" + ts.errors().getFirst().getCause(), ts.errors().getFirst().getCause() instanceof TestException);
     }
 
     @Test
@@ -1706,7 +1706,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                 }, Functions.emptyConsumer(), () -> done.set(true));
 
         while (!done.get()) {
-            tss.remove(0).cancel();
+            tss.removeFirst().cancel();
         }
 
         assertEquals(1000, counter.get());

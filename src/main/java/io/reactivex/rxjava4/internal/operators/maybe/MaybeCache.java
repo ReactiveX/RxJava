@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.*;
@@ -173,6 +174,7 @@ public final class MaybeCache<T> extends Maybe<T> implements MaybeObserver<T> {
     extends AtomicReference<MaybeCache<T>>
     implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = -5791853038359966195L;
 
         final MaybeObserver<? super T> downstream;

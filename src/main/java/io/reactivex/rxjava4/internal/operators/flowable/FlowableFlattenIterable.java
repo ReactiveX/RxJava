@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -97,6 +98,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
     extends BasicIntQueueSubscription<R>
     implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -3096000382929934955L;
 
         final Subscriber<? super R> downstream;

@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 
 import static io.reactivex.rxjava4.internal.util.ExceptionHelper.timeoutMessage;
 
+import java.io.Serial;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
@@ -58,6 +59,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
     static final class TimeoutSubscriber<T> extends AtomicLong
     implements FlowableSubscriber<T>, Subscription, TimeoutSupport {
 
+        @Serial
         private static final long serialVersionUID = 3764492702657003550L;
 
         final Subscriber<? super T> downstream;
@@ -174,6 +176,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
     static final class TimeoutFallbackSubscriber<T> extends SubscriptionArbiter
     implements FlowableSubscriber<T>, TimeoutSupport {
 
+        @Serial
         private static final long serialVersionUID = 3764492702657003550L;
 
         final Subscriber<? super T> downstream;

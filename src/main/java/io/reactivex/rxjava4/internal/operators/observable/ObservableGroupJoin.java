@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -84,6 +85,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
     static final class GroupJoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Disposable, JoinSupport {
 
+        @Serial
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Observer<? super R> downstream;
@@ -378,6 +380,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
     extends AtomicReference<Disposable>
     implements Observer<Object>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 1883890389173668373L;
 
         final JoinSupport parent;
@@ -425,6 +428,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
     extends AtomicReference<Disposable>
     implements Observer<Object>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 1883890389173668373L;
 
         final JoinSupport parent;

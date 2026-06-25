@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
@@ -83,6 +84,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
     extends AtomicInteger
     implements Subscription {
 
+        @Serial
         private static final long serialVersionUID = -2434867452883857743L;
 
         final Subscriber<? super R> downstream;
@@ -311,6 +313,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
     static final class ZipSubscriber<T, R> extends AtomicReference<Subscription> implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -4627193790118206028L;
 
         final ZipCoordinator<T, R> parent;
