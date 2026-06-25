@@ -96,7 +96,7 @@ public final class FlowableCollectTest extends RxJavaTest {
                     .assertNotComplete();
 
             assertEquals(1, list.size());
-            assertEquals(e2, list.get(0).getCause());
+            assertEquals(e2, list.getFirst().getCause());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -212,7 +212,7 @@ public final class FlowableCollectTest extends RxJavaTest {
                     .assertNotComplete();
 
             assertEquals(1, list.size());
-            assertEquals(e2, list.get(0).getCause());
+            assertEquals(e2, list.getFirst().getCause());
         } finally {
             RxJavaPlugins.reset();
         }

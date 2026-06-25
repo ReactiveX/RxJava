@@ -1186,7 +1186,7 @@ public class FlowableZipTest extends RxJavaTest {
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class, "11", "22");
 
-        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().getFirst());
         TestHelper.assertError(errors, 0, TestException.class, "One");
         TestHelper.assertError(errors, 1, TestException.class, "Two");
         assertEquals(2, errors.size());
@@ -1204,7 +1204,7 @@ public class FlowableZipTest extends RxJavaTest {
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class, "11", "22");
 
-        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().getFirst());
         TestHelper.assertError(errors, 0, TestException.class, "One");
         TestHelper.assertError(errors, 1, TestException.class, "Two");
         assertEquals(2, errors.size());
@@ -1449,7 +1449,7 @@ public class FlowableZipTest extends RxJavaTest {
             .awaitDone(5, TimeUnit.SECONDS)
             .assertValueCount(1);
 
-            List<Object> list = ts.values().get(0);
+            List<Object> list = ts.values().getFirst();
 
             assertTrue(list.toString(), list.contains("RxSi"));
             assertTrue(list.toString(), list.contains("RxCo"));

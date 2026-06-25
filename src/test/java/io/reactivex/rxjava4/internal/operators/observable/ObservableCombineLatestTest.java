@@ -829,7 +829,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
                 TestHelper.race(r1, r2);
 
                 if (to.errors().size() != 0) {
-                    if (to.errors().get(0) instanceof CompositeException) {
+                    if (to.errors().getFirst() instanceof CompositeException) {
                         to.assertSubscribed()
                         .assertNotComplete()
                         .assertNoValues();

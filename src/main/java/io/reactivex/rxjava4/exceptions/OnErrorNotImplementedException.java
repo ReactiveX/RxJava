@@ -15,6 +15,8 @@ package io.reactivex.rxjava4.exceptions;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 
+import java.io.Serial;
+
 /**
  * Represents an exception used to signal to the {@code RxJavaPlugins.onError()} that a
  * callback-based subscribe() method on a base reactive type didn't specify
@@ -24,6 +26,7 @@ import io.reactivex.rxjava4.annotations.NonNull;
  */
 public final class OnErrorNotImplementedException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = -6298857009889503852L;
 
     /**

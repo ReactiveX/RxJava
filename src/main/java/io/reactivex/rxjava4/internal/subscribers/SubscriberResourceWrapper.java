@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.Flow.*;
@@ -24,6 +25,7 @@ import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;
 
 public final class SubscriberResourceWrapper<T> extends AtomicReference<Disposable> implements FlowableSubscriber<T>, Disposable, Subscription {
 
+    @Serial
     private static final long serialVersionUID = -8612022020200669122L;
 
     final Subscriber<? super T> downstream;

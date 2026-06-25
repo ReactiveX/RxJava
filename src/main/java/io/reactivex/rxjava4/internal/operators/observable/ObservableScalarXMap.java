@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -177,6 +178,7 @@ public final class ObservableScalarXMap {
     extends AtomicInteger
     implements QueueDisposable<T>, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 3880992722410194083L;
 
         final Observer<? super T> observer;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -49,6 +50,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
     static final class MergeWithObserver<T> extends AtomicInteger
     implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -4592979584110982903L;
 
         final Observer<? super T> downstream;
@@ -230,6 +232,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
         static final class OtherObserver<T> extends AtomicReference<Disposable>
         implements MaybeObserver<T> {
 
+            @Serial
             private static final long serialVersionUID = -2935427570954647017L;
 
             final MergeWithObserver<T> parent;

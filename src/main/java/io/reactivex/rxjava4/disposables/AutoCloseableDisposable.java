@@ -16,12 +16,15 @@ package io.reactivex.rxjava4.disposables;
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 
+import java.io.Serial;
+
 /**
  * A disposable container that manages an {@link AutoCloseable} instance.
  * @since 3.0.0
  */
 final class AutoCloseableDisposable extends ReferenceDisposable<AutoCloseable> {
 
+    @Serial
     private static final long serialVersionUID = -6646144244598696847L;
 
     AutoCloseableDisposable(AutoCloseable value) {

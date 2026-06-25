@@ -19,6 +19,7 @@ import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.BiFunction;
 import static java.util.concurrent.Flow.*;
 
+import java.io.Serial;
 import java.util.Objects;
 
 public final class FlowableOnBackpressureReduce<T> extends AbstractFlowableWithUpstream<T, T> {
@@ -37,6 +38,7 @@ public final class FlowableOnBackpressureReduce<T> extends AbstractFlowableWithU
 
     static final class BackpressureReduceSubscriber<T> extends AbstractBackpressureThrottlingSubscriber<T, T> {
 
+        @Serial
         private static final long serialVersionUID = 821363947659780367L;
 
         final BiFunction<T, T, T> reducer;

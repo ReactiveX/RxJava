@@ -200,7 +200,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(ts.values().toString(), ts.values().get(0).startsWith("RxSingleScheduler-"));
+        assertTrue(ts.values().toString(), ts.values().getFirst().startsWith("RxSingleScheduler-"));
     }
 
     @Test
@@ -213,7 +213,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(ts.values().toString(), ts.values().get(0).startsWith("RxSingleScheduler-"));
+        assertTrue(ts.values().toString(), ts.values().getFirst().startsWith("RxSingleScheduler-"));
     }
 
     @Test
@@ -226,7 +226,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(ts.values().toString(), ts.values().get(0).startsWith("RxSingleScheduler-"));
+        assertTrue(ts.values().toString(), ts.values().getFirst().startsWith("RxSingleScheduler-"));
     }
 
     @Test
@@ -240,7 +240,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(ts.values().toString(), ts.values().get(0).startsWith("RxSingleScheduler-"));
+        assertTrue(ts.values().toString(), ts.values().getFirst().startsWith("RxSingleScheduler-"));
     }
 
     @Test
@@ -254,7 +254,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(ts.values().toString(), ts.values().get(0).startsWith("RxSingleScheduler-"));
+        assertTrue(ts.values().toString(), ts.values().getFirst().startsWith("RxSingleScheduler-"));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(ts.values().toString(), ts.values().get(0).startsWith("RxSingleScheduler-"));
+        assertTrue(ts.values().toString(), ts.values().getFirst().startsWith("RxSingleScheduler-"));
     }
 
     @Test
@@ -878,7 +878,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(ts.values().toString(), ts.values().get(0).startsWith("RxSingleScheduler-"));
+        assertTrue(ts.values().toString(), ts.values().getFirst().startsWith("RxSingleScheduler-"));
     }
 
     @Test
@@ -896,7 +896,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(ts.values().toString(), ts.values().get(0).startsWith("RxSingleScheduler-"));
+        assertTrue(ts.values().toString(), ts.values().getFirst().startsWith("RxSingleScheduler-"));
     }
 
     @Test
@@ -914,7 +914,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(ts.values().toString(), ts.values().get(0).startsWith("RxSingleScheduler-"));
+        assertTrue(ts.values().toString(), ts.values().getFirst().startsWith("RxSingleScheduler-"));
     }
 
     @Test

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.Flow.*;
@@ -42,6 +43,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
 
     static final class RetryBiSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -7098360935104053232L;
 
         final Subscriber<? super T> downstream;

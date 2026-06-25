@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -85,6 +86,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
     static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Subscription, JoinSupport {
 
+        @Serial
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Subscriber<? super R> downstream;
@@ -389,6 +391,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<Object>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 1883890389173668373L;
 
         final JoinSupport parent;
@@ -436,6 +439,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<Object>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 1883890389173668373L;
 
         final JoinSupport parent;

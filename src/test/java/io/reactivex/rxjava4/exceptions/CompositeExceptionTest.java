@@ -192,6 +192,7 @@ public class CompositeExceptionTest extends RxJavaTest {
     public void compositeExceptionWithUnsupportedInitCause() {
         Throwable t = new Throwable() /* NFI */ {
 
+            @Serial
             private static final long serialVersionUID = -3282577447436848385L;
 
             @Override
@@ -216,6 +217,7 @@ public class CompositeExceptionTest extends RxJavaTest {
     public void compositeExceptionWithNullInitCause() {
         Throwable t = new Throwable("ThrowableWithNullInitCause") /* NFI */ {
 
+            @Serial
             private static final long serialVersionUID = -7984762607894527888L;
 
             @Override
@@ -250,11 +252,11 @@ public class CompositeExceptionTest extends RxJavaTest {
 
     @Test
     public void constructorWithNull() {
-        assertTrue(new CompositeException((Throwable[])null).getExceptions().get(0) instanceof NullPointerException);
+        assertTrue(new CompositeException((Throwable[])null).getExceptions().getFirst() instanceof NullPointerException);
 
-        assertTrue(new CompositeException((Iterable<Throwable>)null).getExceptions().get(0) instanceof NullPointerException);
+        assertTrue(new CompositeException((Iterable<Throwable>)null).getExceptions().getFirst() instanceof NullPointerException);
 
-        assertTrue(new CompositeException(null, new TestException()).getExceptions().get(0) instanceof NullPointerException);
+        assertTrue(new CompositeException(null, new TestException()).getExceptions().getFirst() instanceof NullPointerException);
     }
 
     @Test
@@ -362,6 +364,7 @@ public class CompositeExceptionTest extends RxJavaTest {
 }
 
 final class BadException extends Throwable {
+    @Serial
     private static final long serialVersionUID = 8999507293896399171L;
 
     @Override

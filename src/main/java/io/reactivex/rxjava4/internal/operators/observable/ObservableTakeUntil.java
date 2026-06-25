@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -41,6 +42,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
     static final class TakeUntilMainObserver<T, U> extends AtomicInteger
     implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 1418547743690811973L;
 
         final Observer<? super T> downstream;
@@ -104,6 +106,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
         final class OtherObserver extends AtomicReference<Disposable>
         implements Observer<U> {
 
+            @Serial
             private static final long serialVersionUID = -8693423678067375039L;
 
             @Override

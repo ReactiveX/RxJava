@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -70,6 +71,7 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription, Runnable {
 
+        @Serial
         private static final long serialVersionUID = -8296689127439125014L;
 
         final Subscriber<? super T> downstream;

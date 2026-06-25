@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -42,6 +43,7 @@ public final class SingleFlatMapMaybe<T, R> extends Maybe<R> {
     extends AtomicReference<Disposable>
     implements SingleObserver<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -5843758257109742742L;
 
         final MaybeObserver<? super R> downstream;

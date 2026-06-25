@@ -189,7 +189,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
         assertEquals(1, values.size());
 
-        Observer<Object> mo = values.get(0);
+        Observer<Object> mo = values.getFirst();
 
         verify(mo).onNext(0);
         verify(mo).onNext(1);
@@ -239,7 +239,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
         assertEquals(1, values.size());
 
-        Observer<Object> mo = values.get(0);
+        Observer<Object> mo = values.getFirst();
 
         verify(mo).onNext(0);
         verify(mo).onNext(1);
@@ -263,7 +263,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
         .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(to.errors().getFirst());
 
         TestHelper.assertError(errors, 0, TestException.class);
     }

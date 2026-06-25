@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.*;
 
@@ -37,6 +38,7 @@ public final class FlowableTakeLast<T> extends AbstractFlowableWithUpstream<T, T
 
     static final class TakeLastSubscriber<T> extends ArrayDeque<T> implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = 7240042530241604978L;
         final Subscriber<? super T> downstream;
         final int count;

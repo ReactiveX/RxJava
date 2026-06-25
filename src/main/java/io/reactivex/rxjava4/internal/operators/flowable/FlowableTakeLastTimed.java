@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -50,6 +51,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
 
     static final class TakeLastTimedSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -5677354903406201275L;
         final Subscriber<? super T> downstream;
         final long count;

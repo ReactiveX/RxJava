@@ -22,6 +22,7 @@ import io.reactivex.rxjava4.internal.subscriptions.*;
 import io.reactivex.rxjava4.parallel.ParallelFlowable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
 import java.util.Objects;
 
 /**
@@ -87,6 +88,7 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
     static final class ParallelReduceSubscriber<T, R> extends DeferredScalarSubscriber<T, R> {
 
+        @Serial
         private static final long serialVersionUID = 8200530050639449080L;
 
         final BiFunction<R, ? super T, R> reducer;

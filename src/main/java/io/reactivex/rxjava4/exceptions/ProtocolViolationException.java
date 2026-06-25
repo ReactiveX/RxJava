@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava4.exceptions;
 
+import java.io.Serial;
+
 /**
  * Explicitly named exception to indicate a Reactive-Streams
  * protocol violation.
@@ -21,6 +23,7 @@ package io.reactivex.rxjava4.exceptions;
  */
 public final class ProtocolViolationException extends IllegalStateException {
 
+    @Serial
     private static final long serialVersionUID = 1644750035281290266L;
 
     /**

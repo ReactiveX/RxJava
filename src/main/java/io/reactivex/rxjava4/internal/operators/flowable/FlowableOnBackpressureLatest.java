@@ -16,6 +16,9 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Consumer;
+
+import java.io.Serial;
+
 import static java.util.concurrent.Flow.*;
 
 public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithUpstream<T, T> {
@@ -34,6 +37,7 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
 
     static final class BackpressureLatestSubscriber<T> extends AbstractBackpressureThrottlingSubscriber<T, T> {
 
+        @Serial
         private static final long serialVersionUID = 163080509307634843L;
 
         final Consumer<? super T> onDropped;

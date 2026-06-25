@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.util;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.Flow.*;
@@ -28,6 +29,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  */
 public final class AtomicThrowable extends AtomicReference<Throwable> {
 
+    @Serial
     private static final long serialVersionUID = 3949248817947090603L;
 
     /**

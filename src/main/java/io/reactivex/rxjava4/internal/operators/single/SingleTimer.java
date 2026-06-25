@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -44,6 +45,7 @@ public final class SingleTimer extends Single<Long> {
 
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 8465401857522493082L;
         final SingleObserver<? super Long> downstream;
 

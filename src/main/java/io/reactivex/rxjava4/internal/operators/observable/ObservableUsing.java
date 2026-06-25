@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -74,6 +75,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
 
     static final class UsingObserver<T, D> extends AtomicBoolean implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 5904473792286235046L;
 
         final Observer<? super T> downstream;

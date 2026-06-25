@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
+import java.io.Serial;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -55,6 +56,7 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
     extends AtomicReference<Disposable>
     implements SingleObserver<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -622603812305745221L;
 
         final SingleObserver<? super T> downstream;
@@ -127,6 +129,7 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<Object> {
 
+        @Serial
         private static final long serialVersionUID = 5170026210238877381L;
 
         final TakeUntilMainObserver<?> parent;

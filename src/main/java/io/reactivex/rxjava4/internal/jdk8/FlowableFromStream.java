@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
+import java.io.Serial;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
@@ -88,6 +89,7 @@ public final class FlowableFromStream<T> extends Flowable<T> {
 
     abstract static class AbstractStreamSubscription<T> extends AtomicLong implements QueueSubscription<T> {
 
+        @Serial
         private static final long serialVersionUID = -9082954702547571853L;
 
         Iterator<T> iterator;
@@ -181,6 +183,7 @@ public final class FlowableFromStream<T> extends Flowable<T> {
 
     static final class StreamSubscription<T> extends AbstractStreamSubscription<T> {
 
+        @Serial
         private static final long serialVersionUID = -9082954702547571853L;
 
         final Subscriber<? super T> downstream;
@@ -249,6 +252,7 @@ public final class FlowableFromStream<T> extends Flowable<T> {
 
     static final class StreamConditionalSubscription<T> extends AbstractStreamSubscription<T> {
 
+        @Serial
         private static final long serialVersionUID = -9082954702547571853L;
 
         final ConditionalSubscriber<? super T> downstream;

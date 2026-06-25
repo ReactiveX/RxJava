@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
@@ -75,6 +76,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
     static final class ZipCoordinator<T, R> extends AtomicInteger implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = 2983708048395377667L;
         final Observer<? super R> downstream;
         final Function<? super Object[], ? extends R> zipper;

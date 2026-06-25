@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.rxjava4.core.*;
@@ -34,6 +35,7 @@ public final class ObservableUnsubscribeOn<T> extends AbstractObservableWithUpst
 
     static final class UnsubscribeObserver<T> extends AtomicBoolean implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 1015244841293359600L;
 
         final Observer<? super T> downstream;

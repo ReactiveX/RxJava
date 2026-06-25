@@ -416,7 +416,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
 
                 ts.assertError(Throwable.class).assertSubscribed().assertNotComplete().assertValueCount(1);
 
-                Throwable exc = ts.errors().get(0);
+                Throwable exc = ts.errors().getFirst();
 
                 if (exc instanceof CompositeException) {
                     List<Throwable> es = TestHelper.compositeList(exc);
@@ -464,7 +464,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
 
                 ts.assertError(Throwable.class).assertSubscribed().assertNotComplete().assertNoValues();
 
-                Throwable exc = ts.errors().get(0);
+                Throwable exc = ts.errors().getFirst();
 
                 if (exc instanceof CompositeException) {
                     List<Throwable> es = TestHelper.compositeList(exc);

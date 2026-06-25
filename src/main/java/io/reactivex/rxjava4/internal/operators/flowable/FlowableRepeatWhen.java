@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -68,6 +69,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
     extends AtomicInteger
     implements FlowableSubscriber<Object>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = 2827772011130406689L;
 
         final Publisher<T> source;
@@ -131,6 +133,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
     abstract static class WhenSourceSubscriber<T, U> extends SubscriptionArbiter implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -5604623027276966720L;
 
         protected final Subscriber<? super T> downstream;
@@ -180,6 +183,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
     static final class RepeatWhenSubscriber<T> extends WhenSourceSubscriber<T, Object> {
 
+        @Serial
         private static final long serialVersionUID = -2680129890138081029L;
 
         RepeatWhenSubscriber(Subscriber<? super T> actual, FlowableProcessor<Object> processor,

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
+import java.io.Serial;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -24,6 +25,7 @@ import io.reactivex.rxjava4.internal.util.NotificationLite;
 
 public final class BlockingSubscriber<T> extends AtomicReference<Subscription> implements FlowableSubscriber<T>, Subscription {
 
+    @Serial
     private static final long serialVersionUID = -4875965440900746268L;
 
     public static final Object TERMINATED = new Object();

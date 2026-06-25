@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
-import java.io.File;
+import java.io.*;
 import java.lang.management.*;
 import java.lang.reflect.*;
 import java.net.URL;
@@ -219,10 +219,9 @@ public enum TestHelper {
     }
 
     public static void assertError(TestObserverEx<?> to, int index, Class<? extends Throwable> clazz) {
-        Throwable ex = to.errors().get(0);
+        Throwable ex = to.errors().getFirst();
         try {
-            if (ex instanceof CompositeException) {
-                CompositeException ce = (CompositeException) ex;
+            if (ex instanceof CompositeException ce) {
                 List<Throwable> cel = ce.getExceptions();
                 assertTrue(cel.get(index).toString(), clazz.isInstance(cel.get(index)));
             } else {
@@ -235,9 +234,8 @@ public enum TestHelper {
     }
 
     public static void assertError(TestSubscriberEx<?> ts, int index, Class<? extends Throwable> clazz) {
-        Throwable ex = ts.errors().get(0);
-        if (ex instanceof CompositeException) {
-            CompositeException ce = (CompositeException) ex;
+        Throwable ex = ts.errors().getFirst();
+        if (ex instanceof CompositeException ce) {
             List<Throwable> cel = ce.getExceptions();
             assertTrue(cel.get(index).toString(), clazz.isInstance(cel.get(index)));
         } else {
@@ -246,9 +244,8 @@ public enum TestHelper {
     }
 
     public static void assertError(TestObserverEx<?> to, int index, Class<? extends Throwable> clazz, String message) {
-        Throwable ex = to.errors().get(0);
-        if (ex instanceof CompositeException) {
-            CompositeException ce = (CompositeException) ex;
+        Throwable ex = to.errors().getFirst();
+        if (ex instanceof CompositeException ce) {
             List<Throwable> cel = ce.getExceptions();
             assertTrue(cel.get(index).toString(), clazz.isInstance(cel.get(index)));
             assertEquals(message, cel.get(index).getMessage());
@@ -258,9 +255,8 @@ public enum TestHelper {
     }
 
     public static void assertError(TestSubscriberEx<?> ts, int index, Class<? extends Throwable> clazz, String message) {
-        Throwable ex = ts.errors().get(0);
-        if (ex instanceof CompositeException) {
-            CompositeException ce = (CompositeException) ex;
+        Throwable ex = ts.errors().getFirst();
+        if (ex instanceof CompositeException ce) {
             List<Throwable> cel = ce.getExceptions();
             assertTrue(cel.get(index).toString(), clazz.isInstance(cel.get(index)));
             assertEquals(message, cel.get(index).getMessage());
@@ -346,8 +342,8 @@ public enum TestHelper {
                 throw new AssertionError(ex.getMessage());
             }
 
-            assertTrue(list.toString(), list.get(0) instanceof IllegalArgumentException);
-            assertEquals("n > 0 required but it was -99", list.get(0).getMessage());
+            assertTrue(list.toString(), list.getFirst() instanceof IllegalArgumentException);
+            assertEquals("n > 0 required but it was -99", list.getFirst().getMessage());
         } finally {
             RxJavaPlugins.setErrorHandler(null);
         }
@@ -407,8 +403,8 @@ public enum TestHelper {
                 throw new AssertionError(ex.getMessage());
             }
 
-            assertTrue(list.toString(), list.get(0) instanceof IllegalArgumentException);
-            assertEquals("n > 0 required but it was -99", list.get(0).getMessage());
+            assertTrue(list.toString(), list.getFirst() instanceof IllegalArgumentException);
+            assertEquals("n > 0 required but it was -99", list.getFirst().getMessage());
         } finally {
             RxJavaPlugins.setErrorHandler(null);
         }
@@ -2415,7 +2411,7 @@ public enum TestHelper {
         .assertError(CompositeException.class)
         .assertNotComplete();
 
-        List<Throwable> list = compositeList(ts.errors().get(0));
+        List<Throwable> list = compositeList(ts.errors().getFirst());
 
         assertEquals(classes.length, list.size());
 
@@ -2437,7 +2433,7 @@ public enum TestHelper {
         .assertError(CompositeException.class)
         .assertNotComplete();
 
-        assertCompositeExceptionListOf(ts.errors().get(0), classesAndMessages);
+        assertCompositeExceptionListOf(ts.errors().getFirst(), classesAndMessages);
     }
 
     /**
@@ -2453,7 +2449,7 @@ public enum TestHelper {
         .assertError(CompositeException.class)
         .assertNotComplete();
 
-        List<Throwable> list = compositeList(to.errors().get(0));
+        List<Throwable> list = compositeList(to.errors().getFirst());
 
         assertEquals(classes.length, list.size());
 
@@ -2475,7 +2471,7 @@ public enum TestHelper {
         .assertError(CompositeException.class)
         .assertNotComplete();
 
-        assertCompositeExceptionListOf(to.errors().get(0), classesAndMessages);
+        assertCompositeExceptionListOf(to.errors().getFirst(), classesAndMessages);
     }
 
     @SuppressWarnings("unchecked")
@@ -2655,7 +2651,7 @@ public enum TestHelper {
      * @return the list
      */
     public static List<Throwable> errorList(TestObserverEx<?> to) {
-        return compositeList(to.errors().get(0));
+        return compositeList(to.errors().getFirst());
     }
 
     /**
@@ -2664,7 +2660,7 @@ public enum TestHelper {
      * @return the list
      */
     public static List<Throwable> errorList(TestSubscriberEx<?> ts) {
-        return compositeList(ts.errors().get(0));
+        return compositeList(ts.errors().getFirst());
     }
 
     /**
@@ -2712,8 +2708,7 @@ public enum TestHelper {
 
             Object o = mapper.apply(bad);
 
-            if (o instanceof ObservableSource) {
-                ObservableSource<?> os = (ObservableSource<?>) o;
+            if (o instanceof ObservableSource<?> os) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
@@ -2734,8 +2729,7 @@ public enum TestHelper {
                 }
             }
 
-            if (o instanceof Publisher) {
-                Publisher<?> os = (Publisher<?>) o;
+            if (o instanceof Publisher<?> os) {
                 TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
                 os.subscribe(ts);
@@ -2756,8 +2750,7 @@ public enum TestHelper {
                 }
             }
 
-            if (o instanceof SingleSource) {
-                SingleSource<?> os = (SingleSource<?>) o;
+            if (o instanceof SingleSource<?> os) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
@@ -2778,8 +2771,7 @@ public enum TestHelper {
                 }
             }
 
-            if (o instanceof MaybeSource) {
-                MaybeSource<?> os = (MaybeSource<?>) o;
+            if (o instanceof MaybeSource<?> os) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
@@ -2800,8 +2792,7 @@ public enum TestHelper {
                 }
             }
 
-            if (o instanceof CompletableSource) {
-                CompletableSource os = (CompletableSource) o;
+            if (o instanceof CompletableSource os) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
@@ -2871,8 +2862,7 @@ public enum TestHelper {
 
             Object o = mapper.apply(bad);
 
-            if (o instanceof ObservableSource) {
-                ObservableSource<?> os = (ObservableSource<?>) o;
+            if (o instanceof ObservableSource<?> os) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
@@ -2893,8 +2883,7 @@ public enum TestHelper {
                 }
             }
 
-            if (o instanceof Publisher) {
-                Publisher<?> os = (Publisher<?>) o;
+            if (o instanceof Publisher<?> os) {
                 TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
                 os.subscribe(ts);
@@ -2915,8 +2904,7 @@ public enum TestHelper {
                 }
             }
 
-            if (o instanceof SingleSource) {
-                SingleSource<?> os = (SingleSource<?>) o;
+            if (o instanceof SingleSource<?> os) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
@@ -2937,8 +2925,7 @@ public enum TestHelper {
                 }
             }
 
-            if (o instanceof MaybeSource) {
-                MaybeSource<?> os = (MaybeSource<?>) o;
+            if (o instanceof MaybeSource<?> os) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
@@ -2959,8 +2946,7 @@ public enum TestHelper {
                 }
             }
 
-            if (o instanceof CompletableSource) {
-                CompletableSource os = (CompletableSource) o;
+            if (o instanceof CompletableSource os) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
@@ -3809,6 +3795,7 @@ public enum TestHelper {
      * Exception thrown if obstruction was detected.
      */
     public static final class ObstructionException extends RuntimeException {
+        @Serial
         private static final long serialVersionUID = -6380717994471291795L;
         public ObstructionException(String message) {
             super(message);
@@ -3822,6 +3809,7 @@ public enum TestHelper {
      */
     static final class ForwardingConditionalSubscriber<T> extends BasicQueueSubscription<T> implements ConditionalSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = 365317603608134078L;
 
         final Subscriber<? super T> downstream;

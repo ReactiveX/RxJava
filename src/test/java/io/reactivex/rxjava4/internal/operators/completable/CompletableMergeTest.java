@@ -214,7 +214,7 @@ public class CompletableMergeTest extends RxJavaTest {
 
                 TestHelper.race(r1, r2);
 
-                Throwable ex = to.errors().get(0);
+                Throwable ex = to.errors().getFirst();
                 if (ex instanceof CompositeException) {
                     to.assertSubscribed().assertNoValues().assertNotComplete();
 
@@ -256,7 +256,7 @@ public class CompletableMergeTest extends RxJavaTest {
 
             to.assertFailure(CompositeException.class);
 
-            List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+            List<Throwable> errors = TestHelper.compositeList(to.errors().getFirst());
 
             TestHelper.assertError(errors, 0, TestException.class);
             TestHelper.assertError(errors, 1, TestException.class);

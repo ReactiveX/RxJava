@@ -15,11 +15,14 @@ package io.reactivex.rxjava4.disposables;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 
+import java.io.Serial;
+
 /**
  * A disposable container that manages a {@link Runnable} instance.
  */
 final class RunnableDisposable extends ReferenceDisposable<Runnable> {
 
+    @Serial
     private static final long serialVersionUID = -8219729196779211169L;
 
     RunnableDisposable(Runnable value) {

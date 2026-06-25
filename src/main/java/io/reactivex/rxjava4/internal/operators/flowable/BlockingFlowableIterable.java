@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
@@ -47,6 +48,7 @@ public final class BlockingFlowableIterable<T> implements Iterable<T> {
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<T>, Iterator<T>, Runnable, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 6695226475494099826L;
 
         final SpscArrayQueue<T> queue;

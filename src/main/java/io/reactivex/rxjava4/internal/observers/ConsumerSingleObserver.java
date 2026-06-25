@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.observers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.SingleObserver;
@@ -28,6 +29,7 @@ public final class ConsumerSingleObserver<T>
 extends AtomicReference<Disposable>
 implements SingleObserver<T>, Disposable, LambdaConsumerIntrospection {
 
+    @Serial
     private static final long serialVersionUID = -7012088219455310787L;
 
     final Consumer<? super T> onSuccess;

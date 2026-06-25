@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.Flow.*;
@@ -28,6 +29,7 @@ public final class ForEachWhileSubscriber<T>
 extends AtomicReference<Subscription>
 implements FlowableSubscriber<T>, Disposable {
 
+    @Serial
     private static final long serialVersionUID = -4403180040475402120L;
 
     final Predicate<? super T> onNext;

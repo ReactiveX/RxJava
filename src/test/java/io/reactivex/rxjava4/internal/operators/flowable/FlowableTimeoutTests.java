@@ -482,7 +482,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
             if (ts.isTerminated()) {
                 int c = ts.values().size();
                 if (c == 1) {
-                    int v = ts.values().get(0);
+                    int v = ts.values().getFirst();
                     assertTrue("" + v, v == 1 || v == 2);
                 } else {
                     ts.assertResult(1, 2);

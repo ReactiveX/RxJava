@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.core.*;
@@ -45,6 +46,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
 
     static final class EqualCoordinator<T> extends AtomicInteger implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = -6178010334400373240L;
         final Observer<? super Boolean> downstream;
         final BiPredicate<? super T, ? super T> comparer;

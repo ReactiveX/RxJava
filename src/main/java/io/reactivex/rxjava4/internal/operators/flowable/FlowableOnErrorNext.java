@@ -21,6 +21,7 @@ import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionArbiter;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
 import java.util.Objects;
 
 public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T, T> {
@@ -42,6 +43,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
     static final class OnErrorNextSubscriber<T>
     extends SubscriptionArbiter
     implements FlowableSubscriber<T> {
+        @Serial
         private static final long serialVersionUID = 4063763155303814625L;
 
         final Subscriber<? super T> downstream;

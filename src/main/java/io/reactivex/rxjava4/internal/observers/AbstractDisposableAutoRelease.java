@@ -29,6 +29,7 @@
 
 package io.reactivex.rxjava4.internal.observers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.disposables.*;
@@ -49,6 +50,7 @@ abstract class AbstractDisposableAutoRelease
 extends AtomicReference<Disposable>
 implements Disposable, LambdaConsumerIntrospection {
 
+    @Serial
     private static final long serialVersionUID = 8924480688481408726L;
 
     final AtomicReference<DisposableContainer> composite;

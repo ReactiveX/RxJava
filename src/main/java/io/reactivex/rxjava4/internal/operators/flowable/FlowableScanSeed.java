@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -55,6 +56,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
     static final class ScanSeedSubscriber<T, R>
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription {
+        @Serial
         private static final long serialVersionUID = -1776795561228106469L;
 
         final Subscriber<? super R> downstream;

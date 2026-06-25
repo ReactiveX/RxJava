@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.concurrent.Flow.*;
@@ -62,6 +63,7 @@ final Scheduler scheduler;
     abstract static class BaseObserveOnSubscriber<T>
     extends BasicIntQueueSubscription<T>
     implements FlowableSubscriber<T>, Runnable {
+        @Serial
         private static final long serialVersionUID = -8241002408341274697L;
 
         final Worker worker;
@@ -246,6 +248,7 @@ final Scheduler scheduler;
 
     static final class ObserveOnSubscriber<T> extends BaseObserveOnSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -4547113800637756442L;
 
         final Subscriber<? super T> downstream;
@@ -483,6 +486,7 @@ final Scheduler scheduler;
     static final class ObserveOnConditionalSubscriber<T>
     extends BaseObserveOnSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = 644624475404284533L;
 
         final ConditionalSubscriber<? super T> downstream;

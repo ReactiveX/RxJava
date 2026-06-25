@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscriptions;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -28,6 +29,7 @@ import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
  */
 public final class AsyncSubscription extends AtomicLong implements Subscription, Disposable {
 
+    @Serial
     private static final long serialVersionUID = 7028635084060361255L;
 
     final AtomicReference<Subscription> actual;

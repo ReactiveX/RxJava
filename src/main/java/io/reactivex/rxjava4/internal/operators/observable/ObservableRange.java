@@ -17,6 +17,8 @@ import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.observers.BasicIntQueueDisposable;
 
+import java.io.Serial;
+
 /**
  * Emits a range of integer values from start to end.
  */
@@ -39,6 +41,7 @@ public final class ObservableRange extends Observable<Integer> {
     static final class RangeDisposable
     extends BasicIntQueueDisposable<Integer> {
 
+        @Serial
         private static final long serialVersionUID = 396518478098735504L;
 
         final Observer<? super Integer> downstream;

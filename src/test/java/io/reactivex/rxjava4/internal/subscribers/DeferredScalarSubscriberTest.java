@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.subscribers;
 
 import static org.junit.Assert.*;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -388,6 +389,7 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
 
     static final class TestingDeferredScalarSubscriber extends DeferredScalarSubscriber<Integer, Integer> {
 
+        @Serial
         private static final long serialVersionUID = 6285096158319517837L;
 
         TestingDeferredScalarSubscriber(Subscriber<? super Integer> downstream) {
@@ -416,6 +418,7 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.doubleOnSubscribe(new DeferredScalarSubscriber<Integer, Integer>(new TestSubscriber<>()) {
+            @Serial
             private static final long serialVersionUID = -4445381578878059054L;
 
             @Override

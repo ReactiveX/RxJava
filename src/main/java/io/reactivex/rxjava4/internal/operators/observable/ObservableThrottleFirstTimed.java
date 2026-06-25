@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -54,6 +55,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
     static final class DebounceTimedObserver<T>
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable, Runnable {
+        @Serial
         private static final long serialVersionUID = 786994795061867455L;
 
         final Observer<? super T> downstream;

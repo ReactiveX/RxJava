@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Collection;
 
 import static java.util.concurrent.Flow.*;
@@ -48,6 +49,7 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
     extends DeferredScalarSubscription<U>
     implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -8134157938864266736L;
         Subscription upstream;
 

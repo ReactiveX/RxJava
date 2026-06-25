@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -44,6 +45,7 @@ public final class CompletableTimer extends Completable {
 
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 3167244060586201109L;
         final CompletableObserver downstream;
 

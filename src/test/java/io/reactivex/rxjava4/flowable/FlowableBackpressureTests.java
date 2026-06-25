@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.flowable;
 
 import static org.junit.Assert.*;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.Publisher;
@@ -36,6 +37,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
 
     static final class FirehoseNoBackpressure extends AtomicBoolean implements Subscription {
 
+        @Serial
         private static final long serialVersionUID = -669931580197884015L;
         final Subscriber<? super Integer> downstream;
         final AtomicInteger counter;

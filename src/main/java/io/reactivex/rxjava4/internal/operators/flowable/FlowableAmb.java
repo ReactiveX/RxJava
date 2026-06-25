@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -149,6 +150,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
 
     static final class AmbInnerSubscriber<T> extends AtomicReference<Subscription> implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -1185974347409665484L;
         final AmbCoordinator<T> parent;
         final int index;

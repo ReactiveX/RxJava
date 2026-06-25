@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.subjects;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.annotations.*;
@@ -256,6 +257,7 @@ public final class CompletableSubject extends Completable implements Completable
 
     static final class CompletableDisposable
     extends AtomicReference<CompletableSubject> implements Disposable {
+        @Serial
         private static final long serialVersionUID = -7650903191002190468L;
 
         final CompletableObserver downstream;

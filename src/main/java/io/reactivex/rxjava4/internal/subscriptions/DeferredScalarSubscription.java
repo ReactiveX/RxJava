@@ -17,6 +17,8 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.*;
 
+import java.io.Serial;
+
 /**
  * A subscription that signals a single value eventually.
  * <p>
@@ -35,6 +37,7 @@ import io.reactivex.rxjava4.annotations.*;
  */
 public class DeferredScalarSubscription<@NonNull T> extends BasicIntQueueSubscription<T> {
 
+    @Serial
     private static final long serialVersionUID = -2151279923272604993L;
 
     /** The Subscriber to emit the value to. */

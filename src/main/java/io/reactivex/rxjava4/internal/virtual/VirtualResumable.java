@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.virtual;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
@@ -22,6 +23,7 @@ import java.util.concurrent.locks.LockSupport;
  */
 public class VirtualResumable extends AtomicReference<Object> {
 
+    @Serial
     private static final long serialVersionUID = -3462467580179834124L;
 
     /**

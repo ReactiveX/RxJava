@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -45,6 +46,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
     abstract static class SampleMainObserver<T> extends AtomicReference<T>
     implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -3517602651313910099L;
 
         final Observer<? super T> downstream;
@@ -154,6 +156,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
     static final class SampleMainNoLast<T> extends SampleMainObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = -3029755663834015785L;
 
         SampleMainNoLast(Observer<? super T> actual, ObservableSource<?> other) {
@@ -173,6 +176,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
     static final class SampleMainEmitLast<T> extends SampleMainObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = -3029755663834015785L;
 
         final AtomicInteger wip;

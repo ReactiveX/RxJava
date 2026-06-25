@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
@@ -55,6 +56,7 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
     extends BasicIntQueueSubscription<R>
     implements MaybeObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = -8938804753851907758L;
 
         final Subscriber<? super R> downstream;

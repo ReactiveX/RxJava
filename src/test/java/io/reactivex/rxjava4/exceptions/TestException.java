@@ -13,12 +13,15 @@
 
 package io.reactivex.rxjava4.exceptions;
 
+import java.io.Serial;
+
 /**
  * Exception for testing if unchecked exceptions propagate as-is without confusing with
  * other type of common exceptions.
  */
 public final class TestException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = -1438148770465406172L;
 
     /**

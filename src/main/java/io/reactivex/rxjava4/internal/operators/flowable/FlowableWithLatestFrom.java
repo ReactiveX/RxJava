@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -49,6 +50,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
     static final class WithLatestFromSubscriber<T, U, R> extends AtomicReference<U>
     implements ConditionalSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -312246233408980075L;
 
         final Subscriber<? super R> downstream;

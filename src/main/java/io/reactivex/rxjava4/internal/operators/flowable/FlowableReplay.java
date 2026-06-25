@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
@@ -226,6 +227,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     static final class ReplaySubscriber<T>
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<T>, Disposable {
+        @Serial
         private static final long serialVersionUID = 7224554242710036740L;
         /** Holds notifications from upstream. */
         final ReplayBuffer<T> buffer;
@@ -459,6 +461,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      */
     static final class InnerSubscription<T> extends AtomicLong implements Subscription, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -4453897557930727610L;
         /**
          * The parent subscriber-to-source used to allow removing the child in case of
@@ -590,6 +593,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      */
     static final class UnboundedReplayBuffer<T> extends ArrayList<Object> implements ReplayBuffer<T> {
 
+        @Serial
         private static final long serialVersionUID = 7063189396499112664L;
         /** The total number of events in the buffer. */
         volatile int size;
@@ -686,6 +690,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      */
     static final class Node extends AtomicReference<Node> {
 
+        @Serial
         private static final long serialVersionUID = 245354315435971818L;
         final Object value;
         final long index;
@@ -704,6 +709,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      */
     abstract static class BoundedReplayBuffer<T> extends AtomicReference<Node> implements ReplayBuffer<T> {
 
+        @Serial
         private static final long serialVersionUID = 2346567790059478686L;
 
         final boolean eagerTruncate;
@@ -949,6 +955,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      */
     static final class SizeBoundReplayBuffer<T> extends BoundedReplayBuffer<T> {
 
+        @Serial
         private static final long serialVersionUID = -5898283885385201806L;
 
         final int limit;
@@ -975,6 +982,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      */
     static final class SizeAndTimeBoundReplayBuffer<T> extends BoundedReplayBuffer<T> {
 
+        @Serial
         private static final long serialVersionUID = 3457957419649567404L;
         final Scheduler scheduler;
         final long maxAge;

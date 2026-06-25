@@ -23,6 +23,8 @@ import io.reactivex.rxjava4.internal.observers.BasicIntQueueDisposable;
 import io.reactivex.rxjava4.operators.QueueDisposable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
+
 /**
  * Execute an action after an onError, onComplete or a dispose event.
  * <p>History: 2.0.1 - experimental
@@ -45,6 +47,7 @@ public final class ObservableDoFinally<T> extends AbstractObservableWithUpstream
 
     static final class DoFinallyObserver<T> extends BasicIntQueueDisposable<T> implements Observer<T> {
 
+        @Serial
         private static final long serialVersionUID = 4109457741734051389L;
 
         final Observer<? super T> downstream;

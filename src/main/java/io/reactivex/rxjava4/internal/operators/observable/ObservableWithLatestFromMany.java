@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
@@ -99,6 +100,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     extends AtomicInteger
     implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 1577321883966341961L;
 
         final Observer<? super R> downstream;
@@ -243,6 +245,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     extends AtomicReference<Disposable>
     implements Observer<Object> {
 
+        @Serial
         private static final long serialVersionUID = 3256684027868224024L;
 
         final WithLatestFromObserver<?, ?> parent;

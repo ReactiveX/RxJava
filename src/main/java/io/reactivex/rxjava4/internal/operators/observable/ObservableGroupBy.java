@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.*;
@@ -49,6 +50,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
     public static final class GroupByObserver<T, K, V> extends AtomicInteger implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -3688291656102519502L;
 
         final Observer<? super GroupedObservable<K, V>> downstream;
@@ -221,6 +223,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
     static final class State<T, K> extends AtomicInteger implements Disposable, ObservableSource<T> {
 
+        @Serial
         private static final long serialVersionUID = -3852313036005250360L;
 
         final K key;

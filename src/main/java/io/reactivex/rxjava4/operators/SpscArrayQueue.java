@@ -18,6 +18,7 @@
 
 package io.reactivex.rxjava4.operators;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.annotations.Nullable;
@@ -39,6 +40,7 @@ import io.reactivex.rxjava4.internal.util.Pow2;
  * @since 3.1.1
  */
 public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements SimplePlainQueue<E> {
+    @Serial
     private static final long serialVersionUID = -1296597691183856449L;
     private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     final int mask;

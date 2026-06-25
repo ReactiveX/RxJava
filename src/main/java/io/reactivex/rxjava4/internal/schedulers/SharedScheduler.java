@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -122,6 +123,7 @@ public final class SharedScheduler extends Scheduler {
         static final class SharedAction
         extends AtomicReference<DisposableContainer>
         implements Runnable, Disposable {
+            @Serial
             private static final long serialVersionUID = 4949851341419870956L;
 
             final AtomicReference<Disposable> future;

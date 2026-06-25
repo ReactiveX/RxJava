@@ -61,7 +61,7 @@ public class StrictSubscriberTest extends RxJavaTest {
             }
         }.subscribe(sub);
 
-        assertTrue(list.toString(), list.get(0) instanceof StrictSubscriber);
+        assertTrue(list.toString(), list.getFirst() instanceof StrictSubscriber);
     }
 
     static final class SubscriberWrapper<T> implements Subscriber<T> {
@@ -189,8 +189,8 @@ public class StrictSubscriberTest extends RxJavaTest {
 
         Flowable.range(1, 5).subscribe(sub);
 
-        assertTrue(list.toString(), list.get(0) instanceof IllegalArgumentException);
-        assertTrue(list.toString(), list.get(0).toString().contains("3.9"));
+        assertTrue(list.toString(), list.getFirst() instanceof IllegalArgumentException);
+        assertTrue(list.toString(), list.getFirst().toString().contains("3.9"));
     }
 
     @Test
@@ -221,8 +221,8 @@ public class StrictSubscriberTest extends RxJavaTest {
 
         Flowable.range(1, 5).subscribe(sub);
 
-        assertTrue(list.toString(), list.get(0) instanceof IllegalArgumentException);
-        assertTrue(list.toString(), list.get(0).toString().contains("3.9"));
+        assertTrue(list.toString(), list.getFirst() instanceof IllegalArgumentException);
+        assertTrue(list.toString(), list.getFirst().toString().contains("3.9"));
     }
 
     @Test
@@ -329,6 +329,6 @@ public class StrictSubscriberTest extends RxJavaTest {
         }.subscribe(wrapper);
 
         ts.assertFailure(IllegalStateException.class);
-        assertTrue(ts.errors().toString(), ts.errors().get(0).getMessage().contains("2.12"));
+        assertTrue(ts.errors().toString(), ts.errors().getFirst().getMessage().contains("2.12"));
     }
 }

@@ -21,9 +21,12 @@ import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
+import java.io.Serial;
+
 public class QueueSubscriptionTest extends RxJavaTest {
     static final class EmptyQS extends BasicQueueSubscription<Integer> {
 
+        @Serial
         private static final long serialVersionUID = -5312809687598840520L;
 
         @Override
@@ -61,6 +64,7 @@ public class QueueSubscriptionTest extends RxJavaTest {
 
     static final class EmptyIntQS extends BasicIntQueueSubscription<Integer> {
 
+        @Serial
         private static final long serialVersionUID = -1374033403007296252L;
 
         @Override

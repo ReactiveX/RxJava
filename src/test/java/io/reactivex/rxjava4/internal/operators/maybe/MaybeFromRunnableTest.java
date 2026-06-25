@@ -126,7 +126,7 @@ public class MaybeFromRunnableTest extends RxJavaTest {
 
             TestHelper.assertUndeliverable(errors, 0, RuntimeException.class);
 
-            assertTrue(errors.get(0).toString(), errors.get(0).getCause().getCause() instanceof InterruptedException);
+            assertTrue(errors.getFirst().toString(), errors.getFirst().getCause().getCause() instanceof InterruptedException);
         } finally {
             RxJavaPlugins.reset();
         }

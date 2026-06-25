@@ -93,7 +93,7 @@ public class CompletableConsumersTest implements Consumer<Object>, Action {
 
         processor.onError(new IOException());
 
-        assertTrue(events.toString(), events.get(0) instanceof IOException);
+        assertTrue(events.toString(), events.getFirst() instanceof IOException);
 
         assertEquals(0, composite.size());
     }
@@ -126,7 +126,7 @@ public class CompletableConsumersTest implements Consumer<Object>, Action {
 
         processor.onError(new IOException());
 
-        assertTrue(events.toString(), events.get(0) instanceof IOException);
+        assertTrue(events.toString(), events.getFirst() instanceof IOException);
 
         assertEquals(0, composite.size());
     }
@@ -165,7 +165,7 @@ public class CompletableConsumersTest implements Consumer<Object>, Action {
             assertTrue(events.toString(), events.isEmpty());
 
             TestHelper.assertError(errors, 0, CompositeException.class);
-            List<Throwable> inners = TestHelper.compositeList(errors.get(0));
+            List<Throwable> inners = TestHelper.compositeList(errors.getFirst());
             TestHelper.assertError(inners, 0, IllegalArgumentException.class);
             TestHelper.assertError(inners, 1, IOException.class);
         } finally {

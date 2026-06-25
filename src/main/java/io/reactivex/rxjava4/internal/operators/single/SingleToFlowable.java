@@ -20,6 +20,8 @@ import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava4.internal.subscriptions.DeferredScalarSubscription;
 
+import java.io.Serial;
+
 /**
  * Wraps a Single and exposes it as a Flowable.
  *
@@ -41,6 +43,7 @@ public final class SingleToFlowable<T> extends Flowable<T> {
     static final class SingleToFlowableObserver<T> extends DeferredScalarSubscription<T>
     implements SingleObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = 187782011903685568L;
 
         Disposable upstream;

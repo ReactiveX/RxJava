@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -39,6 +40,7 @@ public class StrictSubscriber<T>
 extends AtomicInteger
 implements FlowableSubscriber<T>, Subscription {
 
+    @Serial
     private static final long serialVersionUID = -4945028590049415624L;
 
     final Subscriber<? super T> downstream;

@@ -24,6 +24,8 @@ import io.reactivex.rxjava4.operators.ConditionalSubscriber;
 import io.reactivex.rxjava4.operators.QueueSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
+
 /**
  * Execute an action after an onError, onComplete or a cancel event.
  * <p>History: 2.0.1 - experimental
@@ -50,6 +52,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
 
     static final class DoFinallySubscriber<T> extends BasicIntQueueSubscription<T> implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = 4109457741734051389L;
 
         final Subscriber<? super T> downstream;
@@ -155,6 +158,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
 
     static final class DoFinallyConditionalSubscriber<T> extends BasicIntQueueSubscription<T> implements ConditionalSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = 4109457741734051389L;
 
         final ConditionalSubscriber<? super T> downstream;

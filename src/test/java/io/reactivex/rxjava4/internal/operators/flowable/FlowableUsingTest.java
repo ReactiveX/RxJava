@@ -366,7 +366,7 @@ public class FlowableUsingTest extends RxJavaTest {
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().getFirst());
 
         TestHelper.assertError(errors, 0, TestException.class, "First");
         TestHelper.assertError(errors, 1, TestException.class, "Second");
@@ -382,7 +382,7 @@ public class FlowableUsingTest extends RxJavaTest {
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().getFirst());
 
         TestHelper.assertError(errors, 0, TestException.class, "First");
         TestHelper.assertError(errors, 1, TestException.class, "Second");

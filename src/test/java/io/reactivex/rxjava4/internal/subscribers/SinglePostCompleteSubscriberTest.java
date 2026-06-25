@@ -20,6 +20,8 @@ import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
+import java.io.Serial;
+
 public class SinglePostCompleteSubscriberTest extends RxJavaTest {
 
     @Test
@@ -28,6 +30,7 @@ public class SinglePostCompleteSubscriberTest extends RxJavaTest {
             final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
             final SinglePostCompleteSubscriber<Integer, Integer> spc = new SinglePostCompleteSubscriber<Integer, Integer>(ts) /* NFI */ {
+                @Serial
                 private static final long serialVersionUID = -2848918821531562637L;
 
                 @Override

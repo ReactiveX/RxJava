@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -48,6 +49,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
     extends AtomicInteger
     implements Observer<T>, Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 2233020065421370272L;
 
         final Observer<? super Observable<T>> downstream;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
+import java.io.Serial;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -321,6 +322,7 @@ public final class ParallelScheduler extends Scheduler {
                 DISPOSED.cancel(false);
             }
 
+            @Serial
             private static final long serialVersionUID = 4949851341419870956L;
 
             final AtomicReference<Future<?>> future;

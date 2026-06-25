@@ -654,7 +654,7 @@ public class ObservableMergeTest extends RxJavaTest {
         System.out.println(onNextEvents);
 
         if (testObserver.errors().size() > 0) {
-            testObserver.errors().get(0).printStackTrace();
+            testObserver.errors().getFirst().printStackTrace();
         }
         testObserver.assertNoErrors();
         assertEquals(Flowable.bufferSize() * 2 + 1, onNextEvents.size());
@@ -746,7 +746,7 @@ public class ObservableMergeTest extends RxJavaTest {
         Observable.merge(o1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         if (to.errors().size() > 0) {
-            to.errors().get(0).printStackTrace();
+            to.errors().getFirst().printStackTrace();
         }
         to.assertNoErrors();
         System.out.println("Generated 1: " + generated1.get());

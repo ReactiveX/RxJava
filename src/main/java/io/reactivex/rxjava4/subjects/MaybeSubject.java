@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.subjects;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.annotations.*;
@@ -326,6 +327,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
 
     static final class MaybeDisposable<T>
     extends AtomicReference<MaybeSubject<T>> implements Disposable {
+        @Serial
         private static final long serialVersionUID = -7650903191002190468L;
 
         final MaybeObserver<? super T> downstream;

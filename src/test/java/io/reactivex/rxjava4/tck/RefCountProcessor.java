@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.tck;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -170,6 +171,7 @@ import io.reactivex.rxjava4.processors.FlowableProcessor;
 
     static final class RefCountSubscriber<T> extends AtomicBoolean implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -4317488092687530631L;
 
         final Subscriber<? super T> downstream;

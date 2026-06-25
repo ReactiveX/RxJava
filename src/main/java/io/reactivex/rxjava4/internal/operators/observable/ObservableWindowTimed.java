@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
@@ -71,6 +72,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
     abstract static class AbstractWindowObserver<T>
     extends AtomicInteger
     implements Observer<T>, Disposable {
+        @Serial
         private static final long serialVersionUID = 5724293814035355511L;
 
         final Observer<? super Observable<T>> downstream;
@@ -166,6 +168,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             extends AbstractWindowObserver<T>
             implements Runnable {
 
+        @Serial
         private static final long serialVersionUID = 1155822639622580836L;
 
         final Scheduler scheduler;
@@ -307,6 +310,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
     static final class WindowExactBoundedObserver<T>
     extends AbstractWindowObserver<T>
     implements Runnable {
+        @Serial
         private static final long serialVersionUID = -6130475889925953722L;
 
         final Scheduler scheduler;
@@ -419,8 +423,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                         upstreamCancelled = true;
                         continue;
                     } else if (!isEmpty) {
-                        if (o instanceof WindowBoundaryRunnable) {
-                            WindowBoundaryRunnable boundary = (WindowBoundaryRunnable) o;
+                        if (o instanceof WindowBoundaryRunnable boundary) {
                             if (boundary.index == emitted || !restartTimerOnMaxSize) {
                                 this.count = 0;
                                 window = createNewWindow(window);
@@ -502,6 +505,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
     static final class WindowSkipObserver<T>
     extends AbstractWindowObserver<T>
     implements Runnable {
+        @Serial
         private static final long serialVersionUID = -7852870764194095894L;
 
         final long timeskip;
@@ -602,7 +606,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                             }
                         } else if (o == WINDOW_CLOSE) {
                             if (!windows.isEmpty()) {
-                                windows.remove(0).onComplete();
+                                windows.removeFirst().onComplete();
                             }
                         } else {
                             @SuppressWarnings("unchecked")

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -54,6 +55,7 @@ extends AbstractFlowableWithUpstream<T, U> {
     static final class BufferBoundarySubscriber<T, C extends Collection<? super T>, Open, Close>
     extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -8466418554264089604L;
 
         final Subscriber<? super C> downstream;
@@ -311,6 +313,7 @@ extends AbstractFlowableWithUpstream<T, U> {
         extends AtomicReference<Subscription>
         implements FlowableSubscriber<Open>, Disposable {
 
+            @Serial
             private static final long serialVersionUID = -8498650778633225126L;
 
             final BufferBoundarySubscriber<?, ?, Open, ?> parent;
@@ -357,6 +360,7 @@ extends AbstractFlowableWithUpstream<T, U> {
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<Object>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -8498650778633225126L;
 
         final BufferBoundarySubscriber<T, C, ?, ?> parent;

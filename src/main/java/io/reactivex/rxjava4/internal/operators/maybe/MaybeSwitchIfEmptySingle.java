@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.*;
@@ -49,6 +50,7 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 4603919676453758899L;
 
         final SingleObserver<? super T> downstream;

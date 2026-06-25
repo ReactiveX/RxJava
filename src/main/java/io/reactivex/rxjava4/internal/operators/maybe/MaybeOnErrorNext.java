@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -46,6 +47,7 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 2026620218879969836L;
 
         final MaybeObserver<? super T> downstream;

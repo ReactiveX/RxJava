@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -54,6 +55,7 @@ public final class SingleFlatMapNotification<T, R> extends Single<R> {
     extends AtomicReference<Disposable>
     implements SingleObserver<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 4375739915521278546L;
 
         final SingleObserver<? super R> downstream;

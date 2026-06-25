@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.*;
@@ -44,6 +45,7 @@ public final class SingleSubscribeOn<T> extends Single<T> {
     extends AtomicReference<Disposable>
     implements SingleObserver<T>, Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 7000911171163930287L;
 
         final SingleObserver<? super T> downstream;

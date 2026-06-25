@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.concurrent.*;
@@ -212,7 +212,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         if (!unsubscribeLatch.await(3000, TimeUnit.MILLISECONDS)) {
             System.out.println("Errors: " + observer.errors());
             if (observer.errors().size() > 0) {
-                observer.errors().get(0).printStackTrace();
+                observer.errors().getFirst().printStackTrace();
             }
             fail("timed out waiting for unsubscribe");
         }
@@ -262,7 +262,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         System.out.println("DONE sending unsubscribe ... now waiting");
         System.out.println("Errors: " + observer.errors());
         if (observer.errors().size() > 0) {
-            observer.errors().get(0).printStackTrace();
+            observer.errors().getFirst().printStackTrace();
         }
         observer.assertNoErrors();
     }
@@ -567,6 +567,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     }
 
     static final class ExceptionData extends Exception {
+        @Serial
         private static final long serialVersionUID = -6763898015338136119L;
 
         public final Object data;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.processors;
 
+import java.io.Serial;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -614,6 +615,7 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
 
     static final class ReplaySubscription<@NonNull T> extends AtomicInteger implements Subscription {
 
+        @Serial
         private static final long serialVersionUID = 466549804534799122L;
         final Subscriber<? super T> downstream;
         final ReplayProcessor<T> state;
@@ -824,6 +826,7 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
 
     static final class Node<T> extends AtomicReference<Node<T>> {
 
+        @Serial
         private static final long serialVersionUID = 6404226426336033100L;
 
         final T value;
@@ -835,6 +838,7 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
 
     static final class TimedNode<T> extends AtomicReference<TimedNode<T>> {
 
+        @Serial
         private static final long serialVersionUID = 6404226426336033100L;
 
         final T value;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
@@ -44,6 +45,7 @@ public final class BlockingObservableIterable<T> implements Iterable<T> {
     extends AtomicReference<Disposable>
     implements io.reactivex.rxjava4.core.Observer<T>, Iterator<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 6695226475494099826L;
 
         final SpscLinkedArrayQueue<T> queue;

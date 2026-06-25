@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -161,6 +162,7 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
 
     static final class DebounceEmitter<T> extends AtomicReference<Disposable> implements Runnable, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 6812032969491025141L;
 
         final T value;

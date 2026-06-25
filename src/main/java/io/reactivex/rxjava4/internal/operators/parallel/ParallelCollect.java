@@ -22,6 +22,7 @@ import io.reactivex.rxjava4.internal.subscriptions.*;
 import io.reactivex.rxjava4.parallel.ParallelFlowable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
 import java.util.Objects;
 
 /**
@@ -88,6 +89,7 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
 
     static final class ParallelCollectSubscriber<T, C> extends DeferredScalarSubscriber<T, C> {
 
+        @Serial
         private static final long serialVersionUID = -4767392946044436228L;
 
         final BiConsumer<? super C, ? super T> collector;

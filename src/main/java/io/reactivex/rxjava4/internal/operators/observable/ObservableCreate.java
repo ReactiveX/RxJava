@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -49,6 +50,7 @@ public final class ObservableCreate<T> extends Observable<T> {
     extends AtomicReference<Disposable>
     implements ObservableEmitter<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -3434801548987643227L;
 
         final Observer<? super T> observer;
@@ -142,6 +144,7 @@ public final class ObservableCreate<T> extends Observable<T> {
     extends AtomicInteger
     implements ObservableEmitter<T> {
 
+        @Serial
         private static final long serialVersionUID = 4883307006032401862L;
 
         final ObservableEmitter<T> emitter;

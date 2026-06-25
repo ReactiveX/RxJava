@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
@@ -222,6 +223,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     static final class ReplayObserver<T>
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable {
+        @Serial
         private static final long serialVersionUID = -533785617179540163L;
         /** Holds notifications from upstream. */
         final ReplayBuffer<T> buffer;
@@ -416,6 +418,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     static final class InnerDisposable<T>
     extends AtomicInteger
     implements Disposable {
+        @Serial
         private static final long serialVersionUID = 2728361546769921047L;
         /**
          * The parent subscriber-to-source used to allow removing the child in case of
@@ -499,6 +502,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      */
     static final class UnboundedReplayBuffer<T> extends ArrayList<Object> implements ReplayBuffer<T> {
 
+        @Serial
         private static final long serialVersionUID = 7063189396499112664L;
         /** The total number of events in the buffer. */
         volatile int size;
@@ -569,6 +573,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      */
     static final class Node extends AtomicReference<Node> {
 
+        @Serial
         private static final long serialVersionUID = 245354315435971818L;
         final Object value;
         Node(Object value) {
@@ -584,6 +589,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      */
     abstract static class BoundedReplayBuffer<T> extends AtomicReference<Node> implements ReplayBuffer<T> {
 
+        @Serial
         private static final long serialVersionUID = 2346567790059478686L;
 
         Node tail;
@@ -791,6 +797,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      */
     static final class SizeBoundReplayBuffer<T> extends BoundedReplayBuffer<T> {
 
+        @Serial
         private static final long serialVersionUID = -5898283885385201806L;
 
         final int limit;
@@ -818,6 +825,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      */
     static final class SizeAndTimeBoundReplayBuffer<T> extends BoundedReplayBuffer<T> {
 
+        @Serial
         private static final long serialVersionUID = 3457957419649567404L;
         final Scheduler scheduler;
         final long maxAge;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.Flow.*;
@@ -47,6 +48,7 @@ public final class FlowableConcatWithCompletable<T> extends AbstractFlowableWith
     extends AtomicReference<Disposable>
     implements FlowableSubscriber<T>, CompletableObserver, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -7346385463600070225L;
 
         final Subscriber<? super T> downstream;

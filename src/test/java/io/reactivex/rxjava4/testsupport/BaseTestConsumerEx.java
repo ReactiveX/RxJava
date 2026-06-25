@@ -157,7 +157,7 @@ extends BaseTestConsumer<T, U> {
             throw fail("No errors");
         } else
         if (s == 1) {
-            Throwable e = errors.get(0);
+            Throwable e = errors.getFirst();
             String errorMessage = e.getMessage();
             if (!Objects.equals(message, errorMessage)) {
                 throw fail("\nexpected: " + message + "\ngot: " + errorMessage

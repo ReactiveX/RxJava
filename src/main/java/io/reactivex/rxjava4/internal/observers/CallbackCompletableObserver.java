@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.observers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.CompletableObserver;
@@ -28,6 +29,7 @@ public final class CallbackCompletableObserver
 extends AtomicReference<Disposable>
         implements CompletableObserver, Disposable, LambdaConsumerIntrospection {
 
+    @Serial
     private static final long serialVersionUID = -4361286194466301354L;
 
     final Consumer<? super Throwable> onError;

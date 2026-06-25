@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.subjects;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -507,6 +508,7 @@ public final class UnicastSubject<T> extends Subject<T> {
 
     final class UnicastQueueDisposable extends BasicIntQueueDisposable<T> {
 
+        @Serial
         private static final long serialVersionUID = 7926949470189395511L;
 
         @Override

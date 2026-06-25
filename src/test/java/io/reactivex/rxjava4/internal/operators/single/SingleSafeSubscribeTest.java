@@ -146,7 +146,7 @@ public class SingleSafeSubscribeTest {
 
             TestHelper.assertError(errors, 0, CompositeException.class);
 
-            CompositeException compositeException = (CompositeException)errors.get(0);
+            CompositeException compositeException = (CompositeException)errors.getFirst();
             TestHelper.assertError(compositeException.getExceptions(), 0, IOException.class);
             TestHelper.assertError(compositeException.getExceptions(), 1, TestException.class);
         });

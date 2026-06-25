@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -112,6 +113,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
         extends AtomicReference<Disposable>
         implements MaybeObserver<U> {
 
+            @Serial
             private static final long serialVersionUID = -2897979525538174559L;
 
             final MaybeObserver<? super R> downstream;

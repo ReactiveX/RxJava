@@ -20,6 +20,7 @@ import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.subscribers.SinglePostCompleteSubscriber;
 
+import java.io.Serial;
 import java.util.Objects;
 
 public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream<T, T> {
@@ -37,6 +38,7 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
     static final class OnErrorReturnSubscriber<T>
     extends SinglePostCompleteSubscriber<T, T> {
 
+        @Serial
         private static final long serialVersionUID = -3740826063558713822L;
         final Function<? super Throwable, ? extends T> valueSupplier;
 

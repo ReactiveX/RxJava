@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -349,6 +350,7 @@ implements FlowableSubscriber<T> {
     static final class CacheSubscription<T> extends AtomicInteger
     implements Subscription {
 
+        @Serial
         private static final long serialVersionUID = 6770240836423125754L;
 
         final Subscriber<? super T> downstream;

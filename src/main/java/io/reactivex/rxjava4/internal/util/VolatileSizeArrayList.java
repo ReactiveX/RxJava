@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.util;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class VolatileSizeArrayList<T> extends AtomicInteger implements List<T>, RandomAccess {
 
+    @Serial
     private static final long serialVersionUID = 3972397474470203923L;
 
     final ArrayList<T> list;

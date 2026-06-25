@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.core.*;
@@ -43,6 +44,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
 
     static final class RepeatObserver<T> extends AtomicInteger implements Observer<T> {
 
+        @Serial
         private static final long serialVersionUID = -7098360935104053232L;
 
         final Observer<? super T> downstream;

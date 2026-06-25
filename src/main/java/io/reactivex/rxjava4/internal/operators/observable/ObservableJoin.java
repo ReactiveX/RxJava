@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -70,6 +71,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
     static final class JoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Disposable, JoinSupport {
 
+        @Serial
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Observer<? super R> downstream;

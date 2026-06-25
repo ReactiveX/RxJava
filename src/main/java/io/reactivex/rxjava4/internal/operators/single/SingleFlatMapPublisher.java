@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -62,6 +63,7 @@ public final class SingleFlatMapPublisher<T, R> extends Flowable<R> {
     static final class SingleFlatMapPublisherObserver<S, T> extends AtomicLong
             implements SingleObserver<S>, FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = 7759721921468635667L;
 
         final Subscriber<? super T> downstream;

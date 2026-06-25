@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.mixed;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -60,6 +61,7 @@ public final class FlowableSwitchMapMaybe<T, R> extends Flowable<R> {
     static final class SwitchMapMaybeSubscriber<T, R> extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -5402190102429853762L;
 
         final Subscriber<? super R> downstream;
@@ -255,6 +257,7 @@ public final class FlowableSwitchMapMaybe<T, R> extends Flowable<R> {
         static final class SwitchMapMaybeObserver<R>
         extends AtomicReference<Disposable> implements MaybeObserver<R> {
 
+            @Serial
             private static final long serialVersionUID = 8042919737683345351L;
 
             final SwitchMapMaybeSubscriber<?, R> parent;

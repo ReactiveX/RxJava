@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.operators.observable;
 
 import static io.reactivex.rxjava4.internal.util.ExceptionHelper.timeoutMessage;
 
+import java.io.Serial;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
@@ -56,6 +57,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
     static final class TimeoutObserver<T> extends AtomicLong
     implements Observer<T>, Disposable, TimeoutSupport {
 
+        @Serial
         private static final long serialVersionUID = 3764492702657003550L;
 
         final Observer<? super T> downstream;
@@ -169,6 +171,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
     static final class TimeoutFallbackObserver<T> extends AtomicReference<Disposable>
     implements Observer<T>, Disposable, TimeoutSupport {
 
+        @Serial
         private static final long serialVersionUID = 3764492702657003550L;
 
         final Observer<? super T> downstream;

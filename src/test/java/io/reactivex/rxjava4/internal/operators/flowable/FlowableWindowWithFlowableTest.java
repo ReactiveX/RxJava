@@ -189,7 +189,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         assertEquals(1, values.size());
 
-        Subscriber<Object> mo = values.get(0);
+        Subscriber<Object> mo = values.getFirst();
 
         verify(mo).onNext(0);
         verify(mo).onNext(1);
@@ -239,7 +239,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         assertEquals(1, values.size());
 
-        Subscriber<Object> mo = values.get(0);
+        Subscriber<Object> mo = values.getFirst();
 
         verify(mo).onNext(0);
         verify(mo).onNext(1);
@@ -263,7 +263,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().getFirst());
 
         TestHelper.assertError(errors, 0, TestException.class);
     }

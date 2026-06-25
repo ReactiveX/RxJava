@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -239,6 +240,7 @@ public final class BlockingCurrentThreadScheduler extends Scheduler {
     extends AtomicInteger
     implements Action, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -9165914884456950194L;
         final Runnable task;
 
@@ -362,6 +364,7 @@ public final class BlockingCurrentThreadScheduler extends Scheduler {
         extends AtomicInteger
         implements Action, Disposable {
 
+            @Serial
             private static final long serialVersionUID = -9165914884456950194L;
 
             final Runnable task;

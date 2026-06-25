@@ -409,7 +409,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
 
                 to.assertError(Throwable.class).assertSubscribed().assertNotComplete().assertValueCount(1);
 
-                Throwable exc = to.errors().get(0);
+                Throwable exc = to.errors().getFirst();
 
                 if (exc instanceof CompositeException) {
                     List<Throwable> es = TestHelper.compositeList(exc);
@@ -457,7 +457,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
 
                 to.assertError(Throwable.class).assertSubscribed().assertNotComplete().assertNoValues();
 
-                Throwable exc = to.errors().get(0);
+                Throwable exc = to.errors().getFirst();
 
                 if (exc instanceof CompositeException) {
                     List<Throwable> es = TestHelper.compositeList(exc);

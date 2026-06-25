@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.schedulers;
 
 import static org.junit.Assert.*;
 
+import java.io.Serial;
 import java.util.concurrent.FutureTask;
 
 import org.junit.Test;
@@ -29,6 +30,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
     public void cancelSetFuture() {
         @SuppressWarnings("resource")
         AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) /* NFI */ {
+            @Serial
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -61,6 +63,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
     public void cancelSetFutureCurrentThread() {
         @SuppressWarnings("resource")
         var task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) /* NFI */ {
+            @Serial
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -95,6 +98,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
     public void setFutureCancel() {
         @SuppressWarnings("resource")
         var task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) /* NFI */ {
+            @Serial
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -124,6 +128,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
     public void setFutureCancelSameThread() {
         @SuppressWarnings("resource")
         AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) /* NFI */ {
+            @Serial
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -154,6 +159,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
     public void finished() {
         @SuppressWarnings("resource")
         AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) /* NFI */ {
+            @Serial
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -184,6 +190,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
     public void finishedCancel() {
         @SuppressWarnings("resource")
         AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) /* NFI */ {
+            @Serial
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -219,6 +226,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             @SuppressWarnings("resource")
             final AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) /* NFI */ {
+                @Serial
                 private static final long serialVersionUID = 208585707945686116L;
             };
 
@@ -240,6 +248,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
     }
 
     static class TestDirectTask extends AbstractDirectTask {
+        @Serial
         private static final long serialVersionUID = 587679821055711738L;
 
         TestDirectTask() {

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -52,6 +53,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
     static final class MergeWithObserver<T> extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -4592979584110982903L;
 
         final Subscriber<? super T> downstream;
@@ -321,6 +323,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
         static final class OtherObserver<T> extends AtomicReference<Disposable>
         implements MaybeObserver<T> {
 
+            @Serial
             private static final long serialVersionUID = -2935427570954647017L;
 
             final MergeWithObserver<T> parent;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
+import java.io.Serial;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
@@ -309,6 +310,7 @@ public final class ExecutorScheduler extends Scheduler {
 
         static final class BooleanRunnable extends AtomicBoolean implements Runnable, Disposable {
 
+            @Serial
             private static final long serialVersionUID = -2421395018820541164L;
 
             final Runnable actual;
@@ -364,6 +366,7 @@ public final class ExecutorScheduler extends Scheduler {
          */
         static final class InterruptibleRunnable extends AtomicInteger implements Runnable, Disposable {
 
+            @Serial
             private static final long serialVersionUID = -3603436687413320876L;
 
             final Runnable run;
@@ -459,6 +462,7 @@ public final class ExecutorScheduler extends Scheduler {
     static final class DelayedRunnable extends AtomicReference<Runnable>
             implements Runnable, Disposable, SchedulerRunnableIntrospection {
 
+        @Serial
         private static final long serialVersionUID = -4101336210206799084L;
 
         final SequentialDisposable timed;

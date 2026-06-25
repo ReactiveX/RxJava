@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -49,6 +50,7 @@ public final class CompletableTakeUntilCompletable extends Completable {
     static final class TakeUntilMainObserver extends AtomicReference<Disposable>
     implements CompletableObserver, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 3533011714830024923L;
 
         final CompletableObserver downstream;
@@ -118,6 +120,7 @@ public final class CompletableTakeUntilCompletable extends Completable {
         static final class OtherObserver extends AtomicReference<Disposable>
         implements CompletableObserver {
 
+            @Serial
             private static final long serialVersionUID = 5176264485428790318L;
             final TakeUntilMainObserver parent;
 

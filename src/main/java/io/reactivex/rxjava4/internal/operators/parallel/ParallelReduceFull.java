@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.parallel;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -53,6 +54,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
     static final class ParallelReduceFullMainSubscriber<T> extends DeferredScalarSubscription<T> {
 
+        @Serial
         private static final long serialVersionUID = -5370107872170712765L;
 
         final ParallelReduceFullInnerSubscriber<T>[] subscribers;
@@ -163,6 +165,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -7954444275102466525L;
 
         final ParallelReduceFullMainSubscriber<T> parent;
@@ -231,6 +234,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
     static final class SlotPair<T> extends AtomicInteger {
 
+        @Serial
         private static final long serialVersionUID = 473971317683868662L;
 
         T first;

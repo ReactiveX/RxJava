@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -117,6 +118,7 @@ extends Flowable<R> {
     static final class CombineLatestCoordinator<T, R>
     extends BasicIntQueueSubscription<R> {
 
+        @Serial
         private static final long serialVersionUID = -5082275438355852221L;
 
         final Subscriber<? super R> downstream;
@@ -458,6 +460,7 @@ extends Flowable<R> {
     extends AtomicReference<Subscription>
             implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -8730235182291002949L;
 
         final CombineLatestCoordinator<T, ?> parent;

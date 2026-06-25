@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
+import java.io.Serial;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -22,6 +23,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 public final class ScheduledRunnable extends AtomicReferenceArray<Object>
 implements Runnable, Callable<Object>, Disposable {
 
+    @Serial
     private static final long serialVersionUID = -6120223772001106981L;
     final Runnable actual;
     final boolean interruptOnCancel;

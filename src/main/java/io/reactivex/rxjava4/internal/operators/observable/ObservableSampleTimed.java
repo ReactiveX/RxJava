@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -56,6 +57,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
 
     abstract static class SampleTimedObserver<T> extends AtomicReference<T> implements Observer<T>, Disposable, Runnable {
 
+        @Serial
         private static final long serialVersionUID = -3517602651313910099L;
 
         final Observer<? super T> downstream;
@@ -141,6 +143,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
 
     static final class SampleTimedNoLast<T> extends SampleTimedObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = -7139995637533111443L;
 
         SampleTimedNoLast(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<? super T> onDropped) {
@@ -160,6 +163,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
 
     static final class SampleTimedEmitLast<T> extends SampleTimedObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = -7139995637533111443L;
 
         final AtomicInteger wip;

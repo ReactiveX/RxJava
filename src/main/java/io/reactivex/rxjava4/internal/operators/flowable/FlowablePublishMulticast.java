@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -481,6 +482,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
     extends AtomicLong
     implements Subscription {
 
+        @Serial
         private static final long serialVersionUID = 8664815189257569791L;
 
         final Subscriber<? super T> downstream;

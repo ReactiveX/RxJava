@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.*;
 
@@ -54,6 +55,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription, Runnable {
 
+        @Serial
         private static final long serialVersionUID = -2365647875069161133L;
 
         final Subscriber<? super Flowable<T>> downstream;
@@ -168,6 +170,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription, Runnable {
 
+        @Serial
         private static final long serialVersionUID = -8792836352386833856L;
 
         final Subscriber<? super Flowable<T>> downstream;
@@ -300,6 +303,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription, Runnable {
 
+        @Serial
         private static final long serialVersionUID = 2428527070996323976L;
 
         final Subscriber<? super Flowable<T>> downstream;

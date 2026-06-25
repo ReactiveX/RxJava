@@ -330,7 +330,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
         .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(to.errors().getFirst());
 
         TestHelper.assertError(errors, 0, TestException.class, "Outer");
         TestHelper.assertError(errors, 1, TestException.class, "Inner");
@@ -374,7 +374,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
         .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(to.errors().getFirst());
 
         TestHelper.assertError(errors, 0, TestException.class, "Outer");
         TestHelper.assertError(errors, 1, TestException.class, "Inner");

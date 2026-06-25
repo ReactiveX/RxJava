@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.concurrent.Flow.*;
@@ -35,6 +36,7 @@ public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream
 
     static final class UnsubscribeSubscriber<T> extends AtomicBoolean implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = 1015244841293359600L;
 
         final Subscriber<? super T> downstream;

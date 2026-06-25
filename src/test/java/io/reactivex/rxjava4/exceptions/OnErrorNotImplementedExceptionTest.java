@@ -39,7 +39,7 @@ public class OnErrorNotImplementedExceptionTest extends RxJavaTest {
 
         assertFalse("" + errors, errors.isEmpty());
         TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
-        Throwable c = errors.get(0).getCause();
+        Throwable c = errors.getFirst().getCause();
         assertTrue("" + c, c instanceof TestException);
     }
 

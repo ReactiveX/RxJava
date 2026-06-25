@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.parallel;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -66,6 +67,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
     extends AtomicInteger
     implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -4470634016609963609L;
 
         final Subscriber<? super T>[] subscribers;

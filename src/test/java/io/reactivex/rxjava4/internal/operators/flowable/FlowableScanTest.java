@@ -375,8 +375,8 @@ public class FlowableScanTest extends RxJavaTest {
             .assertError(e);
 
             assertEquals("" + list, 1, list.size());
-            assertTrue("" + list, list.get(0) instanceof UndeliverableException);
-            assertEquals(e2, list.get(0).getCause());
+            assertTrue("" + list, list.getFirst() instanceof UndeliverableException);
+            assertEquals(e2, list.getFirst().getCause());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -448,8 +448,8 @@ public class FlowableScanTest extends RxJavaTest {
             .assertError(e);
 
             assertEquals("" + list, 1, list.size());
-            assertTrue("" + list, list.get(0) instanceof UndeliverableException);
-            assertEquals(e2, list.get(0).getCause());
+            assertTrue("" + list, list.getFirst() instanceof UndeliverableException);
+            assertEquals(e2, list.getFirst().getCause());
         } finally {
             RxJavaPlugins.reset();
         }

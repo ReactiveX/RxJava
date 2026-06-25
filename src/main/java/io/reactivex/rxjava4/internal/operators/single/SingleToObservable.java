@@ -18,6 +18,8 @@ import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava4.internal.observers.DeferredScalarDisposable;
 
+import java.io.Serial;
+
 /**
  * Wraps a Single and exposes it as an Observable.
  *
@@ -52,6 +54,7 @@ public final class SingleToObservable<T> extends Observable<T> {
     extends DeferredScalarDisposable<T>
     implements SingleObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = 3786543492451018833L;
         Disposable upstream;
 

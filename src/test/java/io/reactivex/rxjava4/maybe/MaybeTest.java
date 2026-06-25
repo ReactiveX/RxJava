@@ -408,7 +408,7 @@ public class MaybeTest extends RxJavaTest {
         .assertValueCount(1)
         ;
 
-        assertNotEquals("1: " + main, to.values().get(0));
+        assertNotEquals("1: " + main, to.values().getFirst());
     }
 
     @Test
@@ -451,7 +451,7 @@ public class MaybeTest extends RxJavaTest {
         .assertValueCount(1)
         ;
 
-        assertNotEquals(main, to.values().get(0));
+        assertNotEquals(main, to.values().getFirst());
     }
 
     @Test
@@ -1873,7 +1873,7 @@ public class MaybeTest extends RxJavaTest {
             .subscribe().isDisposed());
 
             TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
-            Throwable c = errors.get(0).getCause();
+            Throwable c = errors.getFirst().getCause();
             assertTrue("" + c, c instanceof TestException);
         } finally {
             RxJavaPlugins.reset();
@@ -2023,7 +2023,7 @@ public class MaybeTest extends RxJavaTest {
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> list = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> list = TestHelper.compositeList(to.errors().getFirst());
         TestHelper.assertError(list, 0, TestException.class, "Outer");
         TestHelper.assertError(list, 1, TestException.class, "Inner");
         assertEquals(2, list.size());

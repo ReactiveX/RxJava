@@ -570,7 +570,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         ts.assertError(CompositeException.class);
         ts.assertNotComplete();
 
-        CompositeException ce = (CompositeException)ts.errors().get(0);
+        CompositeException ce = (CompositeException)ts.errors().getFirst();
 
         assertEquals(2, ce.getExceptions().size());
     }

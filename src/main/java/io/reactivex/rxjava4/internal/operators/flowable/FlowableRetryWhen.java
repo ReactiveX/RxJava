@@ -23,6 +23,7 @@ import io.reactivex.rxjava4.internal.subscriptions.EmptySubscription;
 import io.reactivex.rxjava4.processors.*;
 import io.reactivex.rxjava4.subscribers.SerializedSubscriber;
 
+import java.io.Serial;
 import java.util.Objects;
 
 public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, T> {
@@ -65,6 +66,7 @@ public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, 
 
     static final class RetryWhenSubscriber<T> extends WhenSourceSubscriber<T, Throwable> {
 
+        @Serial
         private static final long serialVersionUID = -2680129890138081029L;
 
         RetryWhenSubscriber(Subscriber<? super T> actual, FlowableProcessor<Throwable> processor,

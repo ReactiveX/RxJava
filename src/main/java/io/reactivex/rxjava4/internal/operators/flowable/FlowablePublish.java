@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -145,6 +146,7 @@ implements HasUpstreamPublisher<T> {
     extends AtomicInteger
     implements FlowableSubscriber<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -1672047311619175801L;
 
         final AtomicReference<PublishConnection<T>> current;
@@ -445,6 +447,7 @@ implements HasUpstreamPublisher<T> {
     static final class InnerSubscription<T> extends AtomicLong
     implements Subscription {
 
+        @Serial
         private static final long serialVersionUID = 2845000326761540265L;
 
         final Subscriber<? super T> downstream;

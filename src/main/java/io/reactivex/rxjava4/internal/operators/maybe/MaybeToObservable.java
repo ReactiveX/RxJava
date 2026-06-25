@@ -19,6 +19,8 @@ import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.rxjava4.internal.observers.DeferredScalarDisposable;
 
+import java.io.Serial;
+
 /**
  * Wraps a MaybeSource and exposes it as an Observable, relaying signals in a backpressure-aware manner
  * and composes cancellation through.
@@ -58,6 +60,7 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
     static final class MaybeToObservableObserver<T> extends DeferredScalarDisposable<T>
     implements MaybeObserver<T> {
 
+        @Serial
         private static final long serialVersionUID = 7603343402964826922L;
 
         Disposable upstream;

@@ -1051,7 +1051,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                 TestHelper.race(r1, r2);
 
                 if (ts.errors().size() != 0) {
-                    if (ts.errors().get(0) instanceof CompositeException) {
+                    if (ts.errors().getFirst() instanceof CompositeException) {
                         ts.assertSubscribed()
                         .assertNotComplete()
                         .assertNoValues();
@@ -1445,7 +1445,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
         TestSubscriber<List<Object>> ts = Flowable.combineLatestDelayError(Arrays.asList(pp, Flowable.just(1)), Arrays::asList)
         .doOnNext(v -> {
-            if (((Integer)v.get(0)) == 0) {
+            if (((Integer)v.getFirst()) == 0) {
                 pp.onNext(2);
                 pp.onComplete();
             }

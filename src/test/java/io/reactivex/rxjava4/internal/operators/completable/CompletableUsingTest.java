@@ -106,7 +106,7 @@ public class CompletableUsingTest extends RxJavaTest {
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> list = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> list = TestHelper.compositeList(to.errors().getFirst());
 
         TestHelper.assertError(list, 0, TestException.class, "Main");
         TestHelper.assertError(list, 1, TestException.class, "Disposer");
@@ -196,7 +196,7 @@ public class CompletableUsingTest extends RxJavaTest {
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> list = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> list = TestHelper.compositeList(to.errors().getFirst());
 
         TestHelper.assertError(list, 0, TestException.class, "Main");
         TestHelper.assertError(list, 1, TestException.class, "Disposer");

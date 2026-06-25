@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.disposables;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -28,6 +29,7 @@ public final class SequentialDisposable
 extends AtomicReference<Disposable>
 implements Disposable {
 
+    @Serial
     private static final long serialVersionUID = -754898800686245608L;
 
     /**

@@ -17,6 +17,8 @@ import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
+
 /**
  * Represents a fuseable container for a single value.
  *
@@ -24,6 +26,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  */
 public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
 
+    @Serial
     private static final long serialVersionUID = -5502432239815349361L;
 
     /** The target of the events. */

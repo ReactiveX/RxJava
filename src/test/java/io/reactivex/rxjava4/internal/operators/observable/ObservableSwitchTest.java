@@ -421,7 +421,7 @@ public class ObservableSwitchTest extends RxJavaTest {
         .assertNotComplete()
         .assertError(CompositeException.class);
 
-        List<Throwable> errors = ExceptionHelper.flatten(to.errors().get(0));
+        List<Throwable> errors = ExceptionHelper.flatten(to.errors().getFirst());
 
         TestHelper.assertError(errors, 0, TestException.class, "Forced failure 1");
         TestHelper.assertError(errors, 1, TestException.class, "Forced failure 2");

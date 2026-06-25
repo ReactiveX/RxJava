@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.*;
@@ -63,6 +64,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
     static final class TimeoutObserver<T> extends AtomicLong
     implements Observer<T>, Disposable, TimeoutSelectorSupport {
 
+        @Serial
         private static final long serialVersionUID = 3764492702657003550L;
 
         final Observer<? super T> downstream;
@@ -184,6 +186,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable, TimeoutSelectorSupport {
 
+        @Serial
         private static final long serialVersionUID = -7508389464265974549L;
 
         final Observer<? super T> downstream;
@@ -320,6 +323,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
     static final class TimeoutConsumer extends AtomicReference<Disposable>
     implements Observer<Object>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = 8708641127342403073L;
 
         final TimeoutSelectorSupport parent;

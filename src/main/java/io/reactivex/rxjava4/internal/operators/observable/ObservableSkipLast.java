@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.ArrayDeque;
 
 import io.reactivex.rxjava4.core.*;
@@ -34,6 +35,7 @@ public final class ObservableSkipLast<T> extends AbstractObservableWithUpstream<
 
     static final class SkipLastObserver<T> extends ArrayDeque<T> implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -3807491841935125653L;
         final Observer<? super T> downstream;
         final int skip;

@@ -13,11 +13,14 @@
 
 package io.reactivex.rxjava4.exceptions;
 
+import java.io.Serial;
+
 /**
  * Indicates that an operator attempted to emit a value but the downstream wasn't ready for it.
  */
 public final class MissingBackpressureException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 8517344746016032542L;
 
     /**

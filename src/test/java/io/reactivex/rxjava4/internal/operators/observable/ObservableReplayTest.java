@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.Serial;
 import java.lang.management.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -649,6 +650,7 @@ public class ObservableReplayTest extends RxJavaTest {
     @Test
     public void boundedReplayBuffer() {
         BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(false) /* NFI */ {
+            @Serial
             private static final long serialVersionUID = -5182053207244406872L;
 
             @Override

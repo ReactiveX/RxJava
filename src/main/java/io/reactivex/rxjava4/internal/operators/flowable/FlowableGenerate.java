@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.concurrent.Flow.*;
@@ -55,6 +56,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
     extends AtomicLong
     implements Emitter<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = 7565982551505011832L;
 
         final Subscriber<? super T> downstream;

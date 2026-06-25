@@ -46,7 +46,7 @@ public class LambdaObserverTest extends RxJavaTest {
 
         Observable.just(1).subscribe(o);
 
-        assertTrue(received.toString(), received.get(0) instanceof TestException);
+        assertTrue(received.toString(), received.getFirst() instanceof TestException);
         assertEquals(received.toString(), 1, received.size());
 
         assertTrue(o.isDisposed());
@@ -66,7 +66,7 @@ public class LambdaObserverTest extends RxJavaTest {
 
         Observable.just(1).subscribe(o);
 
-        assertTrue(received.toString(), received.get(0) instanceof TestException);
+        assertTrue(received.toString(), received.getFirst() instanceof TestException);
         assertEquals(received.toString(), 1, received.size());
 
         assertTrue(o.isDisposed());
@@ -94,7 +94,7 @@ public class LambdaObserverTest extends RxJavaTest {
             assertTrue(o.isDisposed());
 
             TestHelper.assertError(errors, 0, CompositeException.class);
-            List<Throwable> ce = TestHelper.compositeList(errors.get(0));
+            List<Throwable> ce = TestHelper.compositeList(errors.getFirst());
             TestHelper.assertError(ce, 0, TestException.class, "Outer");
             TestHelper.assertError(ce, 1, TestException.class, "Inner");
         } finally {
@@ -217,7 +217,7 @@ public class LambdaObserverTest extends RxJavaTest {
         assertFalse("Has observers?!", ps.hasObservers());
         assertFalse("No errors?!", errors.isEmpty());
 
-        assertTrue(errors.toString(), errors.get(0) instanceof TestException);
+        assertTrue(errors.toString(), errors.getFirst() instanceof TestException);
     }
 
     @Test
@@ -235,7 +235,7 @@ public class LambdaObserverTest extends RxJavaTest {
         assertFalse("Has observers?!", ps.hasObservers());
         assertFalse("No errors?!", errors.isEmpty());
 
-        assertTrue(errors.toString(), errors.get(0) instanceof TestException);
+        assertTrue(errors.toString(), errors.getFirst() instanceof TestException);
     }
 
     @Test

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.Flow.*;
@@ -29,6 +30,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 public final class LambdaSubscriber<T> extends AtomicReference<Subscription>
         implements FlowableSubscriber<T>, Subscription, Disposable, LambdaConsumerIntrospection {
 
+    @Serial
     private static final long serialVersionUID = -7251123623727029452L;
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;

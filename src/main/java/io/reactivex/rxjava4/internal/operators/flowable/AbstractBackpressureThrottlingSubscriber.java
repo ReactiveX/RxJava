@@ -18,6 +18,7 @@ import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava4.internal.util.BackpressureHelper;
 import static java.util.concurrent.Flow.*;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 abstract class AbstractBackpressureThrottlingSubscriber<T, R> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
+    @Serial
     private static final long serialVersionUID = -5050301752721603566L;
 
     final Subscriber<? super R> downstream;

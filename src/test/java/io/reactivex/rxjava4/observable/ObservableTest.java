@@ -910,7 +910,7 @@ public class ObservableTest extends RxJavaTest {
                 to.assertNoErrors();
                 to.assertComplete();
                 to.assertValue(value);
-                return to.values().get(0);
+                return to.values().getFirst();
             });
         assertSame(returned, value);
     }
@@ -924,7 +924,7 @@ public class ObservableTest extends RxJavaTest {
             to.assertNoErrors();
             to.assertComplete();
             to.assertValue(value);
-            return to.values().get(0);
+            return to.values().getFirst();
         });
         assertSame(returned, value);
     }

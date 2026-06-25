@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.internal.operators.observable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.Serial;
 import java.util.*;
 
 import org.junit.*;
@@ -79,6 +80,7 @@ public class ObservableToMultimapTest extends RxJavaTest {
 
         Supplier<Map<Integer, Collection<String>>> mapFactory = () -> new LinkedHashMap<Integer, Collection<String>>() /* NFI */ {
 
+            @Serial
             private static final long serialVersionUID = -2084477070717362859L;
 
             @Override
@@ -270,6 +272,7 @@ public class ObservableToMultimapTest extends RxJavaTest {
 
         Supplier<Map<Integer, Collection<String>>> mapFactory = () -> new LinkedHashMap<Integer, Collection<String>>() /* NFI */ {
 
+            @Serial
             private static final long serialVersionUID = -2084477070717362859L;
 
             @Override

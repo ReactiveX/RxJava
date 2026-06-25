@@ -680,7 +680,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
                 ts.assertSubscribed().assertNoValues().assertNotComplete();
 
-                Throwable ex = ts.errors().get(0);
+                Throwable ex = ts.errors().getFirst();
 
                 if (ex instanceof CompositeException) {
                     List<Throwable> es = TestHelper.errorList(ts);

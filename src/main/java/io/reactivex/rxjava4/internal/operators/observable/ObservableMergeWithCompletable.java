@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -47,6 +48,7 @@ public final class ObservableMergeWithCompletable<T> extends AbstractObservableW
     static final class MergeWithObserver<T> extends AtomicInteger
     implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -4592979584110982903L;
 
         final Observer<? super T> downstream;
@@ -119,6 +121,7 @@ public final class ObservableMergeWithCompletable<T> extends AbstractObservableW
         static final class OtherObserver extends AtomicReference<Disposable>
         implements CompletableObserver {
 
+            @Serial
             private static final long serialVersionUID = -2935427570954647017L;
 
             final MergeWithObserver<?> parent;

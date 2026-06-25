@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -59,6 +60,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription, InnerQueuedSubscriberSupport<R> {
 
+        @Serial
         private static final long serialVersionUID = -4255299542215038287L;
 
         final Subscriber<? super R> downstream;

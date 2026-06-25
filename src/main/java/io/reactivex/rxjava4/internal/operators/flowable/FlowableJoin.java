@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -72,6 +73,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
     static final class JoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Subscription, JoinSupport {
 
+        @Serial
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Subscriber<? super R> downstream;

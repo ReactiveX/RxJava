@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.observers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.SingleObserver;
@@ -26,6 +27,7 @@ public final class BiConsumerSingleObserver<T>
 extends AtomicReference<Disposable>
 implements SingleObserver<T>, Disposable {
 
+    @Serial
     private static final long serialVersionUID = 4943102778943297569L;
     final BiConsumer<? super T, ? super Throwable> onCallback;
 

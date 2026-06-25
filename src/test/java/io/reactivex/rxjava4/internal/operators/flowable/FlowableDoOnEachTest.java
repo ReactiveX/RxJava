@@ -159,7 +159,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         ts.assertNotComplete();
         ts.assertError(CompositeException.class);
 
-        CompositeException ex = (CompositeException)ts.errors().get(0);
+        CompositeException ex = (CompositeException)ts.errors().getFirst();
 
         List<Throwable> exceptions = ex.getExceptions();
         assertEquals(2, exceptions.size());
@@ -376,7 +376,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().getFirst());
 
         TestHelper.assertError(errors, 0, TestException.class, "Outer");
         TestHelper.assertError(errors, 1, TestException.class, "Inner");

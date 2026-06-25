@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.mixed;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.Flow.*;
@@ -36,6 +37,7 @@ import io.reactivex.rxjava4.operators.SpscArrayQueue;
 public abstract class ConcatMapXMainSubscriber<T> extends AtomicInteger
 implements FlowableSubscriber<T> {
 
+    @Serial
     private static final long serialVersionUID = -3214213361171757852L;
 
     final AtomicThrowable errors;

@@ -95,8 +95,7 @@ public final class Notification<T> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Notification) {
-            Notification<?> n = (Notification<?>) obj;
+        if (obj instanceof Notification<?> n) {
             return Objects.equals(value, n.value);
         }
         return false;

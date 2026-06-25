@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -77,6 +78,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
     extends AtomicLong
     implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -3688291656102519502L;
 
         final Subscriber<? super GroupedFlowable<K, V>> downstream;
@@ -358,6 +360,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
     static final class State<T, K> extends BasicIntQueueSubscription<T> implements Publisher<T> {
 
+        @Serial
         private static final long serialVersionUID = -3852313036005250360L;
 
         final K key;

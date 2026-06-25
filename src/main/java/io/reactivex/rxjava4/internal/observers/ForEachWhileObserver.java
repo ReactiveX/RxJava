@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.observers;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.core.Observer;
@@ -26,6 +27,7 @@ public final class ForEachWhileObserver<T>
 extends AtomicReference<Disposable>
 implements Observer<T>, Disposable {
 
+    @Serial
     private static final long serialVersionUID = -4403180040475402120L;
 
     final Predicate<? super T> onNext;

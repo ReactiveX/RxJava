@@ -36,6 +36,8 @@ import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
+
 /**
  * Wraps lambda callbacks and when the upstream terminates or this (Single | Maybe | Completable)
  * observer gets disposed, removes itself from a {@link io.reactivex.rxjava4.disposables.CompositeDisposable}.
@@ -47,6 +49,7 @@ public final class DisposableAutoReleaseMultiObserver<T>
 extends AbstractDisposableAutoRelease
 implements SingleObserver<T>, MaybeObserver<T>, CompletableObserver {
 
+    @Serial
     private static final long serialVersionUID = 8924480688481408726L;
 
     final Consumer<? super T> onSuccess;

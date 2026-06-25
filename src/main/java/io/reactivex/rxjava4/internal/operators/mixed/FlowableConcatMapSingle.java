@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.mixed;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -62,6 +63,7 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
     static final class ConcatMapSingleSubscriber<T, R>
     extends ConcatMapXMainSubscriber<T> implements Subscription {
 
+        @Serial
         private static final long serialVersionUID = -9140123220065488293L;
 
         final Subscriber<? super R> downstream;
@@ -253,6 +255,7 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
         extends AtomicReference<Disposable>
         implements SingleObserver<R> {
 
+            @Serial
             private static final long serialVersionUID = -3051469169682093892L;
 
             final ConcatMapSingleSubscriber<?, R> parent;

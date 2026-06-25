@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -48,6 +49,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
     static final class TakeLastTimedObserver<T>
     extends AtomicBoolean implements Observer<T>, Disposable {
 
+        @Serial
         private static final long serialVersionUID = -5677354903406201275L;
         final Observer<? super T> downstream;
         final long count;

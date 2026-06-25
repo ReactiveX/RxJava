@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscriptions;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -25,6 +26,7 @@ import io.reactivex.rxjava4.internal.util.BackpressureHelper;
  */
 public class SubscriptionArbiter extends AtomicInteger implements Subscription {
 
+    @Serial
     private static final long serialVersionUID = -2189523197179400958L;
 
     /**

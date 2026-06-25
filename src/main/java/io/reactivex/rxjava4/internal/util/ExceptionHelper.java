@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.util;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -93,8 +94,7 @@ public final class ExceptionHelper {
 
         while (!deque.isEmpty()) {
             Throwable e = deque.removeFirst();
-            if (e instanceof CompositeException) {
-                CompositeException ce = (CompositeException) e;
+            if (e instanceof CompositeException ce) {
                 List<Throwable> exceptions = ce.getExceptions();
                 for (int i = exceptions.size() - 1; i >= 0; i--) {
                     deque.offerFirst(exceptions.get(i));
@@ -132,6 +132,7 @@ public final class ExceptionHelper {
 
     static final class Termination extends Throwable {
 
+        @Serial
         private static final long serialVersionUID = -4649703670690200604L;
 
         Termination() {

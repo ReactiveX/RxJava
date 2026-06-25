@@ -107,7 +107,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
         ts.assertNoValues();
         ts.request(1);
         ts.assertValueCount(1);
-        assertTrue(ts.values().get(0).isOnComplete());
+        assertTrue(ts.values().getFirst().isOnComplete());
         ts.assertComplete();
     }
 
@@ -165,7 +165,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
         ts.assertNoValues();
         ts.request(1);
         ts.assertValueCount(1);
-        assertTrue(ts.values().get(0).isOnNext());
+        assertTrue(ts.values().getFirst().isOnNext());
         ts.request(1);
         ts.assertValueCount(2);
         assertTrue(ts.values().get(1).isOnError());

@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava4.exceptions;
 
+import java.io.Serial;
+
 /**
  * Indicates an overflow happened because the upstream disregarded backpressure completely or
  * {@link java.util.concurrent.Flow.Subscriber#onNext(Object)} was called concurrently from multiple threads
@@ -21,6 +23,7 @@ package io.reactivex.rxjava4.exceptions;
  */
 public final class QueueOverflowException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 8517344746016032542L;
 
     /**

@@ -21,6 +21,7 @@ import io.reactivex.rxjava4.functions.BiFunction;
 import io.reactivex.rxjava4.internal.subscriptions.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
+import java.io.Serial;
 import java.util.Objects;
 
 /**
@@ -45,6 +46,7 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
 
     static final class ReduceSubscriber<T> extends DeferredScalarSubscription<T> implements FlowableSubscriber<T> {
 
+        @Serial
         private static final long serialVersionUID = -4663883003264602070L;
 
         final BiFunction<T, T, T> reducer;

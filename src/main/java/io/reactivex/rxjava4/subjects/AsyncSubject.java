@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.subjects;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.annotations.*;
@@ -325,6 +326,7 @@ public final class AsyncSubject<T> extends Subject<T> {
     }
 
     static final class AsyncDisposable<T> extends DeferredScalarDisposable<T> {
+        @Serial
         private static final long serialVersionUID = 5629876084736248016L;
 
         final AsyncSubject<T> parent;

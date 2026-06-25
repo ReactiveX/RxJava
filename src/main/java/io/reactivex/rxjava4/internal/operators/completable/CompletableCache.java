@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
+import java.io.Serial;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -147,6 +148,7 @@ public final class CompletableCache extends Completable implements CompletableOb
     extends AtomicBoolean
     implements Disposable {
 
+        @Serial
         private static final long serialVersionUID = 8943152917179642732L;
 
         final CompletableObserver downstream;

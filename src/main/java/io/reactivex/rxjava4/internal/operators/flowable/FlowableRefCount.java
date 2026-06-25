@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -147,6 +148,7 @@ public final class FlowableRefCount<T> extends Flowable<T> {
     static final class RefConnection extends AtomicReference<Disposable>
     implements Runnable, Consumer<Disposable> {
 
+        @Serial
         private static final long serialVersionUID = -4552101107598366241L;
 
         final FlowableRefCount<?> parent;
@@ -182,6 +184,7 @@ public final class FlowableRefCount<T> extends Flowable<T> {
     static final class RefCountSubscriber<T>
     extends AtomicBoolean implements FlowableSubscriber<T>, Subscription {
 
+        @Serial
         private static final long serialVersionUID = -7419642935409022375L;
 
         final Subscriber<? super T> downstream;

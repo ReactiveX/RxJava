@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -110,6 +111,7 @@ public final class SingleFlatMapBiSelector<T, U, R> extends Single<R> {
         extends AtomicReference<Disposable>
         implements SingleObserver<U> {
 
+            @Serial
             private static final long serialVersionUID = -2897979525538174559L;
 
             final SingleObserver<? super R> downstream;
