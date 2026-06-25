@@ -307,7 +307,7 @@ public class ObservableDebounceTest extends RxJavaTest {
         TestScheduler scheduler = new TestScheduler();
         TestObserverEx<Integer> observer = new TestObserverEx<>();
 
-        Observable.merge(
+        Observable.mergeArray(
                 Observable.just(1),
                 Observable.just(2).delay(10, TimeUnit.MILLISECONDS, scheduler)
         ).debounce(20, TimeUnit.MILLISECONDS, scheduler).take(1).subscribe(observer);

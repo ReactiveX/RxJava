@@ -630,6 +630,7 @@ public class ParamValidationCheckerTest {
 
         defaultValues.put(ObservableCombineLatestConfig.class, ObservableCombineLatestConfig.DEFAULT);
         defaultValues.put(ObservableConcatConfig.class, ObservableConcatConfig.DEFAULT);
+        defaultValues.put(ObservableMergeConfig.class, ObservableMergeConfig.DEFAULT);
 
         @SuppressWarnings("rawtypes")
         class MixedConverters implements FlowableConverter, ObservableConverter, SingleConverter,
@@ -722,11 +723,7 @@ public class ParamValidationCheckerTest {
     }
 
     static void addDefaultInstance(Class<?> clazz, Object o, String tag) {
-        List<Object> list = defaultInstances.get(clazz);
-        if (list == null) {
-            list = new ArrayList<>();
-            defaultInstances.put(clazz, list);
-        }
+        List<Object> list = defaultInstances.computeIfAbsent(clazz, k -> new ArrayList<>());
         list.add(o);
         list.add(tag);
     }

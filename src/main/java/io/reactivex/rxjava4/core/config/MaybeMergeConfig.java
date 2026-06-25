@@ -54,9 +54,7 @@ public record MaybeMergeConfig(boolean delayErrors, int maxConcurrency) {
      * @param delayErrors should the error propagation be delayed?
      * @param maxConcurrency the number of source sequences run concurrently
      */
-    public MaybeMergeConfig(boolean delayErrors, int maxConcurrency) {
+    public MaybeMergeConfig {
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        this.delayErrors = delayErrors;
-        this.maxConcurrency = maxConcurrency;
     }
 }

@@ -54,9 +54,7 @@ public record SingleMergeConfig(boolean delayErrors, int maxConcurrency) {
      * @param delayErrors should the error propagation be delayed?
      * @param maxConcurrency the number of source sequences run concurrently
      */
-    public SingleMergeConfig(boolean delayErrors, int maxConcurrency) {
+    public SingleMergeConfig {
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        this.delayErrors = delayErrors;
-        this.maxConcurrency = maxConcurrency;
     }
 }

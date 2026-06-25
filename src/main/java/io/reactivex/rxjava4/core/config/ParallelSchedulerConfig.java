@@ -16,13 +16,14 @@ package io.reactivex.rxjava4.core.config;
 import java.util.concurrent.ThreadFactory;
 
 import io.reactivex.rxjava4.annotations.*;
+import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
 /**
  * Configuration record for {@link Schedulers#createParallel(ParallelSchedulerConfig)}.
  * @param parallelism the number of concurrent threads, default the number of CPUs.
  * @param tracking if true, tasks submitted to it will be tracked and can be en-masse disposed
- * @param priority the thread priority of the created platform threads.
+ * @param priority the thread priority of the created platform threads. See {@link Thread#NORM_PRIORITY}.
  * @param threadNamePrefix the prefix to name the scheduler's threads
  * @param factory the customizable factory for the underlying Executor, if non-null, the priority and threadNamePrefix
  *                are ignored
@@ -97,21 +98,12 @@ public record ParallelSchedulerConfig(
      * Creates a fully configurable ParallelSchedulerConfig object.
      * @param parallelism the number of threads to work with in the scheduler
      * @param tracking if true, tasks submitted to it will be tracked and can be en-masse disposed
-     * @param priority
+     * @param priority the thread priority of the created platform threads. See {@link Thread#NORM_PRIORITY}.
      * @param threadNamePrefix the prefix to name the scheduler's threads
      * @param factory the customizable factory for the underlying Executor, if non-null, the priority
      *                and threadNamePrefix are ignored
      */
-    public ParallelSchedulerConfig(
-            int parallelism,
-            boolean tracking,
-            int priority,
-            @NonNull String threadNamePrefix,
-            @Nullable ThreadFactory factory) {
-        this.parallelism = parallelism;
-        this.tracking = tracking;
-        this.priority = priority;
-        this.threadNamePrefix = threadNamePrefix;
-        this.factory = factory;
+    public ParallelSchedulerConfig {
+        ObjectHelper.verifyPositive(parallelism, "parallelism");
     }
 }

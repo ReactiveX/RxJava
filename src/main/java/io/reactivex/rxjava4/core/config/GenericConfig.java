@@ -65,11 +65,8 @@ public record GenericConfig(boolean delayErrors, int bufferSize, int prefetch) {
      * @param bufferSize what would be the buffer size
      * @param prefetch what would be the prefetch amount
      */
-    public GenericConfig(boolean delayErrors, int bufferSize, int prefetch) {
+    public GenericConfig {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        this.delayErrors = delayErrors;
-        this.bufferSize = bufferSize;
-        this.prefetch = prefetch;
     }
 }

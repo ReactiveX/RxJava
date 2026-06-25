@@ -24,7 +24,7 @@ public class ObservableGroupByTests extends RxJavaTest {
 
     @Test
     public void takeUnsubscribesOnGroupBy() throws Exception {
-        Observable.merge(
+        Observable.mergeArray(
             ObservableEventStream.getEventStream("HTTP-ClusterA", 50),
             ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
@@ -43,7 +43,7 @@ public class ObservableGroupByTests extends RxJavaTest {
 
     @Test
     public void takeUnsubscribesOnFlatMapOfGroupBy() throws Exception {
-        Observable.merge(
+        Observable.mergeArray(
             ObservableEventStream.getEventStream("HTTP-ClusterA", 50),
             ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
         )

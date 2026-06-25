@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava4.core.config.ObservableMergeConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import org.junit.*;
 
@@ -45,7 +46,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six"));
         final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
 
-        Observable<String> m = Observable.mergeDelayError(o1, o2);
+        Observable<String> m = Observable.mergeArray(ObservableMergeConfig.DELAY_ERROR, o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -69,7 +70,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         final Observable<String> o3 = Observable.unsafeCreate(new TestErrorObservable("seven", "eight", null));
         final Observable<String> o4 = Observable.unsafeCreate(new TestErrorObservable("nine"));
 
-        Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
+        Observable<String> m = Observable.mergeArray(ObservableMergeConfig.DELAY_ERROR, o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(CompositeException.class));
@@ -94,7 +95,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         final Observable<String> o3 = Observable.unsafeCreate(new TestErrorObservable("seven", "eight", null));
         final Observable<String> o4 = Observable.unsafeCreate(new TestErrorObservable("nine"));
 
-        Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
+        Observable<String> m = Observable.mergeArray(ObservableMergeConfig.DELAY_ERROR, o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -117,7 +118,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         final Observable<String> o3 = Observable.unsafeCreate(new TestErrorObservable("seven", "eight"));
         final Observable<String> o4 = Observable.unsafeCreate(new TestErrorObservable("nine", null));
 
-        Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
+        Observable<String> m = Observable.mergeArray(ObservableMergeConfig.DELAY_ERROR, o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -141,7 +142,8 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         // throw the error at the very end so no onComplete will be called after it
         final TestAsyncErrorObservable o4 = new TestAsyncErrorObservable("nine", null);
 
-        Observable<String> m = Observable.mergeDelayError(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2), Observable.unsafeCreate(o3), Observable.unsafeCreate(o4));
+        Observable<String> m = Observable.mergeArray(ObservableMergeConfig.DELAY_ERROR,
+                Observable.unsafeCreate(o1), Observable.unsafeCreate(o2), Observable.unsafeCreate(o3), Observable.unsafeCreate(o4));
         m.subscribe(stringObserver);
 
         try {
@@ -172,7 +174,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six"));
         final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", null));
 
-        Observable<String> m = Observable.mergeDelayError(o1, o2);
+        Observable<String> m = Observable.mergeArray(ObservableMergeConfig.DELAY_ERROR, o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(Throwable.class));
@@ -193,7 +195,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six"));
         final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", null));
 
-        Observable<String> m = Observable.mergeDelayError(o1, o2);
+        Observable<String> m = Observable.mergeArray(ObservableMergeConfig.DELAY_ERROR, o1, o2);
         CaptureObserver w = new CaptureObserver();
         m.subscribe(w);
 
@@ -226,7 +228,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
             observer.onNext(o2);
             observer.onComplete();
         });
-        Observable<String> m = Observable.mergeDelayError(observableOfObservables);
+        Observable<String> m = Observable.merge(observableOfObservables, ObservableMergeConfig.DELAY_ERROR);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -239,7 +241,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
 
-        Observable<String> m = Observable.mergeDelayError(o1, o2);
+        Observable<String> m = Observable.mergeArray(ObservableMergeConfig.DELAY_ERROR, o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -255,7 +257,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         listOfObservables.add(o1);
         listOfObservables.add(o2);
 
-        Observable<String> m = Observable.mergeDelayError(Observable.fromIterable(listOfObservables));
+        Observable<String> m = Observable.merge(Observable.fromIterable(listOfObservables), ObservableMergeConfig.DELAY_ERROR);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -268,7 +270,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
-        Observable<String> m = Observable.mergeDelayError(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2));
+        Observable<String> m = Observable.mergeArray(ObservableMergeConfig.DELAY_ERROR, Observable.unsafeCreate(o1), Observable.unsafeCreate(o2));
         m.subscribe(stringObserver);
 
         try {
@@ -288,7 +290,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         final Observable<Observable<String>> o1 = Observable.error(new RuntimeException("unit test"));
 
         final CountDownLatch latch = new CountDownLatch(1);
-        Observable.mergeDelayError(o1).subscribe(new DefaultObserver<String>() {
+        Observable.merge(o1, ObservableMergeConfig.DELAY_ERROR).subscribe(new DefaultObserver<String>() {
             @Override
             public void onComplete() {
                 fail("Expected onError path");
@@ -423,10 +425,10 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
     @Test
     public void errorInParentObservable() {
         TestObserverEx<Integer> to = new TestObserverEx<>();
-        Observable.mergeDelayError(
+        Observable.merge(
                 Observable.just(Observable.just(1), Observable.just(2))
                         .startWithItem(Observable.<Integer> error(new RuntimeException()))
-                ).subscribe(to);
+                , ObservableMergeConfig.DELAY_ERROR).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertTerminated();
         to.assertValues(1, 2);
@@ -449,7 +451,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
             Observer<String> stringObserver = TestHelper.mockObserver();
 
             TestObserverEx<String> to = new TestObserverEx<>(stringObserver);
-            Observable<String> m = Observable.mergeDelayError(parentObservable);
+            Observable<String> m = Observable.merge(parentObservable, ObservableMergeConfig.DELAY_ERROR);
             m.subscribe(to);
             System.out.println("testErrorInParentObservableDelayed | " + i);
             to.awaitDone(2000, TimeUnit.MILLISECONDS);
@@ -482,84 +484,85 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void mergeIterableDelayError() {
-        Observable.mergeDelayError(Arrays.asList(Observable.just(1), Observable.just(2)))
+        Observable.merge(Arrays.asList(Observable.just(1), Observable.just(2)), ObservableMergeConfig.DELAY_ERROR)
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void mergeArrayDelayError() {
-        Observable.mergeArrayDelayError(Observable.just(1), Observable.just(2))
+        Observable.mergeArray(ObservableMergeConfig.DELAY_ERROR, Observable.just(1), Observable.just(2))
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void mergeIterableDelayErrorWithError() {
-        Observable.mergeDelayError(
+        Observable.merge(
                 Arrays.asList(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
-                Observable.just(2)))
+                Observable.just(2)), ObservableMergeConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void mergeDelayError() {
-        Observable.mergeDelayError(
+        Observable.merge(
                 Observable.just(Observable.just(1),
-                Observable.just(2)))
+                Observable.just(2)), ObservableMergeConfig.DELAY_ERROR)
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void mergeDelayErrorWithError() {
-        Observable.mergeDelayError(
+        Observable.merge(
                 Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
-                Observable.just(2)))
+                Observable.just(2)), ObservableMergeConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void mergeDelayErrorMaxConcurrency() {
-        Observable.mergeDelayError(
+        Observable.merge(
                 Observable.just(Observable.just(1),
-                Observable.just(2)), 1)
+                Observable.just(2)), new ObservableMergeConfig(1))
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void mergeDelayErrorWithErrorMaxConcurrency() {
-        Observable.mergeDelayError(
+        Observable.merge(
                 Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
-                Observable.just(2)), 1)
+                Observable.just(2)), new ObservableMergeConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void mergeIterableDelayErrorMaxConcurrency() {
-        Observable.mergeDelayError(
+        Observable.merge(
                 Arrays.asList(Observable.just(1),
-                Observable.just(2)), 1)
+                Observable.just(2)), new ObservableMergeConfig(1))
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void mergeIterableDelayErrorWithErrorMaxConcurrency() {
-        Observable.mergeDelayError(
+        Observable.merge(
                 Arrays.asList(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
-                Observable.just(2)), 1)
+                Observable.just(2)), new ObservableMergeConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void mergeDelayError3() {
-        Observable.mergeDelayError(
+        Observable.mergeArray(
+                ObservableMergeConfig.DELAY_ERROR,
                 Observable.just(1),
                 Observable.just(2),
                 Observable.just(3)
@@ -570,7 +573,8 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void mergeDelayError3WithError() {
-        Observable.mergeDelayError(
+        Observable.mergeArray(
+                ObservableMergeConfig.DELAY_ERROR,
                 Observable.just(1),
                 Observable.just(2).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(3)

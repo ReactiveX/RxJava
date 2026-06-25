@@ -287,6 +287,7 @@ implements FlowableSubscriber<T>, Subscription {
     /**
      * Expose this {@code TestSubscriber} as a {@link Disposable} object.
      * @return the {@code Disposable} view of this {@code TestSubscriber}
+     * @since 4.0.0
      */
     public final Disposable asDisposable() {
         return new TestSubscriberDisposable(this);

@@ -14,23 +14,32 @@
 package io.reactivex.rxjava4.core.config;
 
 import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 
 /**
- * Generic configuration block with option to delay errors, change max concurrency
- * amounts and buffer sizes.
- * TODO once value classes are available, make this a record class.
+ * Configuration record for Observable.merge() operators.
  * @param delayErrors should the error be delayed?
  * @param maxConcurrency the maximum number of concurrent flows?
  * @param bufferSize what would be the buffer size?
  * @since 4.0.0
  */
-public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferSize) {
+public record ObservableMergeConfig(boolean delayErrors, int maxConcurrency, int bufferSize) {
+
+    /**
+     * The default configuration with no error delays and bufferSize of {@link Observable#bufferSize()}.
+     */
+    public static final ObservableMergeConfig DEFAULT = new ObservableMergeConfig(false, Observable.bufferSize());
+
+    /**
+     * The default configuration with error delays and bufferSize of {@link Observable#bufferSize()}.
+     */
+    public static final ObservableMergeConfig DELAY_ERROR = new ObservableMergeConfig(true, Observable.bufferSize());
 
     /**
      * Default config: no error delay, {@link Flowable#bufferSize()} sizes.
      */
-    public FlatMapConfig() {
+    public ObservableMergeConfig() {
         this(false, Flowable.bufferSize(), Flowable.bufferSize());
     }
 
@@ -38,7 +47,7 @@ public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferS
      * Optionally delay error, {@link Flowable#bufferSize()} sizes
      * @param delayErrors should the error be delayed?
      */
-    public FlatMapConfig(boolean delayErrors) {
+    public ObservableMergeConfig(boolean delayErrors) {
         this(delayErrors, Flowable.bufferSize(), Flowable.bufferSize());
     }
 
@@ -46,7 +55,7 @@ public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferS
      * Optionally set the buffer size, no delay errors.
      * @param maxConcurrency the maximum number of concurrent flows
      */
-    public FlatMapConfig(int maxConcurrency) {
+    public ObservableMergeConfig(int maxConcurrency) {
         this(false, maxConcurrency, Flowable.bufferSize());
     }
 
@@ -55,7 +64,7 @@ public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferS
      * @param delayErrors should the errors be delayed?
      * @param maxConcurrency the maximum number of concurrent flows
      */
-    public FlatMapConfig(boolean delayErrors, int maxConcurrency) {
+    public ObservableMergeConfig(boolean delayErrors, int maxConcurrency) {
         this(delayErrors, maxConcurrency, Flowable.bufferSize());
     }
 
@@ -65,7 +74,7 @@ public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferS
      * @param maxConcurrency the maximum number of concurrent flows?
      * @param bufferSize what would be the buffer size
      */
-    public FlatMapConfig {
+    public ObservableMergeConfig {
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
     }

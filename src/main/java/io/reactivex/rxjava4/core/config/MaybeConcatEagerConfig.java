@@ -66,10 +66,7 @@ public record MaybeConcatEagerConfig(boolean delayError, int maxConcurrency, int
      * @param maxConcurrency the maximum number of concurrent sources running
      * @param prefetch the number of items to request from each source
      */
-    public MaybeConcatEagerConfig(boolean delayError, int maxConcurrency, int prefetch) {
+    public MaybeConcatEagerConfig {
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        this.delayError = delayError;
-        this.maxConcurrency = maxConcurrency;
-        this.prefetch = prefetch;
     }
 }

@@ -3554,28 +3554,28 @@ public enum TestHelper {
 
             if (result instanceof MaybeSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to);
+                disposable.set(to.asDisposable());
 
                 ((MaybeSource<?>)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof SingleSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to);
+                disposable.set(to.asDisposable());
 
                 ((SingleSource<?>)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof CompletableSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to);
+                disposable.set(to.asDisposable());
 
                 ((CompletableSource)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof ObservableSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to);
+                disposable.set(to.asDisposable());
 
                 ((ObservableSource<?>)result)
                 .subscribe(to);
@@ -3620,28 +3620,28 @@ public enum TestHelper {
 
             if (result instanceof MaybeSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to);
+                disposable.set(to.asDisposable());
 
                 ((MaybeSource<?>)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof SingleSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to);
+                disposable.set(to.asDisposable());
 
                 ((SingleSource<?>)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof CompletableSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to);
+                disposable.set(to.asDisposable());
 
                 ((CompletableSource)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof ObservableSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to);
+                disposable.set(to.asDisposable());
 
                 ((ObservableSource<?>)result)
                 .subscribe(to);
