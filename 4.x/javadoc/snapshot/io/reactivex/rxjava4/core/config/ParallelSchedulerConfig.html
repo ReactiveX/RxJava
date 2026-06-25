@@ -61,11 +61,16 @@ initTheme();
 <div class="toc-header">Contents&nbsp;<input type="text" class="filter-input" disabled placeholder="Filter contents (type .)" aria-label="Filter table of contents" autocomplete="off" spellcheck="false"><input type="reset" class="reset-filter" disabled tabindex="-1" value="Reset">&nbsp;<button class="toc-sort-toggle" id="toc-lexical-order-toggle"><img src="../../../../../resource-files/sort-a-z.svg" alt="Sort member details in lexicographical order"></button></div>
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
+<li><a href="#field-summary" tabindex="0">Field Summary</a></li>
 <li><a href="#constructor-summary" tabindex="0">Constructor Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
+<li><a href="#field-detail" tabindex="0">Field Details</a>
+<ol class="toc-list">
+<li><a href="#DEFAULT" tabindex="0">DEFAULT</a></li>
+</ol>
+</li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
-<li><a href="#%3Cinit%3E()" tabindex="0">ParallelSchedulerConfig()</a></li>
 <li><a href="#%3Cinit%3E(int)" tabindex="0">ParallelSchedulerConfig(int)</a></li>
 <li><a href="#%3Cinit%3E(int,boolean)" tabindex="0">ParallelSchedulerConfig(int, boolean)</a></li>
 <li><a href="#%3Cinit%3E(int,java.lang.String)" tabindex="0">ParallelSchedulerConfig(int, String)</a></li>
@@ -103,7 +108,7 @@ initTheme();
 <dt>Record Components:</dt>
 <dd><code><span id="param-parallelism">parallelism</span></code> - the number of concurrent threads, default the number of CPUs.</dd>
 <dd><code><span id="param-tracking">tracking</span></code> - if true, tasks submitted to it will be tracked and can be en-masse disposed</dd>
-<dd><code><span id="param-priority">priority</span></code> - the thread priority of the created platform threads.</dd>
+<dd><code><span id="param-priority">priority</span></code> - the thread priority of the created platform threads. See <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a>.</dd>
 <dd><code><span id="param-threadNamePrefix">threadNamePrefix</span></code> - the prefix to name the scheduler's threads</dd>
 <dd><code><span id="param-factory">factory</span></code> - the customizable factory for the underlying Executor, if non-null, the priority and threadNamePrefix
                are ignored</dd>
@@ -117,6 +122,24 @@ initTheme();
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final <a href="ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></code></div>
+<div class="col-second even-row-color"><code><a href="#DEFAULT" class="member-name-link">DEFAULT</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Default configuration: Available CPU parallelism, tracking on, normal thread priority
+<code>RxParallelScheduler</code> naming and no custom <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link"><code>ThreadFactory</code></a>.</div>
+</div>
+</div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -125,47 +148,42 @@ initTheme();
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">ParallelSchedulerConfig</a>()</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Creates a default config with available CPUs parallelism,
-normal priority, tracking and RxParallelScheduler thread name prefix.</div>
-</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism)</code></div>
-<div class="col-last odd-row-color">
 <div class="block">Creates a default config with the given parallelism,
 normal priority, tracking and RxParallelScheduler thread name prefix.</div>
 </div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int,boolean)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism,
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int,boolean)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism,
  boolean&nbsp;tracking)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Creates a default config with the given parallelism,
 normal priority, optionally tracking and RxParallelScheduler thread name prefix.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int,boolean,int,java.lang.String,java.util.concurrent.ThreadFactory)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int,boolean,int,java.lang.String,java.util.concurrent.ThreadFactory)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism,
  boolean&nbsp;tracking,
  int&nbsp;priority,
  <a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html" title="class in java.lang" class="external-link">String</a>&nbsp;threadNamePrefix,
  <a href="../../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link">ThreadFactory</a>&nbsp;factory)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Creates a fully configurable ParallelSchedulerConfig object.</div>
 </div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int,boolean,java.lang.String)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism,
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int,boolean,java.lang.String)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism,
  boolean&nbsp;tracking,
  <a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html" title="class in java.lang" class="external-link">String</a>&nbsp;threadNamePrefix)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Creates a default config with the given parallelism,
-normal priority, optionally tracking and RxParallelScheduler thread name prefix.</div>
-</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int,boolean,java.util.concurrent.ThreadFactory)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism,
- boolean&nbsp;tracking,
- <a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link">ThreadFactory</a>&nbsp;factory)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Creates a default config with the given parallelism,
 normal priority, optionally tracking and RxParallelScheduler thread name prefix.</div>
 </div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int,java.lang.String)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism,
- <a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html" title="class in java.lang" class="external-link">String</a>&nbsp;threadNamePrefix)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int,boolean,java.util.concurrent.ThreadFactory)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism,
+ boolean&nbsp;tracking,
+ <a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link">ThreadFactory</a>&nbsp;factory)</code></div>
 <div class="col-last even-row-color">
+<div class="block">Creates a default config with the given parallelism,
+normal priority, optionally tracking and RxParallelScheduler thread name prefix.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int,java.lang.String)" class="member-name-link">ParallelSchedulerConfig</a><wbr>(int&nbsp;parallelism,
+ <a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html" title="class in java.lang" class="external-link">String</a>&nbsp;threadNamePrefix)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Creates a default config with the given parallelism,
 normal priority, optionally tracking and RxParallelScheduler thread name prefix.</div>
 </div>
@@ -235,21 +253,29 @@ normal priority, optionally tracking and RxParallelScheduler thread name prefix.
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="DEFAULT">
+<h3>DEFAULT</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></span>&nbsp;<span class="element-name">DEFAULT</span></div>
+<div class="block">Default configuration: Available CPU parallelism, tracking on, normal thread priority
+<code>RxParallelScheduler</code> naming and no custom <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link"><code>ThreadFactory</code></a>.</div>
+</div>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
 <h2>Constructor Details</h2>
 <ul class="member-list">
-<li>
-<section class="detail" id="&lt;init&gt;()">
-<h3>ParallelSchedulerConfig</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ParallelSchedulerConfig</span>()</div>
-<div class="block">Creates a default config with available CPUs parallelism,
-normal priority, tracking and RxParallelScheduler thread name prefix.</div>
-</div>
-</section>
-</li>
 <li>
 <section class="detail" id="&lt;init&gt;(int)">
 <h3>ParallelSchedulerConfig</h3>
@@ -351,7 +377,7 @@ normal priority, optionally tracking and RxParallelScheduler thread name prefix.
 <dt>Parameters:</dt>
 <dd><code>parallelism</code> - the number of threads to work with in the scheduler</dd>
 <dd><code>tracking</code> - if true, tasks submitted to it will be tracked and can be en-masse disposed</dd>
-<dd><code>priority</code> - </dd>
+<dd><code>priority</code> - the thread priority of the created platform threads. See <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a>.</dd>
 <dd><code>threadNamePrefix</code> - the prefix to name the scheduler's threads</dd>
 <dd><code>factory</code> - the customizable factory for the underlying Executor, if non-null, the priority
                and threadNamePrefix are ignored</dd>

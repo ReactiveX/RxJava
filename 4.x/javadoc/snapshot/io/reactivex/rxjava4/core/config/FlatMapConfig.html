@@ -61,11 +61,17 @@ initTheme();
 <div class="toc-header">Contents&nbsp;<input type="text" class="filter-input" disabled placeholder="Filter contents (type .)" aria-label="Filter table of contents" autocomplete="off" spellcheck="false"><input type="reset" class="reset-filter" disabled tabindex="-1" value="Reset">&nbsp;<button class="toc-sort-toggle" id="toc-lexical-order-toggle"><img src="../../../../../resource-files/sort-a-z.svg" alt="Sort member details in lexicographical order"></button></div>
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
+<li><a href="#field-summary" tabindex="0">Field Summary</a></li>
 <li><a href="#constructor-summary" tabindex="0">Constructor Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
+<li><a href="#field-detail" tabindex="0">Field Details</a>
+<ol class="toc-list">
+<li><a href="#DEFAULT" tabindex="0">DEFAULT</a></li>
+<li><a href="#DELAY_ERRORS" tabindex="0">DELAY_ERRORS</a></li>
+</ol>
+</li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
-<li><a href="#%3Cinit%3E()" tabindex="0">FlatMapConfig()</a></li>
 <li><a href="#%3Cinit%3E(boolean)" tabindex="0">FlatMapConfig(boolean)</a></li>
 <li><a href="#%3Cinit%3E(int)" tabindex="0">FlatMapConfig(int)</a></li>
 <li><a href="#%3Cinit%3E(boolean,int)" tabindex="0">FlatMapConfig(boolean, int)</a></li>
@@ -105,7 +111,7 @@ initTheme();
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">FlatMapConfig</span>(boolean&nbsp;delayErrors, int&nbsp;maxConcurrency, int&nbsp;bufferSize)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Record.html" title="class in java.lang" class="external-link">Record</a></span></div>
-<div class="block">Generic configuration block with option to delay errors, change prefetch
+<div class="block">Generic configuration block with option to delay errors, change max concurrency
 amounts and buffer sizes.
 TODO once value classes are available, make this a record class.</div>
 <dl class="notes">
@@ -116,6 +122,28 @@ TODO once value classes are available, make this a record class.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final <a href="FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></code></div>
+<div class="col-second even-row-color"><code><a href="#DEFAULT" class="member-name-link">DEFAULT</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The default config with no error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#DELAY_ERRORS" class="member-name-link">DELAY_ERRORS</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+</div>
+</div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -124,27 +152,23 @@ TODO once value classes are available, make this a record class.</div>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">FlatMapConfig</a>()</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(boolean)" class="member-name-link">FlatMapConfig</a><wbr>(boolean&nbsp;delayErrors)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Default config: no error delay, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes.</div>
-</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(boolean)" class="member-name-link">FlatMapConfig</a><wbr>(boolean&nbsp;delayErrors)</code></div>
-<div class="col-last odd-row-color">
 <div class="block">Optionally delay error, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
 </div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(boolean,int)" class="member-name-link">FlatMapConfig</a><wbr>(boolean&nbsp;delayErrors,
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(boolean,int)" class="member-name-link">FlatMapConfig</a><wbr>(boolean&nbsp;delayErrors,
  int&nbsp;maxConcurrency)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Optionally delays errors and sets the buffer size too.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(boolean,int,int)" class="member-name-link">FlatMapConfig</a><wbr>(boolean&nbsp;delayErrors,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(boolean,int,int)" class="member-name-link">FlatMapConfig</a><wbr>(boolean&nbsp;delayErrors,
  int&nbsp;maxConcurrency,
  int&nbsp;bufferSize)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Fully customize the configuration.</div>
 </div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">FlatMapConfig</a><wbr>(int&nbsp;maxConcurrency)</code></div>
-<div class="col-last even-row-color">
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">FlatMapConfig</a><wbr>(int&nbsp;maxConcurrency)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Optionally set the buffer size, no delay errors.</div>
 </div>
 </div>
@@ -203,20 +227,37 @@ TODO once value classes are available, make this a record class.</div>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="DEFAULT">
+<h3>DEFAULT</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></span>&nbsp;<span class="element-name">DEFAULT</span></div>
+<div class="block">The default config with no error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="DELAY_ERRORS">
+<h3>DELAY_ERRORS</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></span>&nbsp;<span class="element-name">DELAY_ERRORS</span></div>
+<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+</div>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
 <h2>Constructor Details</h2>
 <ul class="member-list">
-<li>
-<section class="detail" id="&lt;init&gt;()">
-<h3>FlatMapConfig</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">FlatMapConfig</span>()</div>
-<div class="block">Default config: no error delay, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes.</div>
-</div>
-</section>
-</li>
 <li>
 <section class="detail" id="&lt;init&gt;(boolean)">
 <h3>FlatMapConfig</h3>

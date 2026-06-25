@@ -1092,6 +1092,10 @@ specified boundary <a href="https://docs.oracle.com/en/java/javase/26/docs/api/j
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableConcatConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()" class="member-name-link">bufferSize()</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns the default internal buffer size used by most async operators.</div>
@@ -2841,6 +2845,14 @@ current <code>Flowable</code> that are followed by another item within a compute
 <dd>
 <div class="block">The default config with no error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
+<dd>
+<div class="block">The default config with no error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/GenericConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></dt>
+<dd>
+<div class="block">The default config with no error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/MaybeConcatConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/MaybeConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">MaybeConcatConfig</a></dt>
 <dd>
 <div class="block">The default configuration with no error delays and prefetch of 2.</div>
@@ -2860,6 +2872,15 @@ current <code>Flowable</code> that are followed by another item within a compute
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatConfig</a></dt>
 <dd>
 <div class="block">The default configuration with no error delays and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">The default configuration with no error delays and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Default configuration: Available CPU parallelism, tracking on, normal thread priority
+<code>RxParallelScheduler</code> naming and no custom <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link"><code>ThreadFactory</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
 <dd>
@@ -3067,6 +3088,10 @@ per-item basis.</div>
 <dd>
 <div class="block">The default configuration with error delays and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">The default configuration with error delays and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatConfig</a></dt>
 <dd>
 <div class="block">The default configuration with error delays and prefetch of 2.</div>
@@ -3080,6 +3105,14 @@ per-item basis.</div>
 <div class="block">The default configuration with error delays and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#DELAY_ERRORS" class="member-name-link">DELAY_ERRORS</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
+<dd>
+<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#DELAY_ERRORS" class="member-name-link">DELAY_ERRORS</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
+<dd>
+<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/GenericConfig.html#DELAY_ERRORS" class="member-name-link">DELAY_ERRORS</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></dt>
 <dd>
 <div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
 </dd>
@@ -3130,6 +3163,10 @@ per-item basis.</div>
 <dt><a href="io/reactivex/rxjava4/core/config/MaybeMergeConfig.html#delayErrors()" class="member-name-link">delayErrors()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/MaybeMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">MaybeMergeConfig</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/MaybeMergeConfig.html#param-delayErrors"><code>delayErrors</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#delayErrors()" class="member-name-link">delayErrors()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#param-delayErrors"><code>delayErrors</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/SingleMergeConfig.html#delayErrors()" class="member-name-link">delayErrors()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleMergeConfig</a></dt>
 <dd>
@@ -3859,6 +3896,10 @@ immediately.</div>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
@@ -4156,7 +4197,7 @@ subscriptions to these <code>ObservableSource</code>s.</div>
 <div class="block">Returns an <code>Observable</code> that applies a function to each item emitted or notification raised by the current
 <code>Observable</code> and then flattens the <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s returned from these functions and emits the resulting items.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Supplier,int)" class="member-name-link">flatMap(Function, Function, Supplier, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Supplier,io.reactivex.rxjava4.core.config.ObservableMergeConfig)" class="member-name-link">flatMap(Function, Function, Supplier, ObservableMergeConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that applies a function to each item emitted or notification raised by the current
 <code>Observable</code> and then flattens the <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s returned from these functions and emits the resulting items,
@@ -4308,12 +4349,8 @@ waits until the upstream and all <code>CompletableSource</code>s complete, optio
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
 <dd>
-<div class="block">Generic configuration block with option to delay errors, change prefetch
+<div class="block">Generic configuration block with option to delay errors, change max concurrency
 amounts and buffer sizes.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#%3Cinit%3E()" class="member-name-link">FlatMapConfig()</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
-<dd>
-<div class="block">Default config: no error delay, <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#%3Cinit%3E(boolean)" class="member-name-link">FlatMapConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>
@@ -5083,10 +5120,6 @@ different type and allows throwing a checked exception.</div>
 <div class="block">Generic configuration block with option to delay errors, change prefetch
 amounts and buffer sizes.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/config/GenericConfig.html#%3Cinit%3E()" class="member-name-link">GenericConfig()</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></dt>
-<dd>
-<div class="block">Default config: no error delay, <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/GenericConfig.html#%3Cinit%3E(boolean)" class="member-name-link">GenericConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></dt>
 <dd>
 <div class="block">Optionally delay error, <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes.</div>
@@ -5509,6 +5542,10 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
@@ -6395,6 +6432,10 @@ and emits it as a single success value to downstream.</div>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/MaybeMergeConfig.html#param-maxConcurrency"><code>maxConcurrency</code></a> record component.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#maxConcurrency()" class="member-name-link">maxConcurrency()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#param-maxConcurrency"><code>maxConcurrency</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#maxConcurrency()" class="member-name-link">maxConcurrency()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">SingleConcatEagerConfig</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/SingleConcatEagerConfig.html#param-maxConcurrency"><code>maxConcurrency</code></a> record component.</div>
@@ -6508,23 +6549,11 @@ emitted by the nested <code>MaybeSource</code>, without any transformation.</div
 <div class="block">Flattens an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a> that emits <code>ObservableSource</code>s into a single <code>Observable</code> that emits the items emitted by
 those <code>ObservableSource</code>s, without any transformation.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#merge(io.reactivex.rxjava4.core.ObservableSource,int)" class="member-name-link">merge(ObservableSource, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#merge(io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.config.ObservableMergeConfig)" class="member-name-link">merge(ObservableSource, ObservableMergeConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Flattens an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a> that emits <code>ObservableSource</code>s into a single <code>Observable</code> that emits the items emitted by
 those <code>ObservableSource</code>s, without any transformation, while limiting the maximum number of concurrent
 subscriptions to these <code>ObservableSource</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#merge(io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource)" class="member-name-link">merge(ObservableSource, ObservableSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens two <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into a single <code>Observable</code>, without any transformation.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#merge(io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource)" class="member-name-link">merge(ObservableSource, ObservableSource, ObservableSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens three <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into a single <code>Observable</code>, without any transformation.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#merge(io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource)" class="member-name-link">merge(ObservableSource, ObservableSource, ObservableSource, ObservableSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens four <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into a single <code>Observable</code>, without any transformation.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Single.html#merge(io.reactivex.rxjava4.core.SingleSource)" class="member-name-link">merge(SingleSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
 <dd>
@@ -6557,12 +6586,7 @@ notification from one of them.</div>
 <dd>
 <div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, without any transformation.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#merge(java.lang.Iterable,int)" class="member-name-link">merge(Iterable, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, without any transformation, while limiting the
-number of concurrent subscriptions to these <code>ObservableSource</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#merge(java.lang.Iterable,int,int)" class="member-name-link">merge(Iterable, int, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#merge(java.lang.Iterable,io.reactivex.rxjava4.core.config.ObservableMergeConfig)" class="member-name-link">merge(Iterable, ObservableMergeConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, without any transformation, while limiting the
 number of concurrent subscriptions to these <code>ObservableSource</code>s.</div>
@@ -6644,11 +6668,6 @@ thos <code>Publisher</code>s , without any transformation.</div>
 those <code>Publisher</code>s, without any transformation, while limiting the maximum number of concurrent
 subscriptions to these <code>Publisher</code>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeArray(int,int,io.reactivex.rxjava4.core.ObservableSource...)" class="member-name-link">mergeArray(int, int, ObservableSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens an array of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, without any transformation, while limiting the
-number of concurrent subscriptions to these <code>ObservableSource</code>s.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeArray(int,int,java.util.concurrent.Flow.Publisher...)" class="member-name-link">mergeArray(int, int, Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Flattens an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, without any transformation, while limiting the
@@ -6675,6 +6694,11 @@ them terminate in a way or another.</div>
 successfully emitted items from each of the source <code>MaybeSource</code>s without being interrupted by an error
 notification from one of them.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeArray(io.reactivex.rxjava4.core.config.ObservableMergeConfig,io.reactivex.rxjava4.core.ObservableSource...)" class="member-name-link">mergeArray(ObservableMergeConfig, ObservableSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dd>
+<div class="block">Flattens an array of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, without any transformation, while limiting the
+number of concurrent subscriptions to these <code>ObservableSource</code>s.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Single.html#mergeArray(io.reactivex.rxjava4.core.config.SingleMergeConfig,io.reactivex.rxjava4.core.SingleSource...)" class="member-name-link">mergeArray(SingleMergeConfig, SingleSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
 <dd>
 <div class="block">Flattens an array of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s into one <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a>, in a way that allows a subscriber to receive all
@@ -6695,78 +6719,17 @@ running all <code>SingleSource</code>s at once.</div>
 <dd>
 <div class="block">Flattens an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, without any transformation.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeArrayDelayError(int,int,io.reactivex.rxjava4.core.ObservableSource...)" class="member-name-link">mergeArrayDelayError(int, int, ObservableSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens an array of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, in a way that allows an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to receive all
-successfully emitted items from each of the <code>ObservableSource</code>s without being interrupted by an error
-notification from one of them, while limiting the number of concurrent subscriptions to these <code>ObservableSource</code>s.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeArrayDelayError(int,int,java.util.concurrent.Flow.Publisher...)" class="member-name-link">mergeArrayDelayError(int, int, Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Flattens an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
 successfully emitted items from each of the source <code>Publisher</code>s without being interrupted by an error
 notification from one of them, while limiting the number of concurrent subscriptions to these <code>Publisher</code>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeArrayDelayError(io.reactivex.rxjava4.core.ObservableSource...)" class="member-name-link">mergeArrayDelayError(ObservableSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens an array of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, in a way that allows an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to receive all
-successfully emitted items from each of the <code>ObservableSource</code>s without being interrupted by an error
-notification from one of them.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeArrayDelayError(java.util.concurrent.Flow.Publisher...)" class="member-name-link">mergeArrayDelayError(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Flattens an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Flowable</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
 successfully emitted items from each of the source <code>Publisher</code>s without being interrupted by an error
 notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeDelayError(io.reactivex.rxjava4.core.ObservableSource)" class="member-name-link">mergeDelayError(ObservableSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a> that emits <code>ObservableSource</code>s into one <code>Observable</code>, in a way that allows an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to
-receive all successfully emitted items from all of the emitted <code>ObservableSource</code>s without being interrupted by
-an error notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeDelayError(io.reactivex.rxjava4.core.ObservableSource,int)" class="member-name-link">mergeDelayError(ObservableSource, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a> that emits <code>ObservableSource</code>s into one <code>Observable</code>, in a way that allows an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to
-receive all successfully emitted items from all of the emitted <code>ObservableSource</code>s without being interrupted by
-an error notification from one of them, while limiting the
-number of concurrent subscriptions to these <code>ObservableSource</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeDelayError(io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource)" class="member-name-link">mergeDelayError(ObservableSource, ObservableSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens two <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, in a way that allows an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to receive all
-successfully emitted items from each of the <code>ObservableSource</code>s without being interrupted by an error
-notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeDelayError(io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource)" class="member-name-link">mergeDelayError(ObservableSource, ObservableSource, ObservableSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens three <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, in a way that allows an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to receive all
-successfully emitted items from all of the <code>ObservableSource</code>s without being interrupted by an error
-notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeDelayError(io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource)" class="member-name-link">mergeDelayError(ObservableSource, ObservableSource, ObservableSource, ObservableSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens four <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, in a way that allows an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to receive all
-successfully emitted items from all of the <code>ObservableSource</code>s without being interrupted by an error
-notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeDelayError(java.lang.Iterable)" class="member-name-link">mergeDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, in a way that allows an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to receive all
-successfully emitted items from each of the returned <code>ObservableSource</code>s without being interrupted by an error
-notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeDelayError(java.lang.Iterable,int)" class="member-name-link">mergeDelayError(Iterable, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, in a way that allows an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to receive all
-successfully emitted items from each of the returned <code>ObservableSource</code>s without being interrupted by an error
-notification from one of them, while limiting the number of concurrent subscriptions to these <code>ObservableSource</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#mergeDelayError(java.lang.Iterable,int,int)" class="member-name-link">mergeDelayError(Iterable, int, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, in a way that allows an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to receive all
-successfully emitted items from each of the returned <code>ObservableSource</code>s without being interrupted by an error
-notification from one of them, while limiting the number of concurrent subscriptions to these <code>ObservableSource</code>s.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeDelayError(java.lang.Iterable)" class="member-name-link">mergeDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -7029,6 +6992,26 @@ value fluently.</div>
 <dd>
 <div class="block">Abstraction over an RxJava <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> that allows associating
 a resource with it.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record for Observable.merge() operators.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#%3Cinit%3E(boolean)" class="member-name-link">ObservableMergeConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">Optionally delay error, <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#%3Cinit%3E(boolean,int)" class="member-name-link">ObservableMergeConfig(boolean, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">Optionally delays errors and sets the buffer size too.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#%3Cinit%3E(boolean,int,int)" class="member-name-link">ObservableMergeConfig(boolean, int, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">Fully customize the configuration.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#%3Cinit%3E(int)" class="member-name-link">ObservableMergeConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">Optionally set the buffer size, no delay errors.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/ObservableOnSubscribe.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">ObservableOnSubscribe&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -7912,11 +7895,6 @@ another value fluently.</div>
 <dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
 <dd>
 <div class="block">Configuration record for <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#createParallel(io.reactivex.rxjava4.core.config.ParallelSchedulerConfig)"><code>Schedulers.createParallel(ParallelSchedulerConfig)</code></a>.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#%3Cinit%3E()" class="member-name-link">ParallelSchedulerConfig()</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
-<dd>
-<div class="block">Creates a default config with available CPUs parallelism,
-normal priority, tracking and RxParallelScheduler thread name prefix.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#%3Cinit%3E(int)" class="member-name-link">ParallelSchedulerConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
 <dd>
@@ -11781,6 +11759,10 @@ transparently relaying signals between the two async representations of a sequen
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
