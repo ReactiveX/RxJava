@@ -186,21 +186,18 @@ public class TestSchedulerTest extends RxJavaTest {
             final Runnable calledOp = mock(Runnable.class);
 
             Flowable<Object> poller;
-            poller = Flowable.unsafeCreate(new Publisher<Object>() {
-                @Override
-                public void subscribe(final Subscriber<? super Object> aSubscriber) {
-                    final BooleanSubscription bs = new BooleanSubscription();
-                    aSubscriber.onSubscribe(bs);
-                    inner.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!bs.isCancelled()) {
-                                calledOp.run();
-                                inner.schedule(this, 5, TimeUnit.SECONDS);
-                            }
+            poller = Flowable.unsafeCreate((Publisher<Object>) aSubscriber -> {
+                final BooleanSubscription bs = new BooleanSubscription();
+                aSubscriber.onSubscribe(bs);
+                inner.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!bs.isCancelled()) {
+                            calledOp.run();
+                            inner.schedule(this, 5, TimeUnit.SECONDS);
                         }
-                    });
-                }
+                    }
+                });
             });
 
             InOrder inOrder = Mockito.inOrder(calledOp);
