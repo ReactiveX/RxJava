@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava4.core.config.ObservableConcatEagerConfig;
 import org.junit.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -332,12 +333,12 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void invalidMaxConcurrent() {
-        Observable.just(1).concatMapEager(toJust, 0, Observable.bufferSize());
+        assertNotNull(Observable.just(1).concatMapEager(toJust, 0, Observable.bufferSize()));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void invalidCapacityHint() {
-        Observable.just(1).concatMapEager(toJust, Observable.bufferSize(), 0);
+        assertNotNull(Observable.just(1).concatMapEager(toJust, Observable.bufferSize(), 0));
     }
 
     @Test
@@ -398,7 +399,9 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         Observable<Integer> source = Observable.just(1);
         TestObserver<Integer> to = TestObserver.create();
 
-        Observable.concatEager(Arrays.asList(source, source, source), 1, 1).subscribe(to);
+        Observable.concatEager(Arrays.asList(source, source, source),
+                new ObservableConcatEagerConfig(ErrorMode.IMMEDIATE, 1, 1))
+                .subscribe(to);
 
         to.assertValues(1, 1, 1);
         to.assertNoErrors();
@@ -422,7 +425,9 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         Observable<Integer> source = Observable.just(1);
         TestObserver<Integer> to = TestObserver.create();
 
-        Observable.concatEager(Observable.just(source, source, source), 1, 1).subscribe(to);
+        Observable.concatEager(Observable.just(source, source, source),
+                new ObservableConcatEagerConfig(ErrorMode.IMMEDIATE,  1, 1))
+                .subscribe(to);
 
         to.assertValues(1, 1, 1);
         to.assertNoErrors();
@@ -433,7 +438,8 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     public void badCapacityHint() throws Exception {
         Observable<Integer> source = Observable.just(1);
         try {
-            Observable.concatEager(Arrays.asList(source, source, source), 1, -99);
+            assertNotNull(Observable.concatEager(Arrays.asList(source, source, source),
+                    new ObservableConcatEagerConfig(ErrorMode.IMMEDIATE, 1, -99)));
         } catch (IllegalArgumentException ex) {
             assertEquals("bufferSize > 0 required but it was -99", ex.getMessage());
         }
@@ -445,7 +451,8 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     public void mappingBadCapacityHint() throws Exception {
         Observable<Integer> source = Observable.just(1);
         try {
-            Observable.just(source, source, source).concatMapEager((Function)Functions.identity(), 10, -99);
+            assertNotNull(Observable.just(source, source, source)
+                    .concatMapEager((Function)Functions.identity(), 10, -99));
         } catch (IllegalArgumentException ex) {
             assertEquals("bufferSize > 0 required but it was -99", ex.getMessage());
         }
@@ -516,7 +523,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
                 to.assertSubscribed().assertNoValues().assertNotComplete();
 
-                Throwable ex = to.errors().get(0);
+                Throwable ex = to.errors().getFirst();
 
                 if (ex instanceof CompositeException) {
                     List<Throwable> es = TestHelper.errorList(to);
@@ -654,7 +661,9 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         PublishSubject<Integer> ps2 = PublishSubject.create();
         PublishSubject<Integer> ps3 = PublishSubject.create();
 
-        TestObserver<Integer> to = Observable.concatArrayEagerDelayError(ps1, ps2, ps3)
+        TestObserver<Integer> to = Observable.concatArrayEager(
+                        ObservableConcatEagerConfig.DELAY_ERROR,
+                        ps1, ps2, ps3)
         .test();
 
         to.assertEmpty();
@@ -687,7 +696,9 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         PublishSubject<Integer> ps2 = PublishSubject.create();
         PublishSubject<Integer> ps3 = PublishSubject.create();
 
-        TestObserver<Integer> to = Observable.concatArrayEagerDelayError(2, 2, ps1, ps2, ps3)
+        TestObserver<Integer> to = Observable.concatArrayEager(
+                new ObservableConcatEagerConfig(ErrorMode.END, 2, 2),
+                        ps1, ps2, ps3)
         .test();
 
         to.assertEmpty();
@@ -722,7 +733,9 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         PublishSubject<Integer> ps2 = PublishSubject.create();
         PublishSubject<Integer> ps3 = PublishSubject.create();
 
-        TestObserver<Integer> to = Observable.concatArrayEagerDelayError(2, 2, ps1, ps2, ps3)
+        TestObserver<Integer> to = Observable.concatArrayEager(
+                new ObservableConcatEagerConfig(ErrorMode.END, 2, 2),
+                        ps1, ps2, ps3)
         .test();
 
         to.assertEmpty();
@@ -804,44 +817,44 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void iterableDelayError() {
-        Observable.concatEagerDelayError(Arrays.asList(
+        Observable.concatEager(Arrays.asList(
                 Observable.range(1, 2),
                 Observable.error(new TestException()),
                 Observable.range(3, 3)
-        ))
+            ), ObservableConcatEagerConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 
     @Test
     public void iterableDelayErrorMaxConcurrency() {
-        Observable.concatEagerDelayError(Arrays.asList(
+        Observable.concatEager(Arrays.asList(
                 Observable.range(1, 2),
                 Observable.error(new TestException()),
                 Observable.range(3, 3)
-        ), 1, 1)
+        ), new ObservableConcatEagerConfig(ErrorMode.END, 1, 1))
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 
     @Test
     public void observerDelayError() {
-        Observable.concatEagerDelayError(Observable.fromArray(
+        Observable.concatEager(Observable.fromArray(
                 Observable.range(1, 2),
                 Observable.error(new TestException()),
                 Observable.range(3, 3)
-        ))
+        ), ObservableConcatEagerConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 
     @Test
     public void observerDelayErrorMaxConcurrency() {
-        Observable.concatEagerDelayError(Observable.fromArray(
+        Observable.concatEager(Observable.fromArray(
                 Observable.range(1, 2),
                 Observable.error(new TestException()),
                 Observable.range(3, 3)
-        ), 1, 1)
+        ), new ObservableConcatEagerConfig(ErrorMode.END, 1, 1))
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }

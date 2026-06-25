@@ -1058,7 +1058,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SafeVarargs
     @NonNull
     public static <@NonNull T> Observable<T> concatArrayEager(@NonNull ObservableSource<? extends T>... sources) {
-        return concatArrayEager(bufferSize(), bufferSize(), sources);
+        return concatArrayEager(ObservableConcatEagerConfig.DELAY_ERROR_BOUNDARY, sources);
     }
 
     /**
@@ -1075,80 +1075,24 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * </dl>
      * @param <T> the value type
      * @param sources an array of {@code ObservableSource}s that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, {@link Integer#MAX_VALUE}
-     *                       is interpreted as indication to subscribe to all sources at once
-     * @param bufferSize the number of elements expected from each {@code ObservableSource} to be buffered
+     * @param config the configuration record of this operator
      * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @since 2.0
+     * @since 4.0.0
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     @SafeVarargs
-    public static <@NonNull T> Observable<T> concatArrayEager(int maxConcurrency, int bufferSize, @NonNull ObservableSource<? extends T>... sources) {
-        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), false, maxConcurrency, bufferSize);
-    }
-
-    /**
-     * Concatenates an array of {@link ObservableSource}s eagerly into a single stream of values
-     * and delaying any errors until all sources terminate.
-     * <p>
-     * <img width="640" height="354" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatArrayEagerDelayError.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * {@code ObservableSource}s. The operator buffers the values emitted by these {@code ObservableSource}s
-     * and then drains them in order, each one after the previous one completes.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources an array of {@code ObservableSource}s that need to be eagerly concatenated
-     * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @since 2.2.1 - experimental
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @SafeVarargs
-    @NonNull
-    public static <@NonNull T> Observable<T> concatArrayEagerDelayError(@NonNull ObservableSource<? extends T>... sources) {
-        return concatArrayEagerDelayError(bufferSize(), bufferSize(), sources);
-    }
-
-    /**
-     * Concatenates an array of {@link ObservableSource}s eagerly into a single stream of values
-     * and delaying any errors until all sources terminate.
-     * <p>
-     * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatArrayEagerDelayError.nn.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * {@code ObservableSource}s. The operator buffers the values emitted by these {@code ObservableSource}s
-     * and then drains them in order, each one after the previous one completes.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources an array of {@code ObservableSource}s that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, {@link Integer#MAX_VALUE}
-     *                       is interpreted as indication to subscribe to all sources at once
-     * @param bufferSize the number of elements expected from each {@code ObservableSource} to be buffered
-     * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @since 2.2.1 - experimental
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    @SafeVarargs
-    public static <@NonNull T> Observable<T> concatArrayEagerDelayError(int maxConcurrency, int bufferSize, @NonNull ObservableSource<? extends T>... sources) {
-        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), true, maxConcurrency, bufferSize);
+    public static <@NonNull T> Observable<T> concatArrayEager(@NonNull ObservableConcatEagerConfig config, @NonNull ObservableSource<? extends T>... sources) {
+        Objects.requireNonNull(config, "config is null");
+        if (config.errorMode() == ErrorMode.IMMEDIATE) {
+            return fromArray(sources).concatMapEager((Function)Functions.identity(), config.maxConcurrency(), config.bufferSize());
+        }
+        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(),
+                config.errorMode() == ErrorMode.END, config.maxConcurrency(), config.bufferSize());
     }
 
     /**
@@ -1173,7 +1117,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> concatEager(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources) {
-        return concatEager(sources, bufferSize(), bufferSize());
+        return concatEager(sources, ObservableConcatEagerConfig.DELAY_ERROR_BOUNDARY);
     }
 
     /**
@@ -1191,20 +1135,23 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * </dl>
      * @param <T> the value type
      * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrently running inner {@code ObservableSource}s; {@link Integer#MAX_VALUE}
-     *                       is interpreted as all inner {@code ObservableSource}s can be active at the same time
-     * @param bufferSize the number of elements expected from each inner {@code ObservableSource} to be buffered
+     * @param config the configuration record for this operator
      * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @since 2.0
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <@NonNull T> Observable<T> concatEager(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, int maxConcurrency, int bufferSize) {
-        return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(), false, maxConcurrency, bufferSize);
+    public static <@NonNull T> Observable<T> concatEager(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
+                                                         @NonNull ObservableConcatEagerConfig config) {
+        Objects.requireNonNull(config, "config is null");
+        if (config.errorMode() == ErrorMode.IMMEDIATE) {
+            return fromIterable(sources).concatMapEager((Function)Functions.identity(), config.maxConcurrency(), config.bufferSize());
+        }
+        return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(),
+                config.errorMode() == ErrorMode.END, config.maxConcurrency(), config.bufferSize());
     }
 
     /**
@@ -1229,7 +1176,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> concatEager(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        return concatEager(sources, bufferSize(), bufferSize());
+        return concatEager(sources, ObservableConcatEagerConfig.DEFAULT);
     }
 
     /**
@@ -1248,137 +1195,23 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * </dl>
      * @param <T> the value type
      * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrently running inner {@code ObservableSource}s; {@link Integer#MAX_VALUE}
-     *                       is interpreted as all inner {@code ObservableSource}s can be active at the same time
-     * @param bufferSize the number of inner {@code ObservableSource} expected to be buffered
+     * @param config the configuration record for this operator
      * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @since 2.0
+     * @since 4.0.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <@NonNull T> Observable<T> concatEager(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int bufferSize) {
-        return wrap(sources).concatMapEager((Function)Functions.identity(), maxConcurrency, bufferSize);
-    }
-
-    /**
-     * Concatenates a sequence of {@link ObservableSource}s eagerly into a single stream of values,
-     * delaying errors until all the inner sequences terminate.
-     * <p>
-     * <img width="640" height="428" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEagerDelayError.i.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * {@code ObservableSource}s. The operator buffers the values emitted by these {@code ObservableSource}s and then drains them
-     * in order, each one after the previous one completes.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
-     * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @since 3.0.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> concatEagerDelayError(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources) {
-        return concatEagerDelayError(sources, bufferSize(), bufferSize());
-    }
-
-    /**
-     * Concatenates a sequence of {@link ObservableSource}s eagerly into a single stream of values,
-     * delaying errors until all the inner sequences terminate and runs a limited number of inner
-     * sequences at once.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEagerDelayError.in.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * {@code ObservableSource}s. The operator buffers the values emitted by these {@code ObservableSource}s and then drains them
-     * in order, each one after the previous one completes.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrently running inner {@code ObservableSource}s; {@link Integer#MAX_VALUE}
-     *                       is interpreted as all inner {@code ObservableSource}s can be active at the same time
-     * @param bufferSize the number of elements expected from each inner {@code ObservableSource} to be buffered
-     * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @since 3.0.0
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> concatEagerDelayError(
-            @NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, int maxConcurrency, int bufferSize) {
-        return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(), true, maxConcurrency, bufferSize);
-    }
-
-    /**
-     * Concatenates an {@link ObservableSource} sequence of {@code ObservableSource}s eagerly into a single stream of values,
-     * delaying errors until all the inner and the outer sequence terminate.
-     * <p>
-     * <img width="640" height="496" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEagerDelayError.o.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * emitted source {@code ObservableSource}s as they are observed. The operator buffers the values emitted by these
-     * {@code ObservableSource}s and then drains them in order, each one after the previous one completes.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
-     * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @since 3.0.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> concatEagerDelayError(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        return concatEagerDelayError(sources, bufferSize(), bufferSize());
-    }
-
-    /**
-     * Concatenates an {@link ObservableSource} sequence of {@code ObservableSource}s eagerly into a single stream of values,
-     * delaying errors until all the inner and the outer sequence terminate and runs a limited number of inner sequences at once.
-     * <p>
-     * <img width="640" height="421" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEagerDelayError.on.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * emitted source {@code ObservableSource}s as they are observed. The operator buffers the values emitted by these
-     * {@code ObservableSource}s and then drains them in order, each one after the previous one completes.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrently running inner {@code ObservableSource}s; {@link Integer#MAX_VALUE}
-     *                       is interpreted as all inner {@code ObservableSource}s can be active at the same time
-     * @param bufferSize the number of inner {@code ObservableSource} expected to be buffered
-     * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @since 3.0.0
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> concatEagerDelayError(
-            @NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int bufferSize) {
-        return wrap(sources).concatMapEagerDelayError((Function)Functions.identity(), true, maxConcurrency, bufferSize);
+    public static <@NonNull T> Observable<T> concatEager(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources,
+                                                         @NonNull ObservableConcatEagerConfig config) {
+        Objects.requireNonNull(config, "config is null");
+        if (config.errorMode() == ErrorMode.IMMEDIATE) {
+            return wrap(sources).concatMapEager((Function) Functions.identity(), config.maxConcurrency(), config.bufferSize());
+        }
+        return wrap(sources).concatMapEagerDelayError((Function) Functions.identity(), config.errorMode() == ErrorMode.END,  config.maxConcurrency(), config.bufferSize());
     }
 
     /**
