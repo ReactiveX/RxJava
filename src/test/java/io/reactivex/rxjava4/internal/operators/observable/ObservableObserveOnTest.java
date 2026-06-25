@@ -232,8 +232,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
      * Attempts to confirm that when pauses exist between events, the ScheduledObserver
      * does not lose or reorder any events since the scheduler will not block, but will
      * be re-scheduled when it receives new events after each pause.
-     *
-     *
+     * <p>
      * This is non-deterministic in proving success, but if it ever fails (non-deterministically)
      * it is a sign of potential issues as thread-races and scheduling should not affect output.
      */
@@ -318,7 +317,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
     public void delayedErrorDeliveryWhenSafeSubscriberUnsubscribes() {
         TestScheduler testScheduler = new TestScheduler();
 
-        Observable<Integer> source = Observable.concat(Observable.<Integer> error(new TestException()), Observable.just(1));
+        Observable<Integer> source = Observable.concatArray(Observable.<Integer> error(new TestException()), Observable.just(1));
 
         Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -680,7 +679,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
     public void workerNotDisposedPrematurelyNormalInNormalOut() {
         DisposeTrackingScheduler s = new DisposeTrackingScheduler();
 
-        Observable.concat(
+        Observable.concatArray(
                 Observable.just(1).hide().observeOn(s),
                 Observable.just(2)
         )
@@ -694,7 +693,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
     public void workerNotDisposedPrematurelySyncInNormalOut() {
         DisposeTrackingScheduler s = new DisposeTrackingScheduler();
 
-        Observable.concat(
+        Observable.concatArray(
                 Observable.just(1).observeOn(s),
                 Observable.just(2)
         )
@@ -712,7 +711,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
         us.onNext(1);
         us.onComplete();
 
-        Observable.concat(
+        Observable.concatArray(
                 us.observeOn(s),
                 Observable.just(2)
         )

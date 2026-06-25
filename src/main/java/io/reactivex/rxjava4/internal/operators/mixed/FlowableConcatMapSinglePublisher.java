@@ -18,7 +18,7 @@ import static java.util.concurrent.Flow.*;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.operators.mixed.FlowableConcatMapSingle.ConcatMapSingleSubscriber;
-import io.reactivex.rxjava4.internal.util.ErrorMode;
+import io.reactivex.rxjava4.core.ErrorMode;
 
 /**
  * Maps each upstream item into a {@link SingleSource}, subscribes to them one after the other terminates

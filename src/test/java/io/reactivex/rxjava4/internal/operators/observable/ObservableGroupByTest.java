@@ -95,7 +95,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     public void error() {
         Observable<String> sourceStrings = Observable.just("one", "two", "three", "four", "five", "six");
         Observable<String> errorSource = Observable.error(new RuntimeException("forced failure"));
-        Observable<String> source = Observable.concat(sourceStrings, errorSource);
+        Observable<String> source = Observable.concatArray(sourceStrings, errorSource);
 
         Observable<GroupedObservable<Integer, String>> grouped = source.groupBy(length);
 
@@ -795,7 +795,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     @Test
     @SuppressUndeliverable
     public void error2() {
-        Observable<Integer> source = Observable.concat(Observable.just(0),
+        Observable<Integer> source = Observable.concatArray(Observable.just(0),
                 Observable.<Integer> error(new TestException("Forced failure")));
 
         Observable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);

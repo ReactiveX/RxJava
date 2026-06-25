@@ -54,7 +54,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     @Test
     public void withError1Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
-                Observable.concat(Observable.just("one"),
+                Observable.concatArray(Observable.just("one"),
                         Observable.<String> error(new TestException())),
                 Observable.just("one", "two", "three")).toObservable();
         verifyError(o);
@@ -64,7 +64,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withError2Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
-                Observable.concat(Observable.just("one"),
+                Observable.concatArray(Observable.just("one"),
                         Observable.<String> error(new TestException()))).toObservable();
         verifyError(o);
     }
@@ -72,9 +72,9 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     @Test
     public void withError3Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
-                Observable.concat(Observable.just("one"),
+                Observable.concatArray(Observable.just("one"),
                         Observable.<String> error(new TestException())),
-                Observable.concat(Observable.just("one"),
+                Observable.concatArray(Observable.just("one"),
                         Observable.<String> error(new TestException()))).toObservable();
         verifyError(o);
     }
@@ -180,7 +180,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     @Test
     public void withError1() {
         Single<Boolean> o = Observable.sequenceEqual(
-                Observable.concat(Observable.just("one"),
+                Observable.concatArray(Observable.just("one"),
                         Observable.<String> error(new TestException())),
                 Observable.just("one", "two", "three"));
         verifyError(o);
@@ -190,7 +190,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withError2() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
-                Observable.concat(Observable.just("one"),
+                Observable.concatArray(Observable.just("one"),
                         Observable.<String> error(new TestException())));
         verifyError(o);
     }
@@ -198,9 +198,9 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     @Test
     public void withError3() {
         Single<Boolean> o = Observable.sequenceEqual(
-                Observable.concat(Observable.just("one"),
+                Observable.concatArray(Observable.just("one"),
                         Observable.<String> error(new TestException())),
-                Observable.concat(Observable.just("one"),
+                Observable.concatArray(Observable.just("one"),
                         Observable.<String> error(new TestException())));
         verifyError(o);
     }

@@ -30,7 +30,7 @@ public class ObservableConcatTests extends RxJavaTest {
         Observable<String> o1 = Observable.just("one", "two");
         Observable<String> o2 = Observable.just("three", "four");
 
-        List<String> values = Observable.concat(o1, o2).toList().blockingGet();
+        List<String> values = Observable.concatArray(o1, o2).toList().blockingGet();
 
         assertEquals("one", values.get(0));
         assertEquals("two", values.get(1));
@@ -128,7 +128,7 @@ public class ObservableConcatTests extends RxJavaTest {
         Observable<Movie> o1 = Observable.just(horrorMovie1, movie);
         Observable<Media> o2 = Observable.just(media, horrorMovie2);
 
-        List<Media> values = Observable.concat(o1, o2).toList().blockingGet();
+        List<Media> values = Observable.concatArray(o1, o2).toList().blockingGet();
 
         assertEquals(horrorMovie1, values.get(0));
         assertEquals(movie, values.get(1));
@@ -153,7 +153,7 @@ public class ObservableConcatTests extends RxJavaTest {
 
         Observable<Media> o2 = Observable.just(media, horrorMovie2);
 
-        List<Media> values = Observable.concat(o1, o2).toList().blockingGet();
+        List<Media> values = Observable.concatArray(o1, o2).toList().blockingGet();
 
         assertEquals(horrorMovie1, values.get(0));
         assertEquals(movie, values.get(1));

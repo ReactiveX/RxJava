@@ -29,7 +29,7 @@ import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.operators.mixed.FlowableConcatMapMaybe.ConcatMapMaybeSubscriber;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
-import io.reactivex.rxjava4.internal.util.ErrorMode;
+import io.reactivex.rxjava4.core.ErrorMode;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.*;
 import io.reactivex.rxjava4.schedulers.Schedulers;

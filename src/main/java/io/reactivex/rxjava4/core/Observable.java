@@ -21,6 +21,7 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.config.ObservableCombineLatestConfig;
+import io.reactivex.rxjava4.core.config.ObservableConcatConfig;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
@@ -886,8 +887,34 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Observable<T> concat(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources) {
+        return concat(sources, ObservableConcatConfig.DELAY_ERROR_BOUNDARY);
+    }
+
+    /**
+     * Concatenates the {@link Iterable} sequence of {@link ObservableSource}s into a single {@code Observable} sequence
+     *  by subscribing to each {@code ObservableSource}, one after the other, one at a time and delays any errors till
+     *  the all inner {@code ObservableSource}s terminate.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatDelayError.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common element base type
+     * @param sources the {@code Iterable} sequence of {@code ObservableSource}s
+     * @param config the configuration record for this operator
+     * @return the new {@code Observable} with the concatenating behavior
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <@NonNull T> Observable<T> concat(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
+                                                    @NonNull ObservableConcatConfig config) {
         Objects.requireNonNull(sources, "sources is null");
-        return fromIterable(sources).concatMapDelayError((Function)Functions.identity(), false, bufferSize());
+        Objects.requireNonNull(config, "config is null");
+        return concat(fromIterable(sources), config);
     }
 
     /**
@@ -911,7 +938,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> concat(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        return concat(sources, bufferSize());
+        return concat(sources, ObservableConcatConfig.DEFAULT);
     }
 
     /**
@@ -927,118 +954,21 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param <T> the common element base type
      * @param sources
      *            an {@code ObservableSource} that emits {@code ObservableSource}s
-     * @param bufferSize
-     *            the number of inner {@code ObservableSource}s expected to be buffered.
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Observable<T> concat(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, int bufferSize) {
+    public static <@NonNull T> Observable<T> concat(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources,
+                                                    @NonNull ObservableConcatConfig config) {
         Objects.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMap(sources, Functions.identity(), bufferSize, ErrorMode.IMMEDIATE));
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the items emitted by two {@link ObservableSource}s, one after the other, without
-     * interleaving them.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            an {@code ObservableSource} to be concatenated
-     * @param source2
-     *            an {@code ObservableSource} to be concatenated
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Observable<T> concat(@NonNull ObservableSource<? extends T> source1, ObservableSource<? extends T> source2) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        return concatArray(source1, source2);
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the items emitted by three {@link ObservableSource}s, one after the other, without
-     * interleaving them.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            an {@code ObservableSource} to be concatenated
-     * @param source2
-     *            an {@code ObservableSource} to be concatenated
-     * @param source3
-     *            an {@code ObservableSource} to be concatenated
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code source1}, {@code source2} or {@code source3} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Observable<T> concat(
-            @NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2,
-            @NonNull ObservableSource<? extends T> source3) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        Objects.requireNonNull(source3, "source3 is null");
-        return concatArray(source1, source2, source3);
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the items emitted by four {@link ObservableSource}s, one after the other, without
-     * interleaving them.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            an {@code ObservableSource} to be concatenated
-     * @param source2
-     *            an {@code ObservableSource} to be concatenated
-     * @param source3
-     *            an {@code ObservableSource} to be concatenated
-     * @param source4
-     *            an {@code ObservableSource} to be concatenated
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code source4} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Observable<T> concat(
-            @NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2,
-            @NonNull ObservableSource<? extends T> source3, @NonNull ObservableSource<? extends T> source4) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        Objects.requireNonNull(source3, "source3 is null");
-        Objects.requireNonNull(source4, "source4 is null");
-        return concatArray(source1, source2, source3, source4);
+        return RxJavaPlugins.onAssembly(new ObservableConcatMap(
+                sources, Functions.identity(), config.bufferSize(), config.errorMode()));
     }
 
     /**
@@ -1054,14 +984,42 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param sources the array of sources
      * @param <T> the common base value type
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     @SafeVarargs
-    public static <@NonNull T> Observable<T> concatArray(@NonNull ObservableSource<? extends T>... sources) {
+    public static <@NonNull T> Observable<T> concatArray(
+            @NonNull ObservableSource<? extends T>... sources) {
+        return concatArray(ObservableConcatConfig.DELAY_ERROR_BOUNDARY, sources);
+    }
+
+    /**
+     * Concatenates a variable number of {@link ObservableSource} sources.
+     * <p>
+     * Note: named this way because of overload conflict with {@code concat(ObservableSource<ObservableSource>)}
+     * <p>
+     * <img width="640" height="290" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatArray.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatArray} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param config the configuration record of this operator
+     * @param sources the array of sources
+     * @param <T> the common base value type
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    @SafeVarargs
+    public static <@NonNull T> Observable<T> concatArray(
+            @NonNull ObservableConcatConfig config,
+            @NonNull ObservableSource<? extends T>... sources) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return empty();
@@ -1069,38 +1027,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         if (sources.length == 1) {
             return wrap((ObservableSource<T>)sources[0]);
         }
-        return RxJavaPlugins.onAssembly(new ObservableConcatMap(fromArray(sources), Functions.identity(), bufferSize(), ErrorMode.BOUNDARY));
-    }
-
-    /**
-     * Concatenates a variable number of {@link ObservableSource} sources and delays errors from any of them
-     * till all terminate.
-     * <p>
-     * <img width="640" height="290" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatArray.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param sources the array of sources
-     * @param <T> the common base value type
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    @SafeVarargs
-    public static <@NonNull T> Observable<T> concatArrayDelayError(@NonNull ObservableSource<? extends T>... sources) {
-        Objects.requireNonNull(sources, "sources is null");
-        if (sources.length == 0) {
-            return empty();
-        }
-        if (sources.length == 1) {
-            @SuppressWarnings("unchecked")
-            Observable<T> source = (Observable<T>)wrap(sources[0]);
-            return source;
-        }
-        return concatDelayError(fromArray(sources));
+        return RxJavaPlugins.onAssembly(new ObservableConcatMap(
+                fromArray(sources), Functions.identity(), bufferSize(), config.errorMode()));
     }
 
     /**
@@ -1217,82 +1145,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SafeVarargs
     public static <@NonNull T> Observable<T> concatArrayEagerDelayError(int maxConcurrency, int bufferSize, @NonNull ObservableSource<? extends T>... sources) {
         return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), true, maxConcurrency, bufferSize);
-    }
-
-    /**
-     * Concatenates the {@link Iterable} sequence of {@link ObservableSource}s into a single {@code Observable} sequence
-     *  by subscribing to each {@code ObservableSource}, one after the other, one at a time and delays any errors till
-     *  the all inner {@code ObservableSource}s terminate.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources the {@code Iterable} sequence of {@code ObservableSource}s
-     * @return the new {@code Observable} with the concatenating behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     */
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Observable<T> concatDelayError(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources) {
-        Objects.requireNonNull(sources, "sources is null");
-        return concatDelayError(fromIterable(sources));
-    }
-
-    /**
-     * Concatenates the {@link ObservableSource} sequence of {@code ObservableSource}s into a single {@code Observable} sequence
-     * by subscribing to each inner {@code ObservableSource}, one after the other, one at a time and delays any errors till the
-     *  all inner and the outer {@code ObservableSource}s terminate.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources the {@code ObservableSource} sequence of {@code ObservableSource}s
-     * @return the new {@code Observable} with the concatenating behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> concatDelayError(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        return concatDelayError(sources, bufferSize(), true);
-    }
-
-    /**
-     * Concatenates the {@link ObservableSource} sequence of {@code ObservableSource}s into a single sequence by subscribing to each inner {@code ObservableSource},
-     * one after the other, one at a time and delays any errors till the all inner and the outer {@code ObservableSource}s terminate.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources the {@code ObservableSource} sequence of {@code ObservableSource}s
-     * @param bufferSize the number of inner {@code ObservableSource}s expected to be buffered
-     * @param tillTheEnd if {@code true}, exceptions from the outer and all inner {@code ObservableSource}s are delayed to the end
-     *                   if {@code false}, exception from the outer {@code ObservableSource} is delayed till the active {@code ObservableSource} terminates
-     * @return the new {@code Observable} with the concatenating behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Observable<T> concatDelayError(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, int bufferSize, boolean tillTheEnd) {
-        Objects.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize is null");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMap(sources, Functions.identity(), bufferSize, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
     }
 
     /**
@@ -7500,7 +7352,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final Observable<T> concatWith(@NonNull ObservableSource<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
-        return concat(this, other);
+        return concatArray(this, other);
     }
 
     /**
@@ -12810,7 +12662,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> startWith(@NonNull CompletableSource other) {
         Objects.requireNonNull(other, "other is null");
-        return Observable.concat(Completable.wrap(other).<T>toObservable(), this);
+        return Observable.concatArray(Completable.wrap(other).<T>toObservable(), this);
     }
 
     /**
@@ -12832,7 +12684,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> startWith(@NonNull SingleSource<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return Observable.concat(Single.wrap(other).toObservable(), this);
+        return Observable.concatArray(Single.wrap(other).toObservable(), this);
     }
 
     /**
@@ -12854,7 +12706,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> startWith(@NonNull MaybeSource<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return Observable.concat(Maybe.wrap(other).toObservable(), this);
+        return Observable.concatArray(Maybe.wrap(other).toObservable(), this);
     }
 
     /**

@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.Flow.*;
 
+import io.reactivex.rxjava4.core.ErrorMode;
 import io.reactivex.rxjava4.core.FlowableSubscriber;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;

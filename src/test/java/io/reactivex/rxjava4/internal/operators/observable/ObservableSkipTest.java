@@ -125,7 +125,7 @@ public class ObservableSkipTest extends RxJavaTest {
         Observable<String> ok = Observable.just("one");
         Observable<String> error = Observable.error(e);
 
-        Observable<String> skip = Observable.concat(ok, error).skip(100);
+        Observable<String> skip = Observable.concatArray(ok, error).skip(100);
 
         Observer<String> observer = TestHelper.mockObserver();
         skip.subscribe(observer);

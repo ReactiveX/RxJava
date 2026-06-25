@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.operators.mixed;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava4.core.ErrorMode;
 import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
