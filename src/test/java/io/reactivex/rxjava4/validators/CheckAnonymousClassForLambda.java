@@ -101,7 +101,7 @@ public class CheckAnonymousClassForLambda {
             }
         }
 
-        if (fail.length() != 0) {
+        if (!fail.isEmpty()) {
             System.out.println(fail);
             System.out.println(total);
             throw new AssertionError(fail.toString());

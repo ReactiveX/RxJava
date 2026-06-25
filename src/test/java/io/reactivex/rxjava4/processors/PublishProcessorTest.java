@@ -617,7 +617,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
             TestHelper.race(r1, r2);
 
-            if (ts.values().size() > 0) {
+            if (!ts.values().isEmpty()) {
                 ts.assertValuesOnly(0);
             } else {
                 ts.assertEmpty();

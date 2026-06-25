@@ -282,7 +282,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
                         continue;
                     }
-                    else if (openDone && windows.size() == 0) {
+                    else if (openDone && windows.isEmpty()) {
                         upstream.dispose();
                         startObserver.dispose();
                         resources.dispose();

@@ -4358,7 +4358,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
      * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retryWhen.png" alt="">
      * <p>
      * Example:
-     *
+     * <br>
      * This retries 3 times, each time incrementing the number of seconds it waits.
      *
      * <pre><code>
@@ -4476,7 +4476,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     public final Flowable<T> startWith(@NonNull CompletableSource other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Completable.wrap(other).<T>toFlowable(), toFlowable());
+        return Flowable.concat(Completable.wrap(other).toFlowable(), toFlowable());
     }
 
     /**
@@ -5391,7 +5391,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     /**
      * Waits until this and the other {@link MaybeSource} signal a success value then applies the given {@link BiFunction}
      * to those values and emits the {@code BiFunction}'s resulting value to downstream.
-     *
+     * <br>
      * <img width="640" height="451" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.zipWith.png" alt="">
      *
      * <p>If either this or the other {@code MaybeSource} is empty or signals an error, the resulting {@code Maybe} will

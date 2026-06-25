@@ -126,7 +126,7 @@ public class FixLicenseHeaders {
             }
         }
 
-        if (fail.length() != 0) {
+        if (!fail.isEmpty()) {
             System.out.println(fail);
             throw new AssertionError(fail.toString());
         }

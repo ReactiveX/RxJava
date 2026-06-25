@@ -47,14 +47,11 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
     public static <T, R> Subscriber<T> subscribe(Subscriber<? super R> s, Function<? super T, ? extends Publisher<? extends R>> mapper,
             int prefetch, ErrorMode errorMode) {
-        switch (errorMode) {
-        case BOUNDARY:
-            return new ConcatMapDelayed<>(s, mapper, prefetch, false);
-        case END:
-            return new ConcatMapDelayed<>(s, mapper, prefetch, true);
-        default:
-            return new ConcatMapImmediate<>(s, mapper, prefetch);
-        }
+        return switch (errorMode) {
+            case BOUNDARY -> new ConcatMapDelayed<>(s, mapper, prefetch, false);
+            case END -> new ConcatMapDelayed<>(s, mapper, prefetch, true);
+            default -> new ConcatMapImmediate<>(s, mapper, prefetch);
+        };
     }
 
     @Override

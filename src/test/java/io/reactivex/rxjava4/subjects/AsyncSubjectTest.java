@@ -415,7 +415,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 
             TestHelper.race(r1, r2);
 
-            if (to1.errors().size() != 0) {
+            if (!to1.errors().isEmpty()) {
                 to1.assertFailure(TestException.class);
             } else {
                 to1.assertEmpty();

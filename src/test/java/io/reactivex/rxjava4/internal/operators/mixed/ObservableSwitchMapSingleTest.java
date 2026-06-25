@@ -365,7 +365,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
                 TestHelper.race(r1, r2);
 
-                if (to.errors().size() != 0) {
+                if (!to.errors().isEmpty()) {
                     assertTrue(errors.isEmpty());
                     to.assertFailure(TestException.class);
                 } else if (!errors.isEmpty()) {

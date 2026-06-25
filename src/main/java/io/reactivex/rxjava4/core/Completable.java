@@ -122,7 +122,6 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    @SafeVarargs
     public static Completable ambArray(@NonNull CompletableSource... sources) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
@@ -190,7 +189,6 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    @SafeVarargs
     public static Completable concatArray(@NonNull CompletableSource... sources) {
         return concatArray(CompletableConcatConfig.DEFAULT, sources);
     }
@@ -212,7 +210,6 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    @SafeVarargs
     public static Completable concatArray(@NonNull CompletableConcatConfig config, @NonNull CompletableSource... sources) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
@@ -775,7 +772,6 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    @SafeVarargs
     public static Completable mergeArray(@NonNull CompletableSource... sources) {
         return mergeArray(CompletableMergeConfig.DEFAULT, sources);
     }
@@ -906,7 +902,6 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    @SafeVarargs
     public static Completable mergeArray(@NonNull CompletableMergeConfig config, @NonNull CompletableSource... sources) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");

@@ -362,10 +362,10 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
 
             TestHelper.race(r1, r2);
 
-            if (to1.errors().size() == 0) {
+            if (to1.errors().isEmpty()) {
                 to2.assertFailure(IllegalStateException.class);
             } else
-            if (to2.errors().size() == 0) {
+            if (to2.errors().isEmpty()) {
                 to1.assertFailure(IllegalStateException.class);
             } else {
                 fail("Neither TestObserver failed");

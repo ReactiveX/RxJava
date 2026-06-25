@@ -72,7 +72,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         obs.observeOn(Schedulers.computation()).subscribe(ts);
 
         ts.awaitDone(1000, TimeUnit.MILLISECONDS);
-        if (ts.errors().size() > 0) {
+        if (!ts.errors().isEmpty()) {
             for (Throwable t : ts.errors()) {
                 t.printStackTrace();
             }
@@ -1612,7 +1612,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
             ts.assertFusionMode(QueueFuseable.ASYNC);
 
-            if (ts.values().size() != 0) {
+            if (!ts.values().isEmpty()) {
                 ts.assertResult(1);
             }
         }

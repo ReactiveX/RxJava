@@ -71,4 +71,18 @@ public class SchedulerToExecutorServiceTest {
             // expected
         }
     }
+
+    @Test
+    public void invokeAnyWithEmptyTasksShouldThrow2() throws Exception {
+        Scheduler scheduler = Schedulers.trampoline();
+        try (var executor = scheduler.toExecutorService(true)) {
+
+            try {
+                executor.invokeAny(Arrays.asList());
+                fail("invokeAny with empty tasks should throw IllegalArgumentException");
+            } catch (IllegalArgumentException expected) {
+                // expected
+            }
+        }
+    }
 }

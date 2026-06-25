@@ -67,7 +67,7 @@ public class MaybeNo2Dot0Since {
             in.close();
         }
 
-        if (b.length() != 0) {
+        if (!b.isEmpty()) {
             System.out.println(b);
 
             fail(b.toString());

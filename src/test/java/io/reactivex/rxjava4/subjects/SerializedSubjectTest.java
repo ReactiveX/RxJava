@@ -459,7 +459,7 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             to.assertError(ex).assertNotComplete();
 
-            if (to.values().size() != 0) {
+            if (!to.values().isEmpty()) {
                 to.assertValue(1);
             }
         }
@@ -480,7 +480,7 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             to.assertComplete().assertNoErrors();
 
-            if (to.values().size() != 0) {
+            if (!to.values().isEmpty()) {
                 to.assertValue(1);
             }
         }

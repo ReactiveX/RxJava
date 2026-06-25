@@ -1050,7 +1050,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
                 TestHelper.race(r1, r2);
 
-                if (ts.errors().size() != 0) {
+                if (!ts.errors().isEmpty()) {
                     if (ts.errors().getFirst() instanceof CompositeException) {
                         ts.assertSubscribed()
                         .assertNotComplete()

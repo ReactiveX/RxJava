@@ -115,7 +115,7 @@ public interface Streamable<@NonNull T> {
     @NonNull
     static <T> Streamable<T> fromPublisher(@NonNull Flow.Publisher<T> source, @NonNull ExecutorService executor) {
         Objects.requireNonNull(source, "source is null");
-        return new StreamableFromPublisher<T>(source, executor);
+        return new StreamableFromPublisher<>(source, executor);
     }
 
     /**
@@ -186,7 +186,7 @@ public interface Streamable<@NonNull T> {
             for(var stage : stages) {
                 list.add(stage);
             }
-            while (list.size() != 0) {
+            while (!list.isEmpty()) {
                 var winner = AwaitCoordinatorStatic.awaitFirstIndex(list, emitter.canceller());
                 emitter.emit((CompletionStage<T>)list.remove(winner));
             }
@@ -361,7 +361,7 @@ public interface Streamable<@NonNull T> {
             return null;
         });
         canceller.add(Disposable.fromFuture(future));
-        return new CompletionStageDisposable<Void>(StreamableHelper.toCompletionStage((Future<Void>)(Future<?>)future), canceller);
+        return new CompletionStageDisposable<>(StreamableHelper.toCompletionStage((Future<Void>)(Future<?>)future), canceller);
     }
 
     /**

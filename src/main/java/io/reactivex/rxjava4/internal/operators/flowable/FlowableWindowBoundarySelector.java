@@ -297,7 +297,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
                         continue;
                     }
-                    else if (openDone && windows.size() == 0) {
+                    else if (openDone && windows.isEmpty()) {
                         upstream.cancel();
                         startSubscriber.cancel();
                         resources.dispose();

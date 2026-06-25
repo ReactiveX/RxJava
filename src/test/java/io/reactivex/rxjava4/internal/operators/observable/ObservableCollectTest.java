@@ -54,7 +54,7 @@ public final class ObservableCollectTest extends RxJavaTest {
     @Test
     public void collectToStringObservable() {
         String value = Observable.just(1, 2, 3).collect(StringBuilder::new, (sb, v) -> {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append("-");
             }
             sb.append(v);
@@ -155,7 +155,7 @@ public final class ObservableCollectTest extends RxJavaTest {
     @Test
     public void collectToString() {
         String value = Observable.just(1, 2, 3).collect(StringBuilder::new, (sb, v) -> {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append("-");
             }
             sb.append(v);

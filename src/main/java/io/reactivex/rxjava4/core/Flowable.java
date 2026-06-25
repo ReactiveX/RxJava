@@ -2467,18 +2467,13 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source, "source is null");
         Objects.requireNonNull(strategy, "strategy is null");
         Flowable<T> f = new FlowableFromObservable<>(source);
-        switch (strategy) {
-            case DROP:
-                return f.onBackpressureDrop();
-            case LATEST:
-                return f.onBackpressureLatest();
-            case MISSING:
-                return f;
-            case ERROR:
-                return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<>(f));
-            default:
-                return f.onBackpressureBuffer();
-        }
+        return switch (strategy) {
+            case DROP -> f.onBackpressureDrop();
+            case LATEST -> f.onBackpressureLatest();
+            case MISSING -> f;
+            case ERROR -> RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<>(f));
+            default -> f.onBackpressureBuffer();
+        };
     }
 
     /**
@@ -9412,7 +9407,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Flowable<T> distinct() {
-        return distinct(Functions.identity(), Functions.<T>createHashSet());
+        return distinct(Functions.identity(), Functions.createHashSet());
     }
 
     /**
@@ -14526,7 +14521,7 @@ FlowableDocBasic<T>
      * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.v3.png" alt="">
      * <p>
      * Example:
-     *
+     * <br>
      * This retries 3 times, each time incrementing the number of seconds it waits.
      *
      * <pre><code>
@@ -15632,7 +15627,7 @@ FlowableDocBasic<T>
     @BackpressureSupport(BackpressureKind.FULL)
     public final Flowable<T> startWith(@NonNull CompletableSource other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Completable.wrap(other).<T>toFlowable(), this);
+        return Flowable.concat(Completable.wrap(other).toFlowable(), this);
     }
 
     /**

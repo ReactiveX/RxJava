@@ -22,7 +22,7 @@ import io.reactivex.rxjava4.internal.util.AwaitCoordinator;
 
 /**
  * A realized stream which can then be consumed asynchronously in steps.
- * Think of it as the {@IAsyncEnumerator} of the Java world. Runs best on Virtual Threads.
+ * Think of it as the {@code IAsyncEnumerator} of the Java world. Runs best on Virtual Threads.
  * <p>
  * To make sure you can run finish, use {@link DisposableContainer#clear()} or {@link DisposableContainer#reset()}
  * to get rid of all previous registered disposables. finish() will create its own, and if that
@@ -93,8 +93,10 @@ public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
      */
     default Streamer<T> finishVia(@NonNull DisposableContainer canceller) {
         Objects.requireNonNull(canceller, "canceller is null");
-        if (this instanceof StreamerFinishViaDisposableContainerCanceller<T> augment) {
-            if (augment.streamer == this && augment.canceller == canceller) {
+        if (this instanceof StreamerFinishViaDisposableContainerCanceller<T>(
+                Streamer<T> streamer, DisposableContainer canceller1
+        )) {
+            if (streamer == this && canceller1 == canceller) {
                 // DO not rewrap!
                 return this;
             }
@@ -107,7 +109,7 @@ public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
      * Augments the base streamer with a canceller so that it can be injected at the various await calls.
      * @param <T> the element type of the stream
      */
-    static record StreamerFinishViaDisposableContainerCanceller<T>(
+    record StreamerFinishViaDisposableContainerCanceller<T>(
             @NonNull Streamer<T> streamer, @NonNull DisposableContainer canceller)
     implements Streamer<T> {
 
@@ -141,7 +143,7 @@ public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
      * Hides the identity of the Streamer for debug or deoptimization purposes.
      * @param <T> the element type of the streamer
      */
-    static record HiddenStreamer<T>(@NonNull Streamer<T> streamer) implements Streamer<T> {
+    record HiddenStreamer<T>(@NonNull Streamer<T> streamer) implements Streamer<T> {
 
         @Override
         public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {

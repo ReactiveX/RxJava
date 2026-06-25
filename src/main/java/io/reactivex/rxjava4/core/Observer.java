@@ -60,7 +60,7 @@ import io.reactivex.rxjava4.disposables.Disposable;
  * </ul>
  * From the {@code Observable}'s perspective, an {@code Observer} is the end consumer thus it is the {@code Observer}'s
  * responsibility to handle the error case and signal it "further down". This means unreliable code in the {@code onXXX}
- * methods should be wrapped into `try-catch`es, specifically in {@link #onError(Throwable)} or {@link #onComplete()}, and handled there
+ * methods should be wrapped into `try-catches, specifically in {@link #onError(Throwable)} or {@link #onComplete()}, and handled there
  * (for example, by logging it or presenting the user with an error dialog). However, if the error would be thrown from
  * {@link #onNext(Object)}, <a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a> mandates
  * the implementation calls {@link Disposable#dispose()} and signals the exception in a way that is adequate to the target context,

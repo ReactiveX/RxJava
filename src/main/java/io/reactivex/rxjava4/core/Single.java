@@ -4135,7 +4135,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     public final Flowable<T> startWith(@NonNull CompletableSource other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Completable.wrap(other).<T>toFlowable(), toFlowable());
+        return Flowable.concat(Completable.wrap(other).toFlowable(), toFlowable());
     }
 
     /**
@@ -4488,7 +4488,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * If the current {@code Single} fails, the resulting {@code Single} will
      * pass along the signal to the downstream. To measure the time to error,
-     * use {@link #materialize()} and apply {@link #timeInterval()}.
+     * use {@link #materialize()} and apply {@code timeInterval()}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeInterval} uses the {@code computation} {@link Scheduler}
@@ -4514,7 +4514,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * If the current {@code Single} fails, the resulting {@code Single} will
      * pass along the signal to the downstream. To measure the time to error,
-     * use {@link #materialize()} and apply {@link #timeInterval(Scheduler)}.
+     * use {@link #materialize()} and apply {@code timeInterval(Scheduler)}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeInterval} uses the provided {@link Scheduler}
@@ -4570,7 +4570,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * If the current {@code Single} is empty or fails, the resulting {@code Single} will
      * pass along the signals to the downstream. To measure the time to termination,
-     * use {@link #materialize()} and apply {@link #timeInterval(TimeUnit, Scheduler)}.
+     * use {@link #materialize()} and apply {@code #timeInterval(TimeUnit, Scheduler)}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeInterval} uses the provided {@link Scheduler}
@@ -4601,7 +4601,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * If the current {@code Single} is empty or fails, the resulting {@code Single} will
      * pass along the signals to the downstream. To get the timestamp of the error,
-     * use {@link #materialize()} and apply {@link #timestamp()}.
+     * use {@link #materialize()} and apply {@code timestamp()}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timestamp} uses the {@code computation} {@code Scheduler}
@@ -4627,7 +4627,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * If the current {@code Single} is empty or fails, the resulting {@code Single} will
      * pass along the signals to the downstream. To get the timestamp of the error,
-     * use {@link #materialize()} and apply {@link #timestamp(Scheduler)}.
+     * use {@link #materialize()} and apply {@code #timestamp(Scheduler)}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timestamp} uses the provided {@code Scheduler}
@@ -4655,7 +4655,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * If the current {@code Single} is empty or fails, the resulting {@code Single} will
      * pass along the signals to the downstream. To get the timestamp of the error,
-     * use {@link #materialize()} and apply {@link #timestamp(TimeUnit)}.
+     * use {@link #materialize()} and apply {@code timestamp(TimeUnit)}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timestamp} uses the {@code computation} {@code Scheduler},
@@ -4683,7 +4683,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * If the current {@code Single} is empty or fails, the resulting {@code Single} will
      * pass along the signals to the downstream. To get the timestamp of the error,
-     * use {@link #materialize()} and apply {@link #timestamp(TimeUnit, Scheduler)}.
+     * use {@link #materialize()} and apply {@code timestamp(TimeUnit, Scheduler)}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timestamp} uses the provided {@code Scheduler},

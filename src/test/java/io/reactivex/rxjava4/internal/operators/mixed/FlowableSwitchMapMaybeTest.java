@@ -407,7 +407,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
 
                 TestHelper.race(r1, r2);
 
-                if (ts.errors().size() != 0) {
+                if (!ts.errors().isEmpty()) {
                     assertTrue(errors.isEmpty());
                     ts.assertFailure(TestException.class);
                 } else if (!errors.isEmpty()) {

@@ -476,7 +476,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         ts.request(Long.MAX_VALUE - 1);
         ts.request(2);
         ts.awaitDone(5, TimeUnit.SECONDS);
-        assertTrue(ts.values().size() > 0);
+        assertTrue(!ts.values().isEmpty());
     }
 
     @Test
