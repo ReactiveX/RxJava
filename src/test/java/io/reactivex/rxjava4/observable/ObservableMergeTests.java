@@ -64,7 +64,7 @@ public class ObservableMergeTests extends RxJavaTest {
         Observable<Movie> o1 = Observable.just(new HorrorMovie(), new Movie());
         Observable<Media> o2 = Observable.just(new Media(), new HorrorMovie());
 
-        List<Media> values = Observable.merge(o1, o2).toList().blockingGet();
+        List<Media> values = Observable.mergeArray(o1, o2).toList().blockingGet();
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);
@@ -82,7 +82,7 @@ public class ObservableMergeTests extends RxJavaTest {
 
         Observable<Media> o2 = Observable.just(new Media(), new HorrorMovie());
 
-        List<Media> values = Observable.merge(o1, o2).toList().blockingGet();
+        List<Media> values = Observable.mergeArray(o1, o2).toList().blockingGet();
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);

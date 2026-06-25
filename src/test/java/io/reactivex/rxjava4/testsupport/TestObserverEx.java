@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.testsupport;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
@@ -31,9 +32,9 @@ import io.reactivex.rxjava4.operators.QueueFuseable;
  *
  * @param <T> the value type
  */
-public class TestObserverEx<T>
+public class TestObserverEx<@NonNull T>
 extends BaseTestConsumerEx<T, TestObserverEx<T>>
-implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, CompletableObserver {
+implements Observer<T>, MaybeObserver<T>, SingleObserver<T>, CompletableObserver {
     /** The actual observer to forward events to. */
     private final Observer<? super T> downstream;
 
@@ -293,6 +294,28 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
     public void onSuccess(T value) {
         onNext(value);
         onComplete();
+    }
+
+    /**
+     * Expose this {@code TestObserver} as a {@link Disposable} object.
+     * @return the {@code Disposable} view of this {@code TestObserver}
+     * @since 4.0.0
+     */
+    public final Disposable asDisposable() {
+        return new TestObserverExDisposable(this);
+    }
+
+    record TestObserverExDisposable(TestObserverEx<?> to) implements Disposable {
+
+        @Override
+        public void dispose() {
+            to.dispose();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return to.isDisposed();
+        }
     }
 
     /**

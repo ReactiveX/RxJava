@@ -391,7 +391,7 @@ public class ParallelSchedulerTest implements Runnable {
     @Test
     public void parallelSchedulerConfig() {
         {
-        var psc1 = new ParallelSchedulerConfig();
+        var psc1 = ParallelSchedulerConfig.DEFAULT;
         assertEquals("Parallelism", psc1.parallelism(), Runtime.getRuntime().availableProcessors());
         assertTrue("Tracking", psc1.tracking());
         assertEquals("threadNamePrefix", psc1.threadNamePrefix(), "RxParallelScheduler");

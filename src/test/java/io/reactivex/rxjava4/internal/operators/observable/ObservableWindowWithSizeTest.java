@@ -113,7 +113,11 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         final AtomicInteger count = new AtomicInteger();
-        Observable.merge(Observable.range(1, 10000).doOnNext(_ -> count.incrementAndGet()).window(5, 4).take(2))
+        Observable.merge(
+                Observable.range(1, 10000)
+                        .doOnNext(_ -> count.incrementAndGet())
+                        .window(5, 4)
+                        .take(2))
         .subscribe(to);
 
         to.awaitDone(500, TimeUnit.MILLISECONDS);
@@ -132,8 +136,10 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
                 .doOnNext(_ -> count.incrementAndGet())
                 .observeOn(Schedulers.computation())
                 .window(5, 4)
-                .take(2), 128)
-                .subscribe(to);
+                .take(2)
+            )
+            .subscribe(to)
+        ;
 
         to.awaitDone(500, TimeUnit.MILLISECONDS);
         to.assertTerminated();
@@ -143,7 +149,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>(args.length + 1);
         for (String arg : args) {
             list.add(arg);
         }

@@ -100,7 +100,7 @@ public class ObservablePublishTest extends RxJavaTest {
         }).doOnComplete(() -> System.out.println("^^^^^^^^^^^^^ completed SLOW"));
 
         TestObserver<Integer> to = new TestObserver<>();
-        Observable.merge(fast, slow).subscribe(to);
+        Observable.mergeArray(fast, slow).subscribe(to);
         is.connect();
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();

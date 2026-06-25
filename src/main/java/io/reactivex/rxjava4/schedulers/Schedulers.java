@@ -660,7 +660,7 @@ public final class Schedulers {
      */
     @NonNull
     public static Scheduler createParallel() {
-        return createParallel(new ParallelSchedulerConfig());
+        return createParallel(ParallelSchedulerConfig.DEFAULT);
     }
 
     /**

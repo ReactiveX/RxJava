@@ -54,9 +54,7 @@ public record CompletableConcatConfig(boolean delayError, int prefetch) {
      * @param delayError should the error propagation be delayed?
      * @param prefetch the number of source sequences to request from a backpressured source
      */
-    public CompletableConcatConfig(boolean delayError, int prefetch) {
+    public CompletableConcatConfig {
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        this.delayError = delayError;
-        this.prefetch = prefetch;
     }
 }

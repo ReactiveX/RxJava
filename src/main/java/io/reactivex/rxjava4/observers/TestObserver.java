@@ -175,6 +175,7 @@ implements Observer<T>, MaybeObserver<T>, SingleObserver<T>, CompletableObserver
     /**
      * Expose this {@code TestObserver} as a {@link Disposable} object.
      * @return the {@code Disposable} view of this {@code TestObserver}
+     * @since 4.0.0
      */
     public final Disposable asDisposable() {
         return new TestObserverDisposable(this);

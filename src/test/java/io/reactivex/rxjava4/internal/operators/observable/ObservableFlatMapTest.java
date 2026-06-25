@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava4.core.config.ObservableMergeConfig;
 import org.junit.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
@@ -341,7 +342,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         TestObserverEx<Object> to = new TestObserverEx<>(o);
 
         Function<Throwable, Observable<Integer>> just = just(onError);
-        source.flatMap(just(onNext), just, just0(onComplete), m).subscribe(to);
+        source.flatMap(just(onNext), just, just0(onComplete), new ObservableMergeConfig(m)).subscribe(to);
 
         to.awaitDone(1, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -522,7 +523,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
             }
         };
 
-        Observable.merge(ps, 2)
+        Observable.merge(ps, new ObservableMergeConfig(2))
         .subscribe(to);
 
         ps.onNext(Observable.just(1));
@@ -575,7 +576,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void noCrossBoundaryFusion() {
         for (int i = 0; i < 500; i++) {
-            TestObserver<Object> to = Observable.merge(
+            TestObserver<Object> to = Observable.mergeArray(
                     Observable.just(1).observeOn(Schedulers.single()).map((Function<Integer, Object>) _ -> Thread.currentThread().getName().substring(0, 4)),
                     Observable.just(1).observeOn(Schedulers.computation()).map((Function<Integer, Object>) _ -> Thread.currentThread().getName().substring(0, 4))
             )

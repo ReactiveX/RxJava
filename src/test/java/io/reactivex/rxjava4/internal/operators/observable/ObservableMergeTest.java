@@ -95,7 +95,7 @@ public class ObservableMergeTest extends RxJavaTest {
         final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
 
-        Observable<String> m = Observable.merge(o1, o2);
+        Observable<String> m = Observable.mergeArray(o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -169,7 +169,7 @@ public class ObservableMergeTest extends RxJavaTest {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
-        Observable<String> m = Observable.merge(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2));
+        Observable<String> m = Observable.mergeArray(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2));
         TestObserver<String> to = new TestObserver<>(stringObserver);
         m.subscribe(to);
 
@@ -200,7 +200,7 @@ public class ObservableMergeTest extends RxJavaTest {
         final AtomicInteger concurrentCounter = new AtomicInteger();
         final AtomicInteger totalCounter = new AtomicInteger();
 
-        Observable<String> m = Observable.merge(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2));
+        Observable<String> m = Observable.mergeArray(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2));
         m.subscribe(new DefaultObserver<String>() {
 
             @Override
@@ -279,7 +279,7 @@ public class ObservableMergeTest extends RxJavaTest {
         // we expect to lose all of these since o1 is done first and fails
         final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
 
-        Observable<String> m = Observable.merge(o1, o2);
+        Observable<String> m = Observable.mergeArray(o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -306,7 +306,7 @@ public class ObservableMergeTest extends RxJavaTest {
         // we expect to lose all of these since o2 is done first and fails
         final Observable<String> o4 = Observable.unsafeCreate(new TestErrorObservable("nine"));
 
-        Observable<String> m = Observable.merge(o1, o2, o3, o4);
+        Observable<String> m = Observable.mergeArray(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -388,7 +388,7 @@ public class ObservableMergeTest extends RxJavaTest {
         Observable<Long> o2 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
         TestObserverEx<Long> to = new TestObserverEx<>();
-        Observable.merge(o1, o2).subscribe(to);
+        Observable.mergeArray(o1, o2).subscribe(to);
 
         // we haven't incremented time so nothing should be received yet
         to.assertNoValues();
@@ -430,7 +430,7 @@ public class ObservableMergeTest extends RxJavaTest {
             Observable<Long> o2 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
             TestObserver<Long> to = new TestObserver<>();
-            Observable.merge(o1, o2).subscribe(to);
+            Observable.mergeArray(o1, o2).subscribe(to);
 
             // we haven't incremented time so nothing should be received yet
             to.assertNoValues();
@@ -492,7 +492,7 @@ public class ObservableMergeTest extends RxJavaTest {
         Observable<Integer> o = Observable.range(1, 10000).subscribeOn(Schedulers.newThread());
 
         for (int i = 0; i < 10; i++) {
-            Observable<Integer> merge = Observable.merge(o, o, o);
+            Observable<Integer> merge = Observable.mergeArray(o, o, o);
             TestObserverEx<Integer> to = new TestObserverEx<>();
             merge.subscribe(to);
 
@@ -536,7 +536,7 @@ public class ObservableMergeTest extends RxJavaTest {
         });
 
         for (int i = 0; i < 10; i++) {
-            Observable<Integer> merge = Observable.merge(o, o, o);
+            Observable<Integer> merge = Observable.mergeArray(o, o, o);
             TestObserver<Integer> to = new TestObserver<>();
             merge.subscribe(to);
 
@@ -574,7 +574,7 @@ public class ObservableMergeTest extends RxJavaTest {
         });
 
         for (int i = 0; i < 10; i++) {
-            Observable<Integer> merge = Observable.merge(o, o, o);
+            Observable<Integer> merge = Observable.mergeArray(o, o, o);
             TestObserver<Integer> to = new TestObserver<>();
             merge.subscribe(to);
 
@@ -602,10 +602,12 @@ public class ObservableMergeTest extends RxJavaTest {
             }
         };
 
-        Observable.merge(o1.take(Flowable.bufferSize() * 2), o2.take(Flowable.bufferSize() * 2)).subscribe(testObserver);
+        Observable.mergeArray(o1.take(Flowable.bufferSize() * 2L),
+                o2.take(Flowable.bufferSize() * 2L))
+                .subscribe(testObserver);
         testObserver.awaitDone(5, TimeUnit.SECONDS);
-        if (testObserver.errors().size() > 0) {
-            testObserver.errors().get(0).printStackTrace();
+        if (!testObserver.errors().isEmpty()) {
+            testObserver.errors().getFirst().printStackTrace();
         }
         testObserver.assertNoErrors();
         System.err.println(testObserver.values());
@@ -639,7 +641,9 @@ public class ObservableMergeTest extends RxJavaTest {
             }
         };
 
-        Observable.merge(o1.take(Flowable.bufferSize() * 2), Observable.just(-99)).subscribe(testObserver);
+        Observable.mergeArray(o1.take(Flowable.bufferSize() * 2L),
+                Observable.just(-99))
+                .subscribe(testObserver);
         testObserver.awaitDone(5, TimeUnit.SECONDS);
 
         List<Integer> onNextEvents = testObserver.values();
@@ -685,10 +689,13 @@ public class ObservableMergeTest extends RxJavaTest {
             }
         };
 
-        Observable.merge(o1.take(Flowable.bufferSize() * 2), o2.take(Flowable.bufferSize() * 2)).observeOn(Schedulers.computation()).subscribe(to);
+        Observable.mergeArray(o1.take(Flowable.bufferSize() * 2L),
+                o2.take(Flowable.bufferSize() * 2L))
+                .observeOn(Schedulers.computation())
+                .subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
-        if (to.errors().size() > 0) {
-            to.errors().get(0).printStackTrace();
+        if (!to.errors().isEmpty()) {
+            to.errors().getFirst().printStackTrace();
         }
         to.assertNoErrors();
         System.err.println(to.values());
@@ -983,7 +990,7 @@ public class ObservableMergeTest extends RxJavaTest {
             Observable<Integer> source1 = Observable.error(new TestException("First"));
             Observable<Integer> source2 = Observable.error(new TestException("Second"));
 
-            Observable.merge(source1, source2)
+            Observable.mergeArray(source1, source2)
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 

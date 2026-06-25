@@ -20,8 +20,7 @@ import java.util.stream.*;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.*;
-import io.reactivex.rxjava4.core.config.ObservableCombineLatestConfig;
-import io.reactivex.rxjava4.core.config.ObservableConcatConfig;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
@@ -273,6 +272,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @throws NullPointerException if {@code sources}, {@code combiner} or {@code config} is {@code null}
      * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
@@ -370,6 +370,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @throws NullPointerException if {@code sources}, {@code combiner} or {@code config} is {@code null}
      * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
@@ -882,7 +883,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -906,6 +906,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param config the configuration record for this operator
      * @return the new {@code Observable} with the concatenating behavior
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
@@ -959,6 +960,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
+     * @since 4.0.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
@@ -967,6 +969,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <@NonNull T> Observable<T> concat(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources,
                                                     @NonNull ObservableConcatConfig config) {
         Objects.requireNonNull(sources, "sources is null");
+        Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new ObservableConcatMap(
                 sources, Functions.identity(), config.bufferSize(), config.errorMode()));
     }
@@ -986,7 +989,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
@@ -1011,6 +1013,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param <T> the common base value type
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
@@ -1027,6 +1030,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         if (sources.length == 1) {
             return wrap((ObservableSource<T>)sources[0]);
         }
+        Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new ObservableConcatMap(
                 fromArray(sources), Functions.identity(), bufferSize(), config.errorMode()));
     }
@@ -2709,103 +2713,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Flattens an {@link Iterable} of {@link ObservableSource}s into one {@code Observable}, without any transformation, while limiting the
-     * number of concurrent subscriptions to these {@code ObservableSource}s.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
-     * <p>
-     * You can combine the items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
-     * using the {@code merge} method.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
-     *  <dt><b>Error handling:</b></dt>
-     *  <dd>If any of the returned {@code ObservableSource}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Observable} terminates with that {@code Throwable} and all other source {@code ObservableSource}s are disposed.
-     *  If more than one {@code ObservableSource} signals an error, the resulting {@code Observable} may terminate with the
-     *  first one's error or, depending on the concurrency of the sources, may terminate with a
-     *  {@link CompositeException} containing two or more of the various error signals.
-     *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
-     *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Observable} has been disposed or terminated with a
-     *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(Iterable, int, int)} to merge sources and terminate only when all source {@code ObservableSource}s
-     *  have completed or failed with an error.
-     *  </dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources
-     *            the {@code Iterable} of {@code ObservableSource}s
-     * @param maxConcurrency
-     *            the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @param bufferSize
-     *            the number of items expected from each inner {@code ObservableSource} to be buffered
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException
-     *             if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @see #mergeDelayError(Iterable, int, int)
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> merge(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, int maxConcurrency, int bufferSize) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), false, maxConcurrency, bufferSize);
-    }
-
-    /**
-     * Flattens an array of {@link ObservableSource}s into one {@code Observable}, without any transformation, while limiting the
-     * number of concurrent subscriptions to these {@code ObservableSource}s.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
-     * <p>
-     * You can combine the items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
-     * using the {@code merge} method.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeArray} does not operate by default on a particular {@link Scheduler}.</dd>
-     *  <dt><b>Error handling:</b></dt>
-     *  <dd>If any of the {@code ObservableSource}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Observable} terminates with that {@code Throwable} and all other source {@code ObservableSource}s are disposed.
-     *  If more than one {@code ObservableSource} signals an error, the resulting {@code Observable} may terminate with the
-     *  first one's error or, depending on the concurrency of the sources, may terminate with a
-     *  {@link CompositeException} containing two or more of the various error signals.
-     *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
-     *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Observable} has been disposed or terminated with a
-     *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeArrayDelayError(int, int, ObservableSource...)} to merge sources and terminate only when all source {@code ObservableSource}s
-     *  have completed or failed with an error.
-     *  </dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources
-     *            the array of {@code ObservableSource}s
-     * @param maxConcurrency
-     *            the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @param bufferSize
-     *            the number of items expected from each inner {@code ObservableSource} to be buffered
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException
-     *             if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @see #mergeArrayDelayError(int, int, ObservableSource...)
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    @SafeVarargs
-    public static <@NonNull T> Observable<T> mergeArray(int maxConcurrency, int bufferSize, @NonNull ObservableSource<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), false, maxConcurrency, bufferSize);
-    }
-
-    /**
      * Flattens an {@link Iterable} of {@link ObservableSource}s into one {@code Observable}, without any transformation.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
@@ -2825,8 +2732,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
      *  signaled by source(s) after the returned {@code Observable} has been disposed or terminated with a
      *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(Iterable)} to merge sources and terminate only when all source {@code ObservableSource}s
-     *  have completed or failed with an error.
      *  </dd>
      * </dl>
      *
@@ -2836,7 +2741,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @see #mergeDelayError(Iterable)
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
@@ -2867,29 +2771,26 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
      *  signaled by source(s) after the returned {@code Observable} has been disposed or terminated with a
      *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(Iterable, int)} to merge sources and terminate only when all source {@code ObservableSource}s
-     *  have completed or failed with an error.
      *  </dd>
      * </dl>
      *
      * @param <T> the common element base type
      * @param sources
      *            the {@code Iterable} of {@code ObservableSource}s
-     * @param maxConcurrency
-     *            the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException
-     *             if {@code maxConcurrency} is less than or equal to 0
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @see #mergeDelayError(Iterable, int)
+     * @since 4.0.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <@NonNull T> Observable<T> merge(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, int maxConcurrency) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), maxConcurrency);
+    public static <@NonNull T> Observable<T> merge(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, @NonNull ObservableMergeConfig config) {
+        Objects.requireNonNull(config, "config is null");
+        return fromIterable(sources).flatMap((Function)Functions.identity(), config.delayErrors(), config.maxConcurrency(), config.bufferSize());
     }
 
     /**
@@ -2913,8 +2814,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
      *  signaled by source(s) after the returned {@code Observable} has been disposed or terminated with a
      *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(ObservableSource)} to merge sources and terminate only when all source {@code ObservableSource}s
-     *  have completed or failed with an error.
      *  </dd>
      * </dl>
      *
@@ -2924,7 +2823,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @throws NullPointerException if {@code sources} is {@code null}
-     * @see #mergeDelayError(ObservableSource)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2957,181 +2855,27 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
      *  signaled by source(s) after the returned {@code Observable} has been disposed or terminated with a
      *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(ObservableSource, int)} to merge sources and terminate only when all source {@code ObservableSource}s
-     *  have completed or failed with an error.
      *  </dd>
      * </dl>
      *
      * @param <T> the common element base type
      * @param sources
      *            an {@code ObservableSource} that emits {@code ObservableSource}s
-     * @param maxConcurrency
-     *            the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
+     * @param config
+     *            the configuration record of this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException
-     *             if {@code maxConcurrency} is non-positive
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @since 1.1.0
-     * @see #mergeDelayError(ObservableSource, int)
+     * @since 4.0.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <@NonNull T> Observable<T> merge(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency) {
+    public static <@NonNull T> Observable<T> merge(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, @NonNull ObservableMergeConfig config) {
         Objects.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), false, maxConcurrency, bufferSize()));
-    }
-
-    /**
-     * Flattens two {@link ObservableSource}s into a single {@code Observable}, without any transformation.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
-     * <p>
-     * You can combine items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
-     * using the {@code merge} method.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
-     *  <dt><b>Error handling:</b></dt>
-     *  <dd>If any of the {@code ObservableSource}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Observable} terminates with that {@code Throwable} and all other source {@code ObservableSource}s are disposed.
-     *  If more than one {@code ObservableSource} signals an error, the resulting {@code Observable} may terminate with the
-     *  first one's error or, depending on the concurrency of the sources, may terminate with a
-     *  {@link CompositeException} containing two or more of the various error signals.
-     *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
-     *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Observable} has been disposed or terminated with a
-     *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(ObservableSource, ObservableSource)} to merge sources and terminate only when all source {@code ObservableSource}s
-     *  have completed or failed with an error.
-     *  </dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            an {@code ObservableSource} to be merged
-     * @param source2
-     *            an {@code ObservableSource} to be merged
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @see #mergeDelayError(ObservableSource, ObservableSource)
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> merge(@NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        return fromArray(source1, source2).flatMap((Function)Functions.identity(), false, 2);
-    }
-
-    /**
-     * Flattens three {@link ObservableSource}s into a single {@code Observable}, without any transformation.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
-     * <p>
-     * You can combine items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
-     * using the {@code merge} method.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
-     *  <dt><b>Error handling:</b></dt>
-     *  <dd>If any of the {@code ObservableSource}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Observable} terminates with that {@code Throwable} and all other source {@code ObservableSource}s are disposed.
-     *  If more than one {@code ObservableSource} signals an error, the resulting {@code Observable} may terminate with the
-     *  first one's error or, depending on the concurrency of the sources, may terminate with a
-     *  {@link CompositeException} containing two or more of the various error signals.
-     *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
-     *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Observable} has been disposed or terminated with a
-     *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(ObservableSource, ObservableSource, ObservableSource)} to merge sources and terminate only when all source {@code ObservableSource}s
-     *  have completed or failed with an error.
-     *  </dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            an {@code ObservableSource} to be merged
-     * @param source2
-     *            an {@code ObservableSource} to be merged
-     * @param source3
-     *            an {@code ObservableSource} to be merged
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code source1}, {@code source2} or {@code source3} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @see #mergeDelayError(ObservableSource, ObservableSource, ObservableSource)
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> merge(
-            @NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2,
-            @NonNull ObservableSource<? extends T> source3) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        Objects.requireNonNull(source3, "source3 is null");
-        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), false, 3);
-    }
-
-    /**
-     * Flattens four {@link ObservableSource}s into a single {@code Observable}, without any transformation.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
-     * <p>
-     * You can combine items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
-     * using the {@code merge} method.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
-     *  <dt><b>Error handling:</b></dt>
-     *  <dd>If any of the {@code ObservableSource}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Observable} terminates with that {@code Throwable} and all other source {@code ObservableSource}s are disposed.
-     *  If more than one {@code ObservableSource} signals an error, the resulting {@code Observable} may terminate with the
-     *  first one's error or, depending on the concurrency of the sources, may terminate with a
-     *  {@link CompositeException} containing two or more of the various error signals.
-     *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
-     *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Observable} has been disposed or terminated with a
-     *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(ObservableSource, ObservableSource, ObservableSource, ObservableSource)} to merge sources
-     *  and terminate only when all source {@code ObservableSource}s
-     *  have completed or failed with an error.
-     *  </dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            an {@code ObservableSource} to be merged
-     * @param source2
-     *            an {@code ObservableSource} to be merged
-     * @param source3
-     *            an {@code ObservableSource} to be merged
-     * @param source4
-     *            an {@code ObservableSource} to be merged
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code source4} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @see #mergeDelayError(ObservableSource, ObservableSource, ObservableSource, ObservableSource)
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> merge(
-            @NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2,
-            @NonNull ObservableSource<? extends T> source3, @NonNull ObservableSource<? extends T> source4) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        Objects.requireNonNull(source3, "source3 is null");
-        Objects.requireNonNull(source4, "source4 is null");
-        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), false, 4);
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), config.delayErrors(), config.maxConcurrency(), config.bufferSize()));
     }
 
     /**
@@ -3154,8 +2898,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
      *  signaled by source(s) after the returned {@code Observable} has been disposed or terminated with a
      *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeArrayDelayError(ObservableSource...)} to merge sources and terminate only when all source {@code ObservableSource}s
-     *  have completed or failed with an error.
      *  </dd>
      * </dl>
      *
@@ -3165,7 +2907,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @see #mergeArrayDelayError(ObservableSource...)
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
@@ -3177,384 +2918,47 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Flattens an {@link Iterable} of {@link ObservableSource}s into one {@code Observable}, in a way that allows an {@link Observer} to receive all
-     * successfully emitted items from each of the returned {@code ObservableSource}s without being interrupted by an error
-     * notification from one of them.
-     * <p>
-     * This behaves like {@link #merge(ObservableSource)} except that if any of the merged {@code ObservableSource}s notify of an
-     * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
-     * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
-     * <p>
-     * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
-     * invoke the {@code onError} method of its {@code Observer}s once.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources
-     *            the {@code Iterable} of {@code ObservableSource}s
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> mergeDelayError(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), true);
-    }
-
-    /**
-     * Flattens an {@link Iterable} of {@link ObservableSource}s into one {@code Observable}, in a way that allows an {@link Observer} to receive all
-     * successfully emitted items from each of the returned {@code ObservableSource}s without being interrupted by an error
-     * notification from one of them, while limiting the number of concurrent subscriptions to these {@code ObservableSource}s.
-     * <p>
-     * This behaves like {@link #merge(ObservableSource)} except that if any of the merged {@code ObservableSource}s notify of an
-     * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
-     * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
-     * <p>
-     * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
-     * invoke the {@code onError} method of its {@code Observer}s once.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources
-     *            the {@code Iterable} of {@code ObservableSource}s
-     * @param maxConcurrency
-     *            the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @param bufferSize
-     *            the number of items expected from each inner {@code ObservableSource} to be buffered
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> mergeDelayError(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, int maxConcurrency, int bufferSize) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), true, maxConcurrency, bufferSize);
-    }
-
-    /**
-     * Flattens an array of {@link ObservableSource}s into one {@code Observable}, in a way that allows an {@link Observer} to receive all
-     * successfully emitted items from each of the {@code ObservableSource}s without being interrupted by an error
-     * notification from one of them, while limiting the number of concurrent subscriptions to these {@code ObservableSource}s.
-     * <p>
-     * This behaves like {@link #merge(ObservableSource)} except that if any of the merged {@code ObservableSource}s notify of an
-     * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
-     * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
-     * <p>
-     * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
-     * invoke the {@code onError} method of its {@code Observer}s once.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources
-     *            the array of {@code ObservableSource}s
-     * @param maxConcurrency
-     *            the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @param bufferSize
-     *            the number of items expected from each inner {@code ObservableSource} to be buffered
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    @SafeVarargs
-    public static <@NonNull T> Observable<T> mergeArrayDelayError(int maxConcurrency, int bufferSize, @NonNull ObservableSource<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), true, maxConcurrency, bufferSize);
-    }
-
-    /**
-     * Flattens an {@link Iterable} of {@link ObservableSource}s into one {@code Observable}, in a way that allows an {@link Observer} to receive all
-     * successfully emitted items from each of the returned {@code ObservableSource}s without being interrupted by an error
-     * notification from one of them, while limiting the number of concurrent subscriptions to these {@code ObservableSource}s.
-     * <p>
-     * This behaves like {@link #merge(ObservableSource)} except that if any of the merged {@code ObservableSource}s notify of an
-     * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
-     * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
-     * <p>
-     * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
-     * invoke the {@code onError} method of its {@code Observer}s once.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources
-     *            the {@code Iterable} of {@code ObservableSource}s
-     * @param maxConcurrency
-     *            the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> mergeDelayError(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, int maxConcurrency) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), true, maxConcurrency);
-    }
-
-    /**
-     * Flattens an {@link ObservableSource} that emits {@code ObservableSource}s into one {@code Observable}, in a way that allows an {@link Observer} to
-     * receive all successfully emitted items from all of the emitted {@code ObservableSource}s without being interrupted by
-     * an error notification from one of them.
-     * <p>
-     * This behaves like {@link #merge(ObservableSource)} except that if any of the merged {@code ObservableSource}s notify of an
-     * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
-     * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
-     * <p>
-     * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
-     * invoke the {@code onError} method of its {@code Observer}s once.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources
-     *            an {@code ObservableSource} that emits {@code ObservableSource}s
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @NonNull
-    public static <@NonNull T> Observable<T> mergeDelayError(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        Objects.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), true, Integer.MAX_VALUE, bufferSize()));
-    }
-
-    /**
-     * Flattens an {@link ObservableSource} that emits {@code ObservableSource}s into one {@code Observable}, in a way that allows an {@link Observer} to
-     * receive all successfully emitted items from all of the emitted {@code ObservableSource}s without being interrupted by
-     * an error notification from one of them, while limiting the
+     * Flattens an array of {@link ObservableSource}s into one {@code Observable}, without any transformation, while limiting the
      * number of concurrent subscriptions to these {@code ObservableSource}s.
      * <p>
-     * This behaves like {@link #merge(ObservableSource)} except that if any of the merged {@code ObservableSource}s notify of an
-     * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
-     * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
-     * <p>
-     * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
-     * invoke the {@code onError} method of its {@code Observer}s once.
+     * You can combine the items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
+     * using the {@code merge} method.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources
-     *            an {@code ObservableSource} that emits {@code ObservableSource}s
-     * @param maxConcurrency
-     *            the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @since 2.0
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> mergeDelayError(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency) {
-        Objects.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), true, maxConcurrency, bufferSize()));
-    }
-
-    /**
-     * Flattens two {@link ObservableSource}s into one {@code Observable}, in a way that allows an {@link Observer} to receive all
-     * successfully emitted items from each of the {@code ObservableSource}s without being interrupted by an error
-     * notification from one of them.
-     * <p>
-     * This behaves like {@link #merge(ObservableSource, ObservableSource)} except that if any of the merged {@code ObservableSource}s
-     * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from
-     * propagating that error notification until all of the merged {@code ObservableSource}s have finished emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
-     * <p>
-     * Even if both merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
-     * invoke the {@code onError} method of its {@code Observer}s once.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            an {@code ObservableSource} to be merged
-     * @param source2
-     *            an {@code ObservableSource} to be merged
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> mergeDelayError(
-            @NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        return fromArray(source1, source2).flatMap((Function)Functions.identity(), true, 2);
-    }
-
-    /**
-     * Flattens three {@link ObservableSource}s into one {@code Observable}, in a way that allows an {@link Observer} to receive all
-     * successfully emitted items from all of the {@code ObservableSource}s without being interrupted by an error
-     * notification from one of them.
-     * <p>
-     * This behaves like {@link #merge(ObservableSource, ObservableSource, ObservableSource)} except that if any of the merged
-     * {@code ObservableSource}s notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain
-     * from propagating that error notification until all of the merged {@code ObservableSource}s have finished emitting
-     * items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
-     * <p>
-     * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
-     * invoke the {@code onError} method of its {@code Observer}s once.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            an {@code ObservableSource} to be merged
-     * @param source2
-     *            an {@code ObservableSource} to be merged
-     * @param source3
-     *            an {@code ObservableSource} to be merged
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code source1}, {@code source2} or {@code source3} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> mergeDelayError(
-            @NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2,
-            @NonNull ObservableSource<? extends T> source3) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        Objects.requireNonNull(source3, "source3 is null");
-        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), true, 3);
-    }
-
-    /**
-     * Flattens four {@link ObservableSource}s into one {@code Observable}, in a way that allows an {@link Observer} to receive all
-     * successfully emitted items from all of the {@code ObservableSource}s without being interrupted by an error
-     * notification from one of them.
-     * <p>
-     * This behaves like {@link #merge(ObservableSource, ObservableSource, ObservableSource, ObservableSource)} except that if any of
-     * the merged {@code ObservableSource}s notify of an error via {@link Observer#onError onError}, {@code mergeDelayError}
-     * will refrain from propagating that error notification until all of the merged {@code ObservableSource}s have finished
-     * emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
-     * <p>
-     * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
-     * invoke the {@code onError} method of its {@code Observer}s once.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            an {@code ObservableSource} to be merged
-     * @param source2
-     *            an {@code ObservableSource} to be merged
-     * @param source3
-     *            an {@code ObservableSource} to be merged
-     * @param source4
-     *            an {@code ObservableSource} to be merged
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code source4} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> mergeDelayError(
-            @NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2,
-            @NonNull ObservableSource<? extends T> source3, @NonNull ObservableSource<? extends T> source4) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        Objects.requireNonNull(source3, "source3 is null");
-        Objects.requireNonNull(source4, "source4 is null");
-        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), true, 4);
-    }
-
-    /**
-     * Flattens an array of {@link ObservableSource}s into one {@code Observable}, in a way that allows an {@link Observer} to receive all
-     * successfully emitted items from each of the {@code ObservableSource}s without being interrupted by an error
-     * notification from one of them.
-     * <p>
-     * This behaves like {@link #merge(ObservableSource)} except that if any of the merged {@code ObservableSource}s notify of an
-     * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
-     * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
-     * <p>
-     * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
-     * invoke the {@code onError} method of its {@code Observer}s once.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code mergeArray} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If any of the {@code ObservableSource}s signal a {@link Throwable} via {@code onError}, the resulting
+     *  {@code Observable} terminates with that {@code Throwable} and all other source {@code ObservableSource}s are disposed.
+     *  If more than one {@code ObservableSource} signals an error, the resulting {@code Observable} may terminate with the
+     *  first one's error or, depending on the concurrency of the sources, may terminate with a
+     *  {@link CompositeException} containing two or more of the various error signals.
+     *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
+     *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
+     *  signaled by source(s) after the returned {@code Observable} has been disposed or terminated with a
+     *  (composite) error will be sent to the same global error handler.
+     *  </dd>
      * </dl>
      *
      * @param <T> the common element base type
      * @param sources
      *            the array of {@code ObservableSource}s
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     * @since 4.0.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     @SafeVarargs
-    public static <@NonNull T> Observable<T> mergeArrayDelayError(@NonNull ObservableSource<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), true, sources.length);
+    public static <@NonNull T> Observable<T> mergeArray(@NonNull ObservableMergeConfig config, @NonNull ObservableSource<? extends T>... sources) {
+        Objects.requireNonNull(config, "config is null");
+        return fromArray(sources).flatMap((Function) Functions.identity(), config.delayErrors(), config.maxConcurrency(), config.bufferSize());
     }
 
     /**
@@ -8922,13 +8326,12 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param onCompleteSupplier
      *            a function that returns an {@code ObservableSource} to merge for an {@code onComplete} notification from the current
      *            {@code Observable}
-     * @param maxConcurrency
-     *         the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
+     * @param config
+     *         the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code onNextMapper} or {@code onErrorMapper} or {@code onCompleteSupplier} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @throws NullPointerException if {@code onNextMapper} or {@code onErrorMapper} or {@code onCompleteSupplier} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -8937,11 +8340,12 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             @NonNull Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
             @NonNull Function<Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
             @NonNull Supplier<? extends ObservableSource<? extends R>> onCompleteSupplier,
-            int maxConcurrency) {
+            @NonNull ObservableMergeConfig config) {
         Objects.requireNonNull(onNextMapper, "onNextMapper is null");
         Objects.requireNonNull(onErrorMapper, "onErrorMapper is null");
         Objects.requireNonNull(onCompleteSupplier, "onCompleteSupplier is null");
-        return merge(new ObservableMapNotification<>(this, onNextMapper, onErrorMapper, onCompleteSupplier), maxConcurrency);
+        Objects.requireNonNull(config, "config is null");
+        return merge(new ObservableMapNotification<>(this, onNextMapper, onErrorMapper, onCompleteSupplier), config);
     }
 
     /**
@@ -10155,7 +9559,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final Observable<T> mergeWith(@NonNull ObservableSource<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
-        return merge(this, other);
+        return mergeArray(this, other);
     }
 
     /**
