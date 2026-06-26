@@ -120,7 +120,7 @@ javadoc {
 moduleConfig {
     moduleInfoPath = 'src/main/module/module-info.java'
     multiReleaseVersion = 9
-	version = project.version
+    version = project.version
 }
 
 import aQute.bnd.gradle.Bundle   // ← important import
@@ -178,18 +178,17 @@ jmh {
 }
 
 def isCI = System.getenv("CI") != null
-def testLoggingConfig = ["skipped", "failed"]
+def parallelForks = Runtime.getRuntime().availableProcessors();
+def testLoggingConfig = ["skipped", "failed", "started"]
 if (!isCI) {
     testLoggingConfig = ["failed"]
+    parallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1;
 }
 
 test {
     maxHeapSize = "1200m"
-    if (System.getenv("CI") != null) {
-        maxParallelForks = Runtime.runtime.availableProcessors()
-    } else {
-        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-    }
+    timeout = Duration.ofMinutes(15)   // or 30, whatever is reasonable for your suite
+    maxParallelForks = parallelForks
     useJUnitPlatform()
 }
 
@@ -206,19 +205,8 @@ tasks.register('testNG', Test) {
     useTestNG()
 
     maxHeapSize = "1200m"
-    if (System.getenv("CI") != null) {
-        maxParallelForks = Runtime.runtime.availableProcessors()
-    } else {
-        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-    }
+    maxParallelForks = parallelForks
     // maxParallelForks = 1
-
-    // Ensure JUnit-compatible XML output in the standard location
-    reports {
-        html.required = true
-        junitXml.required = true
-        junitXml.outputLocation = file("${buildDir}/test-results/test")   // ← important
-    }
 
     // Ensure JUnit-compatible XML output in the standard location
     reports {

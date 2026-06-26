@@ -17,9 +17,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 
-import org.junit.Test;
-
 import io.reactivex.rxjava4.core.*;
+import org.junit.jupiter.api.Test;
 
 public class DefaultSubscriberTest extends RxJavaTest {
 
