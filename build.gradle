@@ -180,6 +180,7 @@ jmh {
 def isCI = System.getenv("CI") != null
 def testLoggingConfig = ["skipped", "failed"]
 def parallelism = Runtime.runtime.availableProcessors()
+def heap = "1400m"
 
 if (!isCI) {
     testLoggingConfig = ["failed"]
@@ -187,7 +188,7 @@ if (!isCI) {
 }
 
 test {
-    maxHeapSize = "1200m"
+    maxHeapSize = heap
     maxParallelForks = parallelism
     timeout = Duration.ofMinutes(30)
 
@@ -206,7 +207,7 @@ tasks.register('testNG', Test) {
     // Tell it to use TestNG explicitly
     useTestNG()
 
-    maxHeapSize = "1200m"
+    maxHeapSize = heap
     maxParallelForks = parallelism
     timeout = Duration.ofMinutes(30)
 
