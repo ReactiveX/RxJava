@@ -66,7 +66,6 @@ initTheme();
 <ol class="toc-list">
 <li><a href="#dispose()" tabindex="0">dispose()</a></li>
 <li><a href="#isDisposed()" tabindex="0">isDisposed()</a></li>
-<li><a href="#close()" tabindex="0">close()</a></li>
 <li><a href="#fromRunnable(java.lang.Runnable)" tabindex="0">fromRunnable(Runnable)</a></li>
 <li><a href="#fromAction(io.reactivex.rxjava4.functions.Action)" tabindex="0">fromAction(Action)</a></li>
 <li><a href="#fromFuture(java.util.concurrent.Future)" tabindex="0">fromFuture(Future)</a></li>
@@ -74,6 +73,7 @@ initTheme();
 <li><a href="#fromSubscription(java.util.concurrent.Flow.Subscription)" tabindex="0">fromSubscription(Flow.Subscription)</a></li>
 <li><a href="#fromAutoCloseable(java.lang.AutoCloseable)" tabindex="0">fromAutoCloseable(AutoCloseable)</a></li>
 <li><a href="#toAutoCloseable(io.reactivex.rxjava4.disposables.Disposable)" tabindex="0">toAutoCloseable(Disposable)</a></li>
+<li><a href="#asAutoCloseable()" tabindex="0">asAutoCloseable()</a></li>
 <li><a href="#empty()" tabindex="0">empty()</a></li>
 <li><a href="#disposed()" tabindex="0">disposed()</a></li>
 </ol>
@@ -87,10 +87,6 @@ initTheme();
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
-<dt>All Superinterfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
-</dl>
-<dl class="notes">
 <dt>All Known Subinterfaces:</dt>
 <dd><code><a href="DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>, <a href="../operators/QueueDisposable.html" title="interface in io.reactivex.rxjava4.operators">QueueDisposable</a>&lt;T&gt;</code></dd>
 </dl>
@@ -100,8 +96,7 @@ initTheme();
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">Disposable</span><span class="extends-implements">
-extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></span></div>
+<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">Disposable</span></div>
 <div class="block">Represents a disposable resource.</div>
 </div>
 </section>
@@ -118,10 +113,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/ja
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#asAutoCloseable()" class="member-name-link">asAutoCloseable</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Dispose the resource, the operation should be idempotent.</div>
+<div class="block">Wraps this <code>Disposable</code> into an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link"><code>AutoCloseable</code></a> instance
+that can be used with try-with-resources constructs.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
@@ -154,14 +150,14 @@ closed exactly once when the <code>Disposable</code> is disposed.</div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#fromFuture(java.util.concurrent.Future)" class="member-name-link">fromFuture</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Future.html" title="interface in java.util.concurrent" class="external-link">Future</a>&lt;?&gt;&nbsp;future)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Future.html" title="interface in java.util.concurrent" class="external-link"><code>Future</code></a> that is
-cancelled exactly once when the <code>Disposable</code> is disposed.</div>
+canceled exactly once when the <code>Disposable</code> is disposed.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#fromFuture(java.util.concurrent.Future,boolean)" class="member-name-link">fromFuture</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Future.html" title="interface in java.util.concurrent" class="external-link">Future</a>&lt;?&gt;&nbsp;future,
  boolean&nbsp;allowInterrupt)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Future.html" title="interface in java.util.concurrent" class="external-link"><code>Future</code></a> that is
-cancelled exactly once when the <code>Disposable</code> is disposed.</div>
+canceled exactly once when the <code>Disposable</code> is disposed.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#fromRunnable(java.lang.Runnable)" class="member-name-link">fromRunnable</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link">Runnable</a>&nbsp;run)</code></div>
@@ -173,7 +169,7 @@ executed exactly once when the <code>Disposable</code> is disposed.</div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#fromSubscription(java.util.concurrent.Flow.Subscription)" class="member-name-link">fromSubscription</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="interface in java.util.concurrent" class="external-link">Flow.Subscription</a>&nbsp;subscription)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscription</code></a> that is
-cancelled exactly once when the <code>Disposable</code> is disposed.</div>
+canceled exactly once when the <code>Disposable</code> is disposed.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isDisposed()" class="member-name-link">isDisposed</a>()</code></div>
@@ -218,21 +214,6 @@ disposed when the returned <code>AutoCloseable</code> is closed.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>true if this resource has been disposed</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="close()">
-<h3>close</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()</div>
-<div class="block">Dispose the resource, the operation should be idempotent.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html#close()" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
-<dt>Since:</dt>
-<dd>4.0.0</dd>
 </dl>
 </div>
 </section>
@@ -289,9 +270,9 @@ executed exactly once when the <code>Disposable</code> is disposed.</div>
 </span><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></span>&nbsp;<span class="element-name">fromFuture</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Future.html" title="interface in java.util.concurrent" class="external-link">Future</a>&lt;?&gt;&nbsp;future)</span></div>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Future.html" title="interface in java.util.concurrent" class="external-link"><code>Future</code></a> that is
-cancelled exactly once when the <code>Disposable</code> is disposed.
+canceled exactly once when the <code>Disposable</code> is disposed.
 <p>
-The <code>Future</code> is cancelled with <code>mayInterruptIfRunning == true</code>.</div>
+The <code>Future</code> is canceled with <code>mayInterruptIfRunning == true</code>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>future</code> - the <code>Future</code> to wrap</dd>
@@ -320,7 +301,7 @@ The <code>Future</code> is cancelled with <code>mayInterruptIfRunning == true</c
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Future.html" title="interface in java.util.concurrent" class="external-link">Future</a>&lt;?&gt;&nbsp;future,
  boolean&nbsp;allowInterrupt)</span></div>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Future.html" title="interface in java.util.concurrent" class="external-link"><code>Future</code></a> that is
-cancelled exactly once when the <code>Disposable</code> is disposed.</div>
+canceled exactly once when the <code>Disposable</code> is disposed.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>future</code> - the <code>Future</code> to wrap</dd>
@@ -343,7 +324,7 @@ cancelled exactly once when the <code>Disposable</code> is disposed.</div>
 </span><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></span>&nbsp;<span class="element-name">fromSubscription</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="interface in java.util.concurrent" class="external-link">Flow.Subscription</a>&nbsp;subscription)</span></div>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscription</code></a> that is
-cancelled exactly once when the <code>Disposable</code> is disposed.</div>
+canceled exactly once when the <code>Disposable</code> is disposed.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>subscription</code> - the <code>Runnable</code> to wrap</dd>
@@ -397,6 +378,23 @@ disposed when the returned <code>AutoCloseable</code> is closed.</div>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>disposable</code> is <code>null</code></dd>
 <dt>Since:</dt>
 <dd>3.0.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="asAutoCloseable()">
+<h3>asAutoCloseable</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></span>&nbsp;<span class="element-name">asAutoCloseable</span>()</div>
+<div class="block">Wraps this <code>Disposable</code> into an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link"><code>AutoCloseable</code></a> instance
+that can be used with try-with-resources constructs.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the new <code>AutoCloseable</code> instance</dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
 </dl>
 </div>
 </section>

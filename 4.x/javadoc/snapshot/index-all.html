@@ -362,6 +362,11 @@ optionally different element type.</div>
 <dd>
 <div class="block">Calculate a value based on the input values.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/disposables/Disposable.html#asAutoCloseable()" class="member-name-link">asAutoCloseable()</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></dt>
+<dd>
+<div class="block">Wraps this <code>Disposable</code> into an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link"><code>AutoCloseable</code></a> instance
+that can be used with try-with-resources constructs.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/observers/TestObserver.html#asDisposable()" class="member-name-link">asDisposable()</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a></dt>
 <dd>
 <div class="block">Expose this <code>TestObserver</code> as a <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> object.</div>
@@ -1259,10 +1264,6 @@ without disposing the entire container.</div>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.html#close()" class="member-name-link">close()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
 <dd>
 <div class="block">Make this Streamer a resource and a Closeable, allowing virtually blocking closing.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/Disposable.html#close()" class="member-name-link">close()</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></dt>
-<dd>
-<div class="block">Dispose the resource, the operation should be idempotent.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#collect(io.reactivex.rxjava4.functions.Supplier,io.reactivex.rxjava4.functions.BiConsumer)" class="member-name-link">collect(Supplier, BiConsumer)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -4790,12 +4791,12 @@ and emits its value or exception to them.</div>
 <dt><a href="io/reactivex/rxjava4/disposables/Disposable.html#fromFuture(java.util.concurrent.Future)" class="member-name-link">fromFuture(Future)</a> - Static method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Future.html" title="interface in java.util.concurrent" class="external-link"><code>Future</code></a> that is
-cancelled exactly once when the <code>Disposable</code> is disposed.</div>
+canceled exactly once when the <code>Disposable</code> is disposed.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/disposables/Disposable.html#fromFuture(java.util.concurrent.Future,boolean)" class="member-name-link">fromFuture(Future, boolean)</a> - Static method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Future.html" title="interface in java.util.concurrent" class="external-link"><code>Future</code></a> that is
-cancelled exactly once when the <code>Disposable</code> is disposed.</div>
+canceled exactly once when the <code>Disposable</code> is disposed.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#fromFuture(java.util.concurrent.Future)" class="member-name-link">fromFuture(Future)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -4990,7 +4991,7 @@ emits <code>onSuccess</code> as a single item or forwards the <code>onError</cod
 <dt><a href="io/reactivex/rxjava4/disposables/Disposable.html#fromSubscription(java.util.concurrent.Flow.Subscription)" class="member-name-link">fromSubscription(Flow.Subscription)</a> - Static method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscription</code></a> that is
-cancelled exactly once when the <code>Disposable</code> is disposed.</div>
+canceled exactly once when the <code>Disposable</code> is disposed.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#fromSupplier(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">fromSupplier(Supplier)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -10745,7 +10746,7 @@ it to this <code>Maybe</code>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#test(boolean)" class="member-name-link">test(boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
-<div class="block">Creates a <a href="io/reactivex/rxjava4/observers/TestObserver.html" title="class in io.reactivex.rxjava4.observers"><code>TestObserver</code></a> optionally in cancelled state, then subscribes it to this <code>Completable</code>.</div>
+<div class="block">Creates a <a href="io/reactivex/rxjava4/observers/TestObserver.html" title="class in io.reactivex.rxjava4.observers"><code>TestObserver</code></a> optionally in canceled state, then subscribes it to this <code>Completable</code>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#test(boolean)" class="member-name-link">test(boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>

@@ -91,7 +91,7 @@ initTheme();
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Superinterfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a>, <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></dd>
+<dd><code><a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
@@ -209,15 +209,16 @@ via a simple <a href="Disposable.html#dispose()"><code>Disposable.dispose()</cod
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.reactivex.rxjava4.disposables.Disposable">Methods inherited from interface&nbsp;<a href="Disposable.html#method-summary" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></h3>
-<code><a href="Disposable.html#close()" title="close()">close</a>, <a href="Disposable.html#dispose()" title="dispose()">dispose</a>, <a href="Disposable.html#isDisposed()" title="isDisposed()">isDisposed</a></code>
+<code><a href="Disposable.html#asAutoCloseable()" title="asAutoCloseable()">asAutoCloseable</a>, <a href="Disposable.html#dispose()" title="dispose()">dispose</a>, <a href="Disposable.html#isDisposed()" title="isDisposed()">isDisposed</a></code>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>default void</code></div>
-<div class="col-second even-row-color"><code><a href="Disposable.html#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-first even-row-color"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></code></div>
+<div class="col-second even-row-color"><code><a href="Disposable.html#asAutoCloseable()" class="member-name-link">asAutoCloseable</a>()</code></div>
 <div class="col-last even-row-color">
-<div class="block">Dispose the resource, the operation should be idempotent.</div>
+<div class="block">Wraps this <code>Disposable</code> into an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link"><code>AutoCloseable</code></a> instance
+that can be used with try-with-resources constructs.</div>
 </div>
 <div class="col-first odd-row-color"><code>void</code></div>
 <div class="col-second odd-row-color"><code><a href="Disposable.html#dispose()" class="member-name-link">dispose</a>()</code></div>
