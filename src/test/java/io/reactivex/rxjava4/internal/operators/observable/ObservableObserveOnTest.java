@@ -74,7 +74,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
         obs.observeOn(Schedulers.computation()).subscribe(to);
 
         to.awaitDone(1000, TimeUnit.MILLISECONDS);
-        if (to.errors().size() > 0) {
+        if (!to.errors().isEmpty()) {
             for (Throwable t : to.errors()) {
                 t.printStackTrace();
             }

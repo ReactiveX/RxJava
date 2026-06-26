@@ -17,6 +17,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -28,7 +29,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * The check ignores HTML tag content on a line, &#64;see and &#64;throws entries
  * and &lt;code&gt;&lt;/code&gt; lines.
  */
-public class JavadocCodesAndLinks {
+public class CheckJavadocCodesAndLinksTest extends RxJavaTest {
 
     @Test
     public void checkFlowable() throws Exception {
@@ -155,20 +156,18 @@ public class JavadocCodesAndLinks {
                                 if (jdxLink < 0) {
                                     break;
                                 }
-                                if (jdxLink >= 0) {
-                                    errorCount++;
-                                    errors.append("The subsequent mention should be code: ")
-                                    .append("{@code ").append(name)
-                                    .append("}\r\n at ")
-                                    .append(packageName)
-                                    .append(".")
-                                    .append(baseClassName)
-                                    .append(".method(")
-                                    .append(baseClassName)
-                                    .append(".java:")
-                                    .append(i + 2 + j)
-                                    .append(")\r\n");
-                                }
+                                errorCount++;
+                                errors.append("The subsequent mention should be code: ")
+                                .append("{@code ").append(name)
+                                .append("}\r\n at ")
+                                .append(packageName)
+                                .append(".")
+                                .append(baseClassName)
+                                .append(".method(")
+                                .append(baseClassName)
+                                .append(".java:")
+                                .append(i + 2 + j)
+                                .append(")\r\n");
                                 k = jdxLink + asLink.length();
                             }
                         }
@@ -207,7 +206,7 @@ public class JavadocCodesAndLinks {
                                 }
                             } else {
                                 if ((idxLink < 0 && idxCode >= 0 && !isAlwaysCode)
-                                        || (idxLink >= 0 && idxCode >= 0 && idxCode < idxLink)) {
+                                        || (idxCode >= 0 && idxCode < idxLink)) {
                                     errorCount++;
                                     if (isAlwaysCode) {
                                         errors.append("The first mention should be code: ")

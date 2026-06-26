@@ -32,7 +32,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * declare {@code @NonNull} for said argument.
  *
  */
-public class NonNullMethodTypeArgumentCheck {
+public class CheckNonNullMethodTypeArgumentTest extends RxJavaTest {
 
     static void process(Class<?> clazz) {
 
@@ -44,10 +44,13 @@ public class NonNullMethodTypeArgumentCheck {
 
         try {
             File f = TestHelper.findSource(className, parentPackage);
+            if (f == null) {
+                throw new FileNotFoundException((className + " < " + parentPackage));
+            }
 
             try (BufferedReader in = Files.newBufferedReader(f.toPath())) {
                 int lineCount = 1;
-                String line = null;
+                String line;
 
                 while ((line = in.readLine()) != null) {
                     line = line.trim();
@@ -75,7 +78,7 @@ public class NonNullMethodTypeArgumentCheck {
         }
 
         if (count != 0) {
-            throw new IllegalArgumentException("Found " + count + " cases\r\n" + result.toString());
+            throw new IllegalArgumentException("Found " + count + " cases\r\n" + result);
         }
     }
 

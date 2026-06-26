@@ -99,8 +99,8 @@ When a consumer subscribes, the given `java.util.concurrent.Callable` is invoked
 ```java
 Callable<String> callable = () -> {
     System.out.println("Hello World!");
-    return "Hello World!");
-}
+    return "Hello World!";
+};
 
 Observable<String> observable = Observable.fromCallable(callable);
 

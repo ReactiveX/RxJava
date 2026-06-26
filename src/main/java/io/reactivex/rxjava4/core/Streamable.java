@@ -186,7 +186,7 @@ public interface Streamable<@NonNull T> {
             for(var stage : stages) {
                 list.add(stage);
             }
-            while (list.size() != 0) {
+            while (!list.isEmpty()) {
                 var winner = AwaitCoordinatorStatic.awaitFirstIndex(list, emitter.canceller());
                 emitter.emit((CompletionStage<T>)list.remove(winner));
             }
@@ -208,7 +208,7 @@ public interface Streamable<@NonNull T> {
                 }
             }, emitter.canceller(), exec)) {
                 mainSource.await(emitter.canceller());
-            };
+            }
         }, exec);
     }
 

@@ -38,7 +38,7 @@ import io.reactivex.rxjava4.subjects.*;
  * <li>All public base types that don't return Flowable don't have the {@link BackpressureSupport} present (these are copy-paste errors)</li>
  * </ul>
  */
-public class BaseTypeAnnotations {
+public class CheckBaseTypeAnnotationsTest extends RxJavaTest {
 
     static void checkCheckReturnValueSupport(Class<?> clazz) {
         StringBuilder b = new StringBuilder();
@@ -75,7 +75,7 @@ public class BaseTypeAnnotations {
             }
         }
 
-        if (b.length() != 0) {
+        if (!b.isEmpty()) {
             System.out.println(clazz);
             System.out.println("------------------------");
             System.out.println(b);
@@ -100,8 +100,8 @@ public class BaseTypeAnnotations {
 
                     if (ann.value().equals(SchedulerSupport.CUSTOM)) {
                         boolean found = false;
-                        for (Class<?> paramclazz : m.getParameterTypes()) {
-                            if (Scheduler.class.isAssignableFrom(paramclazz)) {
+                        for (Class<?> paramClass : m.getParameterTypes()) {
+                            if (Scheduler.class.isAssignableFrom(paramClass)) {
                                 found = true;
                                 break;
                             }
@@ -110,8 +110,8 @@ public class BaseTypeAnnotations {
                             b.append("Marked with CUSTOM scheduler but no Scheduler parameter: ").append(m).append("\r\n");
                         }
                     } else {
-                        for (Class<?> paramclazz : m.getParameterTypes()) {
-                            if (Scheduler.class.isAssignableFrom(paramclazz)) {
+                        for (Class<?> paramClass : m.getParameterTypes()) {
+                            if (Scheduler.class.isAssignableFrom(paramClass)) {
                                 if (!m.getName().equals("timestamp") && !m.getName().equals("timeInterval")) {
                                     b.append("Marked with specific scheduler but Scheduler parameter found: ").append(m).append("\r\n");
                                     break;
@@ -123,7 +123,7 @@ public class BaseTypeAnnotations {
             }
         }
 
-        if (b.length() != 0) {
+        if (!b.isEmpty()) {
             System.out.println(clazz);
             System.out.println("------------------------");
             System.out.println(b);
@@ -157,8 +157,8 @@ public class BaseTypeAnnotations {
                         }
                     } else {
                         boolean found = false;
-                        for (Class<?> paramclazz : m.getParameterTypes()) {
-                            if (Publisher.class.isAssignableFrom(paramclazz)) {
+                        for (Class<?> paramClass : m.getParameterTypes()) {
+                            if (Publisher.class.isAssignableFrom(paramClass)) {
                                 found = true;
                                 break;
                             }
@@ -178,7 +178,7 @@ public class BaseTypeAnnotations {
             }
         }
 
-        if (b.length() != 0) {
+        if (!b.isEmpty()) {
             System.out.println(clazz);
             System.out.println("------------------------");
             System.out.println(b);

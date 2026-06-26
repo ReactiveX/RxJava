@@ -31,7 +31,7 @@ import io.reactivex.rxjava4.parallel.ParallelFlowable;
  * Verify that an operator method uses base interfaces as its direct input or
  * has lambdas returning base interfaces.
  */
-public class OperatorsUseInterfaces {
+public class CheckOperatorsUseInterfacesTest extends RxJavaTest {
 
     @Test
     public void checkFlowable() {
@@ -69,7 +69,7 @@ public class OperatorsUseInterfaces {
 
         for (Method method : clazz.getMethods()) {
             if (method.getDeclaringClass() == clazz) {
-                int pidx = 1;
+                int parameterIndex = 1;
                 for (Parameter param : method.getParameters()) {
                     Class<?> type = param.getType();
                     if (type.isArray()) {
@@ -78,7 +78,7 @@ public class OperatorsUseInterfaces {
                     if (CLASSES.contains(type)) {
                         errors++;
                         error.append("Non-interface input parameter #")
-                        .append(pidx)
+                        .append(parameterIndex)
                         .append(": ")
                         .append(type)
                         .append("\r\n")
@@ -88,13 +88,13 @@ public class OperatorsUseInterfaces {
                         ;
                     }
                     if (CAN_RETURN.contains(type)) {
-                        Type gtype = method.getGenericParameterTypes()[pidx - 1];
+                        Type gtype = method.getGenericParameterTypes()[parameterIndex - 1];
                         if (gtype instanceof GenericArrayType) {
                             gtype = ((GenericArrayType)gtype).getGenericComponentType();
                         }
-                        ParameterizedType ptype = (ParameterizedType)gtype;
+                        ParameterizedType parameterType = (ParameterizedType)gtype;
                         for (;;) {
-                            Type[] parameterArgTypes = ptype.getActualTypeArguments();
+                            Type[] parameterArgTypes = parameterType.getActualTypeArguments();
                             Type argType = parameterArgTypes[parameterArgTypes.length - 1];
                             if (argType instanceof GenericArrayType) {
                                 argType = ((GenericArrayType)argType).getGenericComponentType();
@@ -104,7 +104,7 @@ public class OperatorsUseInterfaces {
                                 if (CLASSES.contains(lastArg.getRawType())) {
                                     errors++;
                                     error.append("Non-interface lambda return #")
-                                    .append(pidx)
+                                    .append(parameterIndex)
                                     .append(": ")
                                     .append(type)
                                     .append("\r\n")
@@ -115,14 +115,14 @@ public class OperatorsUseInterfaces {
                                 }
 
                                 if (CAN_RETURN.contains(lastArg.getRawType())) {
-                                    ptype = lastArg;
+                                    parameterType = lastArg;
                                     continue;
                                 }
                             }
                             break;
                         }
                     }
-                    pidx++;
+                    parameterIndex++;
                 }
             }
         }
@@ -135,32 +135,48 @@ public class OperatorsUseInterfaces {
 
     public void method1(Flowable<?> f) {
         // self-test
+        assertNull(f);
     }
 
     public void method2(Callable<Flowable<?>> c) {
         // self-test
+        assertNull(c);
     }
 
     public void method3(Supplier<Publisher<Flowable<?>>> c) {
         // self-test
+        assertNull(c);
     }
 
     public void method4(Flowable<?>[] array) {
         // self-test
+        assertNull(array);
     }
 
     public void method5(Callable<Flowable<?>[]> c) {
         // self-test
+        assertNull(c);
     }
 
     public void method6(Callable<Publisher<Flowable<?>[]>> c) {
         // self-test
+        assertNull(c);
+    }
+
+    @Test
+    public void methodCalls() {
+        method1(null);
+        method2(null);
+        method3(null);
+        method4(null);
+        method5(null);
+        method6(null);
     }
 
     @Test
     public void checkSelf() {
         try {
-            checkClass(OperatorsUseInterfaces.class);
+            checkClass(CheckOperatorsUseInterfacesTest.class);
             throw new RuntimeException("Should have failed");
         } catch (AssertionError expected) {
             assertTrue(expected.toString(), expected.toString().contains("method1"));
@@ -172,13 +188,13 @@ public class OperatorsUseInterfaces {
         }
     }
 
-    static final Set<Class<?>> CLASSES = new HashSet<>(Arrays.asList(
+    static final Set<Type> CLASSES = new HashSet<>(Arrays.asList(
             Flowable.class, Observable.class,
             Maybe.class, Single.class,
             Completable.class
     ));
 
-    static final Set<Class<?>> CAN_RETURN = new HashSet<>(Arrays.asList(
+    static final Set<Type> CAN_RETURN = new HashSet<>(Arrays.asList(
             Callable.class, Supplier.class,
             Function.class, BiFunction.class, Function3.class, Function4.class,
             Function5.class, Function6.class, Function7.class, Function8.class,

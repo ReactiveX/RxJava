@@ -191,8 +191,8 @@ public class FlowableRefCountTest extends RxJavaTest {
             ts2.cancel();
             ts1.assertNoErrors();
             ts2.assertNoErrors();
-            assertTrue(ts1.values().size() > 0);
-            assertTrue(ts2.values().size() > 0);
+            assertTrue(!ts1.values().isEmpty());
+            assertTrue(!ts2.values().isEmpty());
         }
 
         assertEquals(10, subscribeCount.get());
@@ -226,7 +226,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         System.out.println("DONE sending unsubscribe ... now waiting");
         if (!unsubscribeLatch.await(3000, TimeUnit.MILLISECONDS)) {
             System.out.println("Errors: " + s.errors());
-            if (s.errors().size() > 0) {
+            if (!s.errors().isEmpty()) {
                 s.errors().getFirst().printStackTrace();
             }
             fail("timed out waiting for unsubscribe");
@@ -269,7 +269,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         System.out.println("DONE sending unsubscribe ... now waiting");
         System.out.println("Errors: " + s.errors());
-        if (s.errors().size() > 0) {
+        if (!s.errors().isEmpty()) {
             s.errors().getFirst().printStackTrace();
         }
         s.assertNoErrors();

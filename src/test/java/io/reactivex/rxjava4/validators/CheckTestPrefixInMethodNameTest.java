@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -24,10 +25,9 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 /**
  * Check verifying there are no methods with the prefix "test" in the name.
  */
-public class TestPrefixInMethodName {
+public class CheckTestPrefixInMethodNameTest extends RxJavaTest {
 
     private static final String pattern = "void\\s+test[a-zA-Z0-9]";
-    private static final String replacement = "void ";
 
     @Test
     public void checkAndUpdateTestMethodNames() throws Exception {
@@ -56,20 +56,18 @@ public class TestPrefixInMethodName {
             f = dirs.poll();
 
             File[] list = f.listFiles();
-            if (list != null && list.length != 0) {
+            if (list != null) {
 
                 for (File u : list) {
                     if (u.isDirectory()) {
                         dirs.offer(u);
                     } else {
-                        String fname = u.getName();
-                        if (fname.endsWith(".java")) {
+                        String fileName = u.getName();
+                        if (fileName.endsWith(".java")) {
 
                             int lineNum = 0;
-                            List<String> lines = new ArrayList<>();
-                            BufferedReader in = new BufferedReader(new FileReader(u));
                             //boolean found = false;
-                            try {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
                                 for (; ; ) {
                                     String line = in.readLine();
                                     if (line == null) {
@@ -81,38 +79,14 @@ public class TestPrefixInMethodName {
                                     if (!line.startsWith("//") && !line.startsWith("*") && matcher.find()) {
                                         // found = true;
                                         fail
-                                                .append(fname)
+                                                .append(fileName)
                                                 .append("#L").append(lineNum)
                                                 .append("    ").append(line)
                                                 .append("\n");
                                         total++;
-
-                                        int methodNameStartIndex = matcher.end() - 1;
-                                        char firstChar = Character.toLowerCase(line.charAt(methodNameStartIndex));
-
-                                        String newLine = matcher.replaceAll(replacement + firstChar);
-
-                                        lines.add(newLine);
-                                    } else {
-                                        lines.add(line);
                                     }
-
                                 }
-                            } finally {
-                                in.close();
                             }
-
-                            /*if (found && System.getenv("CI") == null) {
-                                PrintWriter w = new PrintWriter(new FileWriter(u));
-
-                                try {
-                                    for (String s : lines) {
-                                        w.println(s);
-                                    }
-                                } finally {
-                                    w.close();
-                                }
-                            }*/
                         }
                     }
                 }

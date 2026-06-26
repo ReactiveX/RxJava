@@ -60,7 +60,7 @@ Observable.just(1).map(v -> null)
 This means that `Observable<Void>` can no longer emit any values but only terminate normally or with an exception. API designers may instead choose to define `Observable<Object>` with no guarantee on what `Object` will be (which should be irrelevant anyway). For example, if one needs a signaller-like source, a shared enum can be defined and its solo instance `onNext`'d:
 
 ```java
-enum Irrelevant { INSTANCE; }
+enum Irrelevant { INSTANCE}
 
 Observable<Object> source = Observable.create((ObservableEmitter<Object> emitter) -> {
    System.out.println("Side-effect 1");

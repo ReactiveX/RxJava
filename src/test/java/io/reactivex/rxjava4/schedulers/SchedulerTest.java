@@ -208,7 +208,7 @@ public class SchedulerTest extends RxJavaTest {
 
             Thread.sleep(250);
 
-            assertTrue(list.size() >= 1);
+            assertTrue(!list.isEmpty());
             TestHelper.assertUndeliverable(list, 0, TestException.class, null);
 
         } finally {

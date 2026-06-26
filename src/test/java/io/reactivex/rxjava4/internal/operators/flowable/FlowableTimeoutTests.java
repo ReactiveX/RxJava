@@ -450,8 +450,8 @@ public class FlowableTimeoutTests extends RxJavaTest {
 
             TestHelper.race(r1, r2);
 
-            if (ts.values().size() != 0) {
-                if (ts.errors().size() != 0) {
+            if (!ts.values().isEmpty()) {
+                if (!ts.errors().isEmpty()) {
                     ts.assertFailure(TimeoutException.class, 1);
                     ts.assertErrorMessage(timeoutMessage(1, TimeUnit.SECONDS));
                 } else {

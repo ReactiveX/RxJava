@@ -178,7 +178,7 @@ public record SchedulerToExecutorService(@NonNull Scheduler scheduler,
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-        if (tasks.size() == 0) {
+        if (tasks.isEmpty()) {
             throw new IllegalArgumentException("The tasks parameter should contain at least one callable!");
         }
 
@@ -208,7 +208,7 @@ public record SchedulerToExecutorService(@NonNull Scheduler scheduler,
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
             throws InterruptedException, ExecutionException, TimeoutException {
-        if (tasks.size() == 0) {
+        if (tasks.isEmpty()) {
             throw new IllegalArgumentException("The tasks parameter should contain at least one callable!");
         }
 

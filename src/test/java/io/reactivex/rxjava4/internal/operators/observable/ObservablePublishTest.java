@@ -140,7 +140,6 @@ public class ObservablePublishTest extends RxJavaTest {
         final Observable<Integer> source = Observable.range(1, 100)
                 .doOnNext(_ -> sourceEmission.incrementAndGet())
                 .doOnDispose(() -> sourceUnsubscribed.set(true)).share();
-        ;
 
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();

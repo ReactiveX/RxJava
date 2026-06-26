@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.validators;
 import java.io.*;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -23,7 +24,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 /**
  * Adds license header to java files.
  */
-public class InternalWrongNaming {
+public class CheckInternalWrongNamingTest extends RxJavaTest {
 
     static void checkInternalOperatorNaming(String baseClassName, String consumerClassName, String... ignore) throws Exception {
         File f = TestHelper.findSource(baseClassName);
@@ -31,15 +32,15 @@ public class InternalWrongNaming {
             return;
         }
 
-        String rxdir = f.getParentFile().getParentFile().getAbsolutePath().replace('\\', '/');
+        String directory = f.getParentFile().getParentFile().getAbsolutePath().replace('\\', '/');
 
-        if (!rxdir.endsWith("/")) {
-            rxdir += "/";
+        if (!directory.endsWith("/")) {
+            directory += "/";
         }
 
-        rxdir += "internal/operators/" + baseClassName.toLowerCase() + "/";
+        directory += "internal/operators/" + baseClassName.toLowerCase() + "/";
 
-        File[] list = new File(rxdir).listFiles();
+        File[] list = new File(directory).listFiles();
         if (list != null && list.length != 0) {
 
             StringBuilder fail = new StringBuilder();
@@ -59,7 +60,11 @@ public class InternalWrongNaming {
                     String line = lines.get(i);
                     if (line.contains(consumerClassName)) {
 
-                        fail.append("java.lang.RuntimeException: " + g.getName() + " mentions " + consumerClassName)
+                        fail
+                        .append("java.lang.RuntimeException: ")
+                        .append(g.getName())
+                        .append(" mentions ")
+                        .append(consumerClassName)
                         .append("\r\n at io.reactivex.internal.operators.")
                         .append(baseClassName.toLowerCase()).append(".").append(g.getName().replace(".java", ""))
                         .append(".method(").append(g.getName()).append(":").append(i + 1).append(")\r\n\r\n");
@@ -69,7 +74,7 @@ public class InternalWrongNaming {
                 }
             }
 
-            if (fail.length() != 0) {
+            if (!fail.isEmpty()) {
                 System.out.println(fail);
 
                 System.out.println();
@@ -83,9 +88,8 @@ public class InternalWrongNaming {
     static List<String> readFile(File u) throws Exception {
         List<String> lines = new ArrayList<>();
 
-        BufferedReader in = new BufferedReader(new FileReader(u));
-        try {
-            for (;;) {
+        try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+            for (; ; ) {
                 String line = in.readLine();
                 if (line == null) {
                     break;
@@ -93,8 +97,6 @@ public class InternalWrongNaming {
 
                 lines.add(line);
             }
-        } finally {
-            in.close();
         }
         return lines;
     }
@@ -149,13 +151,13 @@ public class InternalWrongNaming {
     }
 
     @Test
-    public void flowableNoUnsubscrib() throws Exception {
-        checkInternalOperatorNaming("Flowable", "unsubscrib");
+    public void flowableNoUnsubscribe() throws Exception {
+        checkInternalOperatorNaming("Flowable", "unsubscribe");
     }
 
     @Test
-    public void observableNoUnsubscrib() throws Exception {
-        checkInternalOperatorNaming("Observable", "unsubscrib");
+    public void observableNoUnsubscribe() throws Exception {
+        checkInternalOperatorNaming("Observable", "unsubscribe");
     }
 
     @Test

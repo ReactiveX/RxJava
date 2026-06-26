@@ -588,7 +588,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
     Observable<Event> ASYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
         return SYNC_INFINITE_OBSERVABLE_OF_EVENT(numGroups, subscribeCounter, sentEventCounter).subscribeOn(Schedulers.newThread());
-    };
+    }
 
     Observable<Event> SYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
         return Observable.unsafeCreate(op -> {
@@ -606,7 +606,7 @@ public class ObservableGroupByTest extends RxJavaTest {
             }
             op.onComplete();
         });
-    };
+    }
 
     @Test
     public void groupByOnAsynchronousSourceAcceptsMultipleSubscriptions() throws InterruptedException {

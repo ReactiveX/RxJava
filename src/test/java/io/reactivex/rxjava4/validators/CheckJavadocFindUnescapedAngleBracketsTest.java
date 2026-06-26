@@ -16,11 +16,12 @@ package io.reactivex.rxjava4.validators;
 import java.io.*;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
-public class JavadocFindUnescapedAngleBrackets {
+public class CheckJavadocFindUnescapedAngleBracketsTest extends RxJavaTest {
 
     @Test
     public void find() throws Exception {
@@ -107,7 +108,7 @@ public class JavadocFindUnescapedAngleBrackets {
             }
         }
 
-        if (b.length() > 0) {
+        if (!b.isEmpty()) {
             System.err.println("Should escape < and > in <code> blocks! " + count);
             System.err.println(b);
             throw new Exception("Should escape < and > in <code> blocks! " + count + "\r\n" + b);
@@ -126,16 +127,13 @@ public class JavadocFindUnescapedAngleBrackets {
 
     static String readFile(File f) throws IOException {
         StringBuilder b = new StringBuilder((int)f.length());
-        BufferedReader in = new BufferedReader(new FileReader(f));
-        try {
-            String line = null;
+        try (BufferedReader in = new BufferedReader(new FileReader(f))) {
+            String line;
 
             while ((line = in.readLine()) != null) {
                 b.append(line).append("\n");
             }
 
-        } finally {
-            in.close();
         }
         return b.toString();
     }

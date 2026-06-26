@@ -80,7 +80,7 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
 
-            if (ts.values().size() >= 1) {
+            if (!ts.values().isEmpty()) {
                 ts.assertValue(1);
             }
         }
@@ -101,7 +101,7 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
 
-            if (ts.values().size() >= 1) {
+            if (!ts.values().isEmpty()) {
                 ts.assertValue(1);
             }
         }

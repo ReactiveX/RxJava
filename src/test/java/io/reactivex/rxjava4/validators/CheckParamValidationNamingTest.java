@@ -35,7 +35,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * and ObjectHelper.verifyPositive calls match the parameter
  *  name in the message.
  */
-public class ParamValidationNaming {
+public class CheckParamValidationNamingTest extends RxJavaTest {
 
     @Test
     public void checkCompletable() throws Exception {
@@ -367,7 +367,7 @@ public class ParamValidationNaming {
                                 || linei.contains(varPattern + ",")
                                 || linei.endsWith(varPattern)) {
                             // ignore nullable-annotated arguments
-                            if (!linei.matches(".*\\@Nullable\\s.*" + validatorStr.code + ".*")) {
+                            if (!linei.matches(".*@Nullable\\s.*" + validatorStr.code + ".*")) {
                                 boolean found = false;
                                 for (int k = i - 1; k >= 0; k--) {
                                     String linek = lines.get(k).trim();

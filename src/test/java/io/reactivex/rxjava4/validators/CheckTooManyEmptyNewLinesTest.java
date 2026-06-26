@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.validators;
 import java.io.*;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -23,7 +24,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 /**
  * Test verifying there are no 2..5 empty newlines in the code.
  */
-public class TooManyEmptyNewLines {
+public class CheckTooManyEmptyNewLinesTest extends RxJavaTest {
 
     @Test
     public void tooManyEmptyNewLines2() throws Exception  {
@@ -57,9 +58,7 @@ public class TooManyEmptyNewLines {
         StringBuilder fail = new StringBuilder();
         fail.append("The following code pattern was found: ");
         fail.append("\\R");
-        for (int i = 0; i < newLines; i++) {
-            fail.append("\\R");
-        }
+        fail.repeat("\\R", Math.max(0, newLines));
         fail.append("\n");
 
         File parent = f.getParentFile().getParentFile();
@@ -73,27 +72,24 @@ public class TooManyEmptyNewLines {
             f = dirs.poll();
 
             File[] list = f.listFiles();
-            if (list != null && list.length != 0) {
+            if (list != null) {
 
                 for (File u : list) {
                     if (u.isDirectory()) {
                         dirs.offer(u);
                     } else {
-                        String fname = u.getName();
-                        if (fname.endsWith(".java")) {
+                        String fileName = u.getName();
+                        if (fileName.endsWith(".java")) {
 
                             List<String> lines = new ArrayList<>();
-                            BufferedReader in = new BufferedReader(new FileReader(u));
-                            try {
-                                for (;;) {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+                                for (; ; ) {
                                     String line = in.readLine();
                                     if (line == null) {
                                         break;
                                     }
                                     lines.add(line);
                                 }
-                            } finally {
-                                in.close();
                             }
 
                             for (int i = 0; i < lines.size() - newLines; i++) {
@@ -110,13 +106,13 @@ public class TooManyEmptyNewLines {
 
                                     if (c == newLines) {
                                         fail
-                                        .append(fname)
+                                        .append(fileName)
                                         .append("#L").append(i + 1)
                                         .append("\n")
                                         .append(" at ")
-                                        .append(fname.replace(".java", ""))
+                                        .append(fileName.replace(".java", ""))
                                         .append(".method(")
-                                        .append(fname)
+                                        .append(fileName)
                                         .append(":").append(i + 1)
                                         .append(")\n")
                                         ;

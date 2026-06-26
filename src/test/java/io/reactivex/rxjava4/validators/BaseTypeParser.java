@@ -50,7 +50,7 @@ public final class BaseTypeParser {
     public static List<RxMethod> parse(File f, String baseClassName) throws Exception {
         List<RxMethod> list = new ArrayList<>();
 
-        StringBuilder b = JavadocForAnnotations.readFile(f);
+        StringBuilder b = CheckJavadocForAnnotationsTest.readFile(f);
 
         int baseIndex = b.indexOf("public abstract class " + baseClassName);
         if (baseIndex < 0) {
@@ -73,11 +73,11 @@ public final class BaseTypeParser {
             int javadocEnd = b.indexOf("*/", javadocStart + 2);
 
             m.javadoc = b.substring(javadocStart, javadocEnd + 2);
-            m.javadocLine = JavadocForAnnotations.lineNumber(b, javadocStart);
+            m.javadocLine = CheckJavadocForAnnotationsTest.lineNumber(b, javadocStart);
 
             int backpressureDoc = b.indexOf("<dt><b>Backpressure:</b></dt>", javadocStart);
             if (backpressureDoc > 0 && backpressureDoc < javadocEnd) {
-                m.backpressureDocLine = JavadocForAnnotations.lineNumber(b, backpressureDoc);
+                m.backpressureDocLine = CheckJavadocForAnnotationsTest.lineNumber(b, backpressureDoc);
                 int nextDD = b.indexOf("</dd>", backpressureDoc);
                 if (nextDD > 0 && nextDD < javadocEnd) {
                     m.backpressureDocumentation = b.substring(backpressureDoc, nextDD + 5);
@@ -86,7 +86,7 @@ public final class BaseTypeParser {
 
             int schedulerDoc = b.indexOf("<dt><b>Scheduler:</b></dt>", javadocStart);
             if (schedulerDoc > 0 && schedulerDoc < javadocEnd) {
-                m.schedulerDocLine = JavadocForAnnotations.lineNumber(b, schedulerDoc);
+                m.schedulerDocLine = CheckJavadocForAnnotationsTest.lineNumber(b, schedulerDoc);
                 int nextDD = b.indexOf("</dd>", schedulerDoc);
                 if (nextDD > 0 && nextDD < javadocEnd) {
                     m.schedulerDocumentation = b.substring(schedulerDoc, nextDD + 5);
@@ -121,7 +121,7 @@ public final class BaseTypeParser {
 
                 m.signature = b.substring(definitionStart, methodDefEnd + 1);
 
-                m.methodLine = JavadocForAnnotations.lineNumber(b, definitionStart);
+                m.methodLine = CheckJavadocForAnnotationsTest.lineNumber(b, definitionStart);
 
                 int backpressureSpec = b.indexOf("@BackpressureSupport(", javadocEnd);
                 if (backpressureSpec > 0 && backpressureSpec < definitionStart) {
@@ -129,10 +129,10 @@ public final class BaseTypeParser {
                     m.backpressureKind = b.substring(backpressureSpec + 21, backpressureSpecEnd);
                 }
 
-                int schhedulerSpec = b.indexOf("@SchedulerSupport(", javadocEnd);
-                if (schhedulerSpec > 0 && schhedulerSpec < definitionStart) {
-                    int schedulerSpecEnd = b.indexOf(")", schhedulerSpec + 18);
-                    m.schedulerKind = b.substring(schhedulerSpec + 18, schedulerSpecEnd);
+                int schedulerSpec = b.indexOf("@SchedulerSupport(", javadocEnd);
+                if (schedulerSpec > 0 && schedulerSpec < definitionStart) {
+                    int schedulerSpecEnd = b.indexOf(")", schedulerSpec + 18);
+                    m.schedulerKind = b.substring(schedulerSpec + 18, schedulerSpecEnd);
                 }
 
                 list.add(m);

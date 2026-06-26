@@ -39,7 +39,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * Check that static and instance methods validate their parameters against
  * null and invalid values properly.
  */
-public class ParamValidationCheckerTest {
+public class CheckParamValidationTest extends RxJavaTest {
 
     @Test(timeout = 30000)
     public void checkFlowable() {
@@ -707,21 +707,13 @@ public class ParamValidationCheckerTest {
 
     static void addIgnore(ParamIgnore ignore) {
         String key = ignore.toString();
-        List<ParamIgnore> list = ignores.get(key);
-        if (list == null) {
-            list = new ArrayList<>();
-            ignores.put(key, list);
-        }
+        List<ParamIgnore> list = ignores.computeIfAbsent(key, _ -> new ArrayList<>());
         list.add(ignore);
     }
 
     static void addOverride(ParamOverride ignore) {
         String key = ignore.toString();
-        List<ParamOverride> list = overrides.get(key);
-        if (list == null) {
-            list = new ArrayList<>();
-            overrides.put(key, list);
-        }
+        List<ParamOverride> list = overrides.computeIfAbsent(key, _ -> new ArrayList<>());
         list.add(ignore);
     }
 
@@ -822,7 +814,7 @@ public class ParamValidationCheckerTest {
                 } else {
                     List<Object> defaultInstancesList = defaultInstances.get(clazz);
                     if (defaultInstancesList == null) {
-                        b.append("\r\nNo default instances for " + clazz);
+                        b.append("\r\nNo default instances for ").append(clazz);
                         fail++;
                         continue outer;
                     }
@@ -864,7 +856,7 @@ public class ParamValidationCheckerTest {
                                     }
                                     Object def = defaultPrimitive(params[j], overrideParam);
                                     if (def == null) {
-                                        b.append("\r\nMissing default non-null value for " + m + " # " + j + " (" + params[j] + ")");
+                                        b.append("\r\nMissing default non-null value for ").append(m).append(" # ").append(j).append(" (").append(params[j]).append(")");
                                         fail++;
                                         continue outer;
                                     }
@@ -872,7 +864,7 @@ public class ParamValidationCheckerTest {
                                 } else {
                                     Object def = defaultValues.get(params[j]);
                                     if (def == null) {
-                                        b.append("\r\nMissing default non-null value for " + m + " # " + j + " (" + params[j] + ")");
+                                        b.append("\r\nMissing default non-null value for ").append(m).append(" # ").append(j).append(" (").append(params[j]).append(")");
                                         fail++;
                                         continue outer;
                                     }
@@ -891,7 +883,7 @@ public class ParamValidationCheckerTest {
 
                             Object def = defaultValues.get(params[i]);
                             if (def == null) {
-                                b.append("\r\nMissing default non-null value for " + m + " # " + i + " (" + params[i] + ")");
+                                b.append("\r\nMissing default non-null value for ").append(m).append(" # ").append(i).append(" (").append(params[i]).append(")");
                                 fail++;
                                 continue outer;
                             }
@@ -920,22 +912,46 @@ public class ParamValidationCheckerTest {
                             if (!success && error.getCause() instanceof NullPointerException) {
                                 if (!error.getCause().toString().contains("is null")) {
                                     fail++;
-                                    b.append("\r\nNPEs should indicate which argument failed: "
-                                    + m + " # " + i + " = " + p + ", tag = " + tag + ", params = " + Arrays.toString(callParams2));
+                                    b.append("\r\nNPEs should indicate which argument failed: ")
+                                    .append(m)
+                                    .append(" # ")
+                                    .append(i)
+                                    .append(" = ")
+                                    .append(p)
+                                    .append(", tag = ")
+                                    .append(tag)
+                                    .append(", params = ")
+                                    .append(Arrays.toString(callParams2));
                                 }
                             }
                             if (success != shouldSucceed) {
                                 fail++;
                                 if (shouldSucceed) {
-                                    b.append("\r\nFailed (should have succeeded): "
-                                    + m + " # " + i + " = " + p + ", tag = " + tag + ", params = " + Arrays.toString(callParams2));
+                                    b.append("\r\nFailed (should have succeeded): ")
+                                    .append(m)
+                                    .append(" # ")
+                                    .append(i)
+                                    .append(" = ")
+                                    .append(p)
+                                    .append(", tag = ")
+                                    .append(tag)
+                                    .append(", params = ")
+                                    .append(Arrays.toString(callParams2));
                                     b.append("\r\n    ").append(error);
                                     if (error.getCause() != null) {
                                         b.append("\r\n    ").append(error.getCause());
                                     }
                                 } else {
-                                    b.append("\r\nNo failure (should have failed): "
-                                    + m + " # " + i + " = " + p + ", tag = " + tag + ", params = " + Arrays.toString(callParams2));
+                                    b.append("\r\nNo failure (should have failed): ")
+                                    .append(m)
+                                    .append(" # ")
+                                    .append(i)
+                                    .append(" = ")
+                                    .append(p)
+                                    .append(", tag = ")
+                                    .append(tag)
+                                    .append(", params = ")
+                                    .append(Arrays.toString(callParams2));
                                 }
                                 continue outer;
                             }

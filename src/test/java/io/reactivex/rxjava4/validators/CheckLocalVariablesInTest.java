@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -36,7 +37,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * <li>{@code Observer} named as "s" or "subscriber"</li>
  * </ul>
  */
-public class CheckLocalVariablesInTests {
+public class CheckLocalVariablesInTest extends RxJavaTest {
 
     static void findPattern(String pattern) throws Exception {
         findPattern(pattern, false);
@@ -69,7 +70,7 @@ public class CheckLocalVariablesInTests {
             f = dirs.poll();
 
             File[] list = f.listFiles();
-            if (list != null && list.length != 0) {
+            if (list != null) {
 
                 for (File u : list) {
                     if (u.isDirectory()) {
@@ -79,9 +80,8 @@ public class CheckLocalVariablesInTests {
                         if (fname.endsWith(".java")) {
 
                             int lineNum = 0;
-                            BufferedReader in = new BufferedReader(new FileReader(u));
-                            try {
-                                for (;;) {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+                                for (; ; ) {
                                     String line = in.readLine();
                                     if (line != null) {
                                         lineNum++;
@@ -91,17 +91,17 @@ public class CheckLocalVariablesInTests {
                                         if (!line.startsWith("//") && !line.startsWith("*")) {
                                             if (p.matcher(line).find()) {
                                                 fail
-                                                .append(fname)
-                                                .append("#L").append(lineNum)
-                                                .append("    ").append(line)
-                                                .append("\n")
-                                                .append(" at ")
-                                                .append(fname.replace(".java", ""))
-                                                .append(".method(")
-                                                .append(fname)
-                                                .append(":")
-                                                .append(lineNum)
-                                                .append(")\n");
+                                                        .append(fname)
+                                                        .append("#L").append(lineNum)
+                                                        .append("    ").append(line)
+                                                        .append("\n")
+                                                        .append(" at ")
+                                                        .append(fname.replace(".java", ""))
+                                                        .append(".method(")
+                                                        .append(fname)
+                                                        .append(":")
+                                                        .append(lineNum)
+                                                        .append(")\n");
 
                                                 total++;
                                             }
@@ -110,8 +110,6 @@ public class CheckLocalVariablesInTests {
                                         break;
                                     }
                                 }
-                            } finally {
-                                in.close();
                             }
                         }
                     }

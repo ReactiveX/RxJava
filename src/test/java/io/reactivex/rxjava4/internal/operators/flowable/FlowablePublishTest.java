@@ -142,7 +142,6 @@ public class FlowablePublishTest extends RxJavaTest {
         final Flowable<Integer> source = Flowable.range(1, 100)
                 .doOnNext(_ -> sourceEmission.incrementAndGet())
                 .doOnCancel(() -> sourceUnsubscribed.set(true)).share();
-        ;
 
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();

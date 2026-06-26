@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.validators;
 import java.io.*;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -38,7 +39,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * &#64;Override
  * </code></pre>
  */
-public class NewLinesBeforeAnnotation {
+public class CheckNewLinesBeforeAnnotationTest extends RxJavaTest {
 
     @Test
     public void missingEmptyNewLine() throws Exception {
@@ -77,9 +78,7 @@ public class NewLinesBeforeAnnotation {
         StringBuilder fail = new StringBuilder();
         fail.append("The following code pattern was found: ");
         fail.append("\\}\\R");
-        for (int i = 0; i < newLines; i++) {
-            fail.append("\\R");
-        }
+        fail.repeat("\\R", Math.max(0, newLines));
         fail.append("[    ]+@\n");
 
         File parent = f.getParentFile().getParentFile();
@@ -93,7 +92,7 @@ public class NewLinesBeforeAnnotation {
             f = dirs.poll();
 
             File[] list = f.listFiles();
-            if (list != null && list.length != 0) {
+            if (list != null) {
 
                 for (File u : list) {
                     if (u.isDirectory()) {
@@ -103,17 +102,14 @@ public class NewLinesBeforeAnnotation {
                         if (fname.endsWith(".java")) {
 
                             List<String> lines = new ArrayList<>();
-                            BufferedReader in = new BufferedReader(new FileReader(u));
-                            try {
-                                for (;;) {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+                                for (; ; ) {
                                     String line = in.readLine();
                                     if (line == null) {
                                         break;
                                     }
                                     lines.add(line);
                                 }
-                            } finally {
-                                in.close();
                             }
 
                             for (int i = 0; i < lines.size() - 1; i++) {

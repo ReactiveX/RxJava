@@ -114,18 +114,14 @@ public final class CompositeException extends RuntimeException {
                 for (Throwable inner : exceptions) {
                     int depth = 0;
                     while (inner != null) {
-                        for (int i = 0; i < depth; i++) {
-                            aggregateMessage.append("  ");
-                        }
+                        aggregateMessage.repeat("  ", Math.max(0, depth));
                         aggregateMessage.append("|-- ");
                         aggregateMessage.append(inner.getClass().getCanonicalName()).append(": ");
                         String innerMessage = inner.getMessage();
                         if (innerMessage != null && innerMessage.contains(separator)) {
                             aggregateMessage.append(separator);
                             for (String line : innerMessage.split(separator)) {
-                                for (int i = 0; i < depth + 2; i++) {
-                                    aggregateMessage.append("  ");
-                                }
+                                aggregateMessage.repeat("  ", Math.max(0, depth + 2));
                                 aggregateMessage.append(line).append(separator);
                             }
                         } else {
@@ -133,9 +129,7 @@ public final class CompositeException extends RuntimeException {
                             aggregateMessage.append(separator);
                         }
 
-                        for (int i = 0; i < depth + 2; i++) {
-                            aggregateMessage.append("  ");
-                        }
+                        aggregateMessage.repeat("  ", Math.max(0, depth + 2));
                         StackTraceElement[] st = inner.getStackTrace();
                         if (st.length > 0) {
                             aggregateMessage.append("at ").append(st[0]).append(separator);
@@ -149,9 +143,7 @@ public final class CompositeException extends RuntimeException {
                         } else {
                             inner = inner.getCause();
                             if (inner != null) {
-                                for (int i = 0; i < depth + 2; i++) {
-                                    aggregateMessage.append("  ");
-                                }
+                                aggregateMessage.repeat("  ", Math.max(0, depth + 2));
                                 aggregateMessage.append("|-- ");
                                 aggregateMessage.append("(cause not expanded again) ");
                                 aggregateMessage.append(inner.getClass().getCanonicalName()).append(": ");

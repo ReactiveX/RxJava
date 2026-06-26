@@ -628,7 +628,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
         Flowable.merge(f1.take(Flowable.bufferSize() * 2), f2.take(Flowable.bufferSize() * 2)).subscribe(testSubscriber);
         testSubscriber.awaitDone(5, TimeUnit.SECONDS);
-        if (testSubscriber.errors().size() > 0) {
+        if (!testSubscriber.errors().isEmpty()) {
             testSubscriber.errors().getFirst().printStackTrace();
         }
         testSubscriber.assertNoErrors();
@@ -670,7 +670,7 @@ public class FlowableMergeTest extends RxJavaTest {
         System.out.println("Generated 1: " + generated1.get() + " / received: " + onNextEvents.size());
         System.out.println(onNextEvents);
 
-        if (testSubscriber.errors().size() > 0) {
+        if (!testSubscriber.errors().isEmpty()) {
             testSubscriber.errors().getFirst().printStackTrace();
         }
         testSubscriber.assertNoErrors();
@@ -710,7 +710,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
         Flowable.merge(f1.take(Flowable.bufferSize() * 2), f2.take(Flowable.bufferSize() * 2)).observeOn(Schedulers.computation()).subscribe(testSubscriber);
         testSubscriber.awaitDone(10, TimeUnit.SECONDS);
-        if (testSubscriber.errors().size() > 0) {
+        if (!testSubscriber.errors().isEmpty()) {
             testSubscriber.errors().getFirst().printStackTrace();
         }
         testSubscriber.assertNoErrors();
@@ -746,7 +746,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
         Flowable.merge(f1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(testSubscriber);
         testSubscriber.awaitDone(10, TimeUnit.SECONDS);
-        if (testSubscriber.errors().size() > 0) {
+        if (!testSubscriber.errors().isEmpty()) {
             testSubscriber.errors().getFirst().printStackTrace();
         }
         testSubscriber.assertNoErrors();
@@ -794,7 +794,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
         Flowable.merge(f1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(testSubscriber);
         testSubscriber.awaitDone(10, TimeUnit.SECONDS);
-        if (testSubscriber.errors().size() > 0) {
+        if (!testSubscriber.errors().isEmpty()) {
             testSubscriber.errors().getFirst().printStackTrace();
         }
         testSubscriber.assertNoErrors();
@@ -1151,7 +1151,6 @@ public class FlowableMergeTest extends RxJavaTest {
     Function<Integer, Flowable<Integer>> toScalar = Flowable::just;
 
     Function<Integer, Flowable<Integer>> toHiddenScalar = t -> Flowable.just(t).hide();
-    ;
 
     void runMerge(Function<Integer, Flowable<Integer>> func, TestSubscriberEx<Integer> ts) {
         List<Integer> list = new ArrayList<>();

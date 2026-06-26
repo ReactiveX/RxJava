@@ -458,7 +458,7 @@ public class SerializedProcessorTest extends RxJavaTest {
 
             ts.assertError(ex).assertNotComplete();
 
-            if (ts.values().size() != 0) {
+            if (!ts.values().isEmpty()) {
                 ts.assertValue(1);
             }
         }
@@ -479,7 +479,7 @@ public class SerializedProcessorTest extends RxJavaTest {
 
             ts.assertComplete().assertNoErrors();
 
-            if (ts.values().size() != 0) {
+            if (!ts.values().isEmpty()) {
                 ts.assertValue(1);
             }
         }

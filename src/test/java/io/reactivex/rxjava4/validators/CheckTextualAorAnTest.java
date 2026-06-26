@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.validators;
 import java.io.*;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -23,7 +24,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 /**
  * Adds license header to java files.
  */
-public class TextualAorAn {
+public class CheckTextualAorAnTest extends RxJavaTest {
 
     @Test
     public void checkFiles() throws Exception {
@@ -36,8 +37,6 @@ public class TextualAorAn {
 
         File parent = f.getParentFile().getParentFile();
         dirs.offer(parent);
-//        dirs.offer(new File(parent.getAbsolutePath().replace('\\', '/').replace("src/main/java", "src/perf/java")));
-//        dirs.offer(new File(parent.getAbsolutePath().replace('\\', '/').replace("src/main/java", "src/test/java")));
 
         StringBuilder fail = new StringBuilder();
 
@@ -45,7 +44,7 @@ public class TextualAorAn {
             f = dirs.poll();
 
             File[] list = f.listFiles();
-            if (list != null && list.length != 0) {
+            if (list != null) {
 
                 for (File u : list) {
                     if (u.isDirectory()) {
@@ -54,9 +53,8 @@ public class TextualAorAn {
                         if (u.getName().endsWith(".java")) {
 
                             List<String> lines = new ArrayList<>();
-                            BufferedReader in = new BufferedReader(new FileReader(u));
-                            try {
-                                for (;;) {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+                                for (; ; ) {
                                     String line = in.readLine();
                                     if (line == null) {
                                         break;
@@ -64,8 +62,6 @@ public class TextualAorAn {
 
                                     lines.add(line);
                                 }
-                            } finally {
-                                in.close();
                             }
 
                             String clazz = u.getAbsolutePath().replace('\\', '/');
@@ -78,7 +74,7 @@ public class TextualAorAn {
             }
         }
 
-        if (fail.length() != 0) {
+        if (!fail.isEmpty()) {
             System.out.println(fail);
             throw new AssertionError(fail.toString());
         }
@@ -91,145 +87,121 @@ public class TextualAorAn {
             if (s.contains(" a Observer")) {
                 b.append("java.lang.RuntimeException: ' a Observer'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("A Observer")) {
                 b.append("java.lang.RuntimeException: 'A Observer'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains(" a Observable")) {
                 b.append("java.lang.RuntimeException: ' a Observable'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("A Observable")) {
                 b.append("java.lang.RuntimeException: 'A Observable'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains(" an Subscriber")) {
                 b.append("java.lang.RuntimeException: ' an Subscriber'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("An Subscriber")) {
                 b.append("java.lang.RuntimeException: 'An Subscriber'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains(" an Publisher")) {
                 b.append("java.lang.RuntimeException: ' an Publisher'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("An Publisher")) {
                 b.append("java.lang.RuntimeException: 'An Publisher'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains(" an Flowable")) {
                 b.append("java.lang.RuntimeException: ' an Flowable'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("An Flowable")) {
                 b.append("java.lang.RuntimeException: 'An Flowable'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains(" an Single")) {
                 b.append("java.lang.RuntimeException: ' an Single'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("An Single")) {
                 b.append("java.lang.RuntimeException: 'An Single'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains(" an Maybe")) {
                 b.append("java.lang.RuntimeException: ' an Maybe'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("An Maybe")) {
                 b.append("java.lang.RuntimeException: 'An Maybe'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains(" an Completable")) {
                 b.append("java.lang.RuntimeException: ' an Completable'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("An Completable")) {
                 b.append("java.lang.RuntimeException: 'An Completable'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("An Runnable")) {
                 b.append("java.lang.RuntimeException: 'An Runnable'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("an Runnable")) {
                 b.append("java.lang.RuntimeException: 'an Runnable'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains(" a error")) {
                 b.append("java.lang.RuntimeException: 'a error'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains(" the a ")) {
                 b.append("java.lang.RuntimeException: ' the a '\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains(" a the ")) {
                 b.append("java.lang.RuntimeException: ' a the '\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("mean time")) {
                 b.append("java.lang.RuntimeException: 'mean time'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains("non null")) {
                 b.append("java.lang.RuntimeException: 'non null'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             if (s.contains(" an cancel")) {
                 b.append("java.lang.RuntimeException: ' an cancel'\r\n at io.reactivex.")
                 .append(className).append(".method(").append(fileName).append(":").append(i).append(")\r\nCaused by: ");
-                ;
             }
 
             i++;

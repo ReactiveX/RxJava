@@ -61,7 +61,7 @@ public abstract class StreamableBaseTest {
         for (var c : cleaners) {
             c.clean();
         }
-        if (errors.size() != 0) {
+        if (!errors.isEmpty()) {
             throw new AssertionError("Undeliverable exceptions during test detected: " + testInfo.getDisplayName(),
                     new CompositeException(errors));
         }

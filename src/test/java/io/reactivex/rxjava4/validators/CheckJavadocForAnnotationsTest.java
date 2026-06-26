@@ -26,7 +26,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * Checks the source code of the base reactive types and locates missing
  * mention of {@code Backpressure:} and {@code Scheduler:} of methods.
  */
-public class JavadocForAnnotations {
+public class CheckJavadocForAnnotationsTest extends RxJavaTest {
 
     static void checkSource(String baseClassName, boolean scheduler) throws Exception {
         File f = TestHelper.findSource(baseClassName);
@@ -44,7 +44,7 @@ public class JavadocForAnnotations {
             scanFor(b, "@BackpressureSupport", "Backpressure:", e, baseClassName);
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -54,9 +54,8 @@ public class JavadocForAnnotations {
     public static StringBuilder readFile(File f) throws Exception {
         StringBuilder b = new StringBuilder();
 
-        BufferedReader in = new BufferedReader(new FileReader(f));
-        try {
-            for (;;) {
+        try (BufferedReader in = new BufferedReader(new FileReader(f))) {
+            for (; ; ) {
                 String line = in.readLine();
 
                 if (line == null) {
@@ -65,15 +64,13 @@ public class JavadocForAnnotations {
 
                 b.append(line).append('\n');
             }
-        } finally {
-            in.close();
         }
 
         return b;
     }
 
-    static final void scanFor(StringBuilder sourceCode, String annotation, String inDoc,
-            StringBuilder e, String baseClassName) {
+    static void scanFor(StringBuilder sourceCode, String annotation, String inDoc,
+                        StringBuilder e, String baseClassName) {
         int index = 0;
         for (;;) {
             int idx = sourceCode.indexOf(annotation, index);
@@ -108,8 +105,8 @@ public class JavadocForAnnotations {
         }
     }
 
-    static final void scanForBadMethod(StringBuilder sourceCode, String annotation, String inDoc,
-            StringBuilder e, String baseClassName) {
+    static void scanForBadMethod(StringBuilder sourceCode, String annotation, String inDoc,
+                                 StringBuilder e, String baseClassName) {
         int index = 0;
         for (;;) {
             int idx = sourceCode.indexOf(annotation, index);
@@ -198,7 +195,7 @@ public class JavadocForAnnotations {
 
         scanForBadMethod(b, "@SchedulerSupport", "Scheduler:", e, baseClassName);
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());

@@ -15,15 +15,20 @@ package io.reactivex.rxjava4.validators;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
-public class NoAnonymousInnerClassesTest {
+public class CheckNoAnonymousInnerClassesTest extends RxJavaTest {
 
     @Test
     public void verify() throws Exception {
-        URL u = NoAnonymousInnerClassesTest.class.getResource("");
+        URL u = CheckNoAnonymousInnerClassesTest.class.getResource("");
+        if (u == null) {
+            throw new FileNotFoundException("CheckNoAnonymousInnerClassesTest.class.''");
+        }
         File f = new File(u.toURI());
 
         String fs = f.toString().toLowerCase().replace("\\", "/");
@@ -51,7 +56,7 @@ public class NoAnonymousInnerClassesTest {
 
             if (f.isDirectory()) {
                 File[] dir = f.listFiles();
-                if (dir != null && dir.length != 0) {
+                if (dir != null) {
                     for (File g : dir) {
                         queue.offer(g);
                     }
@@ -75,12 +80,10 @@ public class NoAnonymousInnerClassesTest {
 
                             boolean found = false;
 
-                            FileInputStream fin = new FileInputStream(f);
-                            try {
-                                byte[] data = new byte[fin.available()];
-                                fin.read(data);
+                            try (FileInputStream fin = new FileInputStream(f)) {
+                                byte[] data = fin.readAllBytes();
 
-                                String content = new String(data, "ISO-8859-1");
+                                String content = new String(data, StandardCharsets.ISO_8859_1);
 
                                 if (content.contains("$SwitchMap$")) {
                                     // the parent class can reference these synthetic inner classes
@@ -88,6 +91,9 @@ public class NoAnonymousInnerClassesTest {
                                     // but the synthetic inner classes should not have further inner classes
 
                                     File[] filesInTheSameDir = f.getParentFile().listFiles();
+                                    if (filesInTheSameDir == null) {
+                                        throw new FileNotFoundException(f.getParentFile().toString());
+                                    }
 
                                     for (File fsame : filesInTheSameDir) {
                                         String fsameName = fsame.getName();
@@ -106,8 +112,6 @@ public class NoAnonymousInnerClassesTest {
                                 } else {
                                     found = true;
                                 }
-                            } finally {
-                                fin.close();
                             }
 
                             if (found) {

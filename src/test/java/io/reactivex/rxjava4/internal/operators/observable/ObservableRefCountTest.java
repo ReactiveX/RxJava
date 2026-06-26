@@ -176,8 +176,8 @@ public class ObservableRefCountTest extends RxJavaTest {
             to2.dispose();
             to1.assertNoErrors();
             to2.assertNoErrors();
-            assertTrue(to1.values().size() > 0);
-            assertTrue(to2.values().size() > 0);
+            assertTrue(!to1.values().isEmpty());
+            assertTrue(!to2.values().isEmpty());
         }
 
         assertEquals(10, subscribeCount.get());
@@ -211,7 +211,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         System.out.println("DONE sending unsubscribe ... now waiting");
         if (!unsubscribeLatch.await(3000, TimeUnit.MILLISECONDS)) {
             System.out.println("Errors: " + observer.errors());
-            if (observer.errors().size() > 0) {
+            if (!observer.errors().isEmpty()) {
                 observer.errors().getFirst().printStackTrace();
             }
             fail("timed out waiting for unsubscribe");
@@ -261,7 +261,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         System.out.println("DONE sending unsubscribe ... now waiting");
         System.out.println("Errors: " + observer.errors());
-        if (observer.errors().size() > 0) {
+        if (!observer.errors().isEmpty()) {
             observer.errors().getFirst().printStackTrace();
         }
         observer.assertNoErrors();

@@ -17,16 +17,16 @@ import static org.junit.Assert.fail;
 
 import java.io.*;
 
+import io.reactivex.rxjava4.core.*;
 import org.junit.Test;
 
-import io.reactivex.rxjava4.core.Maybe;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 /**
  * Checks the source code of Maybe and finds unnecessary since 2.0 annotations in the
  * method's Javadocs.
  */
-public class MaybeNo2Dot0Since {
+public class CheckMaybeForSinceTagsTest extends RxJavaTest {
 
     @Test
     public void noSince20InMaybe() throws Exception {
@@ -39,8 +39,7 @@ public class MaybeNo2Dot0Since {
 
         boolean classDefPassed = false;
 
-        BufferedReader in = new BufferedReader(new FileReader(f));
-        try {
+        try (BufferedReader in = new BufferedReader(new FileReader(f))) {
             int ln = 1;
             while (true) {
                 line = in.readLine();
@@ -56,18 +55,15 @@ public class MaybeNo2Dot0Since {
                 if (classDefPassed) {
                     if (line.contains("@since") && line.contains("2.0") && !line.contains("2.0.")) {
                         b.append("java.lang.RuntimeException: @since 2.0 found").append("\r\n")
-                        .append(" at io.reactivex.Maybe (Maybe.java:").append(ln).append(")\r\n\r\n");
-                        ;
+                                .append(" at io.reactivex.Maybe (Maybe.java:").append(ln).append(")\r\n\r\n");
                     }
                 }
 
                 ln++;
             }
-        } finally {
-            in.close();
         }
 
-        if (b.length() != 0) {
+        if (!b.isEmpty()) {
             System.out.println(b);
 
             fail(b.toString());

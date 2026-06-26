@@ -421,7 +421,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
 
             TestHelper.race(r1, r2);
 
-            if (ts1.errors().size() != 0) {
+            if (!ts1.errors().isEmpty()) {
                 ts1.assertFailure(TestException.class);
             } else {
                 ts1.assertEmpty();

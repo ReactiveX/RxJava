@@ -20,23 +20,20 @@ import java.util.*;
 /**
  * Utility class that lists tests related to Observable that is not present in Flowable tests.
  */
-public final class ObservableToFlowabeTestSync {
-    private ObservableToFlowabeTestSync() {
+public final class ObservableToFlowableTestSync {
+    private ObservableToFlowableTestSync() {
         throw new IllegalStateException("No instances!");
     }
 
     static List<String> readAllLines(File f) {
         List<String> result = new ArrayList<>();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(f));
-            try {
+            try (BufferedReader in = new BufferedReader(new FileReader(f))) {
                 String line;
 
                 while ((line = in.readLine()) != null) {
                     result.add(line);
                 }
-            } finally {
-                in.close();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -46,6 +43,9 @@ public final class ObservableToFlowabeTestSync {
 
     static void list(String basepath, String basepackage) throws Exception {
         File[] observables = new File(basepath + "observable/").listFiles();
+        if (observables == null) {
+            throw new FileNotFoundException(basepath + "observable/");
+        }
 
         int count = 0;
 

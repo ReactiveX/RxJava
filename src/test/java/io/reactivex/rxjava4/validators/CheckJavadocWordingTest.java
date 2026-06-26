@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -26,7 +27,7 @@ import io.reactivex.rxjava4.validators.BaseTypeParser.RxMethod;
 /**
  * Check if the method wording is consistent with the target base type.
  */
-public class JavadocWording {
+public class CheckJavadocWordingTest extends RxJavaTest {
 
     public static int lineNumber(CharSequence s, int index) {
         int cnt = 1;
@@ -217,7 +218,7 @@ public class JavadocWording {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -362,7 +363,7 @@ public class JavadocWording {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -506,7 +507,7 @@ public class JavadocWording {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -610,7 +611,7 @@ public class JavadocWording {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -787,7 +788,7 @@ public class JavadocWording {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -979,7 +980,7 @@ public class JavadocWording {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -992,7 +993,7 @@ public class JavadocWording {
             if (t.contains("Completable")) {
                 regex = "(?s).*?\\s" + t + "\\s+\\w+\\(.*";
             } else {
-                regex = "(?s).*?\\s" + t + "\\<.*?\\>\\s+\\w+\\(.*";
+                regex = "(?s).*?\\s" + t + "<.*?>\\s+\\w+\\(.*";
             }
             if (m.signature.matches(regex)) {
                 for (String at : AT_RETURN_WORDS) {
@@ -1158,7 +1159,7 @@ public class JavadocWording {
 
             int idx3 = m.javadoc.indexOf("<dd>", idx1 + 4);
 
-            if (idx1 > 0 && idx2 > 0 && (idx3 < 0 || (idx2 < idx3 && idx3 > 0))) {
+            if (idx1 > 0 && idx2 > 0 && (idx3 < 0 || idx2 < idx3)) {
                 jdx = idx2 + 5;
             } else {
                 e.append("java.lang.RuntimeException: unbalanced <dd></dd> ")
@@ -1168,7 +1169,9 @@ public class JavadocWording {
                 .append(baseTypeName)
                 .append(".method(")
                 .append(baseTypeName)
-                .append(".java:").append(m.javadocLine + lineNumber(m.javadoc, idx1) - 1).append(")\r\n\r\n");
+                .append(".java:")
+                        .append(m.javadocLine + lineNumber(m.javadoc, idx1) - 1)
+                        .append(")\r\n\r\n");
                 break;
             }
         }
