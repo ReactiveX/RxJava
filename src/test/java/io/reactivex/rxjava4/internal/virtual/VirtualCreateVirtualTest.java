@@ -44,9 +44,7 @@ public class VirtualCreateVirtualTest {
 
     @Test
     public void checkIsInsideVirtualThread() {
-        Flowable.virtualCreate(emitter -> {
-            emitter.emit(Thread.currentThread().isVirtual());
-        })
+        Flowable.virtualCreate(emitter -> emitter.emit(Thread.currentThread().isVirtual()))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(true);
@@ -54,9 +52,7 @@ public class VirtualCreateVirtualTest {
 
     @Test
     public void checkIsInsideVirtualThreadExec() throws Throwable {
-        Flowable.virtualCreate(emitter -> {
-            emitter.emit(Thread.currentThread().isVirtual());
-        }, Schedulers.cached())
+        Flowable.virtualCreate(emitter -> emitter.emit(Thread.currentThread().isVirtual()), Schedulers.cached())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(false);

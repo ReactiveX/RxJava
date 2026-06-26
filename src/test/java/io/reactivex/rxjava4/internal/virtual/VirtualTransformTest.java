@@ -45,75 +45,58 @@ public class VirtualTransformTest {
 
     @Test
     public void errorUpstream() throws Throwable {
-        TestHelper.withVirtual(exec -> {
-            Flowable.error(new IOException())
-            .virtualTransform((v, e, _) -> e.emit(v), exec)
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertError(IOException.class)
-            ;
-        });
+        TestHelper.withVirtual(exec -> Flowable.error(new IOException())
+        .virtualTransform((v, e, _) -> e.emit(v), exec)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertError(IOException.class));
     }
 
     @Test
     public void errorTransform() throws Throwable {
-        TestHelper.withVirtual(exec -> {
-            Flowable.range(1, 5)
-            .virtualTransform((_, _, _) -> { throw new IOException(); }, exec)
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertError(IOException.class)
-            ;
-        });
+        TestHelper.withVirtual(exec -> Flowable.range(1, 5)
+        .virtualTransform((_, _, _) -> { throw new IOException(); }, exec)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertError(IOException.class));
     }
 
     @Test
     public void take() throws Throwable {
-        TestHelper.withVirtual(exec -> {
-            Flowable.range(1, 5)
-            .virtualTransform((v, e, _) -> e.emit(v), exec)
-            .take(2)
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertResult(1, 2)
-            ;
-        });
+        TestHelper.withVirtual(exec -> Flowable.range(1, 5)
+        .virtualTransform((v, e, _) -> e.emit(v), exec)
+        .take(2)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2));
     }
 
     @Test
     public void observeOn() throws Throwable {
-        TestHelper.withVirtual(exec -> {
-            Flowable.range(1, 10000)
-            .virtualTransform((v, e, _) -> e.emit(v), exec)
-            .observeOn(Schedulers.single(), false, 2)
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertNoErrors()
-            .assertValueCount(10000);
-        });
+        TestHelper.withVirtual(exec -> Flowable.range(1, 10000)
+        .virtualTransform((v, e, _) -> e.emit(v), exec)
+        .observeOn(Schedulers.single(), false, 2)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertValueCount(10000));
     }
 
     @Test
     public void empty() throws Throwable {
-        TestHelper.withVirtual(exec -> {
-            Flowable.empty()
-            .virtualTransform((v, e, _) -> e.emit(v), exec)
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertResult()
-            ;
-        });
+        TestHelper.withVirtual(exec -> Flowable.empty()
+        .virtualTransform((v, e, _) -> e.emit(v), exec)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult());
     }
 
     @Test
     public void emptyNever() throws Throwable {
-        TestHelper.withVirtual(exec -> {
-            Flowable.just(1).concatWith(Flowable.never())
-            .virtualTransform((v, e, _) -> e.emit(v), exec)
-            .test()
-            .awaitDone(1, TimeUnit.SECONDS)
-            .assertValues(1)
-            ;
-        });
+        TestHelper.withVirtual(exec -> Flowable.just(1).concatWith(Flowable.never())
+        .virtualTransform((v, e, _) -> e.emit(v), exec)
+        .test()
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertValues(1));
     }
 }

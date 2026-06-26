@@ -369,9 +369,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
         Thread t = new Thread(() -> {
             try {
                 cb.await();
-            } catch (InterruptedException e) {
-                return;
-            } catch (BrokenBarrierException e) {
+            } catch (InterruptedException | BrokenBarrierException e) {
                 return;
             }
             for (int i = 0; i < 1000000; i++) {
@@ -383,9 +381,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
         t.start();
         try {
             cb.await();
-        } catch (InterruptedException e) {
-            return;
-        } catch (BrokenBarrierException e) {
+        } catch (InterruptedException | BrokenBarrierException e) {
             return;
         }
         int lastSize = 0;
@@ -421,9 +417,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
         Thread t = new Thread(() -> {
             try {
                 cb.await();
-            } catch (InterruptedException e) {
-                return;
-            } catch (BrokenBarrierException e) {
+            } catch (InterruptedException | BrokenBarrierException e) {
                 return;
             }
             for (int i = 0; i < 1000000; i++) {
@@ -435,9 +429,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
         t.start();
         try {
             cb.await();
-        } catch (InterruptedException e) {
-            return;
-        } catch (BrokenBarrierException e) {
+        } catch (InterruptedException | BrokenBarrierException e) {
             return;
         }
         for (; !rs.hasThrowable() && !rs.hasComplete();) {
@@ -462,9 +454,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
         Thread t = new Thread(() -> {
             try {
                 cb.await();
-            } catch (InterruptedException e) {
-                return;
-            } catch (BrokenBarrierException e) {
+            } catch (InterruptedException | BrokenBarrierException e) {
                 return;
             }
             for (int i = 0; i < 1000000; i++) {
@@ -483,9 +473,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
         t.start();
         try {
             cb.await();
-        } catch (InterruptedException e) {
-            return;
-        } catch (BrokenBarrierException e) {
+        } catch (InterruptedException | BrokenBarrierException e) {
             return;
         }
         for (; !rs.hasThrowable() && !rs.hasComplete();) {

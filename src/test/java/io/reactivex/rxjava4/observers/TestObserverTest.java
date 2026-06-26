@@ -752,7 +752,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void completeDelegateThrows() {
-        TestObserver<Integer> to = new TestObserver<>(new Observer<Integer>() /* NFI */ {
+        var to = new TestObserver<>(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -958,8 +958,12 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueAtIndexNoMatch() {
-        assertThrowsWithMessage("\nexpected: b (class: String)\ngot: c (class: String); Value at position 2 differ "
-                + "(latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("""
+                ~
+                expected: b (class: String)
+                got: c (class: String); Value at position 2 differ \
+                (latch = 0, values = 3, errors = 0, completions = 1)""",
+                AssertionError.class, () -> {
             TestObserver<String> to = new TestObserver<>();
 
             Observable.just("a", "b", "c").subscribe(to);
@@ -981,8 +985,11 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValuesCountNoMatch() {
-        assertThrowsWithMessage("\nexpected: 2 [a, b]\ngot: 3 [a, b, c]; "
-                + "Value count differs (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("""
+                ~
+                expected: 2 [a, b]
+                got: 3 [a, b, c]; \
+                Value count differs (latch = 0, values = 3, errors = 0, completions = 1)""", AssertionError.class, () -> {
             TestObserver<String> to = new TestObserver<>();
 
             Observable.just("a", "b", "c").subscribe(to);
@@ -1004,8 +1011,11 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValuesNoMatch() {
-        assertThrowsWithMessage("\nexpected: d (class: String)\ngot: c (class: String); Value at position 2 differ "
-                + "(latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("""
+                ~
+                expected: d (class: String)
+                got: c (class: String); Value at position 2 differ \
+                (latch = 0, values = 3, errors = 0, completions = 1)""", AssertionError.class, () -> {
             TestObserver<String> to = new TestObserver<>();
 
             Observable.just("a", "b", "c").subscribe(to);
@@ -1049,8 +1059,11 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueSequenceNoMatch() {
-        assertThrowsWithMessage("\nexpected: d (class: String)\ngot: c (class: String); Value at position 2 differ "
-                + "(latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("""
+                ~
+                expected: d (class: String)
+                got: c (class: String); Value at position 2 differ \
+                (latch = 0, values = 3, errors = 0, completions = 1)""", AssertionError.class, () -> {
             TestObserver<String> to = new TestObserver<>();
 
             Observable.just("a", "b", "c").subscribe(to);
