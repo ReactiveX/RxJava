@@ -338,7 +338,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
                     s.onError(new TestException("outer"));
                 }
             }
-            .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<Integer>() /* NFI */ {
+            .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(
                         MaybeObserver<? super Integer> observer) {
@@ -488,7 +488,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
 
     @Test
     public void requestMoreOnNext() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) /* NFI */ {
+        var ts = new TestSubscriber<Integer>(1) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

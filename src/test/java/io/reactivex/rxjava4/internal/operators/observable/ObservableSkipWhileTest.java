@@ -37,8 +37,9 @@ public class ObservableSkipWhileTest extends RxJavaTest {
         return v < 5;
     };
 
-    private static final Predicate<Integer> INDEX_LESS_THAN_THREE = new Predicate<Integer>() /* NFI */ {
+    private static final Predicate<Integer> INDEX_LESS_THAN_THREE = new Predicate<>() /* NFI */ {
         int index;
+
         @Override
         public boolean test(Integer value) {
             return index++ < 3;

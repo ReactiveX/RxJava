@@ -211,7 +211,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     @Test
     @SuppressWarnings("unchecked")
     public void nonNotificationInstanceAfterDispose() {
-        new Observable<Object>() /* NFI */ {
+        new Observable<>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());

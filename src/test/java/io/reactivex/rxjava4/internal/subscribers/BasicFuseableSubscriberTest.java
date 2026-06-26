@@ -27,7 +27,7 @@ public class BasicFuseableSubscriberTest extends RxJavaTest {
 
     @Test
     public void offerThrows() {
-        BasicFuseableSubscriber<Integer, Integer> fcs = new BasicFuseableSubscriber<Integer, Integer>(new TestSubscriber<>(0L)) {
+        var fcs = new BasicFuseableSubscriber<Integer, Integer>(new TestSubscriber<>(0L)) {
 
             @Override
             public void onNext(Integer t) {

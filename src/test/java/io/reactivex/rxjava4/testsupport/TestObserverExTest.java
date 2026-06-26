@@ -1003,7 +1003,7 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void errorDelegateThrows() {
-        TestObserverEx<Integer> to = new TestObserverEx<>(new Observer<Integer>() /* NFI */ {
+        var to = new TestObserverEx<>(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

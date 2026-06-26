@@ -132,8 +132,9 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailWithRetry() {
         Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() /* NFI */ {
+        .filter(new Predicate<>() /* NFI */ {
             int count;
+
             @Override
             public boolean test(Integer v) throws Exception {
                 if (count++ == 1) {
@@ -230,8 +231,9 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailWithRetryConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() /* NFI */ {
+        .filter(new Predicate<>() /* NFI */ {
             int count;
+
             @Override
             public boolean test(Integer v) throws Exception {
                 if (count++ == 1) {

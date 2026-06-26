@@ -879,7 +879,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
         @Override
         public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-            return new TrackingScheduledFuture<V>(super.schedule(callable, delay, unit));
+            return new TrackingScheduledFuture<>(super.schedule(callable, delay, unit));
         }
 
         class TrackingScheduledFuture<V> implements ScheduledFuture<V> {

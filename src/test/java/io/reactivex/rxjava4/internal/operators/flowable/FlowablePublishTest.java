@@ -148,7 +148,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         final TestSubscriber<Integer> ts2 = new TestSubscriber<>();
 
-        final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() /* NFI */ {
+        var ts1 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (values().size() == 2) {
@@ -512,7 +512,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         ConnectableFlowable<Integer> cf = pp.publish();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -710,7 +710,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
     @Test
     public void dryRunCrash() {
-        final TestSubscriber<Object> ts = new TestSubscriber<Object>(1L) /* NFI */ {
+        var ts = new TestSubscriber<>(1L) /* NFI */ {
             @Override
             public void onNext(Object t) {
                 super.onNext(t);
@@ -829,7 +829,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         cf.connect();
 
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() /* NFI */ {
+        var ts1 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -857,7 +857,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         final TestSubscriber<Integer> ts2 = new TestSubscriber<>(0);
 
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() /* NFI */ {
+        var ts1 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -991,7 +991,7 @@ public class FlowablePublishTest extends RxJavaTest {
             return Flowable.<Integer>never();
         }).test();
 
-        ref.get().subscribe(new TestSubscriber<Integer>() /* NFI */ {
+        ref.get().subscribe(new TestSubscriber<>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1014,7 +1014,7 @@ public class FlowablePublishTest extends RxJavaTest {
             return Flowable.<Integer>never();
         }).test();
 
-        ref.get().subscribe(new TestSubscriber<Integer>(1L) /* NFI */ {
+        ref.get().subscribe(new TestSubscriber<>(1L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1062,13 +1062,13 @@ public class FlowablePublishTest extends RxJavaTest {
 
         final AtomicReference<InnerSubscription<Integer>> ref = new AtomicReference<>();
 
-        cf.subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        cf.subscribe(new FlowableSubscriber<>() /* NFI */ {
             @SuppressWarnings("unchecked")
             @Override
             public void onSubscribe(Subscription s) {
                 ts1.onSubscribe(new BooleanSubscription());
                 // pretend to be cancelled without removing it from the subscriber list
-                ref.set((InnerSubscription<Integer>)s);
+                ref.set((InnerSubscription<Integer>) s);
             }
 
             @Override
@@ -1417,7 +1417,7 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void crossCancelOnComplete() {
         TestSubscriber<Integer> ts1 = new TestSubscriber<>();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() /* NFI */ {
+        var ts2 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onComplete() {
                 super.onComplete();
@@ -1444,7 +1444,7 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void crossCancelOnError() {
         TestSubscriber<Integer> ts1 = new TestSubscriber<>();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() /* NFI */ {
+        var ts2 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onError(Throwable t) {
                 super.onError(t);

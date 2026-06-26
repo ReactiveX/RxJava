@@ -56,7 +56,7 @@ public class CompletableTest extends RxJavaTest {
     static final class IterableIteratorNextThrows implements Iterable<Completable> {
         @Override
         public Iterator<Completable> iterator() {
-            return new Iterator<Completable>() /* NFI */ {
+            return new Iterator<>() /* NFI */ {
                 @Override
                 public boolean hasNext() {
                     return true;
@@ -80,7 +80,7 @@ public class CompletableTest extends RxJavaTest {
     static final class IterableIteratorHasNextThrows implements Iterable<Completable> {
         @Override
         public Iterator<Completable> iterator() {
-            return new Iterator<Completable>() /* NFI */ {
+            return new Iterator<>() /* NFI */ {
                 @Override
                 public boolean hasNext() {
                     throw new TestException();
@@ -3097,7 +3097,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void onStartCalledSafe() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>() /* NFI */ {
+        var ts = new TestSubscriber<>() /* NFI */ {
             @Override
             public void onStart() {
                 onNext(1);

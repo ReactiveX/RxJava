@@ -24,7 +24,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class QueueDrainObserverTest extends RxJavaTest {
 
     static QueueDrainObserver<Integer, Integer, Integer> createUnordered(TestObserver<Integer> to, final Disposable d) {
-        return new QueueDrainObserver<Integer, Integer, Integer>(to, new SpscArrayQueue<>(4)) {
+        return new QueueDrainObserver<>(to, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathEmit(t, false, d);
@@ -51,7 +51,7 @@ public class QueueDrainObserverTest extends RxJavaTest {
     }
 
     static QueueDrainObserver<Integer, Integer, Integer> createOrdered(TestObserver<Integer> to, final Disposable d) {
-        return new QueueDrainObserver<Integer, Integer, Integer>(to, new SpscArrayQueue<>(4)) {
+        return new QueueDrainObserver<>(to, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathOrderedEmit(t, false, d);

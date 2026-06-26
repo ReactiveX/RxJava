@@ -169,7 +169,7 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
 
     @Test
     public void asynchronousDrop() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(1L) /* NFI */ {
+        var ts = new TestSubscriberEx<Integer>(1L) /* NFI */ {
             final Random rnd = new Random();
             @Override
             public void onNext(Integer t) {

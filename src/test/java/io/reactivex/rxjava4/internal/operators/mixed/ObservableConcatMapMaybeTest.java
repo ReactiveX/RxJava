@@ -220,14 +220,14 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
 
             final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<>();
 
-            TestObserverEx<Integer> to = ps.concatMapMaybe(
-                    (Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<Integer>() /* NFI */ {
-                            @Override
-                            protected void subscribeActual(
-                                    MaybeObserver<? super Integer> observer) {
-                                observer.onSubscribe(Disposable.empty());
-                                obs.set(observer);
-                            }
+            var to = ps.concatMapMaybe(
+                    (Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<>() /* NFI */ {
+                        @Override
+                        protected void subscribeActual(
+                                MaybeObserver<? super Integer> observer) {
+                            observer.onSubscribe(Disposable.empty());
+                            obs.set(observer);
+                        }
                     }
             ).to(TestHelper.<Integer>testConsumer());
 

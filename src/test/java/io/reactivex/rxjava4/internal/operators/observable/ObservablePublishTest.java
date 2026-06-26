@@ -146,7 +146,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
         final TestObserver<Integer> to2 = new TestObserver<>();
 
-        final TestObserver<Integer> to1 = new TestObserver<Integer>() /* NFI */ {
+        var to1 = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (values().size() == 2) {
@@ -433,7 +433,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
         ConnectableObservable<Integer> co = ps.publish();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

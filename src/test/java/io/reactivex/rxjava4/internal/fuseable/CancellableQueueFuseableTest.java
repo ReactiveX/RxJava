@@ -67,7 +67,7 @@ public class CancellableQueueFuseableTest {
 
     @Test
     public void cancel2() {
-        AbstractEmptyQueueFuseable<Object> qs = new AbstractEmptyQueueFuseable<Object>() /* NFI */ { };
+        var qs = new AbstractEmptyQueueFuseable<>() /* NFI */ { };
 
         assertFalse(qs.isDisposed());
 
@@ -76,7 +76,7 @@ public class CancellableQueueFuseableTest {
 
     @Test
     public void dispose2() {
-        AbstractEmptyQueueFuseable<Object> qs = new AbstractEmptyQueueFuseable<Object>() /* NFI */ { };
+        var qs = new AbstractEmptyQueueFuseable<>() /* NFI */ { };
 
         assertFalse(qs.isDisposed());
 

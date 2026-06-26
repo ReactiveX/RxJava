@@ -26,7 +26,7 @@ public class InnerQueuedSubscriberTest extends RxJavaTest {
 
     @Test
     public void requestInBatches() {
-        InnerQueuedSubscriberSupport<Integer> support = new InnerQueuedSubscriberSupport<Integer>() /* NFI */ {
+        var support = new InnerQueuedSubscriberSupport<Integer>() /* NFI */ {
             @Override
             public void innerNext(InnerQueuedSubscriber<Integer> inner, Integer value) {
             }

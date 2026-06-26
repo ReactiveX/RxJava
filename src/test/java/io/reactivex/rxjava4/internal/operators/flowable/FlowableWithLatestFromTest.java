@@ -613,7 +613,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.just(1)
-            .withLatestFrom(new Flowable<Integer>() /* NFI */ {
+            .withLatestFrom(new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());

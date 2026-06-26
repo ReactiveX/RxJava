@@ -125,7 +125,7 @@ public final class PublishSubject<T> extends Subject<T> {
      */
     @SuppressWarnings("unchecked")
     PublishSubject() {
-        subscribers = new AtomicReference<>(EMPTY);
+        subscribers = new AtomicReference<PublishDisposable<T>[]>(EMPTY);
     }
 
     @Override

@@ -47,7 +47,7 @@ import io.reactivex.rxjava4.processors.FlowableProcessor;
     RefCountProcessor(FlowableProcessor<T> actual) {
         this.actual = actual;
         this.upstream = new AtomicReference<>();
-        this.subscribers = new AtomicReference<>(EMPTY);
+        this.subscribers = new AtomicReference<RefCountSubscriber<T>[]>(EMPTY);
     }
 
     @Override

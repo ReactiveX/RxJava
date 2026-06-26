@@ -120,8 +120,9 @@ public class SingleMiscTest extends RxJavaTest {
         final AtomicBoolean flag = new AtomicBoolean();
 
         Single.just(1)
-        .doOnSuccess(new Consumer<Integer>() /* NFI */ {
+        .doOnSuccess(new Consumer<>() /* NFI */ {
             int c;
+
             @Override
             public void accept(Integer v) throws Exception {
                 if (++c == 5) {
@@ -137,16 +138,17 @@ public class SingleMiscTest extends RxJavaTest {
 
     @Test
     public void retry() {
-        Single.fromCallable(new Callable<Object>() /* NFI */ {
-            int c;
-            @Override
-            public Object call() throws Exception {
-                if (++c != 5) {
-                    throw new TestException();
-                }
-                return 1;
-            }
-        })
+        Single.fromCallable(new Callable<>() /* NFI */ {
+                    int c;
+
+                    @Override
+                    public Object call() throws Exception {
+                        if (++c != 5) {
+                            throw new TestException();
+                        }
+                        return 1;
+                    }
+                })
         .retry()
         .test()
         .assertResult(1);
@@ -154,16 +156,17 @@ public class SingleMiscTest extends RxJavaTest {
 
     @Test
     public void retryBiPredicate() {
-        Single.fromCallable(new Callable<Object>() /* NFI */ {
-            int c;
-            @Override
-            public Object call() throws Exception {
-                if (++c != 5) {
-                    throw new TestException();
-                }
-                return 1;
-            }
-        })
+        Single.fromCallable(new Callable<>() /* NFI */ {
+                    int c;
+
+                    @Override
+                    public Object call() throws Exception {
+                        if (++c != 5) {
+                            throw new TestException();
+                        }
+                        return 1;
+                    }
+                })
         .retry((_, _) -> true)
         .test()
         .assertResult(1);
@@ -188,16 +191,17 @@ public class SingleMiscTest extends RxJavaTest {
 
     @Test
     public void retryPredicate() {
-        Single.fromCallable(new Callable<Object>() /* NFI */ {
-            int c;
-            @Override
-            public Object call() throws Exception {
-                if (++c != 5) {
-                    throw new TestException();
-                }
-                return 1;
-            }
-        })
+        Single.fromCallable(new Callable<>() /* NFI */ {
+                    int c;
+
+                    @Override
+                    public Object call() throws Exception {
+                        if (++c != 5) {
+                            throw new TestException();
+                        }
+                        return 1;
+                    }
+                })
         .retry(_ -> true)
         .test()
         .assertResult(1);

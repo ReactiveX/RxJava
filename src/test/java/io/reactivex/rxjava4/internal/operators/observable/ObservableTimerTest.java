@@ -233,7 +233,7 @@ public class ObservableTimerTest extends RxJavaTest {
     public void onceObserverThrows() {
         Observable<Long> source = Observable.timer(100, TimeUnit.MILLISECONDS, scheduler);
 
-        source.safeSubscribe(new DefaultObserver<Long>() /* NFI */ {
+        source.safeSubscribe(new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onNext(Long t) {
@@ -264,7 +264,7 @@ public class ObservableTimerTest extends RxJavaTest {
 
         InOrder inOrder = inOrder(observer);
 
-        source.safeSubscribe(new DefaultObserver<Long>() /* NFI */ {
+        source.safeSubscribe(new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onNext(Long t) {

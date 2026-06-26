@@ -124,7 +124,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
 
         final AtomicInteger startCount = new AtomicInteger();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onStart() {
                 startCount.incrementAndGet();
@@ -312,7 +312,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
     public void completeCancelRaceNoRequest() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) /* NFI */ {
+        var ts = new TestSubscriber<Integer>(1L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

@@ -55,7 +55,7 @@ public class ExceptionsTest extends RxJavaTest {
         final int MAX_STACK_DEPTH = 800;
         final AtomicInteger depth = new AtomicInteger();
 
-        a.subscribe(new Observer<Integer>() /* NFI */ {
+        a.subscribe(new Observer<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -77,7 +77,7 @@ public class ExceptionsTest extends RxJavaTest {
                 b.onNext(n + 1);
             }
         });
-        b.subscribe(new Observer<Integer>() /* NFI */ {
+        b.subscribe(new Observer<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -109,7 +109,7 @@ public class ExceptionsTest extends RxJavaTest {
 
     @Test(expected = StackOverflowError.class)
     public void stackOverflowErrorIsThrown() {
-        Observable.just(1).subscribe(new Observer<Integer>() /* NFI */ {
+        Observable.just(1).subscribe(new Observer<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

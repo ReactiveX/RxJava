@@ -233,7 +233,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
 
         ms
         .flattenStreamAsFlowable(Stream::of)
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
 
             @Override
             public void onNext(Integer t) {
@@ -250,7 +250,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
             @Override
             @SuppressWarnings("unchecked")
             public void onSubscribe(@NonNull Subscription s) {
-                qsr.set((QueueSubscription<Integer>)s);
+                qsr.set((QueueSubscription<Integer>) s);
             }
         });
 
@@ -281,7 +281,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
 
         Maybe.just(1)
         .flattenStreamAsFlowable(_ -> Stream.of(1, 2, 3, 4, 5))
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
 
             Subscription upstream;
 
@@ -328,7 +328,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
     public void hasNextThrowsInDrain() {
         @SuppressWarnings("unchecked")
         Stream<Integer> stream = mock(Stream.class);
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
+        when(stream.iterator()).thenReturn(new Iterator<>() /* NFI */ {
 
             int count;
 
@@ -356,7 +356,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
     public void nextThrowsInDrain() {
         @SuppressWarnings("unchecked")
         Stream<Integer> stream = mock(Stream.class);
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
+        when(stream.iterator()).thenReturn(new Iterator<>() /* NFI */ {
 
             @Override
             public boolean hasNext() {
@@ -382,7 +382,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
+        when(stream.iterator()).thenReturn(new Iterator<>() /* NFI */ {
 
             int count;
 
@@ -413,7 +413,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
+        when(stream.iterator()).thenReturn(new Iterator<>() /* NFI */ {
 
             @Override
             public boolean hasNext() {

@@ -264,7 +264,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     public void newSubscriberDoesntBlockExisting() throws InterruptedException {
 
         final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<>();
-        Subscriber<String> subscriber1 = new DefaultSubscriber<String>() /* NFI */ {
+        var subscriber1 = new DefaultSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -288,7 +288,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         final CountDownLatch oneReceived = new CountDownLatch(1);
         final CountDownLatch makeSlow = new CountDownLatch(1);
         final CountDownLatch completed = new CountDownLatch(1);
-        Subscriber<String> subscriber2 = new DefaultSubscriber<String>() /* NFI */ {
+        var subscriber2 = new DefaultSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -383,7 +383,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
             System.out.printf("Turn: %d%n", i);
             src.firstElement().toFlowable()
                 .flatMap((Function<String, Flowable<String>>) t1 -> Flowable.just(t1 + ", " + t1))
-                .subscribe(new DefaultSubscriber<String>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
                     @Override
                     public void onNext(String t) {
                         System.out.println(t);
@@ -415,7 +415,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        source.subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        source.subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onNext(Integer t) {
@@ -1173,7 +1173,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         rp.onNext(2);
         rp.onNext(3);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        TestSubscriber<Integer> ts = new TestSubscriber<>() /* NFI */ {
             @Override
             public void onNext(@NonNull Integer t) {
                 super.onNext(t);
@@ -1209,7 +1209,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         rp.onNext(2);
         rp.onNext(3);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(@NonNull Integer t) {
                 super.onNext(t);
@@ -1229,7 +1229,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         final ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1253,7 +1253,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         final ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) /* NFI */ {
+        var ts = new TestSubscriber<Integer>(1L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1431,7 +1431,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     TestSubscriber<Integer> take1AndCancel() {
-        return new TestSubscriber<Integer>(1) /* NFI */ {
+        return new TestSubscriber<>(1) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

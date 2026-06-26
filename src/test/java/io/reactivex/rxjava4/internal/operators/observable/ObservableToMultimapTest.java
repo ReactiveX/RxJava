@@ -78,7 +78,7 @@ public class ObservableToMultimapTest extends RxJavaTest {
     public void toMultimapWithMapFactoryObservable() {
         Observable<String> source = Observable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Supplier<Map<Integer, Collection<String>>> mapFactory = () -> new LinkedHashMap<Integer, Collection<String>>() /* NFI */ {
+        Supplier<Map<Integer, Collection<String>>> mapFactory = () -> new LinkedHashMap<>() /* NFI */ {
 
             @Serial
             private static final long serialVersionUID = -2084477070717362859L;
@@ -270,7 +270,7 @@ public class ObservableToMultimapTest extends RxJavaTest {
     public void toMultimapWithMapFactory() {
         Observable<String> source = Observable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Supplier<Map<Integer, Collection<String>>> mapFactory = () -> new LinkedHashMap<Integer, Collection<String>>() /* NFI */ {
+        Supplier<Map<Integer, Collection<String>>> mapFactory = () -> new LinkedHashMap<>() /* NFI */ {
 
             @Serial
             private static final long serialVersionUID = -2084477070717362859L;

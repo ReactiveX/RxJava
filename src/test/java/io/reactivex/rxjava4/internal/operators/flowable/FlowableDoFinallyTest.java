@@ -329,12 +329,12 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
     public void clearIsEmpty() {
         Flowable.range(1, 5)
         .doFinally(this)
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {
                 @SuppressWarnings("unchecked")
-                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>) s;
 
                 qs.requestFusion(QueueFuseable.ANY);
 
@@ -376,12 +376,12 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
         Flowable.range(1, 5)
         .doFinally(this)
         .filter(Functions.alwaysTrue())
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {
                 @SuppressWarnings("unchecked")
-                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>) s;
 
                 qs.requestFusion(QueueFuseable.ANY);
 

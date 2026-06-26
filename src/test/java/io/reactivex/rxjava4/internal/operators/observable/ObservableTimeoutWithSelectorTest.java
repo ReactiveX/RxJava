@@ -486,7 +486,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Observer<?>[] sub = { null, null };
 
-                final Observable<Integer> pp2 = new Observable<Integer>() /* NFI */ {
+                var pp2 = new Observable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -530,7 +530,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Observer<?>[] sub = { null, null };
 
-                final Observable<Integer> pp2 = new Observable<Integer>() /* NFI */ {
+                var pp2 = new Observable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -575,7 +575,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Observer<?>[] sub = { null, null };
 
-                final Observable<Integer> pp2 = new Observable<Integer>() /* NFI */ {
+                var pp2 = new Observable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -620,7 +620,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Observer<?>[] sub = { null, null };
 
-                final Observable<Integer> pp2 = new Observable<Integer>() /* NFI */ {
+                var pp2 = new Observable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -663,7 +663,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Observer<?>[] sub = { null, null };
 
-                final Observable<Integer> pp2 = new Observable<Integer>() /* NFI */ {
+                var pp2 = new Observable<Integer>() /* NFI */ {
 
                     int count;
 

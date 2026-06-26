@@ -51,7 +51,7 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
     public void fixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);
-        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() /* NFI */ {
+        var ts = new TestSubscriber<>(new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             protected void onStart() {
@@ -93,7 +93,7 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
     public void requestOverflow() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
         int n = 10;
-        range(n).onBackpressureDrop().subscribe(new DefaultSubscriber<Long>() /* NFI */ {
+        range(n).onBackpressureDrop().subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -114,7 +114,8 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
                 count.incrementAndGet();
                 //cause overflow of requested if not handled properly in onBackpressureDrop operator
                 request(Long.MAX_VALUE - 1);
-            }});
+            }
+        });
         assertEquals(n, count.get());
     }
 

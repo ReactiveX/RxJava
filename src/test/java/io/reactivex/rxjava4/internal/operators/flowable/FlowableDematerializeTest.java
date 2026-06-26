@@ -228,7 +228,7 @@ public class FlowableDematerializeTest extends RxJavaTest {
     @Test
     @SuppressWarnings("unchecked")
     public void nonNotificationInstanceAfterDispose() {
-        new Flowable<Object>() /* NFI */ {
+        new Flowable<>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Object> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());

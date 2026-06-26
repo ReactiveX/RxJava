@@ -348,7 +348,7 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
         final PublishProcessor<Integer> pp1 = PublishProcessor.create();
         final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -375,7 +375,7 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
         final PublishProcessor<Integer> pp2 = PublishProcessor.create();
         final PublishProcessor<Integer> pp3 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -402,7 +402,8 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     public void disposeInner() {
         final TestSubscriber<Object> ts = new TestSubscriber<>();
 
-        Flowable.just(1).flatMapMaybe((Function<Integer, MaybeSource<Object>>) _ -> new Maybe<Object>() /* NFI */ {
+        Flowable.just(1).flatMapMaybe((Function<Integer, MaybeSource<Object>>) _ ->
+                        new Maybe<>() /* NFI */ {
             @Override
             protected void subscribeActual(MaybeObserver<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());

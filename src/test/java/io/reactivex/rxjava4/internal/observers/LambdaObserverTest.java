@@ -133,7 +133,7 @@ public class LambdaObserverTest extends RxJavaTest {
     public void badSourceOnSubscribe() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Observable<Integer> source = new Observable<Integer>() /* NFI */ {
+            var source = new Observable<Integer>() /* NFI */ {
                 @Override
                 public void subscribeActual(Observer<? super Integer> observer) {
                     Disposable d1 = Disposable.empty();
@@ -171,7 +171,7 @@ public class LambdaObserverTest extends RxJavaTest {
     public void badSourceEmitAfterDone() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Observable<Integer> source = new Observable<Integer>() /* NFI */ {
+            var source = new Observable<Integer>() /* NFI */ {
                 @Override
                 public void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

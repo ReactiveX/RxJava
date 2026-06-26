@@ -34,7 +34,7 @@ public class FlowableDoAfterNextTest extends RxJavaTest {
 
     final Consumer<Integer> afterNext = e -> values.add(-e);
 
-    final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+    final TestSubscriber<Integer> ts = new TestSubscriber<>() /* NFI */ {
         @Override
         public void onNext(Integer t) {
             super.onNext(t);

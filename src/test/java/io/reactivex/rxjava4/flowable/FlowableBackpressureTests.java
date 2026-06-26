@@ -336,7 +336,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         final AtomicInteger totalReceived = new AtomicInteger();
         final AtomicInteger batches = new AtomicInteger();
         final AtomicInteger received = new AtomicInteger();
-        incrementingIntegers(c).subscribe(new ResourceSubscriber<Integer>() /* NFI */ {
+        incrementingIntegers(c).subscribe(new ResourceSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -383,45 +383,45 @@ public class FlowableBackpressureTests extends RxJavaTest {
         final AtomicInteger batches = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
         incrementingIntegers(c).subscribeOn(Schedulers.newThread()).subscribe(
-                new ResourceSubscriber<Integer>() /* NFI */ {
+                new ResourceSubscriber<>() /* NFI */ {
 
-            @Override
-            public void onStart() {
-                request(100);
-            }
-
-            @Override
-            public void onComplete() {
-                latch.countDown();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                latch.countDown();
-            }
-
-            @Override
-            public void onNext(Integer t) {
-                int total = totalReceived.incrementAndGet();
-                received.incrementAndGet();
-                boolean done = false;
-                if (total >= 2000) {
-                    done = true;
-                    dispose();
-                }
-                if (received.get() == 100) {
-                    batches.incrementAndGet();
-                    received.set(0);
-                    if (!done) {
+                    @Override
+                    public void onStart() {
                         request(100);
                     }
-                }
-                if (done) {
-                    latch.countDown();
-                }
-            }
 
-        });
+                    @Override
+                    public void onComplete() {
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                        int total = totalReceived.incrementAndGet();
+                        received.incrementAndGet();
+                        boolean done = false;
+                        if (total >= 2000) {
+                            done = true;
+                            dispose();
+                        }
+                        if (received.get() == 100) {
+                            batches.incrementAndGet();
+                            received.set(0);
+                            if (!done) {
+                                request(100);
+                            }
+                        }
+                        if (done) {
+                            latch.countDown();
+                        }
+                    }
+
+                });
 
         latch.await();
         System.out.println("testUserSubscriberUsingRequestAsync => Received: " + totalReceived.get() + "  Emitted: " + c.get() + " Request Batches: " + batches.get());
@@ -652,8 +652,9 @@ public class FlowableBackpressureTests extends RxJavaTest {
         });
     }
 
-    static final Function<Integer, Integer> SLOW_PASS_THRU = new Function<Integer, Integer>() /* NFI */ {
+    static final Function<Integer, Integer> SLOW_PASS_THRU = new Function<>() /* NFI */ {
         volatile int sink;
+
         @Override
         public Integer apply(Integer t1) {
             // be slow ... but faster than Thread.sleep(1)

@@ -299,10 +299,10 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
         Flowable.range(1, 10)
         .flatMapCompletable(_ -> Completable.complete())
         .toFlowable()
-        .subscribe(new FlowableSubscriber<Object>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             @Override
             public void onSubscribe(Subscription s) {
-                QueueSubscription<?> qs = (QueueSubscription<?>)s;
+                QueueSubscription<?> qs = (QueueSubscription<?>) s;
                 try {
                     assertNull(qs.poll());
                 } catch (Throwable ex) {

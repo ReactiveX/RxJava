@@ -86,9 +86,9 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
     public void crossDispose() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserver<Void> to1 = new TestObserver<>();
+        var to1 = new TestObserver<>();
 
-        final TestObserver<Void> to2 = new TestObserver<Void>() /* NFI */ {
+        var to2 = new TestObserver<Void>() /* NFI */ {
             @Override
             public void onComplete() {
                 super.onComplete();
@@ -111,9 +111,9 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
     public void crossDisposeOnError() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserver<Void> to1 = new TestObserver<>();
+        var to1 = new TestObserver<>();
 
-        final TestObserver<Void> to2 = new TestObserver<Void>() /* NFI */ {
+        var to2 = new TestObserver<Void>() /* NFI */ {
             @Override
             public void onError(Throwable ex) {
                 super.onError(ex);
@@ -140,7 +140,7 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
 
         assertFalse(ps.hasObservers());
 
-        TestObserver<Void> to1 = c.test();
+        var to1 = c.test();
 
         assertTrue(ps.hasObservers());
 
@@ -148,12 +148,12 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
 
         assertTrue(ps.hasObservers());
 
-        TestObserver<Void> to2 = c.test();
+        var to2 = c.test();
 
-        TestObserver<Void> to3 = c.test();
+        var to3 = c.test();
         to3.dispose();
 
-        TestObserver<Void> to4 = c.test(true);
+        var to4 = c.test(true);
         to3.dispose();
 
         ps.onComplete();

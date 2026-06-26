@@ -142,10 +142,10 @@ public class FlowableDistinctTest extends RxJavaTest {
     public void fusedClear() {
         Flowable.just(1, 1, 2, 1, 3, 2, 4, 5, 4)
         .distinct()
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             @Override
             public void onSubscribe(Subscription s) {
-                QueueSubscription<?> qs = (QueueSubscription<?>)s;
+                QueueSubscription<?> qs = (QueueSubscription<?>) s;
 
                 assertFalse(qs.isEmpty());
 

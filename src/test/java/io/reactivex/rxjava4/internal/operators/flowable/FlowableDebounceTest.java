@@ -459,7 +459,7 @@ public class FlowableDebounceTest extends RxJavaTest {
             if (o != 1) {
                 return Flowable.never();
             }
-            return new Flowable<Integer>() /* NFI */ {
+            return new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());

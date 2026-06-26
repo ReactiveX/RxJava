@@ -139,7 +139,7 @@ public final class PublishProcessor<@NonNull T> extends FlowableProcessor<T> {
      */
     @SuppressWarnings("unchecked")
     PublishProcessor() {
-        subscribers = new AtomicReference<>(EMPTY);
+        subscribers = new AtomicReference<PublishSubscription<T>[]>(EMPTY);
     }
 
     @Override

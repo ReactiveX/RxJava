@@ -71,7 +71,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
     @Test
     public void takeWhile2() {
         Observable<String> w = Observable.just("one", "two", "three");
-        Observable<String> take = w.takeWhile(new Predicate<String>() /* NFI */ {
+        Observable<String> take = w.takeWhile(new Predicate<>() /* NFI */ {
             int index;
 
             @Override
@@ -132,14 +132,14 @@ public class ObservableTakeWhileTest extends RxJavaTest {
 
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> take = Observable.unsafeCreate(w)
-                .takeWhile(new Predicate<String>() /* NFI */ {
-            int index;
+                .takeWhile(new Predicate<>() /* NFI */ {
+                    int index;
 
-            @Override
-            public boolean test(String s) {
-                return index++ < 1;
-            }
-        });
+                    @Override
+                    public boolean test(String s) {
+                        return index++ < 1;
+                    }
+                });
         take.subscribe(observer);
 
         // wait for the Observable to complete

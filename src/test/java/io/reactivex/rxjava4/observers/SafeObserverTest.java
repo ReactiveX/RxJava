@@ -93,7 +93,7 @@ public class SafeObserverTest extends RxJavaTest {
     }
 
     private static Observer<String> OBSERVER_ONNEXT_FAIL(final AtomicReference<Throwable> onError) {
-        return new DefaultObserver<String>() /* NFI */ {
+        return new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -114,7 +114,7 @@ public class SafeObserverTest extends RxJavaTest {
     }
 
     private static Observer<String> OBSERVER_ONNEXT_ONERROR_FAIL() {
-        return new DefaultObserver<String>() /* NFI */ {
+        return new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -135,7 +135,7 @@ public class SafeObserverTest extends RxJavaTest {
     }
 
     private static Observer<String> OBSERVER_ONERROR_FAIL() {
-        return new DefaultObserver<String>() /* NFI */ {
+        return new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -156,7 +156,7 @@ public class SafeObserverTest extends RxJavaTest {
     }
 
     private static Observer<String> OBSERVER_ONCOMPLETED_FAIL(final AtomicReference<Throwable> onError) {
-        return new DefaultObserver<String>() /* NFI */ {
+        return new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -185,7 +185,7 @@ public class SafeObserverTest extends RxJavaTest {
 
     @Test
     public void actual() {
-        Observer<Integer> actual = new DefaultObserver<Integer>() /* NFI */ {
+        var actual = new DefaultObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
             }

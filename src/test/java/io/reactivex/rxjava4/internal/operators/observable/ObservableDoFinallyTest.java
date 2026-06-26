@@ -333,12 +333,12 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
     public void clearIsEmpty() {
         Observable.range(1, 5)
         .doFinally(this)
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
                 @SuppressWarnings("unchecked")
-                QueueDisposable<Integer> qd = (QueueDisposable<Integer>)d;
+                QueueDisposable<Integer> qd = (QueueDisposable<Integer>) d;
 
                 qd.requestFusion(QueueFuseable.ANY);
 
@@ -380,12 +380,12 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
         Observable.range(1, 5)
         .doFinally(this)
         .filter(Functions.alwaysTrue())
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
                 @SuppressWarnings("unchecked")
-                QueueDisposable<Integer> qd = (QueueDisposable<Integer>)d;
+                QueueDisposable<Integer> qd = (QueueDisposable<Integer>) d;
 
                 qd.requestFusion(QueueFuseable.ANY);
 

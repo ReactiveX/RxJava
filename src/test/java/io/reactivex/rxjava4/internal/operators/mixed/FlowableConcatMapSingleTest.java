@@ -186,13 +186,13 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
             final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestSubscriberEx<Integer> ts = pp.concatMapSingle(
-                    (Function<Integer, SingleSource<Integer>>) _ -> new Single<Integer>() /* NFI */ {
-                            @Override
-                            protected void subscribeActual(
-                                    SingleObserver<? super Integer> observer) {
-                                observer.onSubscribe(Disposable.empty());
-                                obs.set(observer);
-                            }
+                    (Function<Integer, SingleSource<Integer>>) _ -> new Single<>() /* NFI */ {
+                        @Override
+                        protected void subscribeActual(
+                                SingleObserver<? super Integer> observer) {
+                            observer.onSubscribe(Disposable.empty());
+                            obs.set(observer);
+                        }
                     }
             ).to(TestHelper.<Integer>testConsumer());
 

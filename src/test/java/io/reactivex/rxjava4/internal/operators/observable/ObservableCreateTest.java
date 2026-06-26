@@ -279,7 +279,7 @@ public class ObservableCreateTest extends RxJavaTest {
             }
             assertTrue(d.isDisposed());
         })
-        .subscribe(new Observer<Object>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
             }
@@ -312,7 +312,7 @@ public class ObservableCreateTest extends RxJavaTest {
             }
             assertTrue(d.isDisposed());
         })
-        .subscribe(new Observer<Object>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
             }

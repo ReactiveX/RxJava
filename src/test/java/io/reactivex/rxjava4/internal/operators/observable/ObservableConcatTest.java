@@ -663,30 +663,30 @@ public class ObservableConcatTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Observable.range(1, n)
-        .concatMap(func).subscribe(new DefaultObserver<Integer>() /* NFI */ {
-            @Override
-            public void onNext(Integer t) {
-                // Consume after sleep for 1 ms
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    // ignored
-                }
-                if (counter.getAndIncrement() % 100 == 0) {
-                    System.out.println("testIssue2890NoStackoverflow -> " + counter.get());
-                }
-            }
+        .concatMap(func).subscribe(new DefaultObserver<>() /* NFI */ {
+                    @Override
+                    public void onNext(Integer t) {
+                        // Consume after sleep for 1 ms
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            // ignored
+                        }
+                        if (counter.getAndIncrement() % 100 == 0) {
+                            System.out.println("testIssue2890NoStackoverflow -> " + counter.get());
+                        }
+                    }
 
-            @Override
-            public void onComplete() {
-                executor.shutdown();
-            }
+                    @Override
+                    public void onComplete() {
+                        executor.shutdown();
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                executor.shutdown();
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        executor.shutdown();
+                    }
+                });
 
         long awaitTerminationTimeout = 100_000;
         if (!executor.awaitTermination(awaitTerminationTimeout, TimeUnit.MILLISECONDS)) {
@@ -1033,7 +1033,7 @@ public class ObservableConcatTest extends RxJavaTest {
         final Disposable[] disposable = { null };
 
         Observable.concatArray(Observable.just(1), Observable.<Integer>error(new TestException()))
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -1063,7 +1063,7 @@ public class ObservableConcatTest extends RxJavaTest {
         Observable.concatArray(
                 ObservableConcatConfig.DELAY_ERROR,
                 Observable.just(1), Observable.<Integer>error(new TestException()))
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

@@ -458,23 +458,23 @@ public class CompletableMergeTest extends RxJavaTest {
     public void delayErrorIterableCancelAfterHasNext() {
         final TestObserver<Void> to = new TestObserver<>();
 
-        Completable.merge((Iterable<Completable>) () -> new Iterator<Completable>() /* NFI */ {
-            @Override
-            public boolean hasNext() {
-                to.dispose();
-                return true;
-            }
+        Completable.merge((Iterable<Completable>) () -> new Iterator<>() /* NFI */ {
+                    @Override
+                    public boolean hasNext() {
+                        to.dispose();
+                        return true;
+                    }
 
-            @Override
-            public Completable next() {
-                return Completable.complete();
-            }
+                    @Override
+                    public Completable next() {
+                        return Completable.complete();
+                    }
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        }, CompletableMergeConfig.DELAY_ERRORS)
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                }, CompletableMergeConfig.DELAY_ERRORS)
         .subscribe(to);
 
         to.assertEmpty();
@@ -484,23 +484,23 @@ public class CompletableMergeTest extends RxJavaTest {
     public void delayErrorIterableCancelAfterNext() {
         final TestObserver<Void> to = new TestObserver<>();
 
-        Completable.merge((Iterable<Completable>) () -> new Iterator<Completable>() /* NFI */ {
-            @Override
-            public boolean hasNext() {
-                return true;
-            }
+        Completable.merge((Iterable<Completable>) () -> new Iterator<>() /* NFI */ {
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
 
-            @Override
-            public Completable next() {
-                to.dispose();
-                return Completable.complete();
-            }
+                    @Override
+                    public Completable next() {
+                        to.dispose();
+                        return Completable.complete();
+                    }
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        }, CompletableMergeConfig.DELAY_ERRORS)
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                }, CompletableMergeConfig.DELAY_ERRORS)
         .subscribe(to);
 
         to.assertEmpty();

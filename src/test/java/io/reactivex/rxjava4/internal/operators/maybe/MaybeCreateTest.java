@@ -71,7 +71,7 @@ public class MaybeCreateTest extends RxJavaTest {
 
             assertTrue(d.isDisposed());
             assertTrue(e.isDisposed());
-        }).subscribe(new MaybeObserver<Object>() /* NFI */ {
+        }).subscribe(new MaybeObserver<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -110,7 +110,7 @@ public class MaybeCreateTest extends RxJavaTest {
 
             assertTrue(d.isDisposed());
             assertTrue(e.isDisposed());
-        }).subscribe(new MaybeObserver<Object>() /* NFI */ {
+        }).subscribe(new MaybeObserver<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -149,7 +149,7 @@ public class MaybeCreateTest extends RxJavaTest {
 
             assertTrue(d.isDisposed());
             assertTrue(e.isDisposed());
-        }).subscribe(new MaybeObserver<Object>() /* NFI */ {
+        }).subscribe(new MaybeObserver<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -184,7 +184,7 @@ public class MaybeCreateTest extends RxJavaTest {
             }
 
             assertTrue(e.isDisposed());
-        }).subscribe(new MaybeObserver<Object>() /* NFI */ {
+        }).subscribe(new MaybeObserver<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -219,7 +219,7 @@ public class MaybeCreateTest extends RxJavaTest {
             }
 
             assertTrue(e.isDisposed());
-        }).subscribe(new MaybeObserver<Object>() /* NFI */ {
+        }).subscribe(new MaybeObserver<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -254,7 +254,7 @@ public class MaybeCreateTest extends RxJavaTest {
             }
 
             assertTrue(e.isDisposed());
-        }).subscribe(new MaybeObserver<Object>() /* NFI */ {
+        }).subscribe(new MaybeObserver<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

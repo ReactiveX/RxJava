@@ -143,10 +143,10 @@ public class ObservableDistinctTest extends RxJavaTest {
     public void fusedClear() {
         Observable.just(1, 1, 2, 1, 3, 2, 4, 5, 4)
         .distinct()
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
-                QueueDisposable<?> qd = (QueueDisposable<?>)d;
+                QueueDisposable<?> qd = (QueueDisposable<?>) d;
 
                 assertFalse(qd.isEmpty());
 

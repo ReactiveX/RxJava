@@ -62,7 +62,7 @@ public class CompletableMergeIterableTest extends RxJavaTest {
     public void cancelAfterHasNext() {
         final TestObserver<Void> to = new TestObserver<>();
 
-        Completable.merge((Iterable<Completable>) () -> new Iterator<Completable>() /* NFI */ {
+        Completable.merge((Iterable<Completable>) () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 to.dispose();
@@ -87,7 +87,7 @@ public class CompletableMergeIterableTest extends RxJavaTest {
     public void cancelAfterNext() {
         final TestObserver<Void> to = new TestObserver<>();
 
-        Completable.merge((Iterable<Completable>) () -> new Iterator<Completable>() /* NFI */ {
+        Completable.merge((Iterable<Completable>) () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;

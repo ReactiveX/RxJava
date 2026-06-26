@@ -100,7 +100,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
     }
 
     private Consumer<Observable<String>> observeWindow(final List<String> list, final List<List<String>> lists) {
-        return stringObservable -> stringObservable.subscribe(new DefaultObserver<String>() /* NFI */ {
+        return stringObservable -> stringObservable.subscribe(new DefaultObserver<>() /* NFI */ {
             @Override
             public void onComplete() {
                 lists.add(new ArrayList<>(list));
@@ -264,7 +264,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
     public void reentrant() {
         final Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -298,16 +298,16 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         try {
             BehaviorSubject.createDefault(1)
             .window(BehaviorSubject.createDefault(1),
-                    (Function<Integer, Observable<Integer>>) _ -> new Observable<Integer>() /* NFI */ {
-                @Override
-                protected void subscribeActual(
-                        Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposable.empty());
-                    observer.onNext(1);
-                    observer.onNext(2);
-                    observer.onError(new TestException());
-                }
-            })
+                    (Function<Integer, Observable<Integer>>) _ -> new Observable<>() /* NFI */ {
+                        @Override
+                        protected void subscribeActual(
+                                Observer<? super Integer> observer) {
+                            observer.onSubscribe(Disposable.empty());
+                            observer.onNext(1);
+                            observer.onNext(2);
+                            observer.onError(new TestException());
+                        }
+                    })
             .doOnNext(w -> {
                 w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
             })

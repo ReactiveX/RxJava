@@ -256,7 +256,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             System.out.printf("Turn: %d%n", i);
             src.firstElement().toFlowable()
                 .flatMap((Function<String, Flowable<String>>) t1 -> Flowable.just(t1 + ", " + t1))
-                .subscribe(new DefaultSubscriber<String>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
                     @Override
                     public void onNext(String t) {
                         subscriber.onNext(t);
@@ -383,7 +383,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
                 final AtomicReference<Object> o = new AtomicReference<>();
 
                 rs.subscribeOn(s).observeOn(Schedulers.cached())
-                .subscribe(new DefaultSubscriber<Object>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onComplete() {

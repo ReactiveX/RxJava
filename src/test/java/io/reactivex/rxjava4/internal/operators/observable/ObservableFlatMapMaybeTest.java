@@ -290,7 +290,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         final PublishSubject<Integer> ps1 = PublishSubject.create();
         final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -317,7 +317,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         final PublishSubject<Integer> ps2 = PublishSubject.create();
         final PublishSubject<Integer> ps3 = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -344,18 +344,18 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     public void disposeInner() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        Observable.just(1).flatMapMaybe((Function<Integer, MaybeSource<Object>>) _ -> new Maybe<Object>() /* NFI */ {
-            @Override
-            protected void subscribeActual(MaybeObserver<? super Object> observer) {
-                observer.onSubscribe(Disposable.empty());
+        Observable.just(1).flatMapMaybe((Function<Integer, MaybeSource<Object>>) _ -> new Maybe<>() /* NFI */ {
+                    @Override
+                    protected void subscribeActual(MaybeObserver<? super Object> observer) {
+                        observer.onSubscribe(Disposable.empty());
 
-                assertFalse(((Disposable)observer).isDisposed());
+                        assertFalse(((Disposable) observer).isDisposed());
 
-                to.dispose();
+                        to.dispose();
 
-                assertTrue(((Disposable)observer).isDisposed());
-            }
-        })
+                        assertTrue(((Disposable) observer).isDisposed());
+                    }
+                })
         .subscribe(to);
 
         to

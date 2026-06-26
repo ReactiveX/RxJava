@@ -708,7 +708,7 @@ public class FlowableConcatTest {
         int n = 5000;
         final AtomicInteger counter = new AtomicInteger();
 
-        Flowable.range(1, n).concatMap(func).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        Flowable.range(1, n).concatMap(func).subscribe(new DefaultSubscriber<>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 // Consume after sleep for 1 ms
@@ -748,7 +748,7 @@ public class FlowableConcatTest {
         Flowable<Integer> f1 = Flowable.just(1, 2, 3);
         Flowable<Integer> f2 = Flowable.just(4, 5, 6);
         final AtomicBoolean completed = new AtomicBoolean(false);
-        f1.concatWith(f2).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        f1.concatWith(f2).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -763,7 +763,8 @@ public class FlowableConcatTest {
             @Override
             public void onNext(Integer t) {
                 request(2);
-            }});
+            }
+        });
 
         assertTrue(completed.get());
     }
@@ -1229,7 +1230,7 @@ public class FlowableConcatTest {
     public void immediateInnerNextOuterError() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() /* NFI */ {
+        var ts = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1253,7 +1254,7 @@ public class FlowableConcatTest {
     public void immediateInnerNextOuterError2() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() /* NFI */ {
+        var ts = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

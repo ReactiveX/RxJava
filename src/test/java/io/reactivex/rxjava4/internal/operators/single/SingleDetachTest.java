@@ -61,7 +61,7 @@ public class SingleDetachTest extends RxJavaTest {
         Disposable d = Disposable.empty();
         final WeakReference<Disposable> wr = new WeakReference<>(d);
 
-        TestObserver<Object> to = new Single<Object>() /* NFI */ {
+        var to = new Single<>() /* NFI */ {
             @Override
             protected void subscribeActual(SingleObserver<? super Object> observer) {
                 observer.onSubscribe(wr.get());

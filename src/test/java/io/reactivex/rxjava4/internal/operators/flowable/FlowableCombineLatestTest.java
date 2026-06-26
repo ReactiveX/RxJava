@@ -450,7 +450,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Subscriber<List<Object>> s = new DefaultSubscriber<List<Object>>() /* NFI */ {
+            var s = new DefaultSubscriber<List<Object>>() /* NFI */ {
 
                 @Override
                 public void onNext(List<Object> t) {
@@ -721,7 +721,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         Flowable<Integer> f = Flowable.combineLatest(sources, args -> (Integer) args[0]);
         //should get at least 4
         final CountDownLatch latch = new CountDownLatch(4);
-        f.subscribeOn(Schedulers.computation()).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        f.subscribeOn(Schedulers.computation()).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -742,7 +742,8 @@ public class FlowableCombineLatestTest extends RxJavaTest {
             public void onNext(Integer t) {
                 latch.countDown();
                 request(Long.MAX_VALUE - 1);
-            }});
+            }
+        });
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
@@ -1197,7 +1198,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         final PublishProcessor<Integer> pp1 = PublishProcessor.create();
         final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1257,7 +1258,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void FlowableSourcesInIterable() {
-        Flowable<Integer> source = new Flowable<Integer>() /* NFI */ {
+        var source = new Flowable<Integer>() /* NFI */ {
             @Override
             public void subscribeActual(Subscriber<? super Integer> s) {
                 Flowable.just(1).subscribe(s);
@@ -1292,7 +1293,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
                 TestSubscriberEx<Object[]> ts = new TestSubscriberEx<>();
                 AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
-                Flowable<Object> f = new Flowable<Object>() /* NFI */ {
+                var f = new Flowable<>() /* NFI */ {
                     @Override
                     public void subscribeActual(Subscriber<? super Object> s) {
                         ref.set(s);

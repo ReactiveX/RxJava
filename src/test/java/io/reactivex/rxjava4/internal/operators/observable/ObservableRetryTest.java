@@ -45,7 +45,7 @@ public class ObservableRetryTest extends RxJavaTest {
     public void iterativeBackoff() {
         Observer<String> consumer = TestHelper.mockObserver();
 
-        Observable<String> producer = Observable.unsafeCreate(new ObservableSource<String>() /* NFI */ {
+        var producer = Observable.unsafeCreate(new ObservableSource<String>() /* NFI */ {
 
             private AtomicInteger count = new AtomicInteger(4);
             long last = System.currentTimeMillis();

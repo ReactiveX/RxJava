@@ -19,7 +19,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -37,7 +36,7 @@ public class FlowableErrorHandlingTests extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<>();
         Flowable<Long> f = Flowable.interval(50, TimeUnit.MILLISECONDS);
-        Subscriber<Long> subscriber = new DefaultSubscriber<Long>() /* NFI */ {
+        var subscriber = new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -74,7 +73,7 @@ public class FlowableErrorHandlingTests extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<>();
         Flowable<Long> f = Flowable.interval(50, TimeUnit.MILLISECONDS);
-        Subscriber<Long> subscriber = new DefaultSubscriber<Long>() /* NFI */ {
+        var subscriber = new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             public void onComplete() {

@@ -319,7 +319,7 @@ public class FlowableTests extends RxJavaTest {
         // FIXME custom built???
         Flowable.just("1", "2", "three", "4")
         .subscribeOn(Schedulers.newThread())
-        .safeSubscribe(new DefaultSubscriber<String>() /* NFI */ {
+        .safeSubscribe(new DefaultSubscriber<>() /* NFI */ {
             @Override
             public void onComplete() {
                 System.out.println("completed");
@@ -366,7 +366,7 @@ public class FlowableTests extends RxJavaTest {
 
         // FIXME custom built???
         Flowable.just("1", "2", "three", "4")
-        .safeSubscribe(new DefaultSubscriber<String>() /* NFI */ {
+        .safeSubscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -407,7 +407,7 @@ public class FlowableTests extends RxJavaTest {
         final AtomicReference<Throwable> error = new AtomicReference<>();
         // FIXME custom built???
         Flowable.just("1", "2").concatWith(Flowable.<String>error(NumberFormatException::new))
-        .subscribe(new DefaultSubscriber<String>() /* NFI */ {
+        .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -575,7 +575,7 @@ public class FlowableTests extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<>();
         Flowable.just("1", "2", "three", "4").take(3)
-        .safeSubscribe(new DefaultSubscriber<String>() /* NFI */ {
+        .safeSubscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onComplete() {

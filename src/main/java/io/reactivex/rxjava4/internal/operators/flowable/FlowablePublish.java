@@ -179,7 +179,7 @@ implements HasUpstreamPublisher<T> {
             this.upstream = new AtomicReference<>();
             this.connect = new AtomicBoolean();
             this.bufferSize = bufferSize;
-            this.subscribers = new AtomicReference<>(EMPTY);
+            this.subscribers = new AtomicReference<InnerSubscription<T>[]>(EMPTY);
         }
 
         @SuppressWarnings("unchecked")

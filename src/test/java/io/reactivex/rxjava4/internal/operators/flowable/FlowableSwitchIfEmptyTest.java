@@ -84,7 +84,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
 
         Flowable.<Long>empty()
                 .switchIfEmpty(withProducer)
-                .lift((FlowableOperator<Long, Long>) _ -> new DefaultSubscriber<Long>() /* NFI */ {
+                .lift((FlowableOperator<Long, Long>) _ -> new DefaultSubscriber<>() /* NFI */ {
                     @Override
                     public void onComplete() {
 

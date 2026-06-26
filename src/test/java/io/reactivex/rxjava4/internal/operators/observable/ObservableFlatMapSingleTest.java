@@ -252,7 +252,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
         final PublishSubject<Integer> ps1 = PublishSubject.create();
         final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -277,16 +277,17 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     public void disposeInner() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        Observable.just(1).flatMapSingle((Function<Integer, SingleSource<Object>>) _ -> new Single<Object>() /* NFI */ {
+        Observable.just(1)
+        .flatMapSingle((Function<Integer, SingleSource<Object>>) _ -> new Single<>() /* NFI */ {
             @Override
             protected void subscribeActual(SingleObserver<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());
 
-                assertFalse(((Disposable)observer).isDisposed());
+                assertFalse(((Disposable) observer).isDisposed());
 
                 to.dispose();
 
-                assertTrue(((Disposable)observer).isDisposed());
+                assertTrue(((Disposable) observer).isDisposed());
             }
         })
         .subscribe(to);

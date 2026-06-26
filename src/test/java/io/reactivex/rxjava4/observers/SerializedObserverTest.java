@@ -277,7 +277,7 @@ public class SerializedObserverTest extends RxJavaTest {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final CountDownLatch running = new CountDownLatch(2);
 
-                TestObserverEx<String> to = new TestObserverEx<>(new DefaultObserver<String>() /* NFI */ {
+                var to = new TestObserverEx<>(new DefaultObserver<String>() /* NFI */ {
 
                     @Override
                     public void onComplete() {
@@ -358,7 +358,7 @@ public class SerializedObserverTest extends RxJavaTest {
     @Test
     public void threadStarvation() throws InterruptedException {
 
-        TestObserver<String> to = new TestObserver<>(new DefaultObserver<String>() /* NFI */ {
+        var to = new TestObserver<>(new DefaultObserver<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -386,7 +386,7 @@ public class SerializedObserverTest extends RxJavaTest {
         AtomicInteger p2 = new AtomicInteger();
 
         o.onSubscribe(Disposable.empty());
-        DisposableObserver<String> as1 = new DisposableObserver<String>() /* NFI */ {
+        var as1 = new DisposableObserver<String>() /* NFI */ {
             @Override
             public void onNext(String t) {
                 o.onNext(t);
@@ -403,7 +403,7 @@ public class SerializedObserverTest extends RxJavaTest {
             }
         };
 
-        DisposableObserver<String> as2 = new DisposableObserver<String>() /* NFI */ {
+        var as2 = new DisposableObserver<String>() /* NFI */ {
             @Override
             public void onNext(String t) {
                 o.onNext(t);
@@ -834,7 +834,7 @@ public class SerializedObserverTest extends RxJavaTest {
         try {
             final AtomicReference<Observer<Integer>> serial = new AtomicReference<>();
 
-            TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+            var to = new TestObserver<Integer>() /* NFI */ {
                 @Override
                 public void onNext(Integer v) {
                     serial.get().onError(new TestException());
@@ -861,7 +861,7 @@ public class SerializedObserverTest extends RxJavaTest {
     public void completeReentry() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<>();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer v) {
                 serial.get().onComplete();
@@ -1086,7 +1086,7 @@ public class SerializedObserverTest extends RxJavaTest {
     @SuppressUndeliverable
     public void onErrorQueuedUp() {
         AtomicReference<SerializedObserver<Integer>> soRef = new AtomicReference<>();
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>() /* NFI */ {
+        var to = new TestObserverEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

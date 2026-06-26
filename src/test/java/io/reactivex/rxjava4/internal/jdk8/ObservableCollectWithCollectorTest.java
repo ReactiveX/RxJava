@@ -167,7 +167,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorAccumulatorDropSignals() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Observable<Integer> source = new Observable<Integer>() /* NFI */ {
+            var source = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -363,7 +363,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorAccumulatorDropSignalsToObservable() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Observable<Integer> source = new Observable<Integer>() /* NFI */ {
+            var source = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

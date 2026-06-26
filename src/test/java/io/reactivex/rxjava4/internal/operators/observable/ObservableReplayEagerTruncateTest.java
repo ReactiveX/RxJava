@@ -649,7 +649,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
 
     @Test
     public void boundedReplayBuffer() {
-        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(false) /* NFI */ {
+        var buf = new BoundedReplayBuffer<Integer>(false) /* NFI */ {
             @Serial
             private static final long serialVersionUID = -5182053207244406872L;
 
@@ -1201,7 +1201,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
     public void reentrantOnNext() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1223,7 +1223,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
     public void reentrantOnNextBound() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1245,7 +1245,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
     public void reentrantOnNextCancel() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1267,7 +1267,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
     public void reentrantOnNextCancelBounded() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {

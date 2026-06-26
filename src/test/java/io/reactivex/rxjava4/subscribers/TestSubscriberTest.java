@@ -648,7 +648,7 @@ public class TestSubscriberTest extends RxJavaTest {
 
     @Test
     public void onErrorCrashCountsDownLatch() {
-        TestSubscriber<Integer> ts0 = new TestSubscriber<Integer>() /* NFI */ {
+        var ts0 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onError(Throwable e) {
                 throw new TestException();
@@ -1260,7 +1260,7 @@ public class TestSubscriberTest extends RxJavaTest {
 
     @Test
     public void completeDelegateThrows() throws Exception {
-        TestSubscriber<Integer> ts = new TestSubscriber<>(new FlowableSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<>(new FlowableSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {
@@ -1296,7 +1296,7 @@ public class TestSubscriberTest extends RxJavaTest {
 
     @Test
     public void errorDelegateThrows() throws Exception {
-        TestSubscriber<Integer> ts = new TestSubscriber<>(new FlowableSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<>(new FlowableSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {

@@ -265,7 +265,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final AtomicLong completeTime = new AtomicLong();
         // use subscribeOn to make async, observeOn to move
         Flowable.range(1, 2).subscribeOn(Schedulers.newThread()).observeOn(Schedulers.newThread())
-        .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -355,7 +355,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     @Test
     public void backpressureWithTakeAfter() {
         final AtomicInteger generated = new AtomicInteger();
-        Flowable<Integer> flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
+        var flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -372,7 +372,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             }
         });
 
-        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() /* NFI */ {
+        var testSubscriber = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 System.err.println("c t = " + t + " thread " + Thread.currentThread());
@@ -400,7 +400,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void backpressureWithTakeAfterAndMultipleBatches() {
         int numForBatches = Flowable.bufferSize() * 3 + 1; // should be 4 batches == ((3*n)+1) items
         final AtomicInteger generated = new AtomicInteger();
-        Flowable<Integer> flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
+        var flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -417,7 +417,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             }
         });
 
-        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() /* NFI */ {
+        var testSubscriber = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 //                System.err.println("c t = " + t + " thread " + Thread.currentThread());
@@ -439,7 +439,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     @Test
     public void backpressureWithTakeBefore() {
         final AtomicInteger generated = new AtomicInteger();
-        Flowable<Integer> flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
+        var flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -479,7 +479,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             subscriber.onComplete();
         });
 
-        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<>(new DefaultSubscriber<Integer>() /* NFI */ {
+        var testSubscriber = new TestSubscriberEx<>(new DefaultSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -534,7 +534,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             final PublishProcessor<Long> processor = PublishProcessor.create();
 
             final AtomicLong counter = new AtomicLong();
-            TestSubscriberEx<Long> ts = new TestSubscriberEx<>(new DefaultSubscriber<Long>() /* NFI */ {
+            TestSubscriberEx<Long> ts = new TestSubscriberEx<>(new DefaultSubscriber<>() /* NFI */ {
 
                 @Override
                 public void onComplete() {
@@ -630,7 +630,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100).observeOn(Schedulers.computation())
-                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     boolean first = true;
 
@@ -672,7 +672,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         Flowable.range(1, 1000000)
                 .doOnRequest(requests::add)
                 .observeOn(Schedulers.cached())
-                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onStart() {
@@ -1165,13 +1165,14 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final CountDownLatch cdl = new CountDownLatch(1);
 
         up.observeOn(Schedulers.single())
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             Subscription upstream;
             int count;
+
             @Override
             public void onSubscribe(Subscription s) {
                 this.upstream = s;
-                ((QueueSubscription<?>)s).requestFusion(QueueFuseable.ANY);
+                ((QueueSubscription<?>) s).requestFusion(QueueFuseable.ANY);
             }
 
             @Override
@@ -1211,7 +1212,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
                 oo.sourceMode = QueueFuseable.SYNC;
                 oo.requested.lazySet(1);
-                oo.queue = new SimpleQueue<Integer>() /* NFI */ {
+                oo.queue = new SimpleQueue<>() /* NFI */ {
 
                     @Override
                     public boolean offer(Integer value) {
@@ -1262,7 +1263,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
                 oo.sourceMode = QueueFuseable.SYNC;
                 oo.requested.lazySet(1);
-                oo.queue = new SimpleQueue<Integer>() /* NFI */ {
+                oo.queue = new SimpleQueue<>() /* NFI */ {
 
                     @Override
                     public boolean offer(Integer value) {
@@ -1314,7 +1315,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
                 oo.sourceMode = QueueFuseable.ASYNC;
                 oo.requested.lazySet(1);
-                oo.queue = new SimpleQueue<Integer>() /* NFI */ {
+                oo.queue = new SimpleQueue<>() /* NFI */ {
 
                     @Override
                     public boolean offer(Integer value) {
@@ -1365,7 +1366,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
                 oo.sourceMode = QueueFuseable.ASYNC;
                 oo.requested.lazySet(1);
-                oo.queue = new SimpleQueue<Integer>() /* NFI */ {
+                oo.queue = new SimpleQueue<>() /* NFI */ {
 
                     @Override
                     public boolean offer(Integer value) {
@@ -1429,7 +1430,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void syncFusedCancelAfterRequest() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) /* NFI */ {
+        var ts = new TestSubscriber<Integer>(2L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1464,7 +1465,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void syncFusedCancelAfterRequestConditional() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) /* NFI */ {
+        var ts = new TestSubscriber<Integer>(2L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

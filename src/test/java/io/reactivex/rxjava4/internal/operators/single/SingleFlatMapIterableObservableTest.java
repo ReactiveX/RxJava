@@ -206,12 +206,13 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     public void fusedEmptyCheck() {
         Single.just(1)
         .flattenAsObservable((Function<Object, Iterable<Integer>>) _ -> Arrays.asList(1, 2, 3))
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
             QueueDisposable<Integer> qd;
+
             @SuppressWarnings("unchecked")
             @Override
             public void onSubscribe(Disposable d) {
-                qd = (QueueDisposable<Integer>)d;
+                qd = (QueueDisposable<Integer>) d;
 
                 assertEquals(QueueFuseable.ASYNC, qd.requestFusion(QueueFuseable.ANY));
             }

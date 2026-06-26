@@ -490,7 +490,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     public void scalarReentrant() {
         final PublishSubject<Observable<Integer>> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -513,7 +513,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     public void scalarReentrant2() {
         final PublishSubject<Observable<Integer>> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -667,7 +667,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         Observable.range(1, 5)
         .doOnNext(_ -> counter.getAndIncrement())
         .flatMap((Function<Integer, Observable<Integer>>) _ ->
-        Observable.<Integer>fromIterable(() -> new Iterator<Integer>() /* NFI */ {
+        Observable.<Integer>fromIterable(() -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;

@@ -105,7 +105,7 @@ public class ObservableRangeLongTest extends RxJavaTest {
     @Test
     public void emptyRangeSendsOnCompleteEagerlyWithRequestZero() {
         final AtomicBoolean completed = new AtomicBoolean(false);
-        Observable.rangeLong(1L, 0L).subscribe(new DefaultObserver<Long>() /* NFI */ {
+        Observable.rangeLong(1L, 0L).subscribe(new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -125,7 +125,8 @@ public class ObservableRangeLongTest extends RxJavaTest {
             @Override
             public void onNext(Long t) {
 
-            }});
+            }
+        });
         assertTrue(completed.get());
     }
 

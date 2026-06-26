@@ -56,7 +56,7 @@ public class ParallelJoinTest extends RxJavaTest {
         @SuppressWarnings("unchecked")
         final Subscriber<? super Integer>[] subs = new Subscriber[1];
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) /* NFI */ {
+        var ts = new TestSubscriber<Integer>(1) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -119,7 +119,7 @@ public class ParallelJoinTest extends RxJavaTest {
         @SuppressWarnings("unchecked")
         final Subscriber<? super Integer>[] subs = new Subscriber[1];
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) /* NFI */ {
+        var ts = new TestSubscriber<Integer>(1) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -241,7 +241,7 @@ public class ParallelJoinTest extends RxJavaTest {
 
     @Test
     public void consumerCancelsAfterOne() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) /* NFI */ {
+        var ts = new TestSubscriber<Integer>(1) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -260,7 +260,7 @@ public class ParallelJoinTest extends RxJavaTest {
 
     @Test
     public void delayErrorConsumerCancelsAfterOne() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) /* NFI */ {
+        var ts = new TestSubscriber<Integer>(1) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -375,7 +375,7 @@ public class ParallelJoinTest extends RxJavaTest {
     public void onNextWhileProcessingSlowPath() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(@NonNull Integer t) {
                 super.onNext(t);
@@ -399,7 +399,7 @@ public class ParallelJoinTest extends RxJavaTest {
     public void delayErrorOnNextWhileProcessingSlowPath() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(@NonNull Integer t) {
                 super.onNext(t);
@@ -435,14 +435,14 @@ public class ParallelJoinTest extends RxJavaTest {
                 AtomicReference<Subscriber<? super Integer>> ref1 = new AtomicReference<>();
                 AtomicReference<Subscriber<? super Integer>> ref2 = new AtomicReference<>();
 
-                Flowable<Integer> f1 = new Flowable<Integer>() /* NFI */ {
+                var f1 = new Flowable<Integer>() /* NFI */ {
                     @Override
                     public void subscribeActual(Subscriber<? super Integer> s) {
                         s.onSubscribe(new BooleanSubscription());
                         ref1.set(s);
                     }
                 };
-                Flowable<Integer> f2 = new Flowable<Integer>() /* NFI */ {
+                var f2 = new Flowable<Integer>() /* NFI */ {
                     @Override
                     public void subscribeActual(Subscriber<? super Integer> s) {
                         s.onSubscribe(new BooleanSubscription());
@@ -479,14 +479,14 @@ public class ParallelJoinTest extends RxJavaTest {
                 AtomicReference<Subscriber<? super Integer>> ref1 = new AtomicReference<>();
                 AtomicReference<Subscriber<? super Integer>> ref2 = new AtomicReference<>();
 
-                Flowable<Integer> f1 = new Flowable<Integer>() /* NFI */ {
+                var f1 = new Flowable<Integer>() /* NFI */ {
                     @Override
                     public void subscribeActual(Subscriber<? super Integer> s) {
                         s.onSubscribe(new BooleanSubscription());
                         ref1.set(s);
                     }
                 };
-                Flowable<Integer> f2 = new Flowable<Integer>() /* NFI */ {
+                var f2 = new Flowable<Integer>() /* NFI */ {
                     @Override
                     public void subscribeActual(Subscriber<? super Integer> s) {
                         s.onSubscribe(new BooleanSubscription());

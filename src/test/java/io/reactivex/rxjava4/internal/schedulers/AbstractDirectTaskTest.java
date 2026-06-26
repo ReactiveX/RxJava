@@ -44,7 +44,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
         assertTrue(task.isDisposed());
 
-        FutureTask<Void> ft = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null) /* NFI */ {
+        var ft = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null) /* NFI */ {
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
                 interrupted[0] = mayInterruptIfRunning;
@@ -158,7 +158,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
-        FutureTask<Void> ft = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null) /* NFI */ {
+        var ft = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null) /* NFI */ {
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
                 interrupted[0] = mayInterruptIfRunning;
@@ -188,7 +188,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
-        FutureTask<Void> ft = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null) /* NFI */ {
+        var ft = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null) /* NFI */ {
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
                 interrupted[0] = mayInterruptIfRunning;
@@ -224,7 +224,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
             };
 
             final Boolean[] interrupted = { null };
-            final FutureTask<Void> ft = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null) /* NFI */ {
+            var ft = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null) /* NFI */ {
                 @Override
                 public boolean cancel(boolean mayInterruptIfRunning) {
                     interrupted[0] = mayInterruptIfRunning;

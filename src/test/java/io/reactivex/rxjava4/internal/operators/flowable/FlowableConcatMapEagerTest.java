@@ -721,7 +721,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         final UnicastProcessor<Integer> up = UnicastProcessor.create();
         up.onNext(1);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -832,7 +832,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.just(1)
-            .concatMapEager((Function<Integer, Publisher<Integer>>) _ -> new Flowable<Integer>() /* NFI */ {
+            .concatMapEager((Function<Integer, Publisher<Integer>>) _ -> new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());

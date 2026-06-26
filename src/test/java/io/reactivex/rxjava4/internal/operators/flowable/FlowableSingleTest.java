@@ -82,7 +82,7 @@ public class FlowableSingleTest extends RxJavaTest {
                 .singleElement()
                 //
                 .toFlowable()
-                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onStart() {
@@ -118,7 +118,7 @@ public class FlowableSingleTest extends RxJavaTest {
                 .singleElement()
                 //
                 .toFlowable()
-                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onStart() {
@@ -153,7 +153,7 @@ public class FlowableSingleTest extends RxJavaTest {
                 .singleElement()
                 //
                 .toFlowable()
-                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onStart() {

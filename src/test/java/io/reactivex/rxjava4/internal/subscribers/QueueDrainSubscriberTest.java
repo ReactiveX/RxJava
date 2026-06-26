@@ -32,7 +32,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class QueueDrainSubscriberTest extends RxJavaTest {
 
     static QueueDrainSubscriber<Integer, Integer, Integer> createUnordered(TestSubscriber<Integer> ts, final Disposable d) {
-        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
+        return new QueueDrainSubscriber<>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathEmitMax(t, false, d);
@@ -60,7 +60,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     }
 
     static QueueDrainSubscriber<Integer, Integer, Integer> createOrdered(TestSubscriber<Integer> ts, final Disposable d) {
-        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
+        return new QueueDrainSubscriber<>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathOrderedEmitMax(t, false, d);
@@ -88,7 +88,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     }
 
     static QueueDrainSubscriber<Integer, Integer, Integer> createUnorderedReject(TestSubscriber<Integer> ts, final Disposable d) {
-        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
+        return new QueueDrainSubscriber<>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathEmitMax(t, false, d);
@@ -116,7 +116,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     }
 
     static QueueDrainSubscriber<Integer, Integer, Integer> createOrderedReject(TestSubscriber<Integer> ts, final Disposable d) {
-        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
+        return new QueueDrainSubscriber<>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathOrderedEmitMax(t, false, d);

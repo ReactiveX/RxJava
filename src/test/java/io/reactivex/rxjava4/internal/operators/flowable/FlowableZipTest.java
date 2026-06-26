@@ -679,7 +679,7 @@ public class FlowableZipTest extends RxJavaTest {
         final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable.zip(Flowable.just(1),
-                Flowable.just(1), Integer::sum).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                Flowable.just(1), Integer::sum).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -746,7 +746,7 @@ public class FlowableZipTest extends RxJavaTest {
                 .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteFlowable), (a, b) -> a + "-" + b);
 
         final ArrayList<String> list = new ArrayList<>();
-        os.subscribe(new DefaultSubscriber<String>() /* NFI */ {
+        os.subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -953,7 +953,7 @@ public class FlowableZipTest extends RxJavaTest {
     }
 
     private Flowable<Integer> createInfiniteFlowable(final AtomicInteger generated) {
-        Flowable<Integer> flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
+        var flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -1029,7 +1029,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void unboundedDownstreamOverrequesting() {
         Flowable<Integer> source = Flowable.range(1, 2).zipWith(Flowable.range(1, 2), (t1, t2) -> t1 + 10 * t2);
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() /* NFI */ {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1348,12 +1348,12 @@ public class FlowableZipTest extends RxJavaTest {
 
             @SuppressWarnings("rawtypes")
             final Subscriber[] sub = { null };
-            TestSubscriberEx<Object> ts = Flowable.zip(pp, new Flowable<Object>() /* NFI */ {
-                @Override
-                protected void subscribeActual(Subscriber<? super Object> s) {
-                    sub[0] = s;
-                }
-            }, (a, _) -> a)
+            TestSubscriberEx<Object> ts = Flowable.zip(pp, new Flowable<>() /* NFI */ {
+                        @Override
+                        protected void subscribeActual(Subscriber<? super Object> s) {
+                            sub[0] = s;
+                        }
+                    }, (a, _) -> a)
             .to(TestHelper.<Object>testConsumer());
 
             pp.onError(new TestException("First"));
@@ -1515,7 +1515,7 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void cancelOnBackpressureBoundary() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) /* NFI */ {
+        var ts = new TestSubscriber<Integer>(1L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

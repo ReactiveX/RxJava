@@ -101,7 +101,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
                 //
                 .doOnNext(_ -> upstreamCount.incrementAndGet())
                 //
-                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onStart() {
@@ -231,12 +231,12 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
     @Test
     public void fusedAPICalls() {
         Flowable.just(1).hide().ignoreElements().<Integer>toFlowable()
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {
                 @SuppressWarnings("unchecked")
-                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>) s;
 
                 try {
                     assertNull(qs.poll());

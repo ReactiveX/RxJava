@@ -103,7 +103,7 @@ implements FlowableSubscriber<T> {
         Node<T> n = new Node<>(capacityHint);
         this.head = n;
         this.tail = n;
-        this.subscribers = new AtomicReference<>(EMPTY);
+        this.subscribers = new AtomicReference<CacheSubscription<T>[]>(EMPTY);
     }
 
     @Override
