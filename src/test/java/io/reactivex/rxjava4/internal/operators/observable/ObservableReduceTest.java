@@ -215,7 +215,7 @@ public class ObservableReduceTest extends RxJavaTest {
     public void reduceMaybeBadSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Object>() /* NFI */ {
+            new Observable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
                     observer.onSubscribe(Disposable.empty());

@@ -289,7 +289,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Flowable.range(1, n).concatMap(func, 2, ImmediateThinScheduler.INSTANCE)
-        .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        .subscribe(new DefaultSubscriber<>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 // Consume after sleep for 1 ms
@@ -534,7 +534,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void immediateInnerNextOuterError() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() /* NFI */ {
+        var ts = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -558,7 +558,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void immediateInnerNextOuterError2() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() /* NFI */ {
+        var ts = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

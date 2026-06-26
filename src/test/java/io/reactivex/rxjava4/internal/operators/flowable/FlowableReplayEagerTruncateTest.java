@@ -665,7 +665,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
     @Test
     public void boundedReplayBuffer() {
-        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(true) /* NFI */ {
+        var buf = new BoundedReplayBuffer<Integer>(true) /* NFI */ {
             @Serial
             private static final long serialVersionUID = -9081211580719235896L;
 
@@ -997,7 +997,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         .doOnNext(_ -> count.getAndIncrement())
         .replay().autoConnect();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
@@ -1344,7 +1344,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     public void reentrantOnNext() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1366,7 +1366,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     public void reentrantOnNextBound() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1388,7 +1388,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     public void reentrantOnNextCancel() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
@@ -1410,7 +1410,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     public void reentrantOnNextCancelBounded() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {

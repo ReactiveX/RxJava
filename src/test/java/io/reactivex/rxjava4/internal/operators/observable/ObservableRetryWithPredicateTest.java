@@ -59,7 +59,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void retryTwice() {
-        Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() /* NFI */ {
+        var source = Observable.unsafeCreate(new ObservableSource<Integer>() /* NFI */ {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {
@@ -120,7 +120,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void retryOnSpecificException() {
-        Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() /* NFI */ {
+        var source = Observable.unsafeCreate(new ObservableSource<Integer>() /* NFI */ {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {
@@ -157,7 +157,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
     public void retryOnSpecificExceptionAndNotOther() {
         final IOException ioe = new IOException();
         final TestException te = new TestException();
-        Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() /* NFI */ {
+        var source = Observable.unsafeCreate(new ObservableSource<Integer>() /* NFI */ {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {

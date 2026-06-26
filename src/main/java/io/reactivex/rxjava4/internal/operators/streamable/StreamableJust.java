@@ -28,7 +28,7 @@ public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
 
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
-        return new JustStreamer<T>(item, cancellation);
+        return new JustStreamer<>(item, cancellation);
     }
 
     static final class JustStreamer<T> implements Streamer<T>, Disposable {

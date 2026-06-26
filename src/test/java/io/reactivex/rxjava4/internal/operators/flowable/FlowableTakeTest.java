@@ -348,7 +348,7 @@ public class FlowableTakeTest extends RxJavaTest {
     public void takeFinalValueThrows() {
         Flowable<Integer> source = Flowable.just(1).take(1);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();

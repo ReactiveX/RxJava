@@ -59,8 +59,9 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void retryTwice() {
-        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() /* NFI */ {
+        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<>() /* NFI */ {
             int count;
+
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
                 t1.onSubscribe(new BooleanSubscription());
@@ -120,8 +121,9 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void retryOnSpecificException() {
-        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() /* NFI */ {
+        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<>() /* NFI */ {
             int count;
+
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
                 t1.onSubscribe(new BooleanSubscription());
@@ -157,8 +159,9 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
     public void retryOnSpecificExceptionAndNotOther() {
         final IOException ioe = new IOException();
         final TestException te = new TestException();
-        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() /* NFI */ {
+        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<>() /* NFI */ {
             int count;
+
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
                 t1.onSubscribe(new BooleanSubscription());

@@ -170,7 +170,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        source.subscribe(new DefaultSubscriber<Flowable<Integer>>() /* NFI */ {
+        source.subscribe(new DefaultSubscriber<>() /* NFI */ {
             @Override
             public void onStart() {
                 request(1);
@@ -178,7 +178,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
             @Override
             public void onNext(Flowable<Integer> t) {
-                t.subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                t.subscribe(new DefaultSubscriber<>() /* NFI */ {
                     @Override
                     public void onNext(Integer t) {
                         list.add(t);

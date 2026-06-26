@@ -253,7 +253,7 @@ public class ObservableTakeTest extends RxJavaTest {
     public void takeFinalValueThrows() {
         Observable<Integer> source = Observable.just(1).take(1);
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();

@@ -449,7 +449,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Observer<List<Object>> observer = new DefaultObserver<List<Object>>() /* NFI */ {
+            var observer = new DefaultObserver<List<Object>>() /* NFI */ {
 
                 @Override
                 public void onNext(List<Object> t) {
@@ -943,7 +943,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         final PublishSubject<Integer> ps1 = PublishSubject.create();
         final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1015,7 +1015,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
                 TestObserverEx<Object[]> to = new TestObserverEx<>();
                 AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
-                Observable<Object> o = new Observable<Object>() /* NFI */ {
+                var o = new Observable<>() /* NFI */ {
                     @Override
                     public void subscribeActual(Observer<? super Object> observer) {
                         ref.set(observer);

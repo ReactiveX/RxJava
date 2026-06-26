@@ -578,7 +578,7 @@ public class FlowableAmbTest extends RxJavaTest {
     @Test
     public void requestAfterCancel() {
         Flowable.amb(Arrays.asList(Flowable.never(), Flowable.never()))
-        .subscribe(new FlowableSubscriber<Object>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
 
             @Override
             public void onNext(@NonNull Object t) {

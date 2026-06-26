@@ -142,11 +142,11 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                 PPF::new);
 
         q.subscribe(
-                new FlowableSubscriber<PPF>() /* NFI */ {
+                new FlowableSubscriber<>() /* NFI */ {
                     @Override
                     public void onNext(final PPF ppf) {
                         ppf.fruits.filter(t1 -> ppf.person.id == t1.personId)
-                        .subscribe(t1 -> subscriber.onNext(Arrays.asList(ppf.person.name, t1.fruit)));
+                                .subscribe(t1 -> subscriber.onNext(Arrays.asList(ppf.person.name, t1.fruit)));
                     }
 
                     @Override

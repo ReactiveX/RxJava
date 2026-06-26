@@ -52,7 +52,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                 })
                 .subscribeOn(getScheduler())
                 .observeOn(getScheduler())
-                .subscribe(new DefaultSubscriber<Long>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
                     @Override
                     public void onComplete() {
                         System.out.println("--- completed");
@@ -265,7 +265,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch completionLatch = new CountDownLatch(1);
         final Worker inner = getScheduler().createWorker();
         try {
-            Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() /* NFI */ {
+            Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<>() /* NFI */ {
                 @Override
                 public void subscribe(final Subscriber<? super Integer> subscriber) {
                     inner.schedule(new Runnable() /* NFI */ {
@@ -299,7 +299,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
             final AtomicInteger count = new AtomicInteger();
             final AtomicBoolean completed = new AtomicBoolean(false);
-            ResourceSubscriber<Integer> s = new ResourceSubscriber<Integer>() /* NFI */ {
+            var s = new ResourceSubscriber<Integer>() /* NFI */ {
                 @Override
                 public void onComplete() {
                     System.out.println("Completed");

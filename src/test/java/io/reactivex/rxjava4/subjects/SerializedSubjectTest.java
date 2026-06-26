@@ -591,7 +591,7 @@ public class SerializedSubjectTest extends RxJavaTest {
     public void onErrorQueued() {
         Subject<Integer> sp = PublishSubject.<Integer>create().toSerialized();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(@NonNull Integer t) {
                 super.onNext(t);
@@ -615,7 +615,7 @@ public class SerializedSubjectTest extends RxJavaTest {
     public void onCompleteQueued() {
         Subject<Integer> sp = PublishSubject.<Integer>create().toSerialized();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(@NonNull Integer t) {
                 super.onNext(t);

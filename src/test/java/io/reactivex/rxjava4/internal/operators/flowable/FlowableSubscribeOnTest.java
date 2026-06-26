@@ -165,7 +165,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
     @Test
     public void backpressureReschedulesCorrectly() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(10);
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(new DefaultSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriberEx<>(new DefaultSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -213,7 +213,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
                 }
 
             });
-            Subscriber<Integer> parent = new DefaultSubscriber<Integer>() /* NFI */ {
+            var parent = new DefaultSubscriber<Integer>() /* NFI */ {
 
                 @Override
                 public void onComplete() {

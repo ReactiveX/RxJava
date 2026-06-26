@@ -65,7 +65,7 @@ public class FlowableFilterTest extends RxJavaTest {
         Flowable<String> f = w.filter(t1 -> t1.equals("three"));
 
         final CountDownLatch latch = new CountDownLatch(1);
-        TestSubscriber<String> ts = new TestSubscriber<String>() /* NFI */ {
+        var ts = new TestSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -106,7 +106,7 @@ public class FlowableFilterTest extends RxJavaTest {
         Flowable<Integer> f = w.filter(t1 -> t1 > 100);
 
         final CountDownLatch latch = new CountDownLatch(1);
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onComplete() {

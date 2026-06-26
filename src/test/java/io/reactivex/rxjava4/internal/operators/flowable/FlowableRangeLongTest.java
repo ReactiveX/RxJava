@@ -197,7 +197,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void requestOverflow() {
         final AtomicInteger count = new AtomicInteger();
         int n = 10;
-        Flowable.rangeLong(1, n).subscribe(new DefaultSubscriber<Long>() /* NFI */ {
+        Flowable.rangeLong(1, n).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -218,14 +218,15 @@ public class FlowableRangeLongTest extends RxJavaTest {
             public void onNext(Long t) {
                 count.incrementAndGet();
                 request(Long.MAX_VALUE - 1);
-            }});
+            }
+        });
         assertEquals(n, count.get());
     }
 
     @Test
     public void emptyRangeSendsOnCompleteEagerlyWithRequestZero() {
         final AtomicBoolean completed = new AtomicBoolean(false);
-        Flowable.rangeLong(1, 0).subscribe(new DefaultSubscriber<Long>() /* NFI */ {
+        Flowable.rangeLong(1, 0).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -245,7 +246,8 @@ public class FlowableRangeLongTest extends RxJavaTest {
             @Override
             public void onNext(Long t) {
 
-            }});
+            }
+        });
         assertTrue(completed.get());
     }
 
@@ -383,7 +385,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void slowPathCancel() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(2L) /* NFI */ {
+        var ts = new TestSubscriber<Long>(2L) /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -400,7 +402,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void fastPathCancel() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>() /* NFI */ {
+        var ts = new TestSubscriber<Long>() /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -417,7 +419,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void conditionalSlowPathCancel() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) /* NFI */ {
+        var ts = new TestSubscriber<Long>(1L) /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -435,7 +437,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void conditionalFastPathCancel() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>() /* NFI */ {
+        var ts = new TestSubscriber<Long>() /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -453,7 +455,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void conditionalRequestOneByOne() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) /* NFI */ {
+        var ts = new TestSubscriber<Long>(1L) /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -470,7 +472,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void conditionalRequestOneByOne2() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) /* NFI */ {
+        var ts = new TestSubscriber<Long>(1L) /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -487,7 +489,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void fastPathCancelExact() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>() /* NFI */ {
+        var ts = new TestSubscriber<Long>() /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -506,7 +508,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void conditionalFastPathCancelExact() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>() /* NFI */ {
+        var ts = new TestSubscriber<Long>() /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);

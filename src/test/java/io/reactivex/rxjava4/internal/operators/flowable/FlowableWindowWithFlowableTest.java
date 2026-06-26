@@ -46,7 +46,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         final List<Subscriber<Object>> values = new ArrayList<>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() /* NFI */ {
+        var wo = new DefaultSubscriber<Flowable<Integer>>() /* NFI */ {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();
@@ -103,7 +103,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         final List<Subscriber<Object>> values = new ArrayList<>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() /* NFI */ {
+        var wo = new DefaultSubscriber<Flowable<Integer>>() /* NFI */ {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();
@@ -159,7 +159,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         final List<Subscriber<Object>> values = new ArrayList<>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() /* NFI */ {
+        var wo = new DefaultSubscriber<Flowable<Integer>>() /* NFI */ {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();
@@ -209,7 +209,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         final List<Subscriber<Object>> values = new ArrayList<>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() /* NFI */ {
+        var wo = new DefaultSubscriber<Flowable<Integer>>() /* NFI */ {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();
@@ -279,7 +279,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
     public void reentrant() {
         final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -377,7 +377,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
             final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
             TestSubscriberEx<Flowable<Object>> ts = Flowable.error(new TestException("main"))
-            .window(new Flowable<Object>() /* NFI */ {
+            .window(new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -413,14 +413,14 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
                 final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
                 final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
-                TestSubscriberEx<Flowable<Object>> ts = new Flowable<Object>() /* NFI */ {
+                TestSubscriberEx<Flowable<Object>> ts = new Flowable<>() /* NFI */ {
                     @Override
                     protected void subscribeActual(Subscriber<? super Object> subscriber) {
                         subscriber.onSubscribe(new BooleanSubscription());
                         refMain.set(subscriber);
                     }
                 }
-                .window(new Flowable<Object>() /* NFI */ {
+                .window(new Flowable<>() /* NFI */ {
                     @Override
                     protected void subscribeActual(Subscriber<? super Object> subscriber) {
                         subscriber.onSubscribe(new BooleanSubscription());
@@ -453,14 +453,14 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
             final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
             final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
-            TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() /* NFI */ {
+            TestSubscriber<Flowable<Object>> ts = new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     refMain.set(subscriber);
                 }
             }
-            .window(new Flowable<Object>() /* NFI */ {
+            .window(new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -486,14 +486,14 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
         final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
-        TestSubscriberEx<Flowable<Object>> ts = new Flowable<Object>() /* NFI */ {
+        TestSubscriberEx<Flowable<Object>> ts = new Flowable<>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Object> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 refMain.set(subscriber);
             }
         }
-        .window(new Flowable<Object>() /* NFI */ {
+        .window(new Flowable<>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Object> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
@@ -518,14 +518,14 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
             final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
             final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
-            final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() /* NFI */ {
+            final TestSubscriber<Flowable<Object>> ts = new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     refMain.set(subscriber);
                 }
             }
-            .window(new Flowable<Object>() /* NFI */ {
+            .window(new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                     final AtomicInteger counter = new AtomicInteger();
@@ -568,14 +568,14 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
             final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
             final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
-            final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() /* NFI */ {
+            final TestSubscriber<Flowable<Object>> ts = new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     refMain.set(subscriber);
                 }
             }
-            .window(new Flowable<Object>() /* NFI */ {
+            .window(new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                     final AtomicInteger counter = new AtomicInteger();

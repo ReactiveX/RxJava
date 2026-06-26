@@ -791,7 +791,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void errorDelegateThrows() {
-        TestObserver<Integer> to = new TestObserver<>(new Observer<Integer>() /* NFI */ {
+        var to = new TestObserver<>(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

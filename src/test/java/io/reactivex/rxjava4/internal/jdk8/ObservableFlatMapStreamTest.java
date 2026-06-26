@@ -304,7 +304,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
 
         @SuppressWarnings("unchecked")
         Stream<Integer> stream = mock(Stream.class);
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
+        when(stream.iterator()).thenReturn(new Iterator<>() /* NFI */ {
 
             @Override
             public boolean hasNext() {
@@ -332,7 +332,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
 
         @SuppressWarnings("unchecked")
         Stream<Integer> stream = mock(Stream.class);
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
+        when(stream.iterator()).thenReturn(new Iterator<>() /* NFI */ {
 
             @Override
             public boolean hasNext() {

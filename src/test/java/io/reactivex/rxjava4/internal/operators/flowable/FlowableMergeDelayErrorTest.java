@@ -292,7 +292,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<Flowable<String>> f1 = Flowable.error(new RuntimeException("unit test"));
 
         final CountDownLatch latch = new CountDownLatch(1);
-        Flowable.mergeDelayError(f1).subscribe(new DefaultSubscriber<String>() /* NFI */ {
+        Flowable.mergeDelayError(f1).subscribe(new DefaultSubscriber<>() /* NFI */ {
             @Override
             public void onComplete() {
                 fail("Expected onError path");

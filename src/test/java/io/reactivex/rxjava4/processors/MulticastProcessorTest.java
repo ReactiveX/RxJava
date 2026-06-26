@@ -231,7 +231,7 @@ public class MulticastProcessorTest extends RxJavaTest {
 
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
 
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() /* NFI */ {
+        var ts2 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -259,7 +259,7 @@ public class MulticastProcessorTest extends RxJavaTest {
 
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
 
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() /* NFI */ {
+        var ts2 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onError(Throwable t) {
                 super.onError(t);
@@ -287,7 +287,7 @@ public class MulticastProcessorTest extends RxJavaTest {
 
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
 
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() /* NFI */ {
+        var ts2 = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onComplete() {
                 super.onComplete();
@@ -316,7 +316,7 @@ public class MulticastProcessorTest extends RxJavaTest {
 
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>(1);
 
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(1) /* NFI */ {
+        var ts2 = new TestSubscriber<Integer>(1) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -345,7 +345,7 @@ public class MulticastProcessorTest extends RxJavaTest {
         try {
             MulticastProcessor<Integer> mp = MulticastProcessor.create(false);
 
-            mp.subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+            mp.subscribe(new FlowableSubscriber<>() /* NFI */ {
 
                 @Override
                 public void onNext(Integer t) {

@@ -220,7 +220,7 @@ public class FlowableMergeTest extends RxJavaTest {
         final AtomicReference<Throwable> error = new AtomicReference<>();
 
         Flowable<String> m = Flowable.merge(Flowable.unsafeCreate(f1), Flowable.unsafeCreate(f2));
-        m.subscribe(new DefaultSubscriber<String>() /* NFI */ {
+        m.subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -474,7 +474,7 @@ public class FlowableMergeTest extends RxJavaTest {
     private Flowable<Long> createFlowableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(final Scheduler scheduler, final AtomicBoolean unsubscribed) {
         return Flowable.unsafeCreate(child -> Flowable.interval(1, TimeUnit.SECONDS, scheduler)
         .take(5)
-        .subscribe(new FlowableSubscriber<Long>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             @Override
             public void onSubscribe(final Subscription s) {
                 child.onSubscribe(new Subscription() /* NFI */ {
@@ -618,7 +618,7 @@ public class FlowableMergeTest extends RxJavaTest {
         final AtomicInteger generated2 = new AtomicInteger();
         Flowable<Integer> f2 = createInfiniteFlowable(generated2).subscribeOn(Schedulers.computation());
 
-        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() /* NFI */ {
+        var testSubscriber = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
@@ -655,7 +655,7 @@ public class FlowableMergeTest extends RxJavaTest {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Integer> f1 = createInfiniteFlowable(generated1).subscribeOn(Schedulers.computation());
 
-        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() /* NFI */ {
+        var testSubscriber = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -692,7 +692,7 @@ public class FlowableMergeTest extends RxJavaTest {
         final AtomicInteger generated2 = new AtomicInteger();
         Flowable<Integer> f2 = createInfiniteFlowable(generated2).subscribeOn(Schedulers.computation());
 
-        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() /* NFI */ {
+        var testSubscriber = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t < 100) {
@@ -728,7 +728,7 @@ public class FlowableMergeTest extends RxJavaTest {
         Flowable<Flowable<Integer>> f1 = createInfiniteFlowable(generated1)
         .map(Flowable::just);
 
-        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() /* NFI */ {
+        var testSubscriber = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t < 100) {
@@ -774,7 +774,7 @@ public class FlowableMergeTest extends RxJavaTest {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Flowable<Integer>> f1 = createInfiniteFlowable(generated1).map(_ -> Flowable.just(1, 2, 3));
 
-        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() /* NFI */ {
+        var testSubscriber = new TestSubscriberEx<Integer>() /* NFI */ {
             int i;
 
             @Override
@@ -919,7 +919,7 @@ public class FlowableMergeTest extends RxJavaTest {
     }
 
     private Flowable<Integer> createInfiniteFlowable(final AtomicInteger generated) {
-        Flowable<Integer> flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
+        var flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -1100,7 +1100,7 @@ public class FlowableMergeTest extends RxJavaTest {
                 .mergeWith(Flowable.fromIterable(Arrays.asList(3, 4)));
         final int expectedCount = 4;
         final CountDownLatch latch = new CountDownLatch(expectedCount);
-        f.subscribeOn(Schedulers.computation()).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        f.subscribeOn(Schedulers.computation()).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -1122,12 +1122,13 @@ public class FlowableMergeTest extends RxJavaTest {
                 latch.countDown();
                 request(2);
                 request(Long.MAX_VALUE - 1);
-            }});
+            }
+        });
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     private static Consumer<Integer> printCount() {
-        return new Consumer<Integer>() /* NFI */ {
+        return new Consumer<>() /* NFI */ {
             long count;
 
             @Override
@@ -1182,7 +1183,7 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void slowMergeFullScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
-            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(req) /* NFI */ {
+            var ts = new TestSubscriberEx<Integer>(req) /* NFI */ {
                 int remaining = req;
 
                 @Override
@@ -1201,7 +1202,7 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void slowMergeHiddenScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
-            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(req) /* NFI */ {
+            var ts = new TestSubscriberEx<Integer>(req) /* NFI */ {
                 int remaining = req;
                 @Override
                 public void onNext(Integer t) {

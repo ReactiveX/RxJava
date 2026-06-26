@@ -154,7 +154,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void postCompleteCancelledAfterOne() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -179,7 +179,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -234,7 +234,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -293,7 +293,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -348,7 +348,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -402,7 +402,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -456,7 +456,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -510,7 +510,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new QueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -564,7 +564,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -607,7 +607,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -654,7 +654,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -697,7 +697,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -740,7 +740,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;
@@ -783,7 +783,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
-        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
+        var qd = new ObservableQueueDrain<Integer, Integer>() /* NFI */ {
             @Override
             public boolean cancelled() {
                 return false;

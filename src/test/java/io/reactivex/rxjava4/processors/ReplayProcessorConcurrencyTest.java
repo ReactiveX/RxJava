@@ -48,7 +48,7 @@ public class ReplayProcessorConcurrencyTest extends RxJavaTest {
         // it's been played through once so now it will all be replays
         final CountDownLatch slowLatch = new CountDownLatch(1);
         Thread slowThread = new Thread(() -> {
-            Subscriber<Long> slow = new DefaultSubscriber<Long>() /* NFI */ {
+            var slow = new DefaultSubscriber<Long>() /* NFI */ {
 
                 @Override
                 public void onComplete() {
@@ -85,7 +85,7 @@ public class ReplayProcessorConcurrencyTest extends RxJavaTest {
 
         Thread fastThread = new Thread(() -> {
             final CountDownLatch fastLatch = new CountDownLatch(1);
-            Subscriber<Long> fast = new DefaultSubscriber<Long>() /* NFI */ {
+            var fast = new DefaultSubscriber<Long>() /* NFI */ {
 
                 @Override
                 public void onComplete() {
@@ -305,7 +305,7 @@ public class ReplayProcessorConcurrencyTest extends RxJavaTest {
                 final AtomicReference<Object> o = new AtomicReference<>();
 
                 rs.subscribeOn(s).observeOn(Schedulers.cached())
-                .subscribe(new DefaultSubscriber<Object>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onComplete() {

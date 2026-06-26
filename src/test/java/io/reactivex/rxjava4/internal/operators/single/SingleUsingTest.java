@@ -214,25 +214,25 @@ public class SingleUsingTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Single.using(Functions.justSupplier(1), (Function<Integer, SingleSource<Integer>>) _ -> new Single<Integer>() /* NFI */ {
-                @Override
-                protected void subscribeActual(SingleObserver<? super Integer> observer) {
-                    observer.onSubscribe(Disposable.empty());
+            Single.using(Functions.justSupplier(1), (Function<Integer, SingleSource<Integer>>) _ -> new Single<>() /* NFI */ {
+                        @Override
+                        protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                            observer.onSubscribe(Disposable.empty());
 
-                    assertFalse(((Disposable)observer).isDisposed());
+                            assertFalse(((Disposable) observer).isDisposed());
 
-                    Disposable d = Disposable.empty();
-                    observer.onSubscribe(d);
+                            Disposable d = Disposable.empty();
+                            observer.onSubscribe(d);
 
-                    assertTrue(d.isDisposed());
+                            assertTrue(d.isDisposed());
 
-                    assertFalse(((Disposable)observer).isDisposed());
+                            assertFalse(((Disposable) observer).isDisposed());
 
-                    observer.onSuccess(1);
+                            observer.onSuccess(1);
 
-                    assertTrue(((Disposable)observer).isDisposed());
-                }
-            }, Functions.emptyConsumer())
+                            assertTrue(((Disposable) observer).isDisposed());
+                        }
+                    }, Functions.emptyConsumer())
             .test()
             .assertResult(1)
             ;

@@ -607,7 +607,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void scalarReentrant() {
         final PublishProcessor<Flowable<Integer>> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -630,7 +630,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void scalarReentrant2() {
         final PublishProcessor<Flowable<Integer>> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -791,7 +791,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         Flowable.range(1, 5)
         .doOnNext(_ -> counter.getAndIncrement())
         .flatMap((Function<Integer, Publisher<Integer>>) _ ->
-        Flowable.<Integer>fromIterable(() -> new Iterator<Integer>() /* NFI */ {
+        Flowable.<Integer>fromIterable(() -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;

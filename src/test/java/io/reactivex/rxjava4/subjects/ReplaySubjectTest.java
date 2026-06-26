@@ -261,7 +261,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     public void newSubscriberDoesntBlockExisting() throws InterruptedException {
 
         final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<>();
-        Observer<String> observer1 = new DefaultObserver<String>() /* NFI */ {
+        var observer1 = new DefaultObserver<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -285,7 +285,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         final CountDownLatch oneReceived = new CountDownLatch(1);
         final CountDownLatch makeSlow = new CountDownLatch(1);
         final CountDownLatch completed = new CountDownLatch(1);
-        Observer<String> observer2 = new DefaultObserver<String>() /* NFI */ {
+        var observer2 = new DefaultObserver<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -381,7 +381,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
             src.firstElement()
                 .toObservable()
                 .flatMap((Function<String, Observable<String>>) t1 -> Observable.just(t1 + ", " + t1))
-                .subscribe(new DefaultObserver<String>() /* NFI */ {
+                .subscribe(new DefaultObserver<>() /* NFI */ {
                     @Override
                     public void onNext(String t) {
                         System.out.println(t);
@@ -413,7 +413,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         final Observer<Integer> o = TestHelper.mockObserver();
 
-        source.subscribe(new DefaultObserver<Integer>() /* NFI */ {
+        source.subscribe(new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onNext(Integer t) {
@@ -1082,7 +1082,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         final ReplaySubject<Integer> rp = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {

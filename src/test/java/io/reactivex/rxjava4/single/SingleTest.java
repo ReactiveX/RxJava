@@ -44,7 +44,7 @@ public class SingleTest extends RxJavaTest {
     public void helloWorld2() {
         final AtomicReference<String> v = new AtomicReference<>();
         Single.just("Hello World!")
-        .subscribe(new SingleObserver<String>() /* NFI */ {
+        .subscribe(new SingleObserver<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

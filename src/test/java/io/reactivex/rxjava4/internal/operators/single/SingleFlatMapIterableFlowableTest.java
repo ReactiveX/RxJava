@@ -215,12 +215,13 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
     public void fusedEmptyCheck() {
         Single.just(1)
         .flattenAsFlowable((Function<Object, Iterable<Integer>>) _ -> Arrays.asList(1, 2, 3))
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             QueueSubscription<Integer> qs;
+
             @SuppressWarnings("unchecked")
             @Override
             public void onSubscribe(Subscription s) {
-                qs = (QueueSubscription<Integer>)s;
+                qs = (QueueSubscription<Integer>) s;
 
                 assertEquals(QueueFuseable.ASYNC, qs.requestFusion(QueueFuseable.ANY));
             }
@@ -348,8 +349,9 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Single.just(1)
-        .flattenAsFlowable((Function<Integer, Iterable<Integer>>) _ -> (Iterable<Integer>) () -> new Iterator<Integer>() /* NFI */ {
+        .flattenAsFlowable((Function<Integer, Iterable<Integer>>) _ -> (Iterable<Integer>) () -> new Iterator<>() /* NFI */ {
             int count;
+
             @Override
             public boolean hasNext() {
                 if (count++ == 2) {
@@ -382,8 +384,9 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Single.just(1)
-        .flattenAsFlowable((Function<Integer, Iterable<Integer>>) _ -> (Iterable<Integer>) () -> new Iterator<Integer>() /* NFI */ {
+        .flattenAsFlowable((Function<Integer, Iterable<Integer>>) _ -> (Iterable<Integer>) () -> new Iterator<>() /* NFI */ {
             int count;
+
             @Override
             public boolean hasNext() {
                 if (count++ == 2) {
@@ -445,7 +448,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
 
     @Test
     public void slowPatchCancelAfterOnNext() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(@NonNull Integer t) {
                 super.onNext(t);

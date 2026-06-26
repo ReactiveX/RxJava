@@ -495,7 +495,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Subscriber<?>[] sub = { null, null };
 
-                final Flowable<Integer> pp2 = new Flowable<Integer>() /* NFI */ {
+                var pp2 = new Flowable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -539,7 +539,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Subscriber<?>[] sub = { null, null };
 
-                final Flowable<Integer> pp2 = new Flowable<Integer>() /* NFI */ {
+                var pp2 = new Flowable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -584,7 +584,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Subscriber<?>[] sub = { null, null };
 
-                final Flowable<Integer> pp2 = new Flowable<Integer>() /* NFI */ {
+                var pp2 = new Flowable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -629,7 +629,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Subscriber<?>[] sub = { null, null };
 
-                final Flowable<Integer> pp2 = new Flowable<Integer>() /* NFI */ {
+                var pp2 = new Flowable<Integer>() /* NFI */ {
 
                     int count;
 
@@ -672,7 +672,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                 final Subscriber<?>[] sub = { null, null };
 
-                final Flowable<Integer> pp2 = new Flowable<Integer>() /* NFI */ {
+                var pp2 = new Flowable<Integer>() /* NFI */ {
 
                     int count;
 

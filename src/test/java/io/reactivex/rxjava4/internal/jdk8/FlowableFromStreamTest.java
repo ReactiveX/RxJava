@@ -149,10 +149,10 @@ public class FlowableFromStreamTest extends RxJavaTest {
         AtomicReference<SimpleQueue<?>> queue = new AtomicReference<>();
 
         Flowable.fromStream(IntStream.rangeClosed(1, 10).boxed())
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             @Override
             public void onSubscribe(@NonNull Subscription s) {
-                queue.set((SimpleQueue<?>)s);
+                queue.set((SimpleQueue<?>) s);
             }
 
             @Override
@@ -192,11 +192,11 @@ public class FlowableFromStreamTest extends RxJavaTest {
         AtomicInteger calls = new AtomicInteger();
 
         Flowable.fromStream(Stream.of(1).onClose(calls::getAndIncrement))
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             @Override
             public void onSubscribe(@NonNull Subscription s) {
-                queue.set((SimpleQueue<?>)s);
-                ((QueueSubscription<?>)s).requestFusion(QueueFuseable.ANY);
+                queue.set((SimpleQueue<?>) s);
+                ((QueueSubscription<?>) s).requestFusion(QueueFuseable.ANY);
             }
 
             @Override
@@ -340,9 +340,10 @@ public class FlowableFromStreamTest extends RxJavaTest {
             source = source.filter(_ -> true);
         }
 
-        source.subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        source.subscribe(new FlowableSubscriber<>() /* NFI */ {
 
-            @NonNull Subscription upstream;
+            @NonNull
+            Subscription upstream;
 
             @Override
             public void onSubscribe(@NonNull Subscription s) {
@@ -397,9 +398,10 @@ public class FlowableFromStreamTest extends RxJavaTest {
                 CountDownLatch cdl = new CountDownLatch(1);
 
                 source
-                .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+                .subscribe(new FlowableSubscriber<>() /* NFI */ {
 
-                    @NonNull Subscription upstream;
+                    @NonNull
+                    Subscription upstream;
 
                     @Override
                     public void onSubscribe(@NonNull Subscription s) {
@@ -416,13 +418,15 @@ public class FlowableFromStreamTest extends RxJavaTest {
                         AtomicInteger sync = new AtomicInteger(2);
                         exec.submit(() -> {
                             if (sync.decrementAndGet() != 0) {
-                                while (sync.get() != 0) { }
+                                while (sync.get() != 0) {
+                                }
                             }
                             upstream.request(1);
                         });
 
                         if (sync.decrementAndGet() != 0) {
-                            while (sync.get() != 0) { }
+                            while (sync.get() != 0) {
+                            }
                         }
                     }
 

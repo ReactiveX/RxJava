@@ -34,7 +34,7 @@ public class StreamableTest extends StreamableBaseTest {
     public void empty() throws Throwable {
         TestHelper.withVirtual(exec -> {
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            var ts = new TestSubscriber<Integer>();
             ts.onSubscribe(EmptySubscription.INSTANCE);
 
             try (var comp = Streamable.empty().forEach(e -> ts.onError(new TestException("Element produced? " + e)), exec)) {
@@ -56,7 +56,7 @@ public class StreamableTest extends StreamableBaseTest {
     public void just() throws Throwable {
         TestHelper.withVirtual(exec -> {
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            var ts = new TestSubscriber<Integer>();
             ts.onSubscribe(EmptySubscription.INSTANCE);
 
             try (var comp = Streamable.just(1).forEach(ts::onNext, exec)) {

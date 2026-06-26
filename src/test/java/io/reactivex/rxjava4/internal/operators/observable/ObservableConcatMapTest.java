@@ -249,7 +249,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
         try {
             Observable.just(1).hide()
-            .concatMapDelayError((Function<Integer, ObservableSource<Integer>>) _ -> new Observable<Integer>() /* NFI */ {
+            .concatMapDelayError((Function<Integer, ObservableSource<Integer>>) _ -> new Observable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     o[0] = observer;
@@ -275,7 +275,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
         Observable.fromArray(Observable.just(1), Observable.just(2))
         .hide()
         .concatMap(Functions.<Observable<Integer>>identity())
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -305,7 +305,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
         Observable.fromArray(Observable.just(1), Observable.<Integer>error(new TestException()))
         .hide()
         .concatMap(Functions.<Observable<Integer>>identity())
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

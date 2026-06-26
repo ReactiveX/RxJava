@@ -84,7 +84,7 @@ public class FlowableSubscriberTest {
     @Test
     public void requestFromChainedOperator() throws Throwable {
         TestSubscriber<String> s = new TestSubscriber<>(10L);
-        FlowableOperator<String, String> o = s1 -> new FlowableSubscriber<String>() /* NFI */ {
+        FlowableOperator<String, String> o = s1 -> new FlowableSubscriber<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription a) {
@@ -131,7 +131,7 @@ public class FlowableSubscriberTest {
     @Test
     public void requestFromDecoupledOperator() throws Throwable {
         TestSubscriber<String> s = new TestSubscriber<>(0L);
-        FlowableOperator<String, String> o = s1 -> new FlowableSubscriber<String>() /* NFI */ {
+        FlowableOperator<String, String> o = s1 -> new FlowableSubscriber<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription a) {
@@ -196,7 +196,7 @@ public class FlowableSubscriberTest {
 
             });
 
-            ResourceSubscriber<String> as = new ResourceSubscriber<String>() /* NFI */ {
+            var as = new ResourceSubscriber<String>() /* NFI */ {
 
                 @Override
                 protected void onStart() {
@@ -329,7 +329,7 @@ public class FlowableSubscriberTest {
     @Test
     public void onStartCalledOnceViaSubscribe() {
         final AtomicInteger c = new AtomicInteger();
-        Flowable.just(1, 2, 3, 4).take(2).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        Flowable.just(1, 2, 3, 4).take(2).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -360,7 +360,7 @@ public class FlowableSubscriberTest {
     @Test
     public void onStartCalledOnceViaUnsafeSubscribe() {
         final AtomicInteger c = new AtomicInteger();
-        Flowable.just(1, 2, 3, 4).take(2).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        Flowable.just(1, 2, 3, 4).take(2).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -391,7 +391,7 @@ public class FlowableSubscriberTest {
     @Test
     public void onStartCalledOnceViaLift() {
         final AtomicInteger c = new AtomicInteger();
-        Flowable.just(1, 2, 3, 4).lift(child -> new DefaultSubscriber<Integer>() /* NFI */ {
+        Flowable.just(1, 2, 3, 4).lift(child -> new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -424,7 +424,7 @@ public class FlowableSubscriberTest {
     public void onStartRequestsAreAdditive() {
         final List<Integer> list = new ArrayList<>();
         Flowable.just(1, 2, 3, 4, 5)
-        .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        .subscribe(new DefaultSubscriber<>() /* NFI */ {
             @Override
             public void onStart() {
                 request(3);
@@ -444,14 +444,15 @@ public class FlowableSubscriberTest {
             @Override
             public void onNext(Integer t) {
                 list.add(t);
-            }});
+            }
+        });
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
 
     @Test
     public void onStartRequestsAreAdditiveAndOverflowBecomesMaxValue() {
         final List<Integer> list = new ArrayList<>();
-        Flowable.just(1, 2, 3, 4, 5).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        Flowable.just(1, 2, 3, 4, 5).subscribe(new DefaultSubscriber<>() /* NFI */ {
             @Override
             public void onStart() {
                 request(2);
@@ -471,7 +472,8 @@ public class FlowableSubscriberTest {
             @Override
             public void onNext(Integer t) {
                 list.add(t);
-            }});
+            }
+        });
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
 

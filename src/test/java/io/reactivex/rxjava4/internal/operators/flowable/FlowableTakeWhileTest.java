@@ -76,7 +76,7 @@ public class FlowableTakeWhileTest extends RxJavaTest {
     @Test
     public void takeWhile2() {
         Flowable<String> w = Flowable.just("one", "two", "three");
-        Flowable<String> take = w.takeWhile(new Predicate<String>() /* NFI */ {
+        Flowable<String> take = w.takeWhile(new Predicate<>() /* NFI */ {
             int index;
 
             @Override
@@ -144,14 +144,14 @@ public class FlowableTakeWhileTest extends RxJavaTest {
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         Flowable<String> take = Flowable.unsafeCreate(w)
-                .takeWhile(new Predicate<String>() /* NFI */ {
-            int index;
+                .takeWhile(new Predicate<>() /* NFI */ {
+                    int index;
 
-            @Override
-            public boolean test(String s) {
-                return index++ < 1;
-            }
-        });
+                    @Override
+                    public boolean test(String s) {
+                        return index++ < 1;
+                    }
+                });
         take.subscribe(subscriber);
 
         // wait for the Flowable to complete

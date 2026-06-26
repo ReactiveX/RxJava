@@ -47,7 +47,7 @@ public class FlowableDoOnRequestTest extends RxJavaTest {
         //
                 .doOnRequest(requests::add)
                 //
-                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onStart() {

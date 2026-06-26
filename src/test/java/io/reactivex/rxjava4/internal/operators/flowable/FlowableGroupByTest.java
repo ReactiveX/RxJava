@@ -116,7 +116,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         grouped.flatMap((Function<GroupedFlowable<Integer, String>, Flowable<String>>) f -> {
             groupCounter.incrementAndGet();
             return f.map(v -> "Event => key: " + f.getKey() + " value: " + v);
-        }).subscribe(new DefaultSubscriber<String>() /* NFI */ {
+        }).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -193,25 +193,25 @@ public class FlowableGroupByTest extends RxJavaTest {
 
             return eventGroupedFlowable.map(event -> "Source: " + event.source + "  Message: " + event.message);
 
-        }).subscribe(new DefaultSubscriber<String>() /* NFI */ {
+        }).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
-            @Override
-            public void onComplete() {
-                latch.countDown();
-            }
+                    @Override
+                    public void onComplete() {
+                        latch.countDown();
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-                latch.countDown();
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        latch.countDown();
+                    }
 
-            @Override
-            public void onNext(String outputMessage) {
-                System.out.println(outputMessage);
-                eventCounter.incrementAndGet();
-            }
-        });
+                    @Override
+                    public void onNext(String outputMessage) {
+                        System.out.println(outputMessage);
+                        eventCounter.incrementAndGet();
+                    }
+                });
 
         latch.await(5000, TimeUnit.MILLISECONDS);
         assertEquals(1, subscribeCounter.get());
@@ -259,7 +259,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                             .take(20) // limit to only 20 events on this group
                             .map(event -> "testUnsubscribe => Source: " + event.source + "  Message: " + event.message);
 
-                }).subscribe(new DefaultSubscriber<String>() /* NFI */ {
+                }).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onComplete() {
@@ -357,7 +357,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                         return group;
                     }
                 })
-                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onComplete() {
@@ -391,7 +391,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         final AtomicInteger eventCounter = new AtomicInteger();
         Flowable.range(0, 100)
                 .groupBy(i -> i % 2)
-                .subscribe(new DefaultSubscriber<GroupedFlowable<Integer, Integer>>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onComplete() {
@@ -915,7 +915,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         final TestSubscriberEx<Integer> inner2 = new TestSubscriberEx<>();
 
         final TestSubscriberEx<GroupedFlowable<Integer, Integer>> outer
-                = new TestSubscriberEx<>(new DefaultSubscriber<GroupedFlowable<Integer, Integer>>() /* NFI */ {
+                = new TestSubscriberEx<>(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -956,7 +956,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                 .groupBy(_ -> 1)
                 // flatten
                 .concatMap((Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>) g -> g)
-                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
                     @Override
                     public void onStart() {
@@ -979,7 +979,8 @@ public class FlowableGroupByTest extends RxJavaTest {
                         System.out.println(t);
                         //provoke possible request overflow
                         request(Long.MAX_VALUE - 1);
-                    }});
+                    }
+                });
         assertTrue(completed.get());
     }
 
@@ -1139,7 +1140,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void reentrantComplete() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        TestSubscriber<Integer> ts = new TestSubscriber<>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1161,7 +1162,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void reentrantCompleteCancel() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() /* NFI */ {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

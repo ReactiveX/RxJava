@@ -61,7 +61,7 @@ public class MaybeDetachTest extends RxJavaTest {
         Disposable d = Disposable.empty();
         final WeakReference<Disposable> wr = new WeakReference<>(d);
 
-        TestObserver<Object> to = new Maybe<Object>() /* NFI */ {
+        var to = new Maybe<>() /* NFI */ {
             @Override
             protected void subscribeActual(MaybeObserver<? super Object> observer) {
                 observer.onSubscribe(wr.get());

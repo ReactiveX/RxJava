@@ -236,7 +236,8 @@ public class ObservableConcatMapSchedulerTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Observable.range(1, n)
-        .concatMap(func, 2, ImmediateThinScheduler.INSTANCE).subscribe(new DefaultObserver<Integer>() /* NFI */ {
+        .concatMap(func, 2, ImmediateThinScheduler.INSTANCE)
+        .subscribe(new DefaultObserver<>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 // Consume after sleep for 1 ms
@@ -471,7 +472,7 @@ public class ObservableConcatMapSchedulerTest {
     public void immediateInnerNextOuterError() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserverEx<Integer> to = new TestObserverEx<Integer>() /* NFI */ {
+        var to = new TestObserverEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -495,7 +496,7 @@ public class ObservableConcatMapSchedulerTest {
     public void immediateInnerNextOuterError2() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserverEx<Integer> to = new TestObserverEx<Integer>() /* NFI */ {
+        var to = new TestObserverEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

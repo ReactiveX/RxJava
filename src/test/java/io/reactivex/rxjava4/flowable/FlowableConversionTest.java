@@ -144,7 +144,7 @@ public class FlowableConversionTest extends RxJavaTest {
 
     @Test
     public void conversionBetweenObservableClasses() {
-        final TestObserver<String> to = new TestObserver<>(new DefaultObserver<String>() /* NFI */ {
+        var to = new TestObserver<>(new DefaultObserver<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -196,7 +196,7 @@ public class FlowableConversionTest extends RxJavaTest {
                         }))
                     .to(onSubscribe -> {
                         final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<>();
-                        onSubscribe.subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+                        onSubscribe.subscribe(new DefaultSubscriber<>() /* NFI */ {
                             @Override
                             public void onComplete() {
                                 isFinished.set(true);
@@ -210,7 +210,8 @@ public class FlowableConversionTest extends RxJavaTest {
                             @Override
                             public void onNext(Integer t) {
                                 q.add(t);
-                            }});
+                            }
+                        });
                         return q;
                     });
 

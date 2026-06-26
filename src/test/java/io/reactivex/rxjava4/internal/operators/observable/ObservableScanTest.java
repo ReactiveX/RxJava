@@ -107,7 +107,7 @@ public class ObservableScanTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         Observable.range(1, 100)
                 .scan(0, Integer::sum)
-                .subscribe(new DefaultObserver<Integer>() /* NFI */ {
+                .subscribe(new DefaultObserver<>() /* NFI */ {
 
                     @Override
                     public void onComplete() {

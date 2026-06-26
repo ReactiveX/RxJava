@@ -24,7 +24,7 @@ public final class StreamableEmpty<T> implements Streamable<T> {
 
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
-        return new EmptyStreamer<T>();
+        return new EmptyStreamer<>();
     }
 
     static final class EmptyStreamer<T> implements Streamer<T> {

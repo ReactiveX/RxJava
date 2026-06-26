@@ -203,7 +203,7 @@ public class ObservableMergeTest extends RxJavaTest {
         final AtomicInteger totalCounter = new AtomicInteger();
 
         Observable<String> m = Observable.mergeArray(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2));
-        m.subscribe(new DefaultObserver<String>() /* NFI */ {
+        m.subscribe(new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -460,7 +460,7 @@ public class ObservableMergeTest extends RxJavaTest {
     private Observable<Long> createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(final Scheduler scheduler, final AtomicBoolean unsubscribed) {
         return Observable.unsafeCreate(child -> Observable.interval(1, TimeUnit.SECONDS, scheduler)
         .take(5)
-        .subscribe(new Observer<Long>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
             @Override
             public void onSubscribe(final Disposable d) {
                 child.onSubscribe(Disposable.fromRunnable(() -> {
@@ -596,7 +596,7 @@ public class ObservableMergeTest extends RxJavaTest {
         final AtomicInteger generated2 = new AtomicInteger();
         Observable<Integer> o2 = createInfiniteObservable(generated2).subscribeOn(Schedulers.computation());
 
-        TestObserverEx<Integer> testObserver = new TestObserverEx<Integer>() /* NFI */ {
+        var testObserver = new TestObserverEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 System.err.println("TestObserver received => " + t + "  on thread " + Thread.currentThread());
@@ -636,7 +636,7 @@ public class ObservableMergeTest extends RxJavaTest {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Integer> o1 = createInfiniteObservable(generated1).subscribeOn(Schedulers.computation());
 
-        TestObserverEx<Integer> testObserver = new TestObserverEx<Integer>() /* NFI */ {
+        var testObserver = new TestObserverEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -675,7 +675,7 @@ public class ObservableMergeTest extends RxJavaTest {
         final AtomicInteger generated2 = new AtomicInteger();
         Observable<Integer> o2 = createInfiniteObservable(generated2).subscribeOn(Schedulers.computation());
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>() /* NFI */ {
+        var to = new TestObserverEx<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 if (t < 100) {
@@ -725,7 +725,7 @@ public class ObservableMergeTest extends RxJavaTest {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Observable<Integer>> o1 = createInfiniteObservable(generated1).map(_ -> Observable.just(1, 2, 3));
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>() /* NFI */ {
+        var to = new TestObserverEx<Integer>() /* NFI */ {
             int i;
 
             @Override
@@ -870,7 +870,7 @@ public class ObservableMergeTest extends RxJavaTest {
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
-        Observable<Integer> o = Observable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
+        var o = Observable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -945,7 +945,7 @@ public class ObservableMergeTest extends RxJavaTest {
     @Test
     public void slowMergeFullScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>() /* NFI */ {
+            var to = new TestObserverEx<Integer>() /* NFI */ {
                 int remaining = req;
 
                 @Override
@@ -963,7 +963,7 @@ public class ObservableMergeTest extends RxJavaTest {
     @Test
     public void slowMergeHiddenScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>() /* NFI */ {
+            var to = new TestObserverEx<Integer>() /* NFI */ {
                 int remaining = req;
                 @Override
                 public void onNext(Integer t) {

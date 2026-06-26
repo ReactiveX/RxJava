@@ -51,7 +51,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
 
     @Test
     public void checkDoubleDefaultSubscriber() {
-        Subscriber<Integer> consumer = new DefaultSubscriber<Integer>() /* NFI */ {
+        var consumer = new DefaultSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
             }
@@ -125,7 +125,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
 
     @Test
     public void checkDoubleDisposableSubscriber() {
-        Subscriber<Integer> consumer = new DisposableSubscriber<Integer>() /* NFI */ {
+        var consumer = new DisposableSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
             }
@@ -160,7 +160,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
 
     @Test
     public void checkDoubleResourceSubscriber() {
-        Subscriber<Integer> consumer = new ResourceSubscriber<Integer>() /* NFI */ {
+        var consumer = new ResourceSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
             }
@@ -195,7 +195,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
 
     @Test
     public void checkDoubleDefaultObserver() {
-        Observer<Integer> consumer = new DefaultObserver<Integer>() /* NFI */ {
+        var consumer = new DefaultObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
             }
@@ -230,7 +230,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
 
     @Test
     public void checkDoubleDisposableObserver() {
-        Observer<Integer> consumer = new DisposableObserver<Integer>() /* NFI */ {
+        var consumer = new DisposableObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
             }
@@ -265,7 +265,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
 
     @Test
     public void checkDoubleResourceObserver() {
-        Observer<Integer> consumer = new ResourceObserver<Integer>() /* NFI */ {
+        var consumer = new ResourceObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
             }
@@ -300,7 +300,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
 
     @Test
     public void checkDoubleDisposableSingleObserver() {
-        SingleObserver<Integer> consumer = new DisposableSingleObserver<Integer>() /* NFI */ {
+        var consumer = new DisposableSingleObserver<Integer>() /* NFI */ {
             @Override
             public void onSuccess(Integer t) {
             }
@@ -331,7 +331,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
 
     @Test
     public void checkDoubleResourceSingleObserver() {
-        SingleObserver<Integer> consumer = new ResourceSingleObserver<Integer>() /* NFI */ {
+        var consumer = new ResourceSingleObserver<Integer>() /* NFI */ {
             @Override
             public void onSuccess(Integer t) {
             }
@@ -362,7 +362,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
 
     @Test
     public void checkDoubleDisposableMaybeObserver() {
-        MaybeObserver<Integer> consumer = new DisposableMaybeObserver<Integer>() /* NFI */ {
+        var consumer = new DisposableMaybeObserver<Integer>() /* NFI */ {
             @Override
             public void onSuccess(Integer t) {
             }
@@ -397,7 +397,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
 
     @Test
     public void checkDoubleResourceMaybeObserver() {
-        MaybeObserver<Integer> consumer = new ResourceMaybeObserver<Integer>() /* NFI */ {
+        var consumer = new ResourceMaybeObserver<Integer>() /* NFI */ {
             @Override
             public void onSuccess(Integer t) {
             }

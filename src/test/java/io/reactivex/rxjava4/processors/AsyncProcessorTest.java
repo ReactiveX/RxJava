@@ -433,8 +433,8 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     public void onNextCrossCancel() {
         AsyncProcessor<Object> p = AsyncProcessor.create();
 
-        final TestSubscriber<Object> ts2 = new TestSubscriber<>();
-        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() /* NFI */ {
+        var ts2 = new TestSubscriber<>();
+        var ts1 = new TestSubscriber<>() /* NFI */ {
             @Override
             public void onNext(Object t) {
                 ts2.cancel();
@@ -457,8 +457,8 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     public void onErrorCrossCancel() {
         AsyncProcessor<Object> p = AsyncProcessor.create();
 
-        final TestSubscriber<Object> ts2 = new TestSubscriber<>();
-        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() /* NFI */ {
+        var ts2 = new TestSubscriber<>();
+        var ts1 = new TestSubscriber<>() /* NFI */ {
             @Override
             public void onError(Throwable t) {
                 ts2.cancel();
@@ -479,8 +479,8 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     public void onCompleteCrossCancel() {
         AsyncProcessor<Object> p = AsyncProcessor.create();
 
-        final TestSubscriber<Object> ts2 = new TestSubscriber<>();
-        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() /* NFI */ {
+        var ts2 = new TestSubscriber<>();
+        var ts1 = new TestSubscriber<>() /* NFI */ {
             @Override
             public void onComplete() {
                 ts2.cancel();

@@ -342,7 +342,7 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
     @SuppressWarnings("unchecked")
     ReplayProcessor(ReplayBuffer<T> buffer) {
         this.buffer = buffer;
-        this.subscribers = new AtomicReference<>(EMPTY);
+        this.subscribers = new AtomicReference<ReplaySubscription<T>[]>(EMPTY);
     }
 
     @Override

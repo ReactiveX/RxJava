@@ -216,7 +216,7 @@ public class ParallelFromPublisherTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void requestUnboundedRace() {
-        FlowableSubscriber<Integer> fs = new FlowableSubscriber<Integer>() /* NFI */ {
+        var fs = new FlowableSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onNext(@NonNull Integer t) {
@@ -249,7 +249,7 @@ public class ParallelFromPublisherTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void requestRace() {
-        FlowableSubscriber<Integer> fs = new FlowableSubscriber<Integer>() /* NFI */ {
+        var fs = new FlowableSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onNext(@NonNull Integer t) {

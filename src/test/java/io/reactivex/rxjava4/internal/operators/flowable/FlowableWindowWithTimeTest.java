@@ -122,7 +122,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     }
 
     private <T> Consumer<Flowable<T>> observeWindow(final List<T> list, final List<List<T>> lists) {
-        return stringFlowable -> stringFlowable.subscribe(new DefaultSubscriber<T>() /* NFI */ {
+        return stringFlowable -> stringFlowable.subscribe(new DefaultSubscriber<>() /* NFI */ {
             @Override
             public void onComplete() {
                 lists.add(new ArrayList<>(list));
@@ -549,7 +549,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -577,7 +577,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -605,7 +605,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -633,7 +633,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
+        var ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -861,8 +861,9 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         pp.window(100, TimeUnit.MILLISECONDS)
-        .doOnNext(new Consumer<Flowable<Integer>>() /* NFI */ {
+        .doOnNext(new Consumer<>() /* NFI */ {
             int count;
+
             @Override
             public void accept(Flowable<Integer> v) throws Exception {
                 System.out.println(Thread.currentThread());
@@ -902,8 +903,9 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         pp.window(100, TimeUnit.MILLISECONDS)
-        .doOnNext(new Consumer<Flowable<Integer>>() /* NFI */ {
+        .doOnNext(new Consumer<>() /* NFI */ {
             int count;
+
             @Override
             public void accept(Flowable<Integer> v) throws Exception {
                 System.out.println(Thread.currentThread());
@@ -942,8 +944,9 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         pp.window(100, TimeUnit.MILLISECONDS, 10)
-        .doOnNext(new Consumer<Flowable<Integer>>() /* NFI */ {
+        .doOnNext(new Consumer<>() /* NFI */ {
             int count;
+
             @Override
             public void accept(Flowable<Integer> v) throws Exception {
                 System.out.println(Thread.currentThread());
@@ -983,8 +986,9 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         pp.window(100, TimeUnit.MILLISECONDS, 10)
-        .doOnNext(new Consumer<Flowable<Integer>>() /* NFI */ {
+        .doOnNext(new Consumer<>() /* NFI */ {
             int count;
+
             @Override
             public void accept(Flowable<Integer> v) throws Exception {
                 System.out.println(Thread.currentThread());
@@ -1023,8 +1027,9 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         pp.window(90, 100, TimeUnit.MILLISECONDS)
-        .doOnNext(new Consumer<Flowable<Integer>>() /* NFI */ {
+        .doOnNext(new Consumer<>() /* NFI */ {
             int count;
+
             @Override
             public void accept(Flowable<Integer> v) throws Exception {
                 System.out.println(Thread.currentThread());
@@ -1064,8 +1069,9 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
 
         pp.window(90, 100, TimeUnit.MILLISECONDS)
-        .doOnNext(new Consumer<Flowable<Integer>>() /* NFI */ {
+        .doOnNext(new Consumer<>() /* NFI */ {
             int count;
+
             @Override
             public void accept(Flowable<Integer> v) throws Exception {
                 System.out.println(Thread.currentThread());

@@ -827,7 +827,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         Flowable.empty()
         .delay(1, TimeUnit.MILLISECONDS, scheduler)
-        .subscribe(new DisposableSubscriber<Object>() /* NFI */ {
+        .subscribe(new DisposableSubscriber<>() /* NFI */ {
             @Override
             public void onNext(Object value) {
             }
@@ -856,7 +856,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         Flowable.error(new TestException())
         .delay(1, TimeUnit.MILLISECONDS, scheduler)
-        .subscribe(new DisposableSubscriber<Object>() /* NFI */ {
+        .subscribe(new DisposableSubscriber<>() /* NFI */ {
             @Override
             public void onNext(Object value) {
             }

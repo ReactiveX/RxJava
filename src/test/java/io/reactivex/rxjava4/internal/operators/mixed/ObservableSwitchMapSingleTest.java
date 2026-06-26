@@ -297,7 +297,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
                     observer.onError(new TestException("outer"));
                 }
             }
-            .switchMapSingle((Function<Integer, SingleSource<Integer>>) _ -> new Single<Integer>() /* NFI */ {
+            .switchMapSingle((Function<Integer, SingleSource<Integer>>) _ -> new Single<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(
                         SingleObserver<? super Integer> observer) {
@@ -456,7 +456,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
     public void drainReentrant() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

@@ -220,7 +220,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
         @SuppressWarnings("unchecked")
         ConditionalSubscriber<Integer> ts = mock(ConditionalSubscriber.class);
 
-        BasicFuseableConditionalSubscriber<Integer, Integer> bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) /* NFI */ {
+        var bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) /* NFI */ {
 
             @Override
             protected boolean beforeDownstream() {

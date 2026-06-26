@@ -86,28 +86,28 @@ public class TransformerTest extends RxJavaTest {
 
     @Test
     public void observableGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
+        var a = new A<String, Integer>() /* NFI */ { };
 
         Observable.just(a).compose(TransformerTest.<String>testObservableTransformerCreator());
     }
 
     @Test
     public void singleGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
+        var a = new A<String, Integer>() /* NFI */ { };
 
         Single.just(a).compose(TransformerTest.<String>testSingleTransformerCreator());
     }
 
     @Test
     public void maybeGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
+        var a = new A<String, Integer>() /* NFI */ { };
 
         Maybe.just(a).compose(TransformerTest.<String>testMaybeTransformerCreator());
     }
 
     @Test
     public void flowableGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
+        var a = new A<String, Integer>() /* NFI */ { };
 
         Flowable.just(a).compose(TransformerTest.<String>testFlowableTransformerCreator());
     }

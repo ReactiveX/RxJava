@@ -112,7 +112,7 @@ public class FlowableToFutureTest extends RxJavaTest {
 
     @Test
     public void cancellationDuringFutureGet() throws Exception {
-        Future<Object> future = new Future<Object>() /* NFI */ {
+        var future = new Future<>() /* NFI */ {
             private AtomicBoolean isCancelled = new AtomicBoolean(false);
             private AtomicBoolean isDone = new AtomicBoolean(false);
 

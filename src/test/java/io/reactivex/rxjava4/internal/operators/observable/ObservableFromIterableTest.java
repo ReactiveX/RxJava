@@ -57,7 +57,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
      */
     @Test
     public void rawIterable() {
-        Iterable<String> it = () -> new Iterator<String>() /* NFI */ {
+        Iterable<String> it = () -> new Iterator<>() /* NFI */ {
 
             int i;
 
@@ -134,7 +134,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
     @Test
     public void doesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = () -> new Iterator<Integer>() /* NFI */ {
+        Iterable<Integer> iterable = () -> new Iterator<>() /* NFI */ {
 
             int count = 1;
 
@@ -165,7 +165,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
     @Test
     public void doesNotCallIteratorHasNextMoreThanRequiredFastPath() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = () -> new Iterator<Integer>() /* NFI */ {
+        Iterable<Integer> iterable = () -> new Iterator<>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -189,7 +189,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
             }
 
         };
-        Observable.fromIterable(iterable).subscribe(new DefaultObserver<Integer>() /* NFI */ {
+        Observable.fromIterable(iterable).subscribe(new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -282,11 +282,11 @@ public class ObservableFromIterableTest extends RxJavaTest {
     @Test
     public void fusionClear() {
         Observable.fromIterable(Arrays.asList(1, 2, 3))
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 @SuppressWarnings("unchecked")
-                QueueDisposable<Integer> qd = (QueueDisposable<Integer>)d;
+                QueueDisposable<Integer> qd = (QueueDisposable<Integer>) d;
 
                 qd.requestFusion(QueueFuseable.ANY);
 

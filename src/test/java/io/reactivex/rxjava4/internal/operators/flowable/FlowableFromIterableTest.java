@@ -61,7 +61,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
      */
     @Test
     public void rawIterable() {
-        Iterable<String> it = () -> new Iterator<String>() /* NFI */ {
+        Iterable<String> it = () -> new Iterator<>() /* NFI */ {
 
             int i;
 
@@ -170,7 +170,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(expectedCount);
 
         f.subscribeOn(Schedulers.computation())
-        .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        .subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -191,7 +191,8 @@ public class FlowableFromIterableTest extends RxJavaTest {
             public void onNext(Integer t) {
                 latch.countDown();
                 request(Long.MAX_VALUE - 1);
-            }});
+            }
+        });
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
@@ -200,7 +201,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
         final AtomicBoolean completed = new AtomicBoolean(false);
 
-        Flowable.fromIterable(Collections.emptyList()).subscribe(new DefaultSubscriber<Object>() /* NFI */ {
+        Flowable.fromIterable(Collections.emptyList()).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -220,14 +221,15 @@ public class FlowableFromIterableTest extends RxJavaTest {
             @Override
             public void onNext(Object t) {
 
-            }});
+            }
+        });
         assertTrue(completed.get());
     }
 
     @Test
     public void doesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = () -> new Iterator<Integer>() /* NFI */ {
+        Iterable<Integer> iterable = () -> new Iterator<>() /* NFI */ {
 
             int count = 1;
 
@@ -258,7 +260,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void doesNotCallIteratorHasNextMoreThanRequiredFastPath() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = () -> new Iterator<Integer>() /* NFI */ {
+        Iterable<Integer> iterable = () -> new Iterator<>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -282,7 +284,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
             }
 
         };
-        Flowable.fromIterable(iterable).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
+        Flowable.fromIterable(iterable).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -320,7 +322,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextThrowsImmediately() {
-        Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 throw new TestException("Forced failure");
@@ -348,8 +350,9 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextThrowsSecondTimeFastpath() {
-        Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             int count;
+
             @Override
             public boolean hasNext() {
                 if (++count >= 2) {
@@ -380,8 +383,9 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextThrowsSecondTimeSlowpath() {
-        Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             int count;
+
             @Override
             public boolean hasNext() {
                 if (++count >= 2) {
@@ -412,7 +416,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void nextThrowsFastpath() {
-        Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;
@@ -440,7 +444,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void nextThrowsSlowpath() {
-        Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;
@@ -468,7 +472,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void deadOnArrival() {
-        Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;
@@ -511,12 +515,12 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void fusedAPICalls() {
         Flowable.fromIterable(Arrays.asList(1, 2, 3))
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
 
             @Override
             public void onSubscribe(Subscription s) {
                 @SuppressWarnings("unchecked")
-                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>) s;
 
                 assertFalse(qs.isEmpty());
 
@@ -772,11 +776,11 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void fusionClear() {
         Flowable.fromIterable(Arrays.asList(1, 2, 3))
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             @Override
             public void onSubscribe(Subscription s) {
                 @SuppressWarnings("unchecked")
-                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>) s;
 
                 qs.requestFusion(QueueFuseable.ANY);
 
@@ -993,11 +997,11 @@ public class FlowableFromIterableTest extends RxJavaTest {
         AtomicReference<SimpleQueue<?>> queue = new AtomicReference<>();
 
         Flowable.fromIterable(List.of(1))
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             @Override
             public void onSubscribe(@NonNull Subscription s) {
-                queue.set((SimpleQueue<?>)s);
-                ((QueueSubscription<?>)s).requestFusion(QueueFuseable.ANY);
+                queue.set((SimpleQueue<?>) s);
+                ((QueueSubscription<?>) s).requestFusion(QueueFuseable.ANY);
             }
 
             @Override

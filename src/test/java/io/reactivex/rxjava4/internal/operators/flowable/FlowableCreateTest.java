@@ -657,7 +657,7 @@ public class FlowableCreateTest extends RxJavaTest {
                 }
                 assertTrue(d.isDisposed());
             }, m)
-            .subscribe(new FlowableSubscriber<Object>() /* NFI */ {
+            .subscribe(new FlowableSubscriber<>() /* NFI */ {
                 @Override
                 public void onSubscribe(Subscription s) {
                 }
@@ -692,7 +692,7 @@ public class FlowableCreateTest extends RxJavaTest {
                 }
                 assertTrue(d.isDisposed());
             }, m)
-            .subscribe(new FlowableSubscriber<Object>() /* NFI */ {
+            .subscribe(new FlowableSubscriber<>() /* NFI */ {
                 @Override
                 public void onSubscribe(Subscription s) {
                 }

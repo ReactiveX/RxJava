@@ -489,7 +489,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
 
     @Test
     public void unsubscribeInline() {
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() /* NFI */ {
+        TestSubscriber<Integer> ts1 = new TestSubscriber<>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -536,7 +536,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
 
     @Test
     public void requestInline() {
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(1L) /* NFI */ {
+        TestSubscriber<Integer> ts1 = new TestSubscriber<>(1L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -556,7 +556,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
 
     @Test
     public void unsubscribeInlineLatest() {
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() /* NFI */ {
+        TestSubscriber<Integer> ts1 = new TestSubscriber<>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -575,7 +575,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
 
     @Test
     public void unsubscribeInlineExactLatest() {
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(1L) /* NFI */ {
+        TestSubscriber<Integer> ts1 = new TestSubscriber<>(1L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -636,7 +636,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
 
     @Test
     public void requestInlineLatest() {
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(1L) /* NFI */ {
+        var ts1 = new TestSubscriber<Integer>(1L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -673,7 +673,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
 
             this.current = t;
 
-            final ResourceSubscriber<Integer> as = new ResourceSubscriber<Integer>() /* NFI */ {
+            var as = new ResourceSubscriber<Integer>() /* NFI */ {
 
                 @Override
                 public void onComplete() {
@@ -729,7 +729,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
         @Override
         public void subscribe(final FlowableEmitter<Integer> t) {
 
-            processor.subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+            processor.subscribe(new FlowableSubscriber<>() /* NFI */ {
 
                 @Override
                 public void onSubscribe(Subscription s) {

@@ -256,7 +256,7 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
 
         final CountDownLatch cdl = new CountDownLatch(5);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) /* NFI */ {
+        var ts = new TestSubscriber<Integer>(0L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

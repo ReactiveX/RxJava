@@ -315,7 +315,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
     public void disposedAfterOnNext() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        TakeLast source = new TakeLast(new Observer<Integer>() /* NFI */ {
+        TakeLast source = new TakeLast(new Observer<>() /* NFI */ {
             Disposable upstream;
 
             @Override
@@ -382,13 +382,13 @@ public class DeferredScalarObserverTest extends RxJavaTest {
     public void customFusion() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        TakeLast source = new TakeLast(new Observer<Integer>() /* NFI */ {
+        TakeLast source = new TakeLast(new Observer<>() /* NFI */ {
             QueueDisposable<Integer> d;
 
             @SuppressWarnings("unchecked")
             @Override
             public void onSubscribe(Disposable d) {
-                this.d = (QueueDisposable<Integer>)d;
+                this.d = (QueueDisposable<Integer>) d;
                 to.onSubscribe(d);
                 this.d.requestFusion(QueueFuseable.ANY);
             }
@@ -432,13 +432,13 @@ public class DeferredScalarObserverTest extends RxJavaTest {
     public void customFusionClear() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        TakeLast source = new TakeLast(new Observer<Integer>() /* NFI */ {
+        TakeLast source = new TakeLast(new Observer<>() /* NFI */ {
             QueueDisposable<Integer> d;
 
             @SuppressWarnings("unchecked")
             @Override
             public void onSubscribe(Disposable d) {
-                this.d = (QueueDisposable<Integer>)d;
+                this.d = (QueueDisposable<Integer>) d;
                 to.onSubscribe(d);
                 this.d.requestFusion(QueueFuseable.ANY);
             }
@@ -480,13 +480,13 @@ public class DeferredScalarObserverTest extends RxJavaTest {
     public void customFusionDontConsume() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        TakeFirst source = new TakeFirst(new Observer<Integer>() /* NFI */ {
+        TakeFirst source = new TakeFirst(new Observer<>() /* NFI */ {
             QueueDisposable<Integer> d;
 
             @SuppressWarnings("unchecked")
             @Override
             public void onSubscribe(Disposable d) {
-                this.d = (QueueDisposable<Integer>)d;
+                this.d = (QueueDisposable<Integer>) d;
                 to.onSubscribe(d);
                 this.d.requestFusion(QueueFuseable.ANY);
             }

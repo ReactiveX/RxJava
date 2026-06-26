@@ -208,7 +208,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
         this.lock = new ReentrantReadWriteLock();
         this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
-        this.observers = new AtomicReference<>(EMPTY);
+        this.observers = new AtomicReference<BehaviorDisposable<T>[]>(EMPTY);
         this.value = new AtomicReference<>(defaultValue);
         this.terminalEvent = new AtomicReference<>();
     }

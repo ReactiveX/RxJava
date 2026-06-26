@@ -566,30 +566,30 @@ public class RxJavaPluginsTest extends RxJavaTest {
         try {
             RxJavaPlugins.setOnParallelSubscribe((_, t) -> {
                     var result = new Subscriber<?>[] {
-                        new Subscriber<Object>() /* NFI */ {
+                            new Subscriber<>() /* NFI */ {
 
-                            @Override
-                            public void onSubscribe(Subscription s) {
-                                t[0].onSubscribe(s);
+                                @Override
+                                public void onSubscribe(Subscription s) {
+                                    t[0].onSubscribe(s);
+                                }
+
+                                @SuppressWarnings("unchecked")
+                                @Override
+                                public void onNext(Object value) {
+                                    ((Subscriber<Integer>) t[0]).onNext(((Integer) value - 9));
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    t[0].onError(e);
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                    t[0].onComplete();
+                                }
+
                             }
-
-                            @SuppressWarnings("unchecked")
-                            @Override
-                            public void onNext(Object value) {
-                                ((Subscriber<Integer>)t[0]).onNext(((Integer)value - 9));
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                t[0].onError(e);
-                            }
-
-                            @Override
-                            public void onComplete() {
-                                t[0].onComplete();
-                            }
-
-                        }
                     };
                     return result;
                 }
@@ -639,7 +639,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void singleStart() {
         try {
-            RxJavaPlugins.setOnSingleSubscribe((_, t) -> new SingleObserver<Object>() /* NFI */ {
+            RxJavaPlugins.setOnSingleSubscribe((_, t) -> new SingleObserver<>() /* NFI */ {
 
                 @Override
                 public void onSubscribe(Disposable d) {

@@ -190,7 +190,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void iteratorHasNextThrowsImmediately() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        final Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        final Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 throw new TestException();
@@ -220,7 +220,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void iteratorHasNextThrowsImmediatelyJust() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        final Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        final Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 throw new TestException();
@@ -250,8 +250,9 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void iteratorHasNextThrowsSecondCall() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        final Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        final Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             int count;
+
             @Override
             public boolean hasNext() {
                 if (++count >= 2) {
@@ -284,7 +285,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void iteratorNextThrows() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        final Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        final Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;
@@ -314,7 +315,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void iteratorNextThrowsAndUnsubscribes() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        final Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        final Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;
@@ -391,7 +392,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
         final AtomicInteger counter = new AtomicInteger();
 
-        final Iterable<Integer> it = () -> new Iterator<Integer>() /* NFI */ {
+        final Iterable<Integer> it = () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 counter.getAndIncrement();
@@ -487,11 +488,11 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void fusionMethods() {
         Flowable.just(1, 2)
         .flatMapIterable(Functions.justFunction(Arrays.asList(1, 2, 3)))
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             @Override
             public void onSubscribe(Subscription s) {
                 @SuppressWarnings("unchecked")
-                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>) s;
 
                 assertEquals(QueueFuseable.SYNC, qs.requestFusion(QueueFuseable.ANY));
 
@@ -601,11 +602,11 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
             }
             return List.of(v);
         })
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             @Override
             public void onSubscribe(Subscription s) {
                 @SuppressWarnings("unchecked")
-                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>) s;
 
                 assertEquals(QueueFuseable.SYNC, qs.requestFusion(QueueFuseable.ANY));
 
@@ -688,11 +689,12 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 3).hide()
-        .flatMapIterable((Function<Integer, Iterable<Integer>>) _ -> new Iterable<Integer>() /* NFI */ {
+        .flatMapIterable((Function<Integer, Iterable<Integer>>) _ -> new Iterable<>() /* NFI */ {
             int count;
+
             @Override
             public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() /* NFI */ {
+                return new Iterator<>() /* NFI */ {
 
                     @Override
                     public boolean hasNext() {
@@ -776,7 +778,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
         Flowable.range(1, 5)
         .doOnNext(_ -> counter.getAndIncrement())
-        .flatMapIterable((Function<Integer, Iterable<Integer>>) _ -> () -> new Iterator<Integer>() /* NFI */ {
+        .flatMapIterable((Function<Integer, Iterable<Integer>>) _ -> () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;

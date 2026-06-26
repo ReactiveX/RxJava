@@ -296,10 +296,10 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         Observable.range(1, 10)
         .flatMapCompletable(_ -> Completable.complete())
         .toObservable()
-        .subscribe(new Observer<Object>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
-                QueueDisposable<?> qd = (QueueDisposable<?>)d;
+                QueueDisposable<?> qd = (QueueDisposable<?>) d;
                 try {
                     assertNull(qd.poll());
                 } catch (Throwable ex) {

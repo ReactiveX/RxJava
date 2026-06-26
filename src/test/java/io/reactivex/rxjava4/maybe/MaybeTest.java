@@ -1926,7 +1926,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void subscribeWith() {
-        MaybeObserver<Integer> mo = new MaybeObserver<Integer>() /* NFI */ {
+        var mo = new MaybeObserver<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -2570,7 +2570,7 @@ public class MaybeTest extends RxJavaTest {
 
         long middle = usedMemoryNow();
 
-        MaybeObserver<Object> observer = new MaybeObserver<Object>() /* NFI */ {
+        var observer = new MaybeObserver<>() /* NFI */ {
             @SuppressWarnings("unused")
             Disposable u;
 

@@ -318,7 +318,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
                     observer.onError(new TestException("outer"));
                 }
             }
-            .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<Integer>() /* NFI */ {
+            .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> new Maybe<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(
                         MaybeObserver<? super Integer> observer) {
@@ -478,7 +478,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
     public void drainReentrant() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

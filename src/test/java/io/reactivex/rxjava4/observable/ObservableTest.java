@@ -327,7 +327,7 @@ public class ObservableTest extends RxJavaTest {
         // FIXME custom built???
         Observable.just("1", "2", "three", "4")
         .subscribeOn(Schedulers.newThread())
-        .safeSubscribe(new DefaultObserver<String>() /* NFI */ {
+        .safeSubscribe(new DefaultObserver<>() /* NFI */ {
             @Override
             public void onComplete() {
                 System.out.println("completed");
@@ -374,7 +374,7 @@ public class ObservableTest extends RxJavaTest {
 
         // FIXME custom built???
         Observable.just("1", "2", "three", "4")
-        .safeSubscribe(new DefaultObserver<String>() /* NFI */ {
+        .safeSubscribe(new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -416,7 +416,7 @@ public class ObservableTest extends RxJavaTest {
         final AtomicReference<Throwable> error = new AtomicReference<>();
         // FIXME custom built???
         Observable.just("1", "2").concatWith(Observable.<String>error(NumberFormatException::new))
-        .subscribe(new DefaultObserver<String>() /* NFI */ {
+        .subscribe(new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -584,7 +584,7 @@ public class ObservableTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<>();
         Observable.just("1", "2", "three", "4").take(3)
-        .safeSubscribe(new DefaultObserver<String>() /* NFI */ {
+        .safeSubscribe(new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onComplete() {

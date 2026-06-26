@@ -182,7 +182,7 @@ public class SingleSubjectTest extends RxJavaTest {
     @Test
     public void disposeTwice() {
         SingleSubject.create()
-        .subscribe(new SingleObserver<Object>() /* NFI */ {
+        .subscribe(new SingleObserver<>() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 assertFalse(d.isDisposed());

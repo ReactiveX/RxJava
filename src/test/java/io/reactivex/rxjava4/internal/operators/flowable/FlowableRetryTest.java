@@ -45,7 +45,7 @@ public class FlowableRetryTest extends RxJavaTest {
     public void iterativeBackoff() {
         Subscriber<String> consumer = TestHelper.mockSubscriber();
 
-        Flowable<String> producer = Flowable.unsafeCreate(new Publisher<String>() /* NFI */ {
+        Flowable<String> producer = Flowable.unsafeCreate(new Publisher<>() /* NFI */ {
 
             private AtomicInteger count = new AtomicInteger(4);
             long last = System.currentTimeMillis();

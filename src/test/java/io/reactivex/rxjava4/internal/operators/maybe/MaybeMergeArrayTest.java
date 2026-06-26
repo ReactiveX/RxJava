@@ -61,11 +61,12 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     @Test
     public void fusedEmptyCheck() {
         Maybe.mergeArray(Maybe.just(1), Maybe.<Integer>empty(), Maybe.just(2))
-        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
             QueueSubscription<Integer> qs;
+
             @Override
             public void onSubscribe(Subscription s) {
-                qs = (QueueSubscription<Integer>)s;
+                qs = (QueueSubscription<Integer>) s;
 
                 assertEquals(QueueFuseable.ASYNC, qs.requestFusion(QueueFuseable.ANY));
             }
@@ -176,12 +177,12 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     @Test
     public void smallOffer2Throws() {
         Maybe.mergeArray(Maybe.never(), Maybe.never())
-        .subscribe(new FlowableSubscriber<Object>() /* NFI */ {
+        .subscribe(new FlowableSubscriber<>() /* NFI */ {
 
             @SuppressWarnings("rawtypes")
             @Override
             public void onSubscribe(Subscription s) {
-                MergeMaybeObserver o = (MergeMaybeObserver)s;
+                MergeMaybeObserver o = (MergeMaybeObserver) s;
 
                 try {
                     o.queue.offer(1, 2);

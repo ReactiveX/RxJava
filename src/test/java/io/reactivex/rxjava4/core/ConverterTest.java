@@ -87,7 +87,7 @@ public final class ConverterTest extends RxJavaTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void observableGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
+        var a = new A<String, Integer>() /* NFI */ { };
 
         Observable.just(a).to((ObservableConverter)ConverterTest.testObservableConverterCreator());
     }
@@ -95,7 +95,7 @@ public final class ConverterTest extends RxJavaTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void singleGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
+        var a = new A<String, Integer>() /* NFI */ { };
 
         Single.just(a).to((SingleConverter)ConverterTest.<String>testSingleConverterCreator());
     }
@@ -103,7 +103,7 @@ public final class ConverterTest extends RxJavaTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void maybeGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
+        var a = new A<String, Integer>() /* NFI */ { };
 
         Maybe.just(a).to((MaybeConverter)ConverterTest.<String>testMaybeConverterCreator());
     }
@@ -111,7 +111,7 @@ public final class ConverterTest extends RxJavaTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void flowableGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
+        var a = new A<String, Integer>() /* NFI */ { };
 
         Flowable.just(a).to((FlowableConverter)ConverterTest.<String>testFlowableConverterCreator());
     }
@@ -119,14 +119,14 @@ public final class ConverterTest extends RxJavaTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void parallelFlowableGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
+        var a = new A<String, Integer>() /* NFI */ { };
 
         Flowable.just(a).parallel().to((ParallelFlowableConverter)ConverterTest.<String>testParallelFlowableConverterCreator());
     }
 
     @Test
     public void compositeTest() {
-        CompositeConverter converter = new CompositeConverter();
+        var converter = new CompositeConverter();
 
         Flowable.just(1)
                 .to(converter)
@@ -174,27 +174,27 @@ public final class ConverterTest extends RxJavaTest {
     interface B<T> { }
 
     private static <T> ObservableConverter<A<T, ?>, B<T>> testObservableConverterCreator() {
-        return _ -> new B<T>() /* NFI */ {
+        return _ -> new B<>() /* NFI */ {
         };
     }
 
     private static <T> SingleConverter<A<T, ?>, B<T>> testSingleConverterCreator() {
-        return _ -> new B<T>() /* NFI */ {
+        return _ -> new B<>() /* NFI */ {
         };
     }
 
     private static <T> MaybeConverter<A<T, ?>, B<T>> testMaybeConverterCreator() {
-        return _ -> new B<T>() /* NFI */ {
+        return _ -> new B<>() /* NFI */ {
         };
     }
 
     private static <T> FlowableConverter<A<T, ?>, B<T>> testFlowableConverterCreator() {
-        return _ -> new B<T>() /* NFI */ {
+        return _ -> new B<>() /* NFI */ {
         };
     }
 
     private static <T> ParallelFlowableConverter<A<T, ?>, B<T>> testParallelFlowableConverterCreator() {
-        return _ -> new B<T>() /* NFI */ {
+        return _ -> new B<>() /* NFI */ {
         };
     }
 

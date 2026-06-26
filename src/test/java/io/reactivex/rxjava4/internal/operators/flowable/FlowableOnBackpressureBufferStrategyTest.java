@@ -55,7 +55,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     }
 
     private TestSubscriber<Long> createTestSubscriber() {
-        return new TestSubscriber<>(new DefaultSubscriber<Long>() /* NFI */ {
+        return new TestSubscriber<>(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             protected void onStart() {
@@ -283,7 +283,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
         Consumer<Integer> onDropped = _ -> { throw new TestException(); };
 
         TestSubscriberEx<Integer> ts = pp.onBackpressureBuffer(1, null, BackpressureOverflowStrategy.DROP_OLDEST, onDropped)
-        .subscribeWith(new TestSubscriberEx<Integer>(0L));
+        .subscribeWith(new TestSubscriberEx<>(0L));
 
         ts.assertEmpty();
 

@@ -269,7 +269,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
         // use subscribeOn to make async, observeOn to move
         Observable.range(1, 2).subscribeOn(Schedulers.newThread())
         .observeOn(Schedulers.newThread())
-        .subscribe(new DefaultObserver<Integer>() /* NFI */ {
+        .subscribe(new DefaultObserver<>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -359,7 +359,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
     @Test
     public void backpressureWithTakeBefore() {
         final AtomicInteger generated = new AtomicInteger();
-        Observable<Integer> o = Observable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
+        var o = Observable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
             @Override
             public void remove() {
@@ -576,13 +576,14 @@ public class ObservableObserveOnTest extends RxJavaTest {
         final CountDownLatch cdl = new CountDownLatch(1);
 
         us.observeOn(Schedulers.single())
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
             Disposable upstream;
             int count;
+
             @Override
             public void onSubscribe(Disposable d) {
                 this.upstream = d;
-                ((QueueDisposable<?>)d).requestFusion(QueueFuseable.ANY);
+                ((QueueDisposable<?>) d).requestFusion(QueueFuseable.ANY);
             }
 
             @Override
@@ -620,7 +621,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
                 @SuppressWarnings("unchecked")
                 ObserveOnObserver<Integer> oo = (ObserveOnObserver<Integer>)observer;
 
-                oo.queue = new SimpleQueue<Integer>() /* NFI */ {
+                oo.queue = new SimpleQueue<>() /* NFI */ {
 
                     @Override
                     public boolean offer(Integer value) {

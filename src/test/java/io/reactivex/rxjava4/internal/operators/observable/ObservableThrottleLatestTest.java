@@ -196,7 +196,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
         TestScheduler sch = new TestScheduler();
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() /* NFI */ {
+        var to = new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

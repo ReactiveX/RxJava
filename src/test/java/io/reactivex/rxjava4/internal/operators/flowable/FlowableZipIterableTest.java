@@ -227,7 +227,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         InOrder io = inOrder(subscriber);
 
-        Iterable<String> r2 = () -> new Iterator<String>() /* NFI */ {
+        Iterable<String> r2 = () -> new Iterator<>() /* NFI */ {
             int count;
 
             @Override
@@ -270,7 +270,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         InOrder io = inOrder(subscriber);
 
-        Iterable<String> r2 = () -> new Iterator<String>() /* NFI */ {
+        Iterable<String> r2 = () -> new Iterator<>() /* NFI */ {
             @Override
             public boolean hasNext() {
                 return true;

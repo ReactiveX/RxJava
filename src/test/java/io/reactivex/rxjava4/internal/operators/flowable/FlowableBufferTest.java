@@ -819,7 +819,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
             }
 
-        })).buffer(3, 2).subscribe(new DefaultSubscriber<List<Integer>>() /* NFI */ {
+        })).buffer(3, 2).subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -849,7 +849,7 @@ public class FlowableBufferTest extends RxJavaTest {
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         final CountDownLatch cdl = new CountDownLatch(1);
-        ResourceSubscriber<Object> s = new ResourceSubscriber<Object>() /* NFI */ {
+        var s = new ResourceSubscriber<>() /* NFI */ {
             @Override
             public void onNext(Object t) {
                 subscriber.onNext(t);
@@ -1686,7 +1686,7 @@ public class FlowableBufferTest extends RxJavaTest {
     public void openClosebadSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Object>() /* NFI */ {
+            new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> s) {
                     BooleanSubscription bs1 = new BooleanSubscription();
@@ -1843,11 +1843,11 @@ public class FlowableBufferTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.never()
-            .buffer(new Flowable<Object>() /* NFI */ {
+            .buffer(new Flowable<>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> s) {
 
-                    assertFalse(((Disposable)s).isDisposed());
+                    assertFalse(((Disposable) s).isDisposed());
 
                     BooleanSubscription bs1 = new BooleanSubscription();
                     BooleanSubscription bs2 = new BooleanSubscription();
@@ -1864,7 +1864,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
                     s.onError(new IOException());
 
-                    assertTrue(((Disposable)s).isDisposed());
+                    assertTrue(((Disposable) s).isDisposed());
 
                     s.onComplete();
                     s.onNext(1);
@@ -1956,7 +1956,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void bufferExactBoundaryBadSource() {
-        Flowable<Integer> pp = new Flowable<Integer>() /* NFI */ {
+        var pp = new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
@@ -1967,7 +1967,7 @@ public class FlowableBufferTest extends RxJavaTest {
         };
 
         final AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<>();
-        Flowable<Integer> b = new Flowable<Integer>() /* NFI */ {
+        var b = new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
@@ -1996,7 +1996,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void bufferExactBoundaryDisposed() {
-        Flowable<Integer> pp = new Flowable<Integer>() /* NFI */ {
+        var pp = new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
@@ -2040,7 +2040,7 @@ public class FlowableBufferTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         BufferExactUnboundedSubscriber<Integer, List<Integer>> sub = new BufferExactUnboundedSubscriber<>(
-                ts, Functions.justSupplier(new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
+                ts, Functions.justSupplier(new ArrayList<>()), 1, TimeUnit.SECONDS, sch);
 
         sub.onSubscribe(new BooleanSubscription());
 
@@ -2078,7 +2078,7 @@ public class FlowableBufferTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         BufferSkipBoundedSubscriber<Integer, List<Integer>> sub = new BufferSkipBoundedSubscriber<>(
-                ts, Functions.justSupplier(new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
+                ts, Functions.justSupplier(new ArrayList<>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
         sub.onSubscribe(new BooleanSubscription());
 
@@ -2124,7 +2124,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         BufferExactBoundedSubscriber<Integer, List<Integer>> sub =
                 new BufferExactBoundedSubscriber<>(
-                        ts, Functions.justSupplier(new ArrayList<Integer>()),
+                        ts, Functions.justSupplier(new ArrayList<>()),
                         1, TimeUnit.SECONDS, 1, false, sch.createWorker())
         ;
 

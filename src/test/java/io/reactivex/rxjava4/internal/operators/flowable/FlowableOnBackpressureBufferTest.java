@@ -54,7 +54,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     public void fixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);
-        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() /* NFI */ {
+        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             protected void onStart() {
@@ -111,7 +111,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     public void fixBackpressureBoundedBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch backpressureCallback = new CountDownLatch(1);
-        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() /* NFI */ {
+        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
             protected void onStart() {
@@ -364,7 +364,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         Consumer<Integer> onDropped = _ -> { throw new TestException(); };
 
         TestSubscriberEx<Integer> ts = pp.onBackpressureBuffer(1, false, false, () -> { }, onDropped)
-        .subscribeWith(new TestSubscriberEx<Integer>(0L));
+        .subscribeWith(new TestSubscriberEx<>(0L));
 
         ts.assertEmpty();
 

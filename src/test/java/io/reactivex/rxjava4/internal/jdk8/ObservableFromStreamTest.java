@@ -122,11 +122,11 @@ public class ObservableFromStreamTest extends RxJavaTest {
         AtomicReference<SimpleQueue<?>> queue = new AtomicReference<>();
 
         Observable.fromStream(IntStream.rangeClosed(1, 10).boxed())
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
-                queue.set((SimpleQueue<?>)d);
-                ((QueueDisposable<?>)d).requestFusion(QueueFuseable.ANY);
+                queue.set((SimpleQueue<?>) d);
+                ((QueueDisposable<?>) d).requestFusion(QueueFuseable.ANY);
             }
 
             @Override
@@ -166,11 +166,11 @@ public class ObservableFromStreamTest extends RxJavaTest {
         AtomicInteger calls = new AtomicInteger();
 
         Observable.fromStream(Stream.of(1).onClose(calls::getAndIncrement))
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
-                queue.set((SimpleQueue<?>)d);
-                ((QueueDisposable<?>)d).requestFusion(QueueFuseable.ANY);
+                queue.set((SimpleQueue<?>) d);
+                ((QueueDisposable<?>) d).requestFusion(QueueFuseable.ANY);
             }
 
             @Override
@@ -203,11 +203,11 @@ public class ObservableFromStreamTest extends RxJavaTest {
         AtomicInteger calls = new AtomicInteger();
 
         Observable.fromStream(Stream.of(1, 2).onClose(calls::getAndIncrement))
-        .subscribe(new Observer<Integer>() /* NFI */ {
+        .subscribe(new Observer<>() /* NFI */ {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
-                queue.set((SimpleQueue<?>)d);
-                ((QueueDisposable<?>)d).requestFusion(QueueFuseable.ANY);
+                queue.set((SimpleQueue<?>) d);
+                ((QueueDisposable<?>) d).requestFusion(QueueFuseable.ANY);
             }
 
             @Override
@@ -438,7 +438,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
 
         @SuppressWarnings("unchecked")
         Stream<Integer> stream = mock(Stream.class);
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
+        when(stream.iterator()).thenReturn(new Iterator<>() /* NFI */ {
 
             @Override
             public boolean hasNext() {
@@ -464,7 +464,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
 
         @SuppressWarnings("unchecked")
         Stream<Integer> stream = mock(Stream.class);
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
+        when(stream.iterator()).thenReturn(new Iterator<>() /* NFI */ {
 
             int calls;
 

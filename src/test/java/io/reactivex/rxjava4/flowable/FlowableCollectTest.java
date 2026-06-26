@@ -117,7 +117,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     public void collectorFailureDoesNotResultInErrorAndOnNextEmissionsFlowable() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
-        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() /* NFI */ {
+        var throwOnFirstOnly = new BiConsumer<Object, Integer>() /* NFI */ {
 
             boolean once = true;
 
@@ -232,7 +232,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     public void collectorFailureDoesNotResultInErrorAndOnNextEmissions() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
-        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() /* NFI */ {
+        var throwOnFirstOnly = new BiConsumer<Object, Integer>() /* NFI */ {
 
             boolean once = true;
 
