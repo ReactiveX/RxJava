@@ -14526,7 +14526,7 @@ FlowableDocBasic<T>
      * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.v3.png" alt="">
      * <p>
      * Example:
-     *
+     * <p>
      * This retries 3 times, each time incrementing the number of seconds it waits.
      *
      * <pre><code>

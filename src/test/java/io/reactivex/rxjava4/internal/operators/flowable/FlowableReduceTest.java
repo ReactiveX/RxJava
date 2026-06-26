@@ -313,7 +313,7 @@ public class FlowableReduceTest extends RxJavaTest {
 
     /**
      * Make sure an asynchronous reduce with flatMap works.
-     * Original Reactor-Core test case: https://gist.github.com/jurna/353a2bd8ff83f0b24f0b5bc772077d61
+     * Original Reactor-Core test case: <a href="https://gist.github.com/jurna/353a2bd8ff83f0b24f0b5bc772077d61">...</a>
      */
     @Test
     public void shouldReduceTo10Events() {
@@ -335,7 +335,7 @@ public class FlowableReduceTest extends RxJavaTest {
 
     /**
      * Make sure an asynchronous reduce with flatMap works.
-     * Original Reactor-Core test case: https://gist.github.com/jurna/353a2bd8ff83f0b24f0b5bc772077d61
+     * Original Reactor-Core test case: <a href="https://gist.github.com/jurna/353a2bd8ff83f0b24f0b5bc772077d61">...</a>
      */
     @Test
     public void shouldReduceTo10EventsFlowable() {

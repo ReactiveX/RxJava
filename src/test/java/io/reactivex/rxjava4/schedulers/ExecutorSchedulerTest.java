@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.Scheduler;
@@ -152,7 +153,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     static final class TestExecutor implements Executor {
         final ConcurrentLinkedQueue<Runnable> queue = new ConcurrentLinkedQueue<>();
         @Override
-        public void execute(Runnable command) {
+        public void execute(@NonNull Runnable command) {
             queue.offer(command);
         }
         public void executeOne() {
@@ -354,11 +355,11 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
                 w.schedule(() -> {
                     c.decrementAndGet();
-                    while (c.get() != 0) { }
+                    while (c.get() != 0) { Thread.onSpinWait(); }
                 });
 
                 c.decrementAndGet();
-                while (c.get() != 0) { }
+                while (c.get() != 0) { Thread.onSpinWait(); }
                 w.dispose();
             }
         } finally {
@@ -446,8 +447,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Test
     public void interruptibleRunnableRunDisposeRace() {
-        ExecutorService exec = Executors.newSingleThreadExecutor();
-        try {
+        try (var exec = Executors.newSingleThreadExecutor()) {
             Scheduler s = Schedulers.from(exec::execute, true);
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
                 SequentialDisposable sd = new SequentialDisposable();
@@ -457,8 +457,6 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
                         sd::dispose
                 );
             }
-        } finally {
-            exec.shutdown();
         }
     }
 

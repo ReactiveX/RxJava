@@ -273,11 +273,11 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 w.schedule(() -> {
                     c.decrementAndGet();
-                    while (c.get() != 0) { }
+                    while (c.get() != 0) { Thread.onSpinWait(); }
                 });
 
                 c.decrementAndGet();
-                while (c.get() != 0) { }
+                while (c.get() != 0) { Thread.onSpinWait(); }
                 w.dispose();
             }
         } finally {
@@ -373,7 +373,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
         Disposable d = scheduler.scheduleDirect(() -> {
             if (sync.decrementAndGet() != 0) {
-                while (sync.get() != 0) { }
+                while (sync.get() != 0) { Thread.onSpinWait(); }
             }
             try {
                 Thread.sleep(1000);
@@ -383,7 +383,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         });
 
         if (sync.decrementAndGet() != 0) {
-            while (sync.get() != 0) { }
+            while (sync.get() != 0) { Thread.onSpinWait(); }
         }
 
         Thread.sleep(500);
@@ -411,7 +411,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             Disposable d = worker.schedule(() -> {
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
                 try {
                     Thread.sleep(1000);
@@ -421,7 +421,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             });
 
             if (sync.decrementAndGet() != 0) {
-                while (sync.get() != 0) { }
+                while (sync.get() != 0) { Thread.onSpinWait(); }
             }
 
             Thread.sleep(500);
@@ -451,7 +451,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             Disposable d = scheduler.scheduleDirect(() -> {
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
                 try {
                     Thread.sleep(1000);
@@ -461,7 +461,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             });
 
             if (sync.decrementAndGet() != 0) {
-                while (sync.get() != 0) { }
+                while (sync.get() != 0) { Thread.onSpinWait(); }
             }
 
             Thread.sleep(500);
@@ -494,7 +494,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 Disposable d = worker.schedule(() -> {
                     if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
+                        while (sync.get() != 0) { Thread.onSpinWait(); }
                     }
                     try {
                         Thread.sleep(1000);
@@ -504,7 +504,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                 });
 
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
 
                 Thread.sleep(500);
@@ -537,7 +537,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             Disposable d = scheduler.scheduleDirect(() -> {
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
                 try {
                     Thread.sleep(1000);
@@ -547,7 +547,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             });
 
             if (sync.decrementAndGet() != 0) {
-                while (sync.get() != 0) { }
+                while (sync.get() != 0) { Thread.onSpinWait(); }
             }
 
             Thread.sleep(500);
@@ -580,7 +580,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 Disposable d = worker.schedule(() -> {
                     if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
+                        while (sync.get() != 0) { Thread.onSpinWait(); }
                     }
                     try {
                         Thread.sleep(1000);
@@ -590,7 +590,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                 });
 
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
 
                 Thread.sleep(500);
@@ -623,7 +623,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             Disposable d = scheduler.scheduleDirect(() -> {
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
                 try {
                     Thread.sleep(1000);
@@ -633,7 +633,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             });
 
             if (sync.decrementAndGet() != 0) {
-                while (sync.get() != 0) { }
+                while (sync.get() != 0) { Thread.onSpinWait(); }
             }
 
             Thread.sleep(500);
@@ -666,7 +666,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 Disposable d = worker.schedule(() -> {
                     if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
+                        while (sync.get() != 0) { Thread.onSpinWait(); }
                     }
                     try {
                         Thread.sleep(1000);
@@ -676,7 +676,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                 });
 
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
 
                 Thread.sleep(500);
@@ -709,7 +709,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             Disposable d = scheduler.scheduleDirect(() -> {
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
                 try {
                     Thread.sleep(1000);
@@ -719,7 +719,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             }, 1, TimeUnit.MILLISECONDS);
 
             if (sync.decrementAndGet() != 0) {
-                while (sync.get() != 0) { }
+                while (sync.get() != 0) { Thread.onSpinWait(); }
             }
 
             Thread.sleep(500);
@@ -752,7 +752,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 Disposable d = worker.schedule(() -> {
                     if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
+                        while (sync.get() != 0) { Thread.onSpinWait(); }
                     }
                     try {
                         Thread.sleep(1000);
@@ -762,7 +762,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                 }, 1, TimeUnit.MILLISECONDS);
 
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
 
                 Thread.sleep(500);
@@ -795,7 +795,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             Disposable d = scheduler.scheduleDirect(() -> {
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
                 try {
                     Thread.sleep(1000);
@@ -805,7 +805,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             }, 1, TimeUnit.MILLISECONDS);
 
             if (sync.decrementAndGet() != 0) {
-                while (sync.get() != 0) { }
+                while (sync.get() != 0) { Thread.onSpinWait(); }
             }
 
             Thread.sleep(500);
@@ -838,7 +838,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 Disposable d = worker.schedule(() -> {
                     if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
+                        while (sync.get() != 0) { Thread.onSpinWait(); }
                     }
                     try {
                         Thread.sleep(1000);
@@ -848,7 +848,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                 }, 1, TimeUnit.MILLISECONDS);
 
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
 
                 Thread.sleep(500);

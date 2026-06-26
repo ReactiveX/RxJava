@@ -683,7 +683,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             }
 
             for (int i = 1; i <= 10; i++) {
-                while (!pp.offer(i)) { }
+                while (!pp.offer(i)) {
+                    Thread.onSpinWait();
+                }
             }
             pp.onComplete();
         });
@@ -740,7 +742,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
             Runnable r1 = () -> {
                 for (int i1 = 0; i1 < 2; i1++) {
-                    while (!pp.offer(i1)) { }
+                    while (!pp.offer(i1)) { Thread.onSpinWait(); }
                 }
             };
 

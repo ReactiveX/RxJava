@@ -4358,7 +4358,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
      * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retryWhen.png" alt="">
      * <p>
      * Example:
-     *
+     * <p>
      * This retries 3 times, each time incrementing the number of seconds it waits.
      *
      * <pre><code>
@@ -5391,7 +5391,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     /**
      * Waits until this and the other {@link MaybeSource} signal a success value then applies the given {@link BiFunction}
      * to those values and emits the {@code BiFunction}'s resulting value to downstream.
-     *
+     * <p>
      * <img width="640" height="451" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.zipWith.png" alt="">
      *
      * <p>If either this or the other {@code MaybeSource} is empty or signals an error, the resulting {@code Maybe} will

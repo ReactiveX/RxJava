@@ -228,7 +228,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
      * Attempts to confirm that when pauses exist between events, the ScheduledObserver
      * does not lose or reorder any events since the scheduler will not block, but will
      * be re-scheduled when it receives new events after each pause.
-     *
+     * <p>
      *
      * This is non-deterministic in proving success, but if it ever fails (non-deterministically)
      * it is a sign of potential issues as thread-races and scheduling should not affect output.
@@ -509,12 +509,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
         assertEquals(1, errors.size());
         System.out.println("Errors: " + errors);
         Throwable t = errors.getFirst();
-        if (t instanceof QueueOverflowException) {
-            // success, we expect this
-        } else {
-            if (t.getCause() instanceof QueueOverflowException) {
-                // this is also okay
-            } else {
+        if (!(t instanceof QueueOverflowException)) {
+            if (!(t.getCause() instanceof QueueOverflowException)) {
                 fail("Expecting QueueOverflowException");
             }
         }
@@ -534,7 +530,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             final PublishProcessor<Long> processor = PublishProcessor.create();
 
             final AtomicLong counter = new AtomicLong();
-            TestSubscriberEx<Long> ts = new TestSubscriberEx<>(new DefaultSubscriber<Long>() /* NFI */ {
+            var ts = new TestSubscriberEx<>(new DefaultSubscriber<Long>() /* NFI */ {
 
                 @Override
                 public void onComplete() {

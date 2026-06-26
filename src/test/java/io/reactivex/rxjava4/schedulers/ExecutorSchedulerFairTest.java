@@ -276,11 +276,11 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
                 w.schedule(() -> {
                     c.decrementAndGet();
-                    while (c.get() != 0) { }
+                    while (c.get() != 0) { Thread.onSpinWait(); }
                 });
 
                 c.decrementAndGet();
-                while (c.get() != 0) { }
+                while (c.get() != 0) { Thread.onSpinWait(); }
                 w.dispose();
             }
         } finally {

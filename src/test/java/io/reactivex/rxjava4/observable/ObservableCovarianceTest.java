@@ -27,8 +27,8 @@ import io.reactivex.rxjava4.testsupport.TestObserverEx;
 
 /**
  * Test super/extends of generics.
- *
- * See https://github.com/Netflix/RxJava/pull/331
+ * <p>
+ * See <a href="https://github.com/Netflix/RxJava/pull/331">...</a>
  */
 public class ObservableCovarianceTest extends RxJavaTest {
 

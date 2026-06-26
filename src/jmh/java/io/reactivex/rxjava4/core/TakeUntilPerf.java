@@ -48,13 +48,13 @@ public class TakeUntilPerf implements Consumer<Integer> {
 
         flowable = Flowable.range(1, 1000 * 1000).takeUntil(Flowable.fromCallable((Callable<Object>) () -> {
             int c = count;
-            while (items < c) { }
+            while (items < c) { Thread.onSpinWait(); }
             return 1;
         }).subscribeOn(Schedulers.single()));
 
         observable = Observable.range(1, 1000 * 1000).takeUntil(Observable.fromCallable((Callable<Object>) () -> {
             int c = count;
-            while (items < c) { }
+            while (items < c) { Thread.onSpinWait(); }
             return 1;
         }).subscribeOn(Schedulers.single()));
     }
@@ -65,7 +65,7 @@ public class TakeUntilPerf implements Consumer<Integer> {
 
         flowable.subscribe(this, Functions.emptyConsumer(), cdl::countDown);
 
-        while (cdl.getCount() != 0) { }
+        while (cdl.getCount() != 0) { Thread.onSpinWait(); }
     }
 
     @Benchmark
@@ -74,6 +74,6 @@ public class TakeUntilPerf implements Consumer<Integer> {
 
         observable.subscribe(this, Functions.emptyConsumer(), cdl::countDown);
 
-        while (cdl.getCount() != 0) { }
+        while (cdl.getCount() != 0) { Thread.onSpinWait(); }
     }
 }

@@ -30,8 +30,8 @@ import io.reactivex.rxjava4.internal.util.Pow2;
  * This implementation is a mashup of the <a href="http://sourceforge.net/projects/mc-fastflow/">Fast Flow</a>
  * algorithm with an optimization of the offer method taken from the <a
  * href="http://staff.ustc.edu.cn/~bhua/publications/IJPP_draft.pdf">BQueue</a> algorithm (a variation on Fast
- * Flow), and adjusted to comply with Queue.offer semantics regarding capacity.<br>
- * For convenience the relevant papers are available in the resources folder:<br>
+ * Flow), and adjusted to comply with {@link java.util.Queue#offer(Object)} semantics regarding capacity.<br>
+ * For convenience the relevant papers are available in the {@code resources} folder:<br>
  * <i>2010 - Pisa - SPSC Queues on Shared Cache Multi-Core Systems.pdf<br>
  * 2012 - Junchang- BQueue- Efficient and Practical Queuing.pdf <br>
  * </i> This implementation is wait free.
@@ -122,7 +122,9 @@ public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements 
     @Override
     public void clear() {
         // we have to test isEmpty because of the weaker poll() guarantee
-        while (poll() != null || !isEmpty()) { } // NOPMD
+        while (poll() != null || !isEmpty()) {
+            Thread.onSpinWait();
+        } // NOPMD
     }
 
     int calcElementOffset(long index, int mask) {

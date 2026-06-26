@@ -985,12 +985,12 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     /**
      * Issue #3425.
-     *
+     * <p>
      * The problem is that a request of 1 may create a new group, emit to the desired group
      * or emit to a completely different group. In this test, the merge requests N which
      * must be produced by the range, however it will create a bunch of groups before the actual
      * group receives a value.
-     * 
+     * <p>
      * 12/03/2019: this test produces abandoned groups and as such keeps producing new groups
      * that have to be ready to be received by observeOn and merge.
      */

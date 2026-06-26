@@ -117,7 +117,7 @@ public class SimpleQueueTest extends RxJavaTest {
             @Override
             public void run() {
                 c.decrementAndGet();
-                while (c.get() != 0) { }
+                while (c.get() != 0) { Thread.onSpinWait(); }
 
                 while (i++ < 10000) {
                     q.offer(i);
@@ -131,7 +131,7 @@ public class SimpleQueueTest extends RxJavaTest {
             @Override
             public void run() {
                 c.decrementAndGet();
-                while (c.get() != 0) { }
+                while (c.get() != 0) { Thread.onSpinWait(); }
 
                 while (i++ < 10000) {
                     q.offer(i);
@@ -145,7 +145,7 @@ public class SimpleQueueTest extends RxJavaTest {
             @Override
             public void run() {
                 c.decrementAndGet();
-                while (c.get() != 0) { }
+                while (c.get() != 0) { Thread.onSpinWait(); }
 
                 while (--i > 0) {
                     q.poll();

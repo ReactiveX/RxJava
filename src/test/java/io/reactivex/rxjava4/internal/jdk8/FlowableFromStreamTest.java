@@ -416,13 +416,13 @@ public class FlowableFromStreamTest extends RxJavaTest {
                         AtomicInteger sync = new AtomicInteger(2);
                         exec.submit(() -> {
                             if (sync.decrementAndGet() != 0) {
-                                while (sync.get() != 0) { }
+                                while (sync.get() != 0) { Thread.onSpinWait(); }
                             }
                             upstream.request(1);
                         });
 
                         if (sync.decrementAndGet() != 0) {
-                            while (sync.get() != 0) { }
+                            while (sync.get() != 0) { Thread.onSpinWait(); }
                         }
                     }
 
@@ -496,7 +496,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     public void closeCalledOnItemCrash() {
         AtomicInteger calls = new AtomicInteger();
         AtomicInteger counter = new AtomicInteger();
-        Flowable.fromStream(Stream.<Integer>generate(() -> {
+        Flowable.fromStream(Stream.generate(() -> {
             int value = counter.getAndIncrement();
             if (value == 1) {
                 throw new TestException();
@@ -538,7 +538,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     public void closeCalledOnItemCrashConditional() {
         AtomicInteger calls = new AtomicInteger();
         AtomicInteger counter = new AtomicInteger();
-        Flowable.fromStream(Stream.<Integer>generate(() -> {
+        Flowable.fromStream(Stream.generate(() -> {
             int value = counter.getAndIncrement();
             if (value == 1) {
                 throw new TestException();

@@ -44,8 +44,8 @@ public class FlowableReduceTests extends RxJavaTest {
 
     /**
      * Reduce consumes and produces T so can't do covariance.
-     *
-     * https://github.com/ReactiveX/RxJava/issues/360#issuecomment-24203016
+     * <p>
+     * <a href="https://github.com/ReactiveX/RxJava/issues/360#issuecomment-24203016">...</a>
      */
     @Test
     public void reduceWithCovariantObjectsFlowable() {
@@ -78,8 +78,8 @@ public class FlowableReduceTests extends RxJavaTest {
 
     /**
      * Reduce consumes and produces T so can't do covariance.
-     *
-     * https://github.com/ReactiveX/RxJava/issues/360#issuecomment-24203016
+     * <p>
+     * <a href="https://github.com/ReactiveX/RxJava/issues/360#issuecomment-24203016">...</a>
      */
     @Test
     public void reduceWithCovariantObjects() {
@@ -92,8 +92,8 @@ public class FlowableReduceTests extends RxJavaTest {
 
     /**
      * Reduce consumes and produces T so can't do covariance.
-     *
-     * https://github.com/ReactiveX/RxJava/issues/360#issuecomment-24203016
+     * <p>
+     * <a href="https://github.com/ReactiveX/RxJava/issues/360#issuecomment-24203016">...</a>
      */
     @Test
     public void reduceCovariance() {

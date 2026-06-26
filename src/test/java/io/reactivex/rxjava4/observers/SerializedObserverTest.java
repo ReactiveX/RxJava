@@ -336,18 +336,18 @@ public class SerializedObserverTest extends RxJavaTest {
 
     /**
      * Demonstrates thread starvation problem.
-     *
-     * No solution on this for now. Trade-off in this direction as per https://github.com/ReactiveX/RxJava/issues/998#issuecomment-38959474
+     * <p>
+     * No solution on this for now. Trade-off in this direction as per <a href="https://github.com/ReactiveX/RxJava/issues/998#issuecomment-38959474">...</a>
      * Probably need backpressure for this to work
-     *
+     * <p>
      * When using SynchronizedSubscriber we get this output:
-     *
+     * <p>
      * {@code p1: 18 p2: 68 =>} should be close to each other unless we have thread starvation
-     *
+     * <p>
      * When using SerializedObserver we get:
-     *
+     * <p>
      * {@code p1: 1 p2: 2445261 =>} should be close to each other unless we have thread starvation
-     *
+     * <p>
      * This demonstrates how SynchronizedSubscriber balances back and forth better, and blocks emission.
      * The real issue in this example is the async buffer-bloat, so we need backpressure.
      *

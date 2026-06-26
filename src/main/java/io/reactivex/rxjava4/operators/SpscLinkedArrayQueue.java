@@ -194,7 +194,9 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
 
     @Override
     public void clear() {
-        while (poll() != null || !isEmpty()) { } // NOPMD
+        while (poll() != null || !isEmpty()) {
+            Thread.onSpinWait();
+        } // NOPMD
     }
 
     /**

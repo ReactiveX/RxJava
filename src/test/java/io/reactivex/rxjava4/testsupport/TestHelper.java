@@ -266,37 +266,6 @@ public enum TestHelper {
     }
 
     /**
-     * Verify that a specific enum type has no enum constants.
-     * @param <E> the enum type
-     * @param e the enum class instance
-     */
-    public static <E extends Enum<E>> void assertEmptyEnum(Class<E> e) {
-        assertEquals(0, e.getEnumConstants().length);
-
-        try {
-            try {
-                Method m0 = e.getDeclaredMethod("values");
-
-                Object[] a = (Object[])m0.invoke(null);
-                assertEquals(0, a.length);
-
-                Method m = e.getDeclaredMethod("valueOf", String.class);
-
-                m.invoke("INSTANCE");
-                fail("Should have thrown!");
-            } catch (InvocationTargetException ex) {
-                fail(ex.toString());
-            } catch (IllegalAccessException ex) {
-                fail(ex.toString());
-            } catch (IllegalArgumentException ex) {
-                // we expected this
-            }
-        } catch (NoSuchMethodException ex) {
-            fail(ex.toString());
-        }
-    }
-
-    /**
      * Assert that by consuming the Publisher with a bad request amount, it is
      * reported to the plugin error handler promptly.
      * @param source the source to consume
@@ -359,7 +328,7 @@ public enum TestHelper {
         try {
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            var bad = new FlowableSubscriber<Object>() /* NFI */ {
+            var bad = new FlowableSubscriber<>() /* NFI */ {
 
                 @Override
                 public void onSubscribe(Subscription s) {
@@ -440,7 +409,7 @@ public enum TestHelper {
 
         s.scheduleDirect(() -> {
             if (count.decrementAndGet() != 0) {
-                while (count.get() != 0) { }
+                while (count.get() != 0) { Thread.onSpinWait(); }
             }
 
             try {
@@ -455,7 +424,7 @@ public enum TestHelper {
         });
 
         if (count.decrementAndGet() != 0) {
-            while (count.get() != 0) { }
+            while (count.get() != 0) { Thread.onSpinWait(); }
         }
 
         try {
@@ -483,7 +452,7 @@ public enum TestHelper {
             throw ExceptionHelper.wrapOrThrow(errors[1]);
         }
 
-        if (errors[0] != null && errors[1] != null) {
+        if (errors[0] != null) {
             throw new CompositeException(errors);
         }
     }
@@ -958,7 +927,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Maybe<T> source = new Maybe<T>() /* NFI */ {
+            var source = new Maybe<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
@@ -1012,7 +981,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Maybe<T> source = new Maybe<T>() /* NFI */ {
+            var source = new Maybe<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
@@ -1066,7 +1035,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Maybe<T> source = new Maybe<T>() /* NFI */ {
+            var source = new Maybe<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
@@ -1120,7 +1089,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Maybe<T> source = new Maybe<T>() /* NFI */ {
+            var source = new Maybe<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
@@ -1174,7 +1143,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Single<T> source = new Single<T>() /* NFI */ {
+            var source = new Single<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
@@ -1228,7 +1197,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Single<T> source = new Single<T>() /* NFI */ {
+            var source = new Single<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
@@ -1282,7 +1251,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Single<T> source = new Single<T>() /* NFI */ {
+            var source = new Single<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
@@ -1335,7 +1304,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Maybe<T> source = new Maybe<T>() /* NFI */ {
+            var source = new Maybe<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
@@ -1389,7 +1358,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Single<T> source = new Single<T>() /* NFI */ {
+            var source = new Single<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
@@ -1443,7 +1412,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null };
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Flowable<T> source = new Flowable<T>() /* NFI */ {
+            var source = new Flowable<T>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
@@ -1497,7 +1466,7 @@ public enum TestHelper {
             final Boolean[] b = { null, null, null, null };
             final CountDownLatch cdl = new CountDownLatch(2);
 
-            ParallelFlowable<T> source = new ParallelFlowable<T>() /* NFI */ {
+            var source = new ParallelFlowable<T>() /* NFI */ {
                 @Override
                 public void subscribe(Subscriber<? super T>[] subscribers) {
                     for (int i = 0; i < subscribers.length; i++) {
@@ -1510,7 +1479,7 @@ public enum TestHelper {
 
                             subscribers[i].onSubscribe(bs2);
 
-                            b[i * 2 + 0] = bs1.isCancelled();
+                            b[i * 2] = bs1.isCancelled();
                             b[i * 2 + 1] = bs2.isCancelled();
                         } finally {
                             cdl.countDown();
@@ -3717,7 +3686,7 @@ public enum TestHelper {
 
         Schedulers.single().scheduleDirect(() -> {
             if (sync.decrementAndGet() != 0) {
-                while (sync.get() != 0) { }
+                while (sync.get() != 0) { Thread.onSpinWait(); }
             }
 
             run.run();
@@ -3726,7 +3695,7 @@ public enum TestHelper {
         });
 
         if (sync.decrementAndGet() != 0) {
-            while (sync.get() != 0) { }
+            while (sync.get() != 0) { Thread.onSpinWait(); }
         }
     }
 

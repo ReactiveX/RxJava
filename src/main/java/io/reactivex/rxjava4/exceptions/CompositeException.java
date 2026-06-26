@@ -21,14 +21,14 @@ import io.reactivex.rxjava4.annotations.NonNull;
 /**
  * Represents an exception that is a composite of one or more other exceptions. A {@code CompositeException}
  * does not modify the structure of any exception it wraps, but at print-time it iterates through the list of
- * Throwables contained in the composite in order to print them all.
- *
+ * {@link Throwable}s contained in the composite in order to print them all.
+ * <p>
  * Its invariant is to contain an immutable, ordered (by insertion order), unique list of non-composite
  * exceptions. You can retrieve individual exceptions in this list with {@link #getExceptions()}.
- *
+ * <p>
  * The {@link #printStackTrace()} implementation handles the StackTrace in a customized way instead of using
  * {@code getCause()} so that it can avoid circular references.
- *
+ * <p>
  * If you invoke {@link #getCause()}, it will lazily create the causal chain but will stop if it finds any
  * Throwable in the chain that it has already seen.
  */
@@ -42,9 +42,9 @@ public final class CompositeException extends RuntimeException {
     private Throwable cause;
 
     /**
-     * Constructs a CompositeException with the given array of Throwables as the
+     * Constructs a CompositeException with the given array of {@link Throwable}s as the
      * list of suppressed exceptions.
-     * @param exceptions the Throwables to have as initially suppressed exceptions
+     * @param exceptions the {@code Throwable}s to have as initially suppressed exceptions
      *
      * @throws IllegalArgumentException if <code>exceptions</code> is empty.
      */
@@ -54,9 +54,9 @@ public final class CompositeException extends RuntimeException {
     }
 
     /**
-     * Constructs a CompositeException with the given array of Throwables as the
+     * Constructs a CompositeException with the given sequence of {@link Throwable}s as the
      * list of suppressed exceptions.
-     * @param errors the Throwables to have as initially suppressed exceptions
+     * @param errors the {@code Throwable}s to have as initially suppressed exceptions
      *
      * @throws IllegalArgumentException if <code>errors</code> is empty.
      */
@@ -64,14 +64,10 @@ public final class CompositeException extends RuntimeException {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<>();
         if (errors != null) {
             for (Throwable ex : errors) {
-                if (ex instanceof CompositeException) {
-                    deDupedExceptions.addAll(((CompositeException) ex).getExceptions());
+                if (ex instanceof CompositeException ce) {
+                    deDupedExceptions.addAll(ce.getExceptions());
                 } else
-                if (ex != null) {
-                    deDupedExceptions.add(ex);
-                } else {
-                    deDupedExceptions.add(new NullPointerException("Throwable was null!"));
-                }
+                    deDupedExceptions.add(Objects.requireNonNullElseGet(ex, () -> new NullPointerException("Throwable was null!")));
             }
         } else {
             deDupedExceptions.add(new NullPointerException("errors was null"));
@@ -104,7 +100,7 @@ public final class CompositeException extends RuntimeException {
     @NonNull
     public synchronized Throwable getCause() { // NOPMD
         if (cause == null) {
-            String separator = System.getProperty("line.separator");
+            String separator = System.lineSeparator();
             if (exceptions.size() > 1) {
                 Map<Throwable, Boolean> seenCauses = new IdentityHashMap<>();
 
@@ -164,9 +160,9 @@ public final class CompositeException extends RuntimeException {
     }
 
     /**
-     * All of the following {@code printStackTrace} functionality is derived from JDK {@link Throwable}
+     * All the following {@code printStackTrace} functionality is derived from JDK {@link Throwable}
      * {@code printStackTrace}. In particular, the {@code PrintStreamOrWriter} abstraction is copied wholesale.
-     *
+     * <p>
      * Changes from the official JDK implementation:<ul>
      * <li>no infinite loop detection</li>
      * <li>smaller critical section holding {@link PrintStream} lock</li>

@@ -259,7 +259,7 @@ public final class BlockingCurrentThreadScheduler extends Scheduler {
                     }
                 }
             } finally {
-                while (get() == INTERRUPTING) { }
+                while (get() == INTERRUPTING) { Thread.onSpinWait(); }
 
                 if (get() == INTERRUPTED) {
                     Thread.interrupted();
@@ -385,7 +385,7 @@ public final class BlockingCurrentThreadScheduler extends Scheduler {
                         }
                     }
                 } finally {
-                    while (get() == INTERRUPTING) { }
+                    while (get() == INTERRUPTING) { Thread.onSpinWait(); }
 
                     if (get() == INTERRUPTED) {
                         Thread.interrupted();

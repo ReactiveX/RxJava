@@ -87,7 +87,8 @@ public enum EmptySubscription implements QueueSubscription<Object> {
 
     @Override
     public int requestFusion(int mode) {
-        return mode & ASYNC; // accept async mode: an onComplete or onError will be signalled after anyway
+        // accept async mode: an onComplete or onError will be signaled after anyway
+        return mode & ASYNC;
     }
 
     @Override

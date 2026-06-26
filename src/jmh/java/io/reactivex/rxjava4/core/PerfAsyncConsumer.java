@@ -73,7 +73,7 @@ SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
      */
     public PerfAsyncConsumer await(int count) {
         if (count <= 1000) {
-            while (getCount() != 0) { }
+            while (getCount() != 0) { Thread.onSpinWait(); }
         } else {
             try {
                 await();

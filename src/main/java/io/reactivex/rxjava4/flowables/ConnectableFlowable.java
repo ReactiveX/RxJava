@@ -44,8 +44,8 @@ import io.reactivex.rxjava4.schedulers.Schedulers;
  * {@code reset()} in this case.
  * <p>
  * Note that although {@link #connect()} and {@link #reset()} are safe to call from multiple threads, it is recommended
- * a dedicated thread or business logic manages the connection or resetting of a {@code ConnectableFlowable} so that
- * there is no unwanted signal loss due to early {@code connect()} or {@code reset()} calls while {@code Subscriber}s are
+ * a dedicated thread or business logic manages the connection or resetting of a {@code ConnectableFlowable}.
+ * This ensures there is no unwanted signal loss due to early {@code connect()} or {@code reset()} calls while {@code Subscriber}s are
  * still being subscribed to this {@code ConnectableFlowable} to receive signals from the get-go.
  * <p>
  * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators">RxJava Wiki: Connectable Observable Operators</a>
@@ -279,7 +279,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * during the lifetime of the returned {@code Flowable}. If this {@code ConnectableFlowable}
      * terminates, the connection is never renewed, no matter how {@code Subscriber}s come
      * and go. Use {@link #refCount()} to renew a connection or dispose an active
-     * connection when all {@code Subscriber}s have cancelled their {@link Subscription}s.
+     * connection when all {@code Subscriber}s have canceled their {@link Subscription}s.
      * <p>
      * This overload does not allow disconnecting the connection established via
      * {@link #connect(Consumer)}. Use the {@link #autoConnect(int, Consumer)} overload
@@ -314,7 +314,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * during the lifetime of the returned {@code Flowable}. If this {@code ConnectableFlowable}
      * terminates, the connection is never renewed, no matter how {@code Subscriber}s come
      * and go. Use {@link #refCount()} to renew a connection or dispose an active
-     * connection when all {@code Subscriber}s have cancelled their {@link Subscription}s.
+     * connection when all {@code Subscriber}s have canceled their {@link Subscription}s.
      * <p>
      * This overload does not allow disconnecting the connection established via
      * {@link #connect(Consumer)}. Use the {@link #autoConnect(int, Consumer)} overload
@@ -352,7 +352,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * during the lifetime of the returned {@code Flowable}. If this {@code ConnectableFlowable}
      * terminates, the connection is never renewed, no matter how {@code Subscriber}s come
      * and go. Use {@link #refCount()} to renew a connection or dispose an active
-     * connection when all {@code Subscriber}s have cancelled their {@link Subscription}s.
+     * connection when all {@code Subscriber}s have canceled their {@link Subscription}s.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by

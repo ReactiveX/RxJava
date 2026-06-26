@@ -35,7 +35,7 @@ public interface FlowableSubscriber<@NonNull T> extends Subscriber<T> {
      * calling {@link Subscription#request(long)}. In practice this means
      * no initialization should happen after the {@code request()} call and
      * additional behavior is thread safe in respect to {@code onNext}.
-     *
+     * <p>
      * {@inheritDoc}
      */
     @Override

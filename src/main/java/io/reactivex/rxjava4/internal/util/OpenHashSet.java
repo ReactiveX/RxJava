@@ -141,15 +141,16 @@ public final class OpenHashSet<T> {
         T[] b = (T[])new Object[newCap];
 
         for (int j = size; j-- != 0; ) {
-            while (a[--i] == null) { } // NOPMD
+            while (true) {
+                if (a[--i] != null) {
+                    break;
+                }
+            }
             int pos = mix(a[i].hashCode()) & m;
             if (b[pos] != null) {
-                for (;;) {
+                do {
                     pos = (pos + 1) & m;
-                    if (b[pos] == null) {
-                        break;
-                    }
-                }
+                } while (b[pos] != null);
             }
             b[pos] = a[i];
         }

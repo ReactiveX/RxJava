@@ -23,7 +23,7 @@ import io.reactivex.rxjava4.core.Observable;
 
 /**
  * Generate a table of available operators across base classes in {@code Operator-Matrix.md}.
- * 
+ * <p>
  * Should be run with the main project directory as working directory where the {@code docs}
  * folder is.
  */

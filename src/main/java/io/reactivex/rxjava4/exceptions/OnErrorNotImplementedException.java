@@ -31,7 +31,7 @@ public final class OnErrorNotImplementedException extends RuntimeException {
 
     /**
      * Customizes the {@code Throwable} with a custom message and wraps it before it
-     * is signalled to the {@code RxJavaPlugins.onError()} handler as {@code OnErrorNotImplementedException}.
+     * is signaled to the {@code RxJavaPlugins.onError()} handler as {@code OnErrorNotImplementedException}.
      *
      * @param message
      *          the message to assign to the {@code Throwable} to signal
@@ -44,7 +44,7 @@ public final class OnErrorNotImplementedException extends RuntimeException {
 
     /**
      * Wraps the {@code Throwable} before it
-     * is signalled to the {@code RxJavaPlugins.onError()}
+     * is signaled to the {@code RxJavaPlugins.onError()}
      * handler as {@code OnErrorNotImplementedException}.
      *
      * @param e

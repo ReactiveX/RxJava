@@ -317,13 +317,13 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
 
                 w.schedule(() -> {
                     ready.decrementAndGet();
-                    while (ready.get() != 0) { }
+                    while (ready.get() != 0) { Thread.onSpinWait(); }
 
                     ts.request(1);
                 });
 
                 ready.decrementAndGet();
-                while (ready.get() != 0) { }
+                while (ready.get() != 0) { Thread.onSpinWait(); }
 
                 ds.onComplete();
 
@@ -358,20 +358,20 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
 
                 w.schedule(() -> {
                     ready.decrementAndGet();
-                    while (ready.get() != 0) { }
+                    while (ready.get() != 0) { Thread.onSpinWait(); }
 
                     ts.request(1);
                 });
 
                 w2.schedule(() -> {
                     ready.decrementAndGet();
-                    while (ready.get() != 0) { }
+                    while (ready.get() != 0) { Thread.onSpinWait(); }
 
                     ts.request(1);
                 });
 
                 ready.decrementAndGet();
-                while (ready.get() != 0) { }
+                while (ready.get() != 0) { Thread.onSpinWait(); }
 
                 ds.onComplete();
 

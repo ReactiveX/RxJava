@@ -47,7 +47,7 @@ public class VirtualResumableTest {
             var t = new Thread(ready1::await);
             t.start();
 
-            while (ready1.get() == null) { }
+            while (ready1.get() == null) { Thread.onSpinWait(); }
             try {
                 ready1.await();
             } catch (IllegalStateException ex) {

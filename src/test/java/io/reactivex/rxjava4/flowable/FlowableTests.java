@@ -265,8 +265,8 @@ public class FlowableTests extends RxJavaTest {
 
     /**
      * A reduce on an empty Observable and a seed should just pass the seed through.
-     *
-     * This is confirmed at https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642456
+     * <p>
+     * This is confirmed at <a href="https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642456">...</a>
      */
     @Test
     public void reduceWithEmptyObservableAndSeed() {
@@ -304,9 +304,9 @@ public class FlowableTests extends RxJavaTest {
 
     /**
      * The error from the user provided Observer is not handled by the subscribe method try/catch.
-     *
+     * <p>
      * It is handled by the AtomicObserver that wraps the provided Observer.
-     *
+     * <p>
      * Result: Passes (if AtomicObserver functionality exists)
      * @throws InterruptedException if the test is interrupted
      */
@@ -356,7 +356,7 @@ public class FlowableTests extends RxJavaTest {
 
     /**
      * The error from the user provided Observer is handled by the subscribe try/catch because this is synchronous.
-     *
+     * <p>
      * Result: Passes
      */
     @Test
@@ -398,7 +398,7 @@ public class FlowableTests extends RxJavaTest {
 
     /**
      * The error from the user provided Observable is handled by the subscribe try/catch because this is synchronous.
-     *
+     * <p>
      * Result: Passes
      */
     @Test

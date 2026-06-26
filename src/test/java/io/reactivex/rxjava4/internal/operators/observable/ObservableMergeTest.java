@@ -664,7 +664,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     /**
      * This is the same as the upstreams ones, but now adds the downstream as well by using observeOn.
-     *
+     * <p>
      * This requires merge to also obey the {@link java.util.concurrent.Flow.Subscription#request(long)} values coming from its child Observer.
      * @throws InterruptedException if the test is interrupted
      */
@@ -711,10 +711,10 @@ public class ObservableMergeTest extends RxJavaTest {
     /**
      * Currently there is no solution to this ... we can't exert backpressure on the outer Observable if we
      * can't know if the ones we've received so far are going to emit or not, otherwise we could starve the system.
-     *
+     * <p>
      * For example, 10,000 Observables are being merged (bad use case to begin with, but ...) and it's only one of them
      * that will ever emit. If backpressure only allowed the first 1,000 to be sent, we would hang and never receive an event.
-     *
+     * <p>
      * Thus, we must allow all Observables to be sent. The ScalarSynchronousObservable use case is an exception to this since
      * we can grab the value synchronously.
      *

@@ -27,16 +27,16 @@ import io.reactivex.rxjava4.subscribers.*;
 
 /**
  * Base tests for schedulers that involve threads (concurrency).
- *
+ * <p>
  * These can only run on Schedulers that launch threads since they expect async/concurrent behavior.
- *
+ * <p>
  * The Current/Immediate schedulers will not work with these tests.
  */
 public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedulerTests {
 
     /**
      * Make sure canceling through {@code subscribeOn} works.
-     * Bug report: https://github.com/ReactiveX/RxJava/issues/431
+     * Bug report: <a href="https://github.com/ReactiveX/RxJava/issues/431">...</a>
      * @throws InterruptedException if the test is interrupted
      */
     @Test

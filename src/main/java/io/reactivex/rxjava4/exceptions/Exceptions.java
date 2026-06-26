@@ -55,9 +55,9 @@ public final class Exceptions {
      * <li>{@code LinkageError}</li>
      * </ul>
      * This can be useful if you are writing an operator that calls user-supplied code, and you want to
-     * notify subscribers of errors encountered in that code by calling their {@code onError} methods, but only
-     * if the errors are not so catastrophic that such a call would be futile, in which case you simply want to
-     * rethrow the error.
+     * notify subscribers of errors encountered in that code by calling their {@code onError} methods.
+     * But only if the errors are not so catastrophic that such a call would be futile, in which case
+     * you simply want to rethrow the error.
      *
      * @param t
      *         the {@code Throwable} to test and perhaps throw

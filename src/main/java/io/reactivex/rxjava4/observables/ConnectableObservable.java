@@ -42,8 +42,8 @@ import io.reactivex.rxjava4.schedulers.Schedulers;
  * {@link #reset()} in this case.
  * <p>
  * Note that although {@link #connect()} and {@link #reset()} are safe to call from multiple threads, it is recommended
- * a dedicated thread or business logic manages the connection or resetting of a {@code ConnectableObservable} so that
- * there is no unwanted signal loss due to early {@code connect()} or {@code reset()} calls while {@code Observer}s are
+ * a dedicated thread or business logic manages the connection or resetting of a {@code ConnectableObservable}.
+ * This ensures there is no unwanted signal loss due to early {@code connect()} or {@code reset()} calls while {@code Observer}s are
  * still being subscribed to this {@code ConnectableObservable} to receive signals from the get-go.
  *
  * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators">RxJava Wiki: Connectable Observable Operators</a>

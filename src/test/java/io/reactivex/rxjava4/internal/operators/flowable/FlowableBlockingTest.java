@@ -298,7 +298,7 @@ public class FlowableBlockingTest extends RxJavaTest {
     }
 
     @Test
-    public void firstFgnoredCancelAndOnNext() {
+    public void firstIgnoredCancelAndOnNext() {
         Flowable<Integer> source = Flowable.fromPublisher(s -> {
             s.onSubscribe(new BooleanSubscription());
             s.onNext(1);
@@ -407,7 +407,7 @@ public class FlowableBlockingTest extends RxJavaTest {
     }
 
     @Test
-    public void blockinsSubscribeCancelAsync() {
+    public void blockingSubscribeCancelAsync() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
@@ -421,13 +421,13 @@ public class FlowableBlockingTest extends RxJavaTest {
 
             Schedulers.computation().scheduleDirect(() -> {
                 c.decrementAndGet();
-                while (c.get() != 0 && !pp.hasSubscribers()) { }
+                while (c.get() != 0 && !pp.hasSubscribers()) { Thread.onSpinWait(); }
 
                 TestHelper.race(r1, r2);
             });
 
             c.decrementAndGet();
-            while (c.get() != 0) { }
+            while (c.get() != 0) { Thread.onSpinWait(); }
 
             pp
             .blockingSubscribe(ts);

@@ -248,7 +248,7 @@ public class ReplaySubjectConcurrencyTest extends RxJavaTest {
 
     /**
      * Make sure emission-subscription races are handled correctly.
-     * https://github.com/ReactiveX/RxJava/issues/1147
+     * <a href="https://github.com/ReactiveX/RxJava/issues/1147">...</a>
      */
     @Test
     public void raceForTerminalState() {

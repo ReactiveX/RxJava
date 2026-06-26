@@ -681,7 +681,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
     /**
      * This is the same as the upstreams ones, but now adds the downstream as well by using observeOn.
-     *
+     * <p>
      * This requires merge to also obey the {@link Subscription#request(long)} values coming from it's child subscriber.
      * @throws InterruptedException if the test is interrupted
      */
@@ -760,10 +760,10 @@ public class FlowableMergeTest extends RxJavaTest {
     /**
      * Currently there is no solution to this ... we can't exert backpressure on the outer Flowable if we
      * can't know if the ones we've received so far are going to emit or not, otherwise we could starve the system.
-     *
+     * <p>
      * For example, 10,000 Flowables are being merged (bad use case to begin with, but ...) and it's only one of them
      * that will ever emit. If backpressure only allowed the first 1,000 to be sent, we would hang and never receive an event.
-     *
+     * <p>
      * Thus, we must allow all Flowables to be sent. The ScalarSynchronousFlowable use case is an exception to this since
      * we can grab the value synchronously.
      *

@@ -31,7 +31,7 @@ public interface SimpleQueue<@NonNull T> {
      * Atomically enqueue a single value.
      * @param value the value to enqueue, not null
      * @return true if successful, false if the value was not enqueued
-     * likely due to reaching the queue capacity)
+     * likely due to reaching the queue capacity
      */
     boolean offer(@NonNull T value);
 
@@ -40,7 +40,7 @@ public interface SimpleQueue<@NonNull T> {
      * @param v1 the first value to enqueue, not null
      * @param v2 the second value to enqueue, not null
      * @return true if successful, false if the value was not enqueued
-     * likely due to reaching the queue capacity)
+     * likely due to reaching the queue capacity
      */
     boolean offer(@NonNull T v1, @NonNull T v2);
 

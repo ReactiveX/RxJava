@@ -388,7 +388,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
         @Override
         public void clear() {
-            while (poll() != null && !isEmpty()) { }
+            while (poll() != null && !isEmpty()) { Thread.onSpinWait(); }
         }
 
         @Override

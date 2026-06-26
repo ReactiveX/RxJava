@@ -247,10 +247,10 @@ public class ScheduledRunnableTest extends RxJavaTest {
             Runnable r0 = () -> {
                 set.dispose();
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
                 if (syncb.decrementAndGet() != 0) {
-                    while (syncb.get() != 0) { }
+                    while (syncb.get() != 0) { Thread.onSpinWait(); }
                 }
                 for (int j = 0; j < 1000; j++) {
                     if (Thread.currentThread().isInterrupted()) {
@@ -267,11 +267,11 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
             Runnable r2 = () -> {
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
                 run.setFuture(ft);
                 if (syncb.decrementAndGet() != 0) {
-                    while (syncb.get() != 0) { }
+                    while (syncb.get() != 0) { Thread.onSpinWait(); }
                 }
             };
 

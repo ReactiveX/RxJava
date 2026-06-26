@@ -187,12 +187,12 @@ public class TrampolineSchedulerInternalTest extends RxJavaTest {
 
                 Schedulers.single().scheduleDirect(() -> {
                     if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
+                        while (sync.get() != 0) { Thread.onSpinWait(); }
                     }
                     d.dispose();
                 });
                 if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
+                    while (sync.get() != 0) { Thread.onSpinWait(); }
                 }
             });
         }

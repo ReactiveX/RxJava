@@ -49,7 +49,7 @@ public class OperatorFlatMapPerf {
         PerfSubscriber latchedObserver = input.newLatchedObserver();
         input.flowable.flatMap((Function<Integer, Publisher<Integer>>) i -> Flowable.just(i).subscribeOn(Schedulers.computation())).subscribe(latchedObserver);
         if (input.size == 1) {
-            while (latchedObserver.latch.getCount() != 0) { }
+            while (latchedObserver.latch.getCount() != 0) { Thread.onSpinWait(); }
         } else {
             latchedObserver.latch.await();
         }
