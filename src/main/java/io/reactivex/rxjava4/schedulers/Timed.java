@@ -22,6 +22,10 @@ import io.reactivex.rxjava4.annotations.NonNull;
  * Holds onto a value along with time information.
  *
  * @param <T> the value type
+ * @param value the item to store
+ * @param time the time value
+ * @param unit the unit of time
+ * @since 4.0.0
  */
 public record Timed<T>(T value, long time, TimeUnit unit) {
     /**
@@ -32,10 +36,9 @@ public record Timed<T>(T value, long time, TimeUnit unit) {
      * @param unit  the time unit, not null
      * @throws NullPointerException if {@code value} or {@code unit} is {@code null}
      */
-    public Timed(@NonNull T value, long time, @NonNull TimeUnit unit) {
-        this.value = Objects.requireNonNull(value, "value is null");
-        this.time = time;
-        this.unit = Objects.requireNonNull(unit, "unit is null");
+    public Timed {
+        Objects.requireNonNull(value, "value is null");
+        Objects.requireNonNull(unit, "unit is null");
     }
 
     /**
@@ -46,24 +49,6 @@ public record Timed<T>(T value, long time, TimeUnit unit) {
      */
     public long time(@NonNull TimeUnit unit) {
         return unit.convert(time, this.unit);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof Timed<?>(Object value1, long time1, TimeUnit unit1)) {
-            return Objects.equals(value, value1)
-                    && time == time1
-                    && Objects.equals(unit, unit1);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int h = value.hashCode();
-        h = h * 31 + (int) ((time >>> 31) ^ time);
-        h = h * 31 + unit.hashCode();
-        return h;
     }
 
     @Override

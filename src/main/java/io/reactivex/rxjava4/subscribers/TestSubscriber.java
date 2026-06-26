@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.subscribers;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import static java.util.concurrent.Flow.*;
@@ -187,11 +188,7 @@ implements FlowableSubscriber<T>, Subscription {
         try {
             lastThread = Thread.currentThread();
 
-            if (t == null) {
-                errors.add(new NullPointerException("onError received a null Throwable"));
-            } else {
-                errors.add(t);
-            }
+            errors.add(Objects.requireNonNullElseGet(t, () -> new NullPointerException("onError received a null Throwable")));
 
             downstream.onError(t);
         } finally {
