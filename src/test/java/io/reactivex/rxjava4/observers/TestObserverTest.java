@@ -40,6 +40,9 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class TestObserverTest extends RxJavaTest {
 
     static void assertThrowsWithMessage(String message, Class<? extends Throwable> clazz, ThrowingRunnable run) {
+        if (message.startsWith("~")) {
+            message = message.substring(1);
+        }
         assertEquals(message, assertThrows(clazz, run).getMessage());
     }
 
