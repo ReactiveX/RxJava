@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -26,7 +27,7 @@ import io.reactivex.rxjava4.validators.BaseTypeParser.RxMethod;
 /**
  * Check if the method wording is consistent with the target base type.
  */
-public class JavadocWording {
+public class CheckJavadocWordingTest extends RxJavaTest {
 
     public static int lineNumber(CharSequence s, int index) {
         int cnt = 1;

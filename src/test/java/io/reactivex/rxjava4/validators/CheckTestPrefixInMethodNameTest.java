@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -24,7 +25,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 /**
  * Check verifying there are no methods with the prefix "test" in the name.
  */
-public class TestPrefixInMethodName {
+public class CheckTestPrefixInMethodNameTest extends RxJavaTest {
 
     private static final String pattern = "void\\s+test[a-zA-Z0-9]";
     private static final String replacement = "void ";
@@ -56,7 +57,7 @@ public class TestPrefixInMethodName {
             f = dirs.poll();
 
             File[] list = f.listFiles();
-            if (list != null && list.length != 0) {
+            if (list != null) {
 
                 for (File u : list) {
                     if (u.isDirectory()) {
@@ -67,9 +68,8 @@ public class TestPrefixInMethodName {
 
                             int lineNum = 0;
                             List<String> lines = new ArrayList<>();
-                            BufferedReader in = new BufferedReader(new FileReader(u));
                             //boolean found = false;
-                            try {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
                                 for (; ; ) {
                                     String line = in.readLine();
                                     if (line == null) {
@@ -98,8 +98,6 @@ public class TestPrefixInMethodName {
                                     }
 
                                 }
-                            } finally {
-                                in.close();
                             }
 
                             /*if (found && System.getenv("CI") == null) {

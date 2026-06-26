@@ -17,13 +17,14 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
-public class NoAnonymousInnerClassesTest {
+public class CheckNoAnonymousInnerClassesTest extends RxJavaTest {
 
     @Test
     public void verify() throws Exception {
-        URL u = NoAnonymousInnerClassesTest.class.getResource("");
+        URL u = CheckNoAnonymousInnerClassesTest.class.getResource("");
         File f = new File(u.toURI());
 
         String fs = f.toString().toLowerCase().replace("\\", "/");
@@ -75,8 +76,7 @@ public class NoAnonymousInnerClassesTest {
 
                             boolean found = false;
 
-                            FileInputStream fin = new FileInputStream(f);
-                            try {
+                            try (FileInputStream fin = new FileInputStream(f)) {
                                 byte[] data = new byte[fin.available()];
                                 fin.read(data);
 
@@ -106,8 +106,6 @@ public class NoAnonymousInnerClassesTest {
                                 } else {
                                     found = true;
                                 }
-                            } finally {
-                                fin.close();
                             }
 
                             if (found) {

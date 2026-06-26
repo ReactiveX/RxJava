@@ -17,14 +17,14 @@ import static org.junit.Assert.fail;
 
 import java.lang.reflect.*;
 
-import org.junit.Test;
+import org.junit.*;
 
 import io.reactivex.rxjava4.core.*;
 
 /**
  * Verifies that instance methods of the base reactive classes are all declared final.
  */
-public class PublicFinalMethods {
+public class CheckPublicFinalMethodsTest extends RxJavaTest {
 
     static void scan(Class<?> clazz) {
         for (Method m : clazz.getMethods()) {
@@ -61,5 +61,11 @@ public class PublicFinalMethods {
     @Test
     public void maybe() {
         scan(Maybe.class);
+    }
+
+    @Test
+    @Ignore("Interfaces and defaults not yet handled, TODO")
+    public void streamable() {
+        scan(Streamable.class);
     }
 }

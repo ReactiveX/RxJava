@@ -39,7 +39,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * Check that static and instance methods validate their parameters against
  * null and invalid values properly.
  */
-public class ParamValidationCheckerTest {
+public class CheckParamValidationTest extends RxJavaTest {
 
     @Test(timeout = 30000)
     public void checkFlowable() {

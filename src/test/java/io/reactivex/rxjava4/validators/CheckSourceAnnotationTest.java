@@ -36,7 +36,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * &#64;NonNull or &#64;Nullable annotations specified on their return type and object-type parameters
  * as well as &#64;SafeVarargs for varargs.
  */
-public class SourceAnnotationCheck extends RxJavaTest {
+public class CheckSourceAnnotationTest extends RxJavaTest {
 
     @Test
     public void checkCompletable() throws Exception {

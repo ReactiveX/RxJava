@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.validators;
 import java.io.*;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -23,7 +24,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 /**
  * Adds license header to java files.
  */
-public class InternalWrongNaming {
+public class CheckInternalWrongNamingTest extends RxJavaTest {
 
     static void checkInternalOperatorNaming(String baseClassName, String consumerClassName, String... ignore) throws Exception {
         File f = TestHelper.findSource(baseClassName);
@@ -83,9 +84,8 @@ public class InternalWrongNaming {
     static List<String> readFile(File u) throws Exception {
         List<String> lines = new ArrayList<>();
 
-        BufferedReader in = new BufferedReader(new FileReader(u));
-        try {
-            for (;;) {
+        try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+            for (; ; ) {
                 String line = in.readLine();
                 if (line == null) {
                     break;
@@ -93,8 +93,6 @@ public class InternalWrongNaming {
 
                 lines.add(line);
             }
-        } finally {
-            in.close();
         }
         return lines;
     }

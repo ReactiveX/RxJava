@@ -17,6 +17,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -28,7 +29,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * The check ignores HTML tag content on a line, &#64;see and &#64;throws entries
  * and &lt;code&gt;&lt;/code&gt; lines.
  */
-public class JavadocCodesAndLinks {
+public class CheckJavadocCodesAndLinksTest extends RxJavaTest {
 
     @Test
     public void checkFlowable() throws Exception {

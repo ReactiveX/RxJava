@@ -14,11 +14,15 @@
 package io.reactivex.rxjava4.validators;
 
 import static org.junit.Assert.assertEquals;
+
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
-public class ParameterNamesInClassesTest {
+public class CheckParameterNamesInClassesTest extends RxJavaTest {
+
     void method(int paramName) {
         // deliberately empty
+        assertEquals(1, paramName);
     }
 
     @Test

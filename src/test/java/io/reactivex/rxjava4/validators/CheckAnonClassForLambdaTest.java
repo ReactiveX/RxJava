@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -25,7 +26,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 /**
  * Adds license header to java files.
  */
-public class CheckAnonymousClassForLambda {
+public class CheckAnonClassForLambdaTest extends RxJavaTest {
 
     String[] header = {
     "/*",

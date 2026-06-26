@@ -35,7 +35,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * and ObjectHelper.verifyPositive calls match the parameter
  *  name in the message.
  */
-public class ParamValidationNaming {
+public class CheckParamValidationNamingTest extends RxJavaTest {
 
     @Test
     public void checkCompletable() throws Exception {

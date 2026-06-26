@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.validators;
 import java.io.*;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -38,7 +39,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * &#64;Override
  * </code></pre>
  */
-public class NewLinesBeforeAnnotation {
+public class CheckNewLinesBeforeAnnotationTest extends RxJavaTest {
 
     @Test
     public void missingEmptyNewLine() throws Exception {
@@ -103,17 +104,14 @@ public class NewLinesBeforeAnnotation {
                         if (fname.endsWith(".java")) {
 
                             List<String> lines = new ArrayList<>();
-                            BufferedReader in = new BufferedReader(new FileReader(u));
-                            try {
-                                for (;;) {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+                                for (; ; ) {
                                     String line = in.readLine();
                                     if (line == null) {
                                         break;
                                     }
                                     lines.add(line);
                                 }
-                            } finally {
-                                in.close();
                             }
 
                             for (int i = 0; i < lines.size() - 1; i++) {

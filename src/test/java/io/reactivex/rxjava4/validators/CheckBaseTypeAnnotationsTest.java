@@ -38,7 +38,7 @@ import io.reactivex.rxjava4.subjects.*;
  * <li>All public base types that don't return Flowable don't have the {@link BackpressureSupport} present (these are copy-paste errors)</li>
  * </ul>
  */
-public class BaseTypeAnnotations {
+public class CheckBaseTypeAnnotationsTest extends RxJavaTest {
 
     static void checkCheckReturnValueSupport(Class<?> clazz) {
         StringBuilder b = new StringBuilder();

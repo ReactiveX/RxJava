@@ -17,6 +17,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.*;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -27,7 +28,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  * or {@code fail} call.
  * @since 3.0.0
  */
-public class CatchThrowIfFatalCheck {
+public class CheckCatchThrowIfFatalTest extends RxJavaTest {
 
     @Test
     public void check() throws Exception {
