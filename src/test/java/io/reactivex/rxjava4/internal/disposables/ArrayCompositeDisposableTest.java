@@ -23,7 +23,6 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class ArrayCompositeDisposableTest extends RxJavaTest {
 
-    @SuppressWarnings("resource")
     @Test
     public void normal() {
         ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
@@ -69,7 +68,6 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
         assertTrue(d6.isDisposed());
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void disposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -81,7 +79,6 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void replaceRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -93,7 +90,6 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void setRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {

@@ -92,7 +92,6 @@ public final class FlowableRefCount<T> extends Flowable<T> {
         }
     }
 
-    @SuppressWarnings("resource")
     void cancel(RefConnection rc) {
         SequentialDisposable sd;
         synchronized (this) {

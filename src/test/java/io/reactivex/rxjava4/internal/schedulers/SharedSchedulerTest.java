@@ -218,36 +218,33 @@ public class SharedSchedulerTest implements Runnable {
     @Test
     public void disposeSetFutureRace() {
         for (int i = 0; i < 1000; i++) {
-            try (final SharedAction sa = new SharedAction(this, new CompositeDisposable())) {
+            var sa = new SharedAction(this, new CompositeDisposable());
+            final Disposable d = Disposable.empty();
 
-                final Disposable d = Disposable.empty();
+            Runnable r1 = () -> sa.setFuture(d);
 
-                Runnable r1 = () -> sa.setFuture(d);
+            Runnable r2 = sa::dispose;
 
-                Runnable r2 = sa::dispose;
+            TestHelper.race(r1, r2, Schedulers.single());
 
-                TestHelper.race(r1, r2, Schedulers.single());
-
-                assertTrue("Future not disposed", d.isDisposed());
-            }
+            assertTrue("Future not disposed", d.isDisposed());
         }
     }
 
     @Test
     public void runSetFutureRace() {
         for (int i = 0; i < 1000; i++) {
-            try (final SharedAction sa = new SharedAction(this, new CompositeDisposable())) {
-                final Disposable d = Disposable.empty();
+            var sa = new SharedAction(this, new CompositeDisposable());
+            final Disposable d = Disposable.empty();
 
-                Runnable r1 = () -> sa.setFuture(d);
+            Runnable r1 = () -> sa.setFuture(d);
 
-                Runnable r2 = sa::run;
+            Runnable r2 = sa::run;
 
-                TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2, Schedulers.single());
 
-                assertFalse("Future disposed", d.isDisposed());
-                assertEquals(i + 1, calls);
-            }
+            assertFalse("Future disposed", d.isDisposed());
+            assertEquals(i + 1, calls);
         }
     }
 }

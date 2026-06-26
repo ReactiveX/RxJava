@@ -346,7 +346,6 @@ public class ObservableTimerTest extends RxJavaTest {
     public void cancelledAndRun() {
         TestObserver<Long> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
-        @SuppressWarnings("resource")
         TimerObserver tm = new TimerObserver(to);
 
         tm.dispose();

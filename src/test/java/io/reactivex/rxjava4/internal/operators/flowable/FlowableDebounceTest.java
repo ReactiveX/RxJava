@@ -349,7 +349,6 @@ public class FlowableDebounceTest extends RxJavaTest {
 
         TestHelper.checkDisposed(PublishProcessor.create().debounce(Functions.justFunction(Flowable.never())));
 
-        @SuppressWarnings("resource")
         Disposable d = new FlowableDebounceTimed.DebounceEmitter<>(1, 1, null);
         assertFalse(d.isDisposed());
 
@@ -517,7 +516,6 @@ public class FlowableDebounceTest extends RxJavaTest {
 
         sub.onSubscribe(new BooleanSubscription());
 
-        @SuppressWarnings("resource")
         DebounceEmitter<Integer> de = new DebounceEmitter<>(1, 50, sub);
         de.emit();
         de.emit();

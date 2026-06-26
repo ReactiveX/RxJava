@@ -499,7 +499,6 @@ public class FlowableSubscriberTest {
 
     @Test
     public void doubleSubscribe() {
-        @SuppressWarnings("resource")
         ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(_ -> true,
                 Functions.<Throwable>emptyConsumer(), Functions.EMPTY_ACTION);
 
@@ -526,7 +525,6 @@ public class FlowableSubscriberTest {
             final TestSubscriber<Integer> ts = new TestSubscriber<>();
             ts.onSubscribe(new BooleanSubscription());
 
-            @SuppressWarnings("resource")
             ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(v -> {
                 ts.onNext(v);
                 return true;
@@ -550,7 +548,6 @@ public class FlowableSubscriberTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        @SuppressWarnings("resource")
         ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(_ -> {
             throw new TestException();
         }, ts::onError, ts::onComplete);
@@ -566,7 +563,6 @@ public class FlowableSubscriberTest {
 
     @Test
     public void onErrorThrows() {
-        @SuppressWarnings("resource")
         ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(_ -> true,
         _ -> {
             throw new TestException("Inner");
@@ -592,7 +588,6 @@ public class FlowableSubscriberTest {
 
     @Test
     public void onCompleteThrows() {
-        @SuppressWarnings("resource")
         ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(_ -> true,
                 _ -> { }, () -> {
             throw new TestException("Inner");

@@ -23,7 +23,6 @@ public final class EmptyCompletableObserverTest extends RxJavaTest {
 
     @Test
     public void defaultShouldReportNoCustomOnError() {
-        @SuppressWarnings("resource")
         EmptyCompletableObserver o = new EmptyCompletableObserver();
 
         assertFalse(o.hasCustomOnError());

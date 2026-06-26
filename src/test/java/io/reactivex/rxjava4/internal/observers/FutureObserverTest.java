@@ -155,7 +155,6 @@ public class FutureObserverTest extends RxJavaTest {
     @Test
     public void cancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            @SuppressWarnings("resource")
             final FutureObserver<Integer> fo = new FutureObserver<>();
 
             Runnable r = () -> fo.cancel(false);
@@ -179,7 +178,6 @@ public class FutureObserverTest extends RxJavaTest {
         RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
         try {
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                @SuppressWarnings("resource")
                 final FutureObserver<Integer> fo = new FutureObserver<>();
 
                 final TestException ex = new TestException();
@@ -200,7 +198,6 @@ public class FutureObserverTest extends RxJavaTest {
         RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
         try {
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                @SuppressWarnings("resource")
                 final FutureObserver<Integer> fo = new FutureObserver<>();
 
                 if (i % 3 == 0) {
@@ -354,7 +351,6 @@ public class FutureObserverTest extends RxJavaTest {
     @Test
     public void cancelOnSubscribeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            @SuppressWarnings("resource")
             final FutureObserver<Integer> fo = new FutureObserver<>();
 
             Runnable r = () -> fo.cancel(false);

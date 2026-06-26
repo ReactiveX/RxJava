@@ -2039,7 +2039,6 @@ public class FlowableBufferTest extends RxJavaTest {
 
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        @SuppressWarnings("resource")
         BufferExactUnboundedSubscriber<Integer, List<Integer>> sub = new BufferExactUnboundedSubscriber<>(
                 ts, Functions.justSupplier(new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
 
@@ -2123,7 +2122,6 @@ public class FlowableBufferTest extends RxJavaTest {
 
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        @SuppressWarnings("resource")
         BufferExactBoundedSubscriber<Integer, List<Integer>> sub =
                 new BufferExactBoundedSubscriber<>(
                         ts, Functions.justSupplier(new ArrayList<Integer>()),

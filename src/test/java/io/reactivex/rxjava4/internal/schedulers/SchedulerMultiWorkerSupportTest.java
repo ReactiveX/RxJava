@@ -58,7 +58,6 @@ public class SchedulerMultiWorkerSupportTest extends RxJavaTest {
     public void distinctThreads() throws Exception {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
-            @SuppressWarnings("resource")
             final CompositeDisposable composite = new CompositeDisposable();
 
             try {

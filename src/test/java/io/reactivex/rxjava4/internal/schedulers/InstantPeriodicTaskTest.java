@@ -34,7 +34,6 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
 
-            @SuppressWarnings("resource")
             InstantPeriodicTask task = new InstantPeriodicTask(() -> {
                 throw new TestException();
             }, exec);
@@ -58,7 +57,6 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         try {
 
-            @SuppressWarnings("resource")
             InstantPeriodicTask task = new InstantPeriodicTask(() -> {
                 throw new TestException();
             }, exec);
@@ -83,7 +81,6 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         try {
 
-            @SuppressWarnings("resource")
             InstantPeriodicTask task = new InstantPeriodicTask(() -> {
                 throw new TestException();
             }, exec);
@@ -111,7 +108,6 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         try {
 
-            @SuppressWarnings("resource")
             InstantPeriodicTask task = new InstantPeriodicTask(() -> {
                 throw new TestException();
             }, exec);
@@ -141,7 +137,6 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         try {
 
-            @SuppressWarnings("resource")
             InstantPeriodicTask task = new InstantPeriodicTask(() -> {
                 throw new TestException();
             }, exec);
@@ -168,7 +163,6 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         try {
 
-            @SuppressWarnings("resource")
             InstantPeriodicTask task = new InstantPeriodicTask(() -> {
                 throw new TestException();
             }, exec);
@@ -197,7 +191,6 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         try {
             for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-                @SuppressWarnings("resource")
                 final InstantPeriodicTask task = new InstantPeriodicTask(() -> {
                     throw new TestException();
                 }, exec);
@@ -222,7 +215,6 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         try {
             for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-                @SuppressWarnings("resource")
                 final InstantPeriodicTask task = new InstantPeriodicTask(() -> {
                     throw new TestException();
                 }, exec);

@@ -53,9 +53,8 @@ public interface AwaitCoordinatorStatic {
             return f.join();
         }
         var d = Disposable.fromFuture(f, true);
-        try (var _ = canceller.subscribe(d)) {
-            return f.join();
-        }
+        canceller.subscribe(d);
+        return f.join();
     }
 
     /**

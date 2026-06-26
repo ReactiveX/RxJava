@@ -52,7 +52,6 @@ public class FlowableAmbTest extends RxJavaTest {
     private Flowable<String> createFlowable(final String[] values,
             final long interval, final Throwable e) {
         return Flowable.unsafeCreate(subscriber -> {
-            @SuppressWarnings("resource")
             final CompositeDisposable parentSubscription = new CompositeDisposable();
 
             subscriber.onSubscribe(new Subscription() /* NFI */ {

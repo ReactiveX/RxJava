@@ -857,7 +857,6 @@ public class ObservableDelayTest extends RxJavaTest {
     public void cancelShouldPreventRandomSubsequentEmissions() {
         for (int attempt = 1; attempt < 100; attempt ++) {
 
-            @SuppressWarnings("resource")
             SequentialDisposable disposable = new SequentialDisposable();
             ConcurrentLinkedQueue<Integer> sink = new ConcurrentLinkedQueue<>();
 

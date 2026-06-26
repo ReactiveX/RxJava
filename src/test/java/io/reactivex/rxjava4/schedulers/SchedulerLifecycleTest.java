@@ -69,7 +69,6 @@ public class SchedulerLifecycleTest extends RxJavaTest {
 
         final Runnable countAction = cdl::countDown;
 
-        @SuppressWarnings("resource")
         CompositeDisposable cd = new CompositeDisposable();
 
         try {

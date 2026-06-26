@@ -58,14 +58,12 @@ public class ResourceCompletableObserverTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void nullResource() {
-        @SuppressWarnings("resource")
         TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
         rco.add(null);
     }
 
     @Test
     public void addResources() {
-        @SuppressWarnings("resource")
         TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
 
         assertFalse(rco.isDisposed());
@@ -91,7 +89,6 @@ public class ResourceCompletableObserverTest extends RxJavaTest {
 
     @Test
     public void onCompleteCleansUp() {
-        @SuppressWarnings("resource")
         TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
 
         assertFalse(rco.isDisposed());
@@ -111,7 +108,6 @@ public class ResourceCompletableObserverTest extends RxJavaTest {
 
     @Test
     public void onErrorCleansUp() {
-        @SuppressWarnings("resource")
         TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
 
         assertFalse(rco.isDisposed());
@@ -169,7 +165,6 @@ public class ResourceCompletableObserverTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            @SuppressWarnings("resource")
             TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
 
             rco.onSubscribe(Disposable.empty());
@@ -190,7 +185,6 @@ public class ResourceCompletableObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        @SuppressWarnings("resource")
         TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
         rco.dispose();
 

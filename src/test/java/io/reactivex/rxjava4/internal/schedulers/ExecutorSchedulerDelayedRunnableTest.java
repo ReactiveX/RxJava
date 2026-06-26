@@ -29,7 +29,6 @@ public class ExecutorSchedulerDelayedRunnableTest extends RxJavaTest {
     @Test(expected = TestException.class)
     @SuppressUndeliverable
     public void delayedRunnableCrash() {
-        @SuppressWarnings("resource")
         DelayedRunnable dl = new DelayedRunnable(() -> {
             throw new TestException();
         });
@@ -39,7 +38,6 @@ public class ExecutorSchedulerDelayedRunnableTest extends RxJavaTest {
     @Test
     public void dispose() {
         final AtomicInteger count = new AtomicInteger();
-        @SuppressWarnings("resource")
         DelayedRunnable dl = new DelayedRunnable(count::incrementAndGet);
 
         dl.dispose();

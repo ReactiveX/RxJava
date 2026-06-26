@@ -310,7 +310,6 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void cancelNoConcurrentClean() {
         TestObserver<Integer> to = new TestObserver<>();
-        @SuppressWarnings("resource")
         ConcatMapMaybeMainObserver<Integer, Integer> operator =
                 new ConcatMapMaybeMainObserver<>(
                         to, Functions.justFunction(Maybe.<Integer>never()), 16, ErrorMode.IMMEDIATE);

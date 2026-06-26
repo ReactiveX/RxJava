@@ -34,7 +34,6 @@ public class CancellableDisposableTest extends RxJavaTest {
 
         Cancellable c = count::getAndIncrement;
 
-        @SuppressWarnings("resource")
         CancellableDisposable cd = new CancellableDisposable(c);
 
         assertFalse(cd.isDisposed());
@@ -56,7 +55,6 @@ public class CancellableDisposableTest extends RxJavaTest {
             throw new TestException();
         };
 
-        @SuppressWarnings("resource")
         CancellableDisposable cd = new CancellableDisposable(c);
 
         assertFalse(cd.isDisposed());
@@ -83,7 +81,6 @@ public class CancellableDisposableTest extends RxJavaTest {
 
             Cancellable c = count::getAndIncrement;
 
-            @SuppressWarnings("resource")
             final CancellableDisposable cd = new CancellableDisposable(c);
 
             Runnable r = cd::dispose;

@@ -22,7 +22,6 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class ArrayCompositeSubscriptionTest extends RxJavaTest {
 
-    @SuppressWarnings("resource")
     @Test
     public void set() {
         ArrayCompositeSubscription ac = new ArrayCompositeSubscription(1);
@@ -58,7 +57,6 @@ public class ArrayCompositeSubscriptionTest extends RxJavaTest {
         assertFalse(ac.setResource(0, null));
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void replace() {
         ArrayCompositeSubscription ac = new ArrayCompositeSubscription(1);
@@ -94,7 +92,6 @@ public class ArrayCompositeSubscriptionTest extends RxJavaTest {
         ac.replaceResource(0, null);
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void disposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -106,7 +103,6 @@ public class ArrayCompositeSubscriptionTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void setReplaceRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {

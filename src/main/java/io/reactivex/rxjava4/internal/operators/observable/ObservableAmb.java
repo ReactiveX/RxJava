@@ -69,7 +69,6 @@ public final class ObservableAmb<T> extends Observable<T> {
             return;
         }
 
-        @SuppressWarnings("resource")
         AmbCoordinator<T> ac = new AmbCoordinator<>(observer, count);
         ac.subscribe(sources);
     }

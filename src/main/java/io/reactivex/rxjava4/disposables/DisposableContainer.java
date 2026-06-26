@@ -95,13 +95,13 @@ public interface DisposableContainer extends Disposable {
      * cases where the dispose signal has no side effects to work with.
      * @since 4.0.0
      */
-    static DisposableContainer NEVER = new NeverDisposableContainer();
+    DisposableContainer NEVER = new NeverDisposableContainer();
 
     /**
      * Implementation of a never disposable container.
      * @since 4.0.0
      */
-    static record NeverDisposableContainer() implements DisposableContainer {
+    record NeverDisposableContainer() implements DisposableContainer {
 
         @Override
         public void dispose() {
