@@ -707,13 +707,13 @@ public class CheckParamValidationTest extends RxJavaTest {
 
     static void addIgnore(ParamIgnore ignore) {
         String key = ignore.toString();
-        List<ParamIgnore> list = ignores.computeIfAbsent(key, k -> new ArrayList<>());
+        List<ParamIgnore> list = ignores.computeIfAbsent(key, _ -> new ArrayList<>());
         list.add(ignore);
     }
 
     static void addOverride(ParamOverride ignore) {
         String key = ignore.toString();
-        List<ParamOverride> list = overrides.computeIfAbsent(key, k -> new ArrayList<>());
+        List<ParamOverride> list = overrides.computeIfAbsent(key, _ -> new ArrayList<>());
         list.add(ignore);
     }
 
@@ -912,19 +912,46 @@ public class CheckParamValidationTest extends RxJavaTest {
                             if (!success && error.getCause() instanceof NullPointerException) {
                                 if (!error.getCause().toString().contains("is null")) {
                                     fail++;
-                                    b.append("\r\nNPEs should indicate which argument failed: ").append(m).append(" # ").append(i).append(" = ").append(p).append(", tag = ").append(tag).append(", params = ").append(Arrays.toString(callParams2));
+                                    b.append("\r\nNPEs should indicate which argument failed: ")
+                                    .append(m)
+                                    .append(" # ")
+                                    .append(i)
+                                    .append(" = ")
+                                    .append(p)
+                                    .append(", tag = ")
+                                    .append(tag)
+                                    .append(", params = ")
+                                    .append(Arrays.toString(callParams2));
                                 }
                             }
                             if (success != shouldSucceed) {
                                 fail++;
                                 if (shouldSucceed) {
-                                    b.append("\r\nFailed (should have succeeded): ").append(m).append(" # ").append(i).append(" = ").append(p).append(", tag = ").append(tag).append(", params = ").append(Arrays.toString(callParams2));
+                                    b.append("\r\nFailed (should have succeeded): ")
+                                    .append(m)
+                                    .append(" # ")
+                                    .append(i)
+                                    .append(" = ")
+                                    .append(p)
+                                    .append(", tag = ")
+                                    .append(tag)
+                                    .append(", params = ")
+                                    .append(Arrays.toString(callParams2));
                                     b.append("\r\n    ").append(error);
                                     if (error.getCause() != null) {
                                         b.append("\r\n    ").append(error.getCause());
                                     }
                                 } else {
-                                    b.append("\r\nNo failure (should have failed): ").append(m).append(" # ").append(i).append(" = ").append(p).append(", tag = ").append(tag).append(", params = ").append(Arrays.toString(callParams2));
+                                    b.append("\r\nNo failure (should have failed): ")
+                                    .append(m)
+                                    .append(" # ")
+                                    .append(i)
+                                    .append(" = ")
+                                    .append(p)
+                                    .append(", tag = ")
+                                    .append(tag)
+                                    .append(", params = ")
+                                    .append(Arrays.toString(callParams2));
                                 }
                                 continue outer;
                             }
