@@ -30,9 +30,7 @@ public class ObservableGenerateTest extends RxJavaTest {
 
     @Test
     public void statefulBiconsumer() {
-        Observable.generate(() -> 10, (BiConsumer<Object, Emitter<Object>>) (s, e) -> {
-            e.onNext(s);
-        }, _ -> {
+        Observable.generate(() -> 10, (BiConsumer<Object, Emitter<Object>>) (s, e) -> e.onNext(s), _ -> {
 
         })
         .take(5)
@@ -64,9 +62,7 @@ public class ObservableGenerateTest extends RxJavaTest {
     public void disposerThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Observable.generate(() -> 1, (BiConsumer<Object, Emitter<Object>>) (_, e) -> {
-                e.onComplete();
-            }, _ -> {
+            Observable.generate(() -> 1, (BiConsumer<Object, Emitter<Object>>) (_, e) -> e.onComplete(), _ -> {
                 throw new TestException();
             })
             .test()
@@ -80,9 +76,7 @@ public class ObservableGenerateTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.generate(() -> 1, (BiConsumer<Object, Emitter<Object>>) (_, e) -> {
-            e.onComplete();
-        }, Functions.emptyConsumer()));
+        TestHelper.checkDisposed(Observable.generate(() -> 1, (BiConsumer<Object, Emitter<Object>>) (_, e) -> e.onComplete(), Functions.emptyConsumer()));
     }
 
     @Test

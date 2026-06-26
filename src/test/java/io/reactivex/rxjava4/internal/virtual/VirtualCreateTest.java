@@ -46,9 +46,7 @@ public class VirtualCreateTest {
     @Test
     public void checkIsInsideVirtualThread() {
         try (var scope = Executors.newVirtualThreadPerTaskExecutor()) {
-            Flowable.virtualCreate(emitter -> {
-                emitter.emit(Thread.currentThread().isVirtual());
-            }, scope)
+            Flowable.virtualCreate(emitter -> emitter.emit(Thread.currentThread().isVirtual()), scope)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(true);
@@ -58,9 +56,7 @@ public class VirtualCreateTest {
     @Test
     public void checkIsInsideVirtualThreadExec() throws Throwable {
         try (var exec = Executors.newSingleThreadExecutor()) {
-            Flowable.virtualCreate(emitter -> {
-                emitter.emit(Thread.currentThread().isVirtual());
-            }, exec)
+            Flowable.virtualCreate(emitter -> emitter.emit(Thread.currentThread().isVirtual()), exec)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(false);
@@ -81,46 +77,38 @@ public class VirtualCreateTest {
 
     @Test
     public void takeUntil() throws Throwable {
-        withVirtual(exec -> {
-            Flowable.<Integer>virtualCreate(e -> {
-                for (int i = 1; i < 6; i++) {
-                    e.emit(i);
-                }
-            }, exec)
-            .take(2)
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertResult(1, 2);
-        });
+        withVirtual(exec -> Flowable.<Integer>virtualCreate(e -> {
+            for (int i = 1; i < 6; i++) {
+                e.emit(i);
+            }
+        }, exec)
+        .take(2)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2));
     }
 
     @Test
     public void backpressure() throws Throwable {
-        withVirtual(exec -> {
-            Flowable.<Integer>virtualCreate(e -> {
-                for (int i = 0; i < 10000; i++) {
-                    e.emit(i);
-                }
-            }, exec)
-            .observeOn(Schedulers.single(), false, 2)
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertValueCount(10000)
-            ;
-        });
+        withVirtual(exec -> Flowable.<Integer>virtualCreate(e -> {
+            for (int i = 0; i < 10000; i++) {
+                e.emit(i);
+            }
+        }, exec)
+        .observeOn(Schedulers.single(), false, 2)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertValueCount(10000));
     }
 
     @Test
     public void error() throws Throwable {
-        withVirtual(exec -> {
-            Flowable.<Integer>virtualCreate(_ -> {
-                throw new IOException();
-            }, exec)
-            .observeOn(Schedulers.single(), false, 2)
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertError(IOException.class)
-            ;
-        });
+        withVirtual(exec -> Flowable.<Integer>virtualCreate(_ -> {
+            throw new IOException();
+        }, exec)
+        .observeOn(Schedulers.single(), false, 2)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertError(IOException.class));
     }
 }

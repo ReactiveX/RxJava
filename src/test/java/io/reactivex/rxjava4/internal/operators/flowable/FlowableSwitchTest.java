@@ -947,9 +947,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         Flowable.range(1, 10000)
         .switchMap((Function<Integer, Flowable<Object>>) _ -> Flowable.just(2).hide()
         .observeOn(Schedulers.single())
-        .map((Function<Integer, Object>) _ -> {
-            return Thread.currentThread().getName();
-        }))
+        .map((Function<Integer, Object>) _ -> Thread.currentThread().getName()))
         .to(TestHelper.<Object>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertNever(thread)
@@ -1110,9 +1108,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
         int n = 10_000;
         for (int i = 0; i < n; i++) {
-            Flowable.<Integer>create(it -> {
-                it.onNext(0);
-            }, BackpressureStrategy.MISSING)
+            Flowable.<Integer>create(it -> it.onNext(0), BackpressureStrategy.MISSING)
             .switchMap(_ -> createFlowable(inner))
             .observeOn(Schedulers.computation())
             .doFinally(outer::incrementAndGet)
@@ -1129,12 +1125,8 @@ public class FlowableSwitchTest extends RxJavaTest {
         return Flowable.<Integer>unsafeCreate(s -> {
             SerializedSubscriber<Integer> it = new SerializedSubscriber<>(s);
             it.onSubscribe(new BooleanSubscription());
-            Schedulers.cached().scheduleDirect(() -> {
-                it.onNext(1);
-            }, 0, TimeUnit.MILLISECONDS);
-            Schedulers.cached().scheduleDirect(() -> {
-                it.onNext(2);
-            }, 0, TimeUnit.MILLISECONDS);
+            Schedulers.cached().scheduleDirect(() -> it.onNext(1), 0, TimeUnit.MILLISECONDS);
+            Schedulers.cached().scheduleDirect(() -> it.onNext(2), 0, TimeUnit.MILLISECONDS);
         })
         .doFinally(inner::incrementAndGet);
     }

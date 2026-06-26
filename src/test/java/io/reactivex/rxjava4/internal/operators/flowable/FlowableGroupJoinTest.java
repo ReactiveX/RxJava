@@ -551,9 +551,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         pp1.groupJoin(pp2, _ -> Flowable.never(), _ -> Flowable.never(), (a, _) -> a)
-        .doOnNext(_ -> {
-            ts.cancel();
-        })
+        .doOnNext(_ -> ts.cancel())
         .subscribe(ts);
 
         pp2.onNext(1);

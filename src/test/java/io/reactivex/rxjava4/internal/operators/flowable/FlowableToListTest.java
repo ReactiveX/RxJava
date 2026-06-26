@@ -174,9 +174,7 @@ public class FlowableToListTest extends RxJavaTest {
     static void await(CyclicBarrier cb) {
         try {
             cb.await();
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        } catch (BrokenBarrierException ex) {
+        } catch (InterruptedException | BrokenBarrierException ex) {
             ex.printStackTrace();
         }
     }

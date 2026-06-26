@@ -56,9 +56,7 @@ public class FlowableVirtualTransformVirtual2TckTest extends BaseTck<Long> {
             Thread.sleep(10);
             return v;
         })
-        .virtualTransform((v, emitter, _) -> {
-            emitter.emit(v);
-        }, Schedulers.virtual(), 2)
+        .virtualTransform((v, emitter, _) -> emitter.emit(v), Schedulers.virtual(), 2)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);

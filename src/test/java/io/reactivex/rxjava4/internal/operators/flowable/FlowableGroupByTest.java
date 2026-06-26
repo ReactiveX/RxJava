@@ -1736,11 +1736,11 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void groupSyncFusionRejected() {
         Flowable.just(1)
         .groupBy(_ -> 1)
-        .doOnNext(g -> {
-            g.subscribeWith(new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC))
-            .assertFuseable()
-            .assertFusionMode(QueueFuseable.NONE);
-        })
+        .doOnNext(g ->
+                g.subscribeWith(new TestSubscriberEx<Integer>()
+                                .setInitialFusionMode(QueueFuseable.SYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE))
         .test()
         .assertComplete();
     }
@@ -1755,11 +1755,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             pp.groupBy(_ -> 1)
-            .doOnNext(g -> {
-                TestHelper.raceOther(() -> {
-                    g.subscribe(ts);
-                }, cdl);
-            })
+            .doOnNext(g -> TestHelper.raceOther(() -> g.subscribe(ts), cdl))
             .test();
 
             pp.onNext(1);
@@ -1895,9 +1891,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         Flowable
         .range(1, 500_000)
         .map(i -> i % groups)
-        .doOnCancel(() -> {
-            System.out.println("Cancelling upstream");
-        })
+        .doOnCancel(() -> System.out.println("Cancelling upstream"))
         .groupBy(i -> i, i -> i, false, groupByBufferSize,
                               sizeCap(groups * 2, notifyOnExplicitEviction))
         .flatMap(gf -> gf
@@ -1946,9 +1940,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         Flowable
         .range(1, 500_000)
         .map(i -> i % groups)
-        .doOnRequest(v -> {
-            System.out.println("Source: " + v);
-        })
+        .doOnRequest(v -> System.out.println("Source: " + v))
         .groupBy(i -> i)
         .flatMap(gf -> gf
                      .observeOn(Schedulers.computation())
@@ -1971,9 +1963,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         Flowable
         .range(1, 500_000)
         .map(i -> i % groups)
-        .doOnRequest(v -> {
-            System.out.println("Source: " + v);
-        })
+        .doOnRequest(v -> System.out.println("Source: " + v))
         .groupBy(i -> i)
         .flatMap(gf -> gf
                      .hide()

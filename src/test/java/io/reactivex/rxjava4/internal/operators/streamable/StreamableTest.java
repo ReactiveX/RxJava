@@ -37,7 +37,7 @@ public class StreamableTest extends StreamableBaseTest {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             ts.onSubscribe(EmptySubscription.INSTANCE);
 
-            try (var comp = Streamable.empty().forEach(e -> { ts.onError(new TestException("Element produced? " + e)); }, exec)) {
+            try (var comp = Streamable.empty().forEach(e -> ts.onError(new TestException("Element produced? " + e)), exec)) {
 
                 comp.stage().toCompletableFuture().thenAccept(_ -> ts.onComplete())
                 .exceptionally(e -> { ts.onError(e); return null; });
@@ -113,9 +113,7 @@ public class StreamableTest extends StreamableBaseTest {
                     emitter.emit(i);
                 }
             }, exec)
-            .transform((item, emitter, _) -> {
-                emitter.emit(-item - 1);
-            }, exec)
+            .transform((item, emitter, _) -> emitter.emit(-item - 1), exec)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(-2, -3, -4, -5, -6, -7, -8, -9, -10, -11);
@@ -130,9 +128,7 @@ public class StreamableTest extends StreamableBaseTest {
         TestHelper.onVirtual(exec -> {
             Flowable.range(1, 10)
             .toStreamable(exec)
-            .transform((item, emitter, _) -> {
-                emitter.emit(-item - 1);
-            }, exec)
+            .transform((item, emitter, _) -> emitter.emit(-item - 1), exec)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(-2, -3, -4, -5, -6, -7, -8, -9, -10, -11);
@@ -155,9 +151,7 @@ public class StreamableTest extends StreamableBaseTest {
             })
             .doOnNext(v -> System.out.println("Flowable::doOnNext " + v))
             .toStreamable(exec)
-            .transform((item, emitter, _) -> {
-                emitter.emit(-item - 1);
-            }, exec)
+            .transform((item, emitter, _) -> emitter.emit(-item - 1), exec)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(-2, -3, -4, -5, -6, -7, -8, -9, -10, -11);
@@ -228,18 +222,16 @@ public class StreamableTest extends StreamableBaseTest {
 
     @Test
     public void rangeTransformFilter() throws Throwable {
-        TestHelper.withVirtual(exec -> {
-            Flowable.range(1, 10)
-            .toStreamable(exec)
-            .transform((item, emitter, _) -> {
-                if ((item & 1) == 0) {
-                    emitter.emit(item);
-                }
-            }, exec)
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertResult(2, 4, 6, 8, 10);
-        });
+        TestHelper.withVirtual(exec -> Flowable.range(1, 10)
+        .toStreamable(exec)
+        .transform((item, emitter, _) -> {
+            if ((item & 1) == 0) {
+                emitter.emit(item);
+            }
+        }, exec)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(2, 4, 6, 8, 10));
     }
 
     @Test

@@ -284,9 +284,7 @@ public enum TestHelper {
 
                 m.invoke("INSTANCE");
                 fail("Should have thrown!");
-            } catch (InvocationTargetException ex) {
-                fail(ex.toString());
-            } catch (IllegalAccessException ex) {
+            } catch (InvocationTargetException | IllegalAccessException ex) {
                 fail(ex.toString());
             } catch (IllegalArgumentException ex) {
                 // we expected this
@@ -3537,43 +3535,49 @@ public enum TestHelper {
             })
             .to(transform);
 
-            if (result instanceof MaybeSource) {
-                TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to.asDisposable());
+            switch (result) {
+                case MaybeSource<?> maybeSource -> {
+                    TestObserverEx<Object> to = new TestObserverEx<>();
+                    disposable.set(to.asDisposable());
 
-                ((MaybeSource<?>)result)
-                .subscribe(to);
-                to.assertEmpty();
-            } else if (result instanceof SingleSource) {
-                TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to.asDisposable());
+                    maybeSource
+                            .subscribe(to);
+                    to.assertEmpty();
+                }
+                case SingleSource<?> singleSource -> {
+                    TestObserverEx<Object> to = new TestObserverEx<>();
+                    disposable.set(to.asDisposable());
 
-                ((SingleSource<?>)result)
-                .subscribe(to);
-                to.assertEmpty();
-            } else if (result instanceof CompletableSource) {
-                TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to.asDisposable());
+                    singleSource
+                            .subscribe(to);
+                    to.assertEmpty();
+                }
+                case CompletableSource completableSource -> {
+                    TestObserverEx<Object> to = new TestObserverEx<>();
+                    disposable.set(to.asDisposable());
 
-                ((CompletableSource)result)
-                .subscribe(to);
-                to.assertEmpty();
-            } else if (result instanceof ObservableSource) {
-                TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to.asDisposable());
+                    completableSource
+                            .subscribe(to);
+                    to.assertEmpty();
+                }
+                case ObservableSource<?> observableSource -> {
+                    TestObserverEx<Object> to = new TestObserverEx<>();
+                    disposable.set(to.asDisposable());
 
-                ((ObservableSource<?>)result)
-                .subscribe(to);
-                to.assertEmpty();
-            } else if (result instanceof Publisher) {
-                TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
-                disposable.set(Disposable.fromSubscription(ts));
+                    observableSource
+                            .subscribe(to);
+                    to.assertEmpty();
+                }
+                case Publisher<?> publisher -> {
+                    TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+                    disposable.set(Disposable.fromSubscription(ts));
 
-                ((Publisher<?>)result)
-                .subscribe(ts);
-                ts.assertEmpty();
-            } else {
-                fail("Unsupported transformation output: " + result + " of class " + (result != null ? result.getClass() : " <null>"));
+                    publisher
+                            .subscribe(ts);
+                    ts.assertEmpty();
+                }
+                default ->
+                        fail("Unsupported transformation output: " + result + " of class " + (result != null ? result.getClass() : " <null>"));
             }
 
             assertFalse("No undeliverable errors received", errors.isEmpty());
@@ -3602,43 +3606,49 @@ public enum TestHelper {
             })
             .to(transform);
 
-            if (result instanceof MaybeSource) {
-                TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to.asDisposable());
+            switch (result) {
+                case MaybeSource<?> maybeSource -> {
+                    TestObserverEx<Object> to = new TestObserverEx<>();
+                    disposable.set(to.asDisposable());
 
-                ((MaybeSource<?>)result)
-                .subscribe(to);
-                to.assertEmpty();
-            } else if (result instanceof SingleSource) {
-                TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to.asDisposable());
+                    maybeSource
+                            .subscribe(to);
+                    to.assertEmpty();
+                }
+                case SingleSource<?> singleSource -> {
+                    TestObserverEx<Object> to = new TestObserverEx<>();
+                    disposable.set(to.asDisposable());
 
-                ((SingleSource<?>)result)
-                .subscribe(to);
-                to.assertEmpty();
-            } else if (result instanceof CompletableSource) {
-                TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to.asDisposable());
+                    singleSource
+                            .subscribe(to);
+                    to.assertEmpty();
+                }
+                case CompletableSource completableSource -> {
+                    TestObserverEx<Object> to = new TestObserverEx<>();
+                    disposable.set(to.asDisposable());
 
-                ((CompletableSource)result)
-                .subscribe(to);
-                to.assertEmpty();
-            } else if (result instanceof ObservableSource) {
-                TestObserverEx<Object> to = new TestObserverEx<>();
-                disposable.set(to.asDisposable());
+                    completableSource
+                            .subscribe(to);
+                    to.assertEmpty();
+                }
+                case ObservableSource<?> observableSource -> {
+                    TestObserverEx<Object> to = new TestObserverEx<>();
+                    disposable.set(to.asDisposable());
 
-                ((ObservableSource<?>)result)
-                .subscribe(to);
-                to.assertEmpty();
-            } else if (result instanceof Publisher) {
-                TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
-                disposable.set(Disposable.fromSubscription(ts));
+                    observableSource
+                            .subscribe(to);
+                    to.assertEmpty();
+                }
+                case Publisher<?> publisher -> {
+                    TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+                    disposable.set(Disposable.fromSubscription(ts));
 
-                ((Publisher<?>)result)
-                .subscribe(ts);
-                ts.assertEmpty();
-            } else {
-                fail("Unsupported transformation output: " + result + " of class " + (result != null ? result.getClass() : " <null>"));
+                    publisher
+                            .subscribe(ts);
+                    ts.assertEmpty();
+                }
+                default ->
+                        fail("Unsupported transformation output: " + result + " of class " + (result != null ? result.getClass() : " <null>"));
             }
 
             assertFalse("No undeliverable errors received", errors.isEmpty());
@@ -3901,15 +3911,13 @@ public enum TestHelper {
      * @throws Throwable the exception propagated out
      */
     public static void onVirtual(Consumer<ExecutorService> call) throws Throwable {
-        withVirtual(exec -> {
-            exec.submit(() -> {
-                try {
-                    call.accept(exec);
-                } catch (Throwable ex) {
-                    throw Exceptions.propagate(ex);
-                }
-            }).get();
-        });
+        withVirtual(exec -> exec.submit(() -> {
+            try {
+                call.accept(exec);
+            } catch (Throwable ex) {
+                throw Exceptions.propagate(ex);
+            }
+        }).get());
     }
 
     record ExecutorIntercept(ExecutorService service, boolean printStackTrace) implements ExecutorService {

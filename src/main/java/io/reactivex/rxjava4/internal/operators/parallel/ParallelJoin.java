@@ -216,7 +216,6 @@ public final class ParallelJoin<T> extends Flowable<T> {
             int missed = 1;
 
             JoinInnerSubscriber<T>[] s = this.subscribers;
-            int n = s.length;
             Subscriber<? super T> a = this.downstream;
 
             for (;;) {
@@ -387,7 +386,6 @@ public final class ParallelJoin<T> extends Flowable<T> {
             int missed = 1;
 
             JoinInnerSubscriber<T>[] s = this.subscribers;
-            int n = s.length;
             Subscriber<? super T> a = this.downstream;
 
             for (;;) {

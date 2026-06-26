@@ -238,9 +238,7 @@ public interface Streamable<@NonNull T> {
     default Flowable<T> toFlowable(@NonNull ExecutorService executor) {
         Objects.requireNonNull(executor, "executir is null");
         var me = this;
-        return Flowable.virtualCreate(emitter -> {
-            me.forEach(emitter::emit).await(emitter.canceller());
-        }, executor);
+        return Flowable.virtualCreate(emitter -> me.forEach(emitter::emit).await(emitter.canceller()), executor);
     }
 
     /**
@@ -269,13 +267,11 @@ public interface Streamable<@NonNull T> {
         Objects.requireNonNull(transformer, "transformer is null");
         Objects.requireNonNull(executor, "executor is null");
         var me = this;
-        return create(emitter -> {
-            me.forEach((item, stopper) -> {
-                // System.out.println("item " + item);
-                transformer.transform(item, emitter, stopper);
-            }, emitter.canceller(), executor)
-            .await(emitter.canceller());
-        }, executor);
+        return create(emitter -> me.forEach((item, stopper) -> {
+            // System.out.println("item " + item);
+            transformer.transform(item, emitter, stopper);
+        }, emitter.canceller(), executor)
+        .await(emitter.canceller()), executor);
     }
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo

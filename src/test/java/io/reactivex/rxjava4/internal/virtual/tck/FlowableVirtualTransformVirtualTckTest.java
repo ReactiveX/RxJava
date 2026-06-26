@@ -106,9 +106,7 @@ public class FlowableVirtualTransformVirtualTckTest extends BaseTck<Long> {
             }
             return v;
         })
-        .virtualTransform((v, emitter, _) -> {
-            emitter.emit(v);
-        }, Schedulers.virtual(), Flowable.bufferSize())
+        .virtualTransform((v, emitter, _) -> emitter.emit(v), Schedulers.virtual(), Flowable.bufferSize())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);

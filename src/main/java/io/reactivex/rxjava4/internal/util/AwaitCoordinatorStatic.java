@@ -122,9 +122,7 @@ public interface AwaitCoordinatorStatic {
         var winner = new CompletableFuture<CompletionStage<? extends T>>();
 
         for (var stage : stages) {
-            stage.whenComplete((_, _) -> {
-                winner.complete(stage);
-            });
+            stage.whenComplete((_, _) -> winner.complete(stage));
         }
         return await(winner, canceller).toCompletableFuture().getNow(null);
     }
@@ -144,9 +142,7 @@ public interface AwaitCoordinatorStatic {
         var winner = new CompletableFuture<CompletionStage<? extends T>>();
 
         for (var stage : stages) {
-            stage.whenComplete((_, _) -> {
-                winner.complete(stage);
-            });
+            stage.whenComplete((_, _) -> winner.complete(stage));
         }
         return (CompletionStage<T>)await(winner, canceller).toCompletableFuture().getNow(null);
     }
@@ -167,9 +163,7 @@ public interface AwaitCoordinatorStatic {
         for (int i = 0; i < stages.size(); i++) {
             var stage = stages.get(i);
             var fi = i;
-            stage.whenComplete((_, _) -> {
-                winner.complete(fi);
-            });
+            stage.whenComplete((_, _) -> winner.complete(fi));
         }
         return await(winner, canceller);
     }
