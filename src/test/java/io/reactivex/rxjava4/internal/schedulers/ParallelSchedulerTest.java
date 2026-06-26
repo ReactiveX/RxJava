@@ -349,14 +349,13 @@ public class ParallelSchedulerTest implements Runnable {
         try {
             for (int i = 0; i < 1000; i++) {
                 final CompositeDisposable cd = new CompositeDisposable();
-                try (final TrackedAction tt = new TrackedAction(this, cd)) {
-                    final FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
+                var tt = new TrackedAction(this, cd);
+                final FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
-                    Runnable r1 = () -> tt.setFuture(ft);
+                Runnable r1 = () -> tt.setFuture(ft);
 
-                    Runnable r2 = () -> tt.future.set(TrackedAction.FINISHED);
-                    TestHelper.race(r1, r2, Schedulers.single());
-                }
+                Runnable r2 = () -> tt.future.set(TrackedAction.FINISHED);
+                TestHelper.race(r1, r2, Schedulers.single());
             }
         } finally {
             s.shutdown();
@@ -369,14 +368,14 @@ public class ParallelSchedulerTest implements Runnable {
         try {
             for (int i = 0; i < 1000; i++) {
                 final CompositeDisposable cd = new CompositeDisposable();
-                try (final TrackedAction tt = new TrackedAction(this, cd)) {
-                    final FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
-                    Runnable r1 = () -> tt.setFuture(ft);
+                var tt = new TrackedAction(this, cd);
+                final FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
-                    Runnable r2 = () -> tt.future.set(TrackedAction.DISPOSED);
-                    TestHelper.race(r1, r2, Schedulers.single());
-                }
+                Runnable r1 = () -> tt.setFuture(ft);
+
+                Runnable r2 = () -> tt.future.set(TrackedAction.DISPOSED);
+                TestHelper.race(r1, r2, Schedulers.single());
             }
         } finally {
             s.shutdown();

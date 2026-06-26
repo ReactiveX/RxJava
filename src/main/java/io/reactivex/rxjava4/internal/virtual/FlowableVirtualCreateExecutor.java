@@ -117,7 +117,7 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
                 var w = worker;
                 worker = null;
                 if (w != null) {
-                    w.close();
+                    w.dispose();
                 }
             }
             return null;

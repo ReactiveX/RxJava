@@ -201,7 +201,6 @@ public class SerialDisposableTests extends RxJavaTest {
     @Test
     public void disposeState() {
         Disposable empty = Disposable.empty();
-        @SuppressWarnings("resource")
         SerialDisposable d = new SerialDisposable(empty);
 
         assertFalse(d.isDisposed());

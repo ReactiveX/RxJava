@@ -240,7 +240,6 @@ public class LambdaObserverTest extends RxJavaTest {
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {
-        @SuppressWarnings("resource")
         LambdaObserver<Integer> o = new LambdaObserver<>(Functions.<Integer>emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION,
@@ -251,7 +250,6 @@ public class LambdaObserverTest extends RxJavaTest {
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
-        @SuppressWarnings("resource")
         LambdaObserver<Integer> o = new LambdaObserver<>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION,
@@ -266,7 +264,6 @@ public class LambdaObserverTest extends RxJavaTest {
         try {
             final List<Throwable> observerErrors = Collections.synchronizedList(new ArrayList<>());
 
-            @SuppressWarnings("resource")
             LambdaObserver<Integer> o = new LambdaObserver<>(Functions.<Integer>emptyConsumer(),
                     observerErrors::add,
                     Functions.EMPTY_ACTION,

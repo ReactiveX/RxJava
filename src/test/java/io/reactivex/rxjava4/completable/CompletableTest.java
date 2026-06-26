@@ -962,7 +962,6 @@ public class CompletableTest extends RxJavaTest {
     public void timerCancel() throws InterruptedException {
         Completable c = Completable.timer(250, TimeUnit.MILLISECONDS);
 
-        @SuppressWarnings("resource")
         final SequentialDisposable sd = new SequentialDisposable();
         final AtomicInteger calls = new AtomicInteger();
 

@@ -83,7 +83,6 @@ public class DisposableSubscriberTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            @SuppressWarnings("resource")
             TestDisposableSubscriber<Integer> tc = new TestDisposableSubscriber<>();
 
             tc.onSubscribe(new BooleanSubscription());
@@ -104,7 +103,6 @@ public class DisposableSubscriberTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        @SuppressWarnings("resource")
         TestDisposableSubscriber<Integer> tc = new TestDisposableSubscriber<>();
 
         assertFalse(tc.isDisposed());

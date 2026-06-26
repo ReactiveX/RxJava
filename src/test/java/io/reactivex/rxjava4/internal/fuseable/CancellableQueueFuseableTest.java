@@ -27,7 +27,6 @@ public class CancellableQueueFuseableTest {
 
     @Test
     public void pollClear() throws Throwable {
-        @SuppressWarnings("resource")
         CancellableQueueFuseable<Object> qs = new CancellableQueueFuseable<>();
 
         assertNull(qs.poll());
@@ -38,7 +37,6 @@ public class CancellableQueueFuseableTest {
 
     @Test
     public void cancel() {
-        @SuppressWarnings("resource")
         CancellableQueueFuseable<Object> qs = new CancellableQueueFuseable<>();
 
         assertFalse(qs.isDisposed());
@@ -54,7 +52,6 @@ public class CancellableQueueFuseableTest {
 
     @Test
     public void dispose() {
-        @SuppressWarnings("resource")
         CancellableQueueFuseable<Object> qs = new CancellableQueueFuseable<>();
 
         assertFalse(qs.isDisposed());
@@ -70,7 +67,6 @@ public class CancellableQueueFuseableTest {
 
     @Test
     public void cancel2() {
-        @SuppressWarnings("resource")
         AbstractEmptyQueueFuseable<Object> qs = new AbstractEmptyQueueFuseable<Object>() /* NFI */ { };
 
         assertFalse(qs.isDisposed());
@@ -80,7 +76,6 @@ public class CancellableQueueFuseableTest {
 
     @Test
     public void dispose2() {
-        @SuppressWarnings("resource")
         AbstractEmptyQueueFuseable<Object> qs = new AbstractEmptyQueueFuseable<Object>() /* NFI */ { };
 
         assertFalse(qs.isDisposed());

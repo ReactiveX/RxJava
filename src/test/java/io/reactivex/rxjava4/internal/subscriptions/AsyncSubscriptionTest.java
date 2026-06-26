@@ -25,7 +25,6 @@ import io.reactivex.rxjava4.disposables.Disposable;
 
 public class AsyncSubscriptionTest extends RxJavaTest {
 
-    @SuppressWarnings("resource")
     @Test
     public void noResource() {
         AsyncSubscription as = new AsyncSubscription();
@@ -42,7 +41,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(s).cancel();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void requestBeforeSet() {
         AsyncSubscription as = new AsyncSubscription();
@@ -59,7 +57,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(s).cancel();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void cancelBeforeSet() {
         AsyncSubscription as = new AsyncSubscription();
@@ -75,7 +72,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(s).cancel();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void singleSet() {
         AsyncSubscription as = new AsyncSubscription();
@@ -93,7 +89,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(s1).cancel();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void initialResource() {
         Disposable r = mock(Disposable.class);
@@ -104,7 +99,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(r).dispose();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void setResource() {
         AsyncSubscription as = new AsyncSubscription();
@@ -118,7 +112,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(r).dispose();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void replaceResource() {
         AsyncSubscription as = new AsyncSubscription();
@@ -132,7 +125,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(r).dispose();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void setResource2() {
         AsyncSubscription as = new AsyncSubscription();
@@ -151,7 +143,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(r2).dispose();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void replaceResource2() {
         AsyncSubscription as = new AsyncSubscription();
@@ -170,7 +161,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(r2).dispose();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void setResourceAfterCancel() {
         AsyncSubscription as = new AsyncSubscription();
@@ -184,7 +174,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(r).dispose();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void replaceResourceAfterCancel() {
         AsyncSubscription as = new AsyncSubscription();
@@ -197,7 +186,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(r).dispose();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void cancelOnce() {
         Disposable r = mock(Disposable.class);
@@ -215,7 +203,6 @@ public class AsyncSubscriptionTest extends RxJavaTest {
         verify(r).dispose();
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void disposed() {
         AsyncSubscription as = new AsyncSubscription();

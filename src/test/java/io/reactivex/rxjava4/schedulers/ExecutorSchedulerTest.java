@@ -450,7 +450,6 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         try {
             Scheduler s = Schedulers.from(exec::execute, true);
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                @SuppressWarnings("resource")
                 SequentialDisposable sd = new SequentialDisposable();
 
                 TestHelper.race(

@@ -505,7 +505,6 @@ public class ObservableGroupJoinTest extends RxJavaTest {
     public void leftRightState() {
         JoinSupport js = mock(JoinSupport.class);
 
-        @SuppressWarnings("resource")
         LeftRightObserver o = new LeftRightObserver(js, false);
 
         assertFalse(o.isDisposed());

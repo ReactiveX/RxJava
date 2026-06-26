@@ -40,7 +40,6 @@ public class DisposableLambdaObserverTest extends RxJavaTest {
     public void disposeCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            @SuppressWarnings("resource")
             DisposableLambdaObserver<Integer> o = new DisposableLambdaObserver<>(
                     new TestObserver<>(), Functions.emptyConsumer(),
                     () -> {

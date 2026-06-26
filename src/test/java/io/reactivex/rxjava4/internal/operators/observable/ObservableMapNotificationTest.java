@@ -46,7 +46,6 @@ public class ObservableMapNotificationTest extends RxJavaTest {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                @SuppressWarnings("resource")
                 MapNotificationObserver mn = new MapNotificationObserver(
                         observer,
                         Functions.justFunction(Observable.just(1)),

@@ -23,7 +23,6 @@ import io.reactivex.rxjava4.core.RxJavaTest;
 
 public class BlockingObserverTest extends RxJavaTest {
 
-    @SuppressWarnings("resource")
     @Test
     public void dispose() {
         Queue<Object> q = new ArrayDeque<>();

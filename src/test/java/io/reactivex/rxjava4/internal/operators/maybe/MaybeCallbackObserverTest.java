@@ -31,7 +31,6 @@ public class MaybeCallbackObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        @SuppressWarnings("resource")
         MaybeCallbackObserver<Object> mo = new MaybeCallbackObserver<>(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_ACTION);
 
         Disposable d = Disposable.empty();
@@ -51,7 +50,6 @@ public class MaybeCallbackObserverTest extends RxJavaTest {
     public void onSuccessCrashes() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            @SuppressWarnings("resource")
             MaybeCallbackObserver<Object> mo = new MaybeCallbackObserver<>(
                     _ -> {
                         throw new TestException();
@@ -73,7 +71,6 @@ public class MaybeCallbackObserverTest extends RxJavaTest {
     public void onErrorCrashes() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            @SuppressWarnings("resource")
             MaybeCallbackObserver<Object> mo = new MaybeCallbackObserver<>(
                     Functions.emptyConsumer(),
                     (Consumer<Object>) _ -> {
@@ -100,7 +97,6 @@ public class MaybeCallbackObserverTest extends RxJavaTest {
     public void onCompleteCrashes() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            @SuppressWarnings("resource")
             MaybeCallbackObserver<Object> mo = new MaybeCallbackObserver<>(
                     Functions.emptyConsumer(),
                     Functions.emptyConsumer(),
@@ -120,7 +116,6 @@ public class MaybeCallbackObserverTest extends RxJavaTest {
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {
-        @SuppressWarnings("resource")
         MaybeCallbackObserver<Integer> o = new MaybeCallbackObserver<>(Functions.<Integer>emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION);
@@ -130,7 +125,6 @@ public class MaybeCallbackObserverTest extends RxJavaTest {
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
-        @SuppressWarnings("resource")
         MaybeCallbackObserver<Integer> o = new MaybeCallbackObserver<>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION);

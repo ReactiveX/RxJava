@@ -25,7 +25,7 @@ import io.reactivex.rxjava4.internal.functions.Functions;
 /**
  * Represents a disposable resource.
  */
-public interface Disposable extends AutoCloseable {
+public interface Disposable {
     /**
      * Dispose the resource, the operation should be idempotent.
      */
@@ -36,14 +36,6 @@ public interface Disposable extends AutoCloseable {
      * @return true if this resource has been disposed
      */
     boolean isDisposed();
-
-    /**
-     * Dispose the resource, the operation should be idempotent.
-     * @since 4.0.0
-     */
-    default void close() {
-        dispose();
-    }
 
     /**
      * Construct a {@code Disposable} by wrapping a {@link Runnable} that is
@@ -75,9 +67,9 @@ public interface Disposable extends AutoCloseable {
 
     /**
      * Construct a {@code Disposable} by wrapping a {@link Future} that is
-     * cancelled exactly once when the {@code Disposable} is disposed.
+     * canceled exactly once when the {@code Disposable} is disposed.
      * <p>
-     * The {@code Future} is cancelled with {@code mayInterruptIfRunning == true}.
+     * The {@code Future} is canceled with {@code mayInterruptIfRunning == true}.
      * @param future the {@code Future} to wrap
      * @return the new {@code Disposable} instance
      * @throws NullPointerException if {@code future} is {@code null}
@@ -92,7 +84,7 @@ public interface Disposable extends AutoCloseable {
 
     /**
      * Construct a {@code Disposable} by wrapping a {@link Future} that is
-     * cancelled exactly once when the {@code Disposable} is disposed.
+     * canceled exactly once when the {@code Disposable} is disposed.
      * @param future the {@code Future} to wrap
      * @param allowInterrupt if true, the future cancel happens via {@code Future.cancel(true)}
      * @return the new {@code Disposable} instance
@@ -107,7 +99,7 @@ public interface Disposable extends AutoCloseable {
 
     /**
      * Construct a {@code Disposable} by wrapping a {@link Subscription} that is
-     * cancelled exactly once when the {@code Disposable} is disposed.
+     * canceled exactly once when the {@code Disposable} is disposed.
      * @param subscription the {@code Runnable} to wrap
      * @return the new {@code Disposable} instance
      * @throws NullPointerException if {@code subscription} is {@code null}
@@ -145,6 +137,17 @@ public interface Disposable extends AutoCloseable {
     static AutoCloseable toAutoCloseable(@NonNull Disposable disposable) {
         Objects.requireNonNull(disposable, "disposable is null");
         return disposable::dispose;
+    }
+
+    /**
+     * Wraps this {@code Disposable} into an {@link AutoCloseable} instance
+     * that can be used with try-with-resources constructs.
+     * @return the new {@code AutoCloseable} instance
+     * @since 4.0.0
+     */
+    @NonNull
+    default AutoCloseable asAutoCloseable() {
+        return this::dispose;
     }
 
     /**

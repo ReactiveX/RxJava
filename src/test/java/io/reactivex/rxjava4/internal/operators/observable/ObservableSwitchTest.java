@@ -1189,7 +1189,6 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     Observable<Integer> createObservable(AtomicInteger inner) {
         return Observable.<Integer>unsafeCreate(s -> {
-            @SuppressWarnings("resource")
             SerializedObserver<Integer> it = new SerializedObserver<>(s);
             it.onSubscribe(Disposable.empty());
             Schedulers.cached().scheduleDirect(() -> {

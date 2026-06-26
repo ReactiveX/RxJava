@@ -71,14 +71,12 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void nullResource() {
-        @SuppressWarnings("resource")
         TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<>();
         ro.add(null);
     }
 
     @Test
     public void addResources() {
-        @SuppressWarnings("resource")
         TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<>();
 
         assertFalse(ro.isDisposed());
@@ -104,7 +102,6 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
     @Test
     public void onCompleteCleansUp() {
-        @SuppressWarnings("resource")
         TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<>();
 
         assertFalse(ro.isDisposed());
@@ -124,7 +121,6 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
     @Test
     public void onErrorCleansUp() {
-        @SuppressWarnings("resource")
         TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<>();
 
         assertFalse(ro.isDisposed());
@@ -165,7 +161,6 @@ public class ResourceSubscriberTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            @SuppressWarnings("resource")
             TestResourceSubscriber<Integer> tc = new TestResourceSubscriber<>();
 
             tc.onSubscribe(new BooleanSubscription());
@@ -186,7 +181,6 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        @SuppressWarnings("resource")
         TestResourceSubscriber<Integer> tc = new TestResourceSubscriber<>();
         tc.dispose();
 

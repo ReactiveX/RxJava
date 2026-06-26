@@ -77,7 +77,6 @@ public class DisposableCompletableObserverTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            @SuppressWarnings("resource")
             TestCompletable tc = new TestCompletable();
 
             tc.onSubscribe(Disposable.empty());
@@ -98,7 +97,6 @@ public class DisposableCompletableObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        @SuppressWarnings("resource")
         TestCompletable tc = new TestCompletable();
         tc.dispose();
 

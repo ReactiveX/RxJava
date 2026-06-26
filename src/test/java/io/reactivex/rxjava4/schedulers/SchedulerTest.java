@@ -117,7 +117,6 @@ public class SchedulerTest extends RxJavaTest {
 
         TestScheduler scheduler = new TestScheduler();
 
-        @SuppressWarnings("resource")
         final SequentialDisposable sd = new SequentialDisposable();
 
         Disposable d = scheduler.schedulePeriodicallyDirect(() -> {
@@ -145,7 +144,6 @@ public class SchedulerTest extends RxJavaTest {
         Worker worker = scheduler.createWorker();
 
         try {
-            @SuppressWarnings("resource")
             final SequentialDisposable sd = new SequentialDisposable();
 
             Disposable d = worker.schedulePeriodically(() -> {

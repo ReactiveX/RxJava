@@ -31,7 +31,6 @@ public class DisposeTaskTest extends RxJavaTest {
 
             Scheduler.Worker worker = Schedulers.single().createWorker();
 
-            @SuppressWarnings("resource")
             DisposeTask task = new DisposeTask(() -> {
                 throw new TestException();
             }, worker);

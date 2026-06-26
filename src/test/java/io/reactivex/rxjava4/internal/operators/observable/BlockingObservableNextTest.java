@@ -229,8 +229,7 @@ public class BlockingObservableNextTest extends RxJavaTest {
     public void noBufferingOrBlockingOfSequence() throws Throwable {
         int repeat = 0;
         for (;;) {
-            @SuppressWarnings("resource")
-            final SerialDisposable task = new SerialDisposable();
+            var task = new SerialDisposable();
             try {
                 final CountDownLatch finished = new CountDownLatch(1);
                 final int COUNT = 30;
@@ -341,7 +340,6 @@ public class BlockingObservableNextTest extends RxJavaTest {
 
     @Test
     public void nextObserverError() {
-        @SuppressWarnings("resource")
         NextObserver<Integer> no = new NextObserver<>();
 
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -356,7 +354,6 @@ public class BlockingObservableNextTest extends RxJavaTest {
 
     @Test
     public void nextObserverOnNext() throws Exception {
-        @SuppressWarnings("resource")
         NextObserver<Integer> no = new NextObserver<>();
 
         no.setWaiting();
@@ -370,7 +367,6 @@ public class BlockingObservableNextTest extends RxJavaTest {
 
     @Test
     public void nextObserverOnCompleteOnNext() throws Exception {
-        @SuppressWarnings("resource")
         NextObserver<Integer> no = new NextObserver<>();
 
         no.setWaiting();

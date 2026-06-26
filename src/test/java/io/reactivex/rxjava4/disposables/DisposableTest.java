@@ -237,4 +237,15 @@ public class DisposableTest extends RxJavaTest {
         assertTrue(d.isDisposed());
         assertEquals(1, counter.get());
     }
+
+    @Test
+    public void autoCloseable() throws Throwable {
+        var d = Disposable.empty();
+
+        try (var a = d.asAutoCloseable()) {
+            assertNotNull(a);
+        }
+
+        assertTrue("d is not disposed", d.isDisposed());
+    }
 }

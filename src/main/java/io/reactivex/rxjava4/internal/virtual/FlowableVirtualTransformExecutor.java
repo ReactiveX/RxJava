@@ -177,7 +177,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
                 var w = worker;
                 worker = null;
                 if (w != null) {
-                    w.close();
+                    w.dispose();
                 }
             } finally {
                 producerReady.resume();
