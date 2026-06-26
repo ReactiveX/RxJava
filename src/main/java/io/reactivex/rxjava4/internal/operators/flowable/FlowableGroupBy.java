@@ -312,19 +312,13 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         }
     }
 
-    static final class EvictionAction<K, V> implements Consumer<GroupedUnicast<K, V>> {
-
-        final Queue<GroupedUnicast<K, V>> evictedGroups;
-
-        EvictionAction(Queue<GroupedUnicast<K, V>> evictedGroups) {
-            this.evictedGroups = evictedGroups;
-        }
+    record EvictionAction<K, V>(Queue<GroupedUnicast<K, V>> evictedGroups) implements Consumer<GroupedUnicast<K, V>> {
 
         @Override
-        public void accept(GroupedUnicast<K, V> value) {
-            evictedGroups.offer(value);
+            public void accept(GroupedUnicast<K, V> value) {
+                evictedGroups.offer(value);
+            }
         }
-    }
 
     static final class GroupedUnicast<K, T> extends GroupedFlowable<K, T> {
 

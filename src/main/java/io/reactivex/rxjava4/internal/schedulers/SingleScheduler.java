@@ -43,8 +43,8 @@ public final class SingleScheduler extends Scheduler {
         SHUTDOWN = Executors.newScheduledThreadPool(0);
         SHUTDOWN.shutdown();
 
-        int priority = Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY,
-                Integer.getInteger(KEY_SINGLE_PRIORITY, Thread.NORM_PRIORITY)));
+        int priority = Math.clamp(
+                Integer.getInteger(KEY_SINGLE_PRIORITY, Thread.NORM_PRIORITY), Thread.MIN_PRIORITY, Thread.MAX_PRIORITY);
 
         SINGLE_THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX, priority, true);
     }

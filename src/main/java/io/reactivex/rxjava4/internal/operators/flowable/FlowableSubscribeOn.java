@@ -144,19 +144,12 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
             worker.dispose();
         }
 
-        static final class Request implements Runnable {
-            final Subscription upstream;
-            final long n;
-
-            Request(Subscription s, long n) {
-                this.upstream = s;
-                this.n = n;
-            }
+        record Request(Subscription upstream, long n) implements Runnable {
 
             @Override
-            public void run() {
-                upstream.request(n);
-            }
-        }
+                    public void run() {
+                        upstream.request(n);
+                    }
+                }
     }
 }

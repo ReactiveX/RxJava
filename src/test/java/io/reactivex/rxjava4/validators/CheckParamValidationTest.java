@@ -1164,49 +1164,34 @@ public class CheckParamValidationTest extends RxJavaTest {
         NON_NEGATIVE
     }
 
-    static final class ParamIgnore {
-        final Class<?> clazz;
-        final String name;
-        final Class<?>[] arguments;
+    record ParamIgnore(Class<?> clazz, String name, Class<?>... arguments) {
 
-        ParamIgnore(Class<?> clazz, String name, Class<?>... arguments) {
-            this.clazz = clazz;
-            this.name = name;
-            this.arguments = arguments;
-        }
-
-        @Override
-        public String toString() {
-            return clazz.getName() + " " + name;
-        }
-    }
-
-    static final class ParamOverride {
-        final Class<?> clazz;
-        final int index;
-        final ParamMode mode;
-        final String name;
-        final Class<?>[] arguments;
-
-        ParamOverride(Class<?> clazz, int index, ParamMode mode, String name, Class<?>... arguments) {
-            this.clazz = clazz;
-            this.index = index;
-            this.mode = mode;
-            this.name = name;
-            this.arguments = arguments;
-
-            try {
-                clazz.getMethod(name, arguments);
-            } catch (Exception ex) {
-                throw new AssertionError(ex);
+            @Override
+            public String toString() {
+                return clazz.getName() + " " + name;
             }
         }
 
-        @Override
-        public String toString() {
-            return clazz.getName() + " " + name;
+    record ParamOverride(Class<?> clazz, int index, ParamMode mode, String name, Class<?>... arguments) {
+            ParamOverride(Class<?> clazz, int index, ParamMode mode, String name, Class<?>... arguments) {
+                this.clazz = clazz;
+                this.index = index;
+                this.mode = mode;
+                this.name = name;
+                this.arguments = arguments;
+
+                try {
+                    clazz.getMethod(name, arguments);
+                } catch (Exception ex) {
+                    throw new AssertionError(ex);
+                }
+            }
+
+            @Override
+            public String toString() {
+                return clazz.getName() + " " + name;
+            }
         }
-    }
 
     static final class NeverPublisher extends Flowable<Object> {
 

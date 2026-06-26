@@ -29,26 +29,21 @@ public final class CompletableFromSingle<T> extends Completable {
         single.subscribe(new CompletableFromSingleObserver<>(observer));
     }
 
-    static final class CompletableFromSingleObserver<T> implements SingleObserver<T> {
-        final CompletableObserver co;
-
-        CompletableFromSingleObserver(CompletableObserver co) {
-            this.co = co;
-        }
+    record CompletableFromSingleObserver<T>(CompletableObserver co) implements SingleObserver<T> {
 
         @Override
-        public void onError(Throwable e) {
-            co.onError(e);
-        }
+            public void onError(Throwable e) {
+                co.onError(e);
+            }
 
-        @Override
-        public void onSubscribe(Disposable d) {
-            co.onSubscribe(d);
-        }
+            @Override
+            public void onSubscribe(Disposable d) {
+                co.onSubscribe(d);
+            }
 
-        @Override
-        public void onSuccess(T value) {
-            co.onComplete();
+            @Override
+            public void onSuccess(T value) {
+                co.onComplete();
+            }
         }
-    }
 }

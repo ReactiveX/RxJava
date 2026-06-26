@@ -45,38 +45,28 @@ public final class MaybeFromCompletionStage<T> extends Maybe<T> {
         stage.whenComplete(whenReference);
     }
 
-    static final class CompletionStageHandler<T>
-    implements Disposable, BiConsumer<T, Throwable> {
-
-        final MaybeObserver<? super T> downstream;
-
-        final BiConsumerAtomicReference<T> whenReference;
-
-        CompletionStageHandler(MaybeObserver<? super T> downstream, BiConsumerAtomicReference<T> whenReference) {
-            this.downstream = downstream;
-            this.whenReference = whenReference;
-        }
+    record CompletionStageHandler<T>(MaybeObserver<? super T> downstream, BiConsumerAtomicReference<T> whenReference)
+            implements Disposable, BiConsumer<T, Throwable> {
 
         @Override
-        public void accept(T item, Throwable error) {
-            if (error != null) {
-                downstream.onError(error);
+            public void accept(T item, Throwable error) {
+                if (error != null) {
+                    downstream.onError(error);
+                } else if (item != null) {
+                    downstream.onSuccess(item);
+                } else {
+                    downstream.onComplete();
+                }
             }
-            else if (item != null) {
-                downstream.onSuccess(item);
-            } else {
-                downstream.onComplete();
+
+            @Override
+            public void dispose() {
+                whenReference.set(null);
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return whenReference.get() == null;
             }
         }
-
-        @Override
-        public void dispose() {
-            whenReference.set(null);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return whenReference.get() == null;
-        }
-    }
 }

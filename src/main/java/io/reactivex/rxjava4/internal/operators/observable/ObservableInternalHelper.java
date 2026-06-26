@@ -30,98 +30,69 @@ public final class ObservableInternalHelper {
         throw new IllegalStateException("No instances!");
     }
 
-    static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
-        final Consumer<Emitter<T>> consumer;
-
-        SimpleGenerator(Consumer<Emitter<T>> consumer) {
-            this.consumer = consumer;
-        }
+    record SimpleGenerator<T, S>(Consumer<Emitter<T>> consumer) implements BiFunction<S, Emitter<T>, S> {
 
         @Override
-        public S apply(S t1, Emitter<T> t2) throws Throwable {
-            consumer.accept(t2);
-            return t1;
+            public S apply(S t1, Emitter<T> t2) throws Throwable {
+                consumer.accept(t2);
+                return t1;
+            }
         }
-    }
 
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Consumer<Emitter<T>> consumer) {
         return new SimpleGenerator<>(consumer);
     }
 
-    static final class SimpleBiGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
-        final BiConsumer<S, Emitter<T>> consumer;
-
-        SimpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
-            this.consumer = consumer;
-        }
+    record SimpleBiGenerator<T, S>(BiConsumer<S, Emitter<T>> consumer) implements BiFunction<S, Emitter<T>, S> {
 
         @Override
-        public S apply(S t1, Emitter<T> t2) throws Throwable {
-            consumer.accept(t1, t2);
-            return t1;
+            public S apply(S t1, Emitter<T> t2) throws Throwable {
+                consumer.accept(t1, t2);
+                return t1;
+            }
         }
-    }
 
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
         return new SimpleBiGenerator<>(consumer);
     }
 
-    static final class ItemDelayFunction<T, U> implements Function<T, ObservableSource<T>> {
-        final Function<? super T, ? extends ObservableSource<U>> itemDelay;
-
-        ItemDelayFunction(Function<? super T, ? extends ObservableSource<U>> itemDelay) {
-            this.itemDelay = itemDelay;
-        }
+    record ItemDelayFunction<T, U>(
+            Function<? super T, ? extends ObservableSource<U>> itemDelay) implements Function<T, ObservableSource<T>> {
 
         @Override
-        public ObservableSource<T> apply(final T v) throws Throwable {
-            ObservableSource<U> o = Objects.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null ObservableSource");
-            return new ObservableTake<>(o, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+            public ObservableSource<T> apply(final T v) throws Throwable {
+                ObservableSource<U> o = Objects.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null ObservableSource");
+                return new ObservableTake<>(o, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+            }
         }
-    }
 
     public static <T, U> Function<T, ObservableSource<T>> itemDelay(final Function<? super T, ? extends ObservableSource<U>> itemDelay) {
         return new ItemDelayFunction<>(itemDelay);
     }
 
-    static final class ObserverOnNext<T> implements Consumer<T> {
-        final Observer<T> observer;
-
-        ObserverOnNext(Observer<T> observer) {
-            this.observer = observer;
-        }
+    record ObserverOnNext<T>(Observer<T> observer) implements Consumer<T> {
 
         @Override
-        public void accept(T v) {
-            observer.onNext(v);
+            public void accept(T v) {
+                observer.onNext(v);
+            }
         }
-    }
 
-    static final class ObserverOnError<T> implements Consumer<Throwable> {
-        final Observer<T> observer;
-
-        ObserverOnError(Observer<T> observer) {
-            this.observer = observer;
-        }
+    record ObserverOnError<T>(Observer<T> observer) implements Consumer<Throwable> {
 
         @Override
-        public void accept(Throwable v) {
-            observer.onError(v);
+            public void accept(Throwable v) {
+                observer.onError(v);
+            }
         }
-    }
 
-    static final class ObserverOnComplete<T> implements Action {
-        final Observer<T> observer;
-
-        ObserverOnComplete(Observer<T> observer) {
-            this.observer = observer;
-        }
+    record ObserverOnComplete<T>(Observer<T> observer) implements Action {
 
         @Override
-        public void run() {
-            observer.onComplete();
+            public void run() {
+                observer.onComplete();
+            }
         }
-    }
 
     public static <T> Consumer<T> observerOnNext(Observer<T> observer) {
         return new ObserverOnNext<>(observer);
@@ -230,67 +201,31 @@ public final class ObservableInternalHelper {
         }
     }
 
-    static final class BufferedReplaySupplier<T> implements Supplier<ConnectableObservable<T>> {
-        final Observable<T> parent;
-        final int bufferSize;
-
-        final boolean eagerTruncate;
-
-        BufferedReplaySupplier(Observable<T> parent, int bufferSize, boolean eagerTruncate) {
-            this.parent = parent;
-            this.bufferSize = bufferSize;
-            this.eagerTruncate = eagerTruncate;
-        }
+    record BufferedReplaySupplier<T>(Observable<T> parent, int bufferSize,
+                                     boolean eagerTruncate) implements Supplier<ConnectableObservable<T>> {
 
         @Override
-        public ConnectableObservable<T> get() {
-            return parent.replay(bufferSize, eagerTruncate);
+            public ConnectableObservable<T> get() {
+                return parent.replay(bufferSize, eagerTruncate);
+            }
         }
-    }
 
-    static final class BufferedTimedReplaySupplier<T> implements Supplier<ConnectableObservable<T>> {
-        final Observable<T> parent;
-        final int bufferSize;
-        final long time;
-        final TimeUnit unit;
-        final Scheduler scheduler;
-
-        final boolean eagerTruncate;
-
-        BufferedTimedReplaySupplier(Observable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
-            this.parent = parent;
-            this.bufferSize = bufferSize;
-            this.time = time;
-            this.unit = unit;
-            this.scheduler = scheduler;
-            this.eagerTruncate = eagerTruncate;
-        }
+    record BufferedTimedReplaySupplier<T>(Observable<T> parent, int bufferSize, long time, TimeUnit unit,
+                                          Scheduler scheduler,
+                                          boolean eagerTruncate) implements Supplier<ConnectableObservable<T>> {
 
         @Override
-        public ConnectableObservable<T> get() {
-            return parent.replay(bufferSize, time, unit, scheduler, eagerTruncate);
+            public ConnectableObservable<T> get() {
+                return parent.replay(bufferSize, time, unit, scheduler, eagerTruncate);
+            }
         }
-    }
 
-    static final class TimedReplayCallable<T> implements Supplier<ConnectableObservable<T>> {
-        final Observable<T> parent;
-        final long time;
-        final TimeUnit unit;
-        final Scheduler scheduler;
-
-        final boolean eagerTruncate;
-
-        TimedReplayCallable(Observable<T> parent, long time, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
-            this.parent = parent;
-            this.time = time;
-            this.unit = unit;
-            this.scheduler = scheduler;
-            this.eagerTruncate = eagerTruncate;
-        }
+    record TimedReplayCallable<T>(Observable<T> parent, long time, TimeUnit unit, Scheduler scheduler,
+                                  boolean eagerTruncate) implements Supplier<ConnectableObservable<T>> {
 
         @Override
-        public ConnectableObservable<T> get() {
-            return parent.replay(time, unit, scheduler, eagerTruncate);
+            public ConnectableObservable<T> get() {
+                return parent.replay(time, unit, scheduler, eagerTruncate);
+            }
         }
-    }
 }

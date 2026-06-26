@@ -71,22 +71,18 @@ public final class ObservableEventStream {
         }
     }
 
-    public static class Event {
-        public final String type;
-        public final String instanceId;
-        public final Map<String, Object> values;
-
-        /**
-         * Construct an event with the provided parameters.
-         * @param type the event type
-         * @param instanceId the instance identifier
-         * @param values
-         *            This does NOT deep-copy, so do not mutate this Map after passing it in.
-         */
-        public Event(String type, String instanceId, Map<String, Object> values) {
-            this.type = type;
-            this.instanceId = instanceId;
-            this.values = Collections.unmodifiableMap(values);
+    public record Event(String type, String instanceId, Map<String, Object> values) {
+            /**
+             * Construct an event with the provided parameters.
+             *
+             * @param type       the event type
+             * @param instanceId the instance identifier
+             * @param values     This does NOT deep-copy, so do not mutate this Map after passing it in.
+             */
+            public Event(String type, String instanceId, Map<String, Object> values) {
+                this.type = type;
+                this.instanceId = instanceId;
+                this.values = Collections.unmodifiableMap(values);
+            }
         }
-    }
 }

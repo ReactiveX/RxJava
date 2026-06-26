@@ -92,36 +92,29 @@ public final class MaybeSwitchIfEmpty<T> extends AbstractMaybeWithUpstream<T, T>
             }
         }
 
-        static final class OtherMaybeObserver<T> implements MaybeObserver<T> {
-
-            final MaybeObserver<? super T> downstream;
-
-            final AtomicReference<Disposable> parent;
-            OtherMaybeObserver(MaybeObserver<? super T> actual, AtomicReference<Disposable> parent) {
-                this.downstream = actual;
-                this.parent = parent;
-            }
+        record OtherMaybeObserver<T>(MaybeObserver<? super T> downstream,
+                                     AtomicReference<Disposable> parent) implements MaybeObserver<T> {
 
             @Override
-            public void onSubscribe(Disposable d) {
-                DisposableHelper.setOnce(parent, d);
-            }
+                    public void onSubscribe(Disposable d) {
+                        DisposableHelper.setOnce(parent, d);
+                    }
 
-            @Override
-            public void onSuccess(T value) {
-                downstream.onSuccess(value);
-            }
+                    @Override
+                    public void onSuccess(T value) {
+                        downstream.onSuccess(value);
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                downstream.onError(e);
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        downstream.onError(e);
+                    }
 
-            @Override
-            public void onComplete() {
-                downstream.onComplete();
-            }
-        }
+                    @Override
+                    public void onComplete() {
+                        downstream.onComplete();
+                    }
+                }
 
     }
 }

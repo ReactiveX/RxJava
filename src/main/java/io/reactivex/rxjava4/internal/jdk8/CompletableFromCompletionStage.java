@@ -45,35 +45,26 @@ public final class CompletableFromCompletionStage<T> extends Completable {
         stage.whenComplete(whenReference);
     }
 
-    static final class CompletionStageHandler<T>
-    implements Disposable, BiConsumer<T, Throwable> {
-
-        final CompletableObserver downstream;
-
-        final BiConsumerAtomicReference<T> whenReference;
-
-        CompletionStageHandler(CompletableObserver downstream, BiConsumerAtomicReference<T> whenReference) {
-            this.downstream = downstream;
-            this.whenReference = whenReference;
-        }
+    record CompletionStageHandler<T>(CompletableObserver downstream, BiConsumerAtomicReference<T> whenReference)
+            implements Disposable, BiConsumer<T, Throwable> {
 
         @Override
-        public void accept(T item, Throwable error) {
-            if (error != null) {
-                downstream.onError(error);
-            } else {
-                downstream.onComplete();
+            public void accept(T item, Throwable error) {
+                if (error != null) {
+                    downstream.onError(error);
+                } else {
+                    downstream.onComplete();
+                }
+            }
+
+            @Override
+            public void dispose() {
+                whenReference.set(null);
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return whenReference.get() == null;
             }
         }
-
-        @Override
-        public void dispose() {
-            whenReference.set(null);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return whenReference.get() == null;
-        }
-    }
 }

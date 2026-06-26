@@ -43,44 +43,33 @@ public final class SingleEquals<T> extends Single<Boolean> {
         second.subscribe(new InnerObserver<T>(1, set, values, observer, count));
     }
 
-    static class InnerObserver<T> implements SingleObserver<T> {
-        final int index;
-        final CompositeDisposable set;
-        final Object[] values;
-        final SingleObserver<? super Boolean> downstream;
-        final AtomicInteger count;
-
-        InnerObserver(int index, CompositeDisposable set, Object[] values, SingleObserver<? super Boolean> observer, AtomicInteger count) {
-            this.index = index;
-            this.set = set;
-            this.values = values;
-            this.downstream = observer;
-            this.count = count;
-        }
+    record InnerObserver<T>(int index, CompositeDisposable set, Object[] values,
+                            SingleObserver<? super Boolean> downstream,
+                            AtomicInteger count) implements SingleObserver<T> {
 
         @Override
-        public void onSubscribe(Disposable d) {
-            set.add(d);
-        }
+            public void onSubscribe(Disposable d) {
+                set.add(d);
+            }
 
-        @Override
-        public void onSuccess(T value) {
-            values[index] = value;
+            @Override
+            public void onSuccess(T value) {
+                values[index] = value;
 
-            if (count.incrementAndGet() == 2) {
-                downstream.onSuccess(Objects.equals(values[0], values[1]));
+                if (count.incrementAndGet() == 2) {
+                    downstream.onSuccess(Objects.equals(values[0], values[1]));
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                int state = count.getAndSet(-1);
+                if (state == 0 || state == 1) {
+                    set.dispose();
+                    downstream.onError(e);
+                } else {
+                    RxJavaPlugins.onError(e);
+                }
             }
         }
-
-        @Override
-        public void onError(Throwable e) {
-            int state = count.getAndSet(-1);
-            if (state == 0 || state == 1) {
-                set.dispose();
-                downstream.onError(e);
-            } else {
-                RxJavaPlugins.onError(e);
-            }
-        }
-    }
 }

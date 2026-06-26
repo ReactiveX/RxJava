@@ -439,13 +439,7 @@ public class CheckParamValidationNamingTest extends RxJavaTest {
         }
     }
 
-    static final class ValidatorStrings {
-        final String code;
-        final String javadoc;
-        ValidatorStrings(String code, String javadoc) {
-            this.code = code;
-            this.javadoc = javadoc;
-        }
+    record ValidatorStrings(String code, String javadoc) {
     }
 
     static final List<ValidatorStrings> VALIDATOR_STRINGS = Arrays.asList(

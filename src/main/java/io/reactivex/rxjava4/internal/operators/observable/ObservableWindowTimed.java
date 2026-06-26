@@ -484,22 +484,13 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             return window;
         }
 
-        static final class WindowBoundaryRunnable implements Runnable {
-
-            final WindowExactBoundedObserver<?> parent;
-
-            final long index;
-
-            WindowBoundaryRunnable(WindowExactBoundedObserver<?> parent, long index) {
-                this.parent = parent;
-                this.index = index;
-            }
+        record WindowBoundaryRunnable(WindowExactBoundedObserver<?> parent, long index) implements Runnable {
 
             @Override
-            public void run() {
-                parent.boundary(this);
-            }
-        }
+                    public void run() {
+                        parent.boundary(this);
+                    }
+                }
     }
 
     static final class WindowSkipObserver<T>
@@ -638,22 +629,13 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         static final Object WINDOW_OPEN = new Object();
         static final Object WINDOW_CLOSE = new Object();
 
-        static final class WindowBoundaryRunnable implements Runnable {
-
-            final WindowSkipObserver<?> parent;
-
-            final boolean isOpen;
-
-            WindowBoundaryRunnable(WindowSkipObserver<?> parent, boolean isOpen) {
-                this.parent = parent;
-                this.isOpen = isOpen;
-            }
+        record WindowBoundaryRunnable(WindowSkipObserver<?> parent, boolean isOpen) implements Runnable {
 
             @Override
-            public void run() {
-                parent.boundary(isOpen);
-            }
-        }
+                    public void run() {
+                        parent.boundary(isOpen);
+                    }
+                }
     }
 
 }

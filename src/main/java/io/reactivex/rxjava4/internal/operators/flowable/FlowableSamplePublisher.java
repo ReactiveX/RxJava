@@ -141,33 +141,28 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         abstract void run();
     }
 
-    static final class SamplerSubscriber<T> implements FlowableSubscriber<Object> {
-        final SamplePublisherSubscriber<T> parent;
-        SamplerSubscriber(SamplePublisherSubscriber<T> parent) {
-            this.parent = parent;
-
-        }
+    record SamplerSubscriber<T>(SamplePublisherSubscriber<T> parent) implements FlowableSubscriber<Object> {
 
         @Override
-        public void onSubscribe(Subscription s) {
-            parent.setOther(s);
-        }
+            public void onSubscribe(Subscription s) {
+                parent.setOther(s);
+            }
 
-        @Override
-        public void onNext(Object t) {
-            parent.run();
-        }
+            @Override
+            public void onNext(Object t) {
+                parent.run();
+            }
 
-        @Override
-        public void onError(Throwable t) {
-            parent.error(t);
-        }
+            @Override
+            public void onError(Throwable t) {
+                parent.error(t);
+            }
 
-        @Override
-        public void onComplete() {
-            parent.complete();
+            @Override
+            public void onComplete() {
+                parent.complete();
+            }
         }
-    }
 
     static final class SampleMainNoLast<T> extends SamplePublisherSubscriber<T> {
 

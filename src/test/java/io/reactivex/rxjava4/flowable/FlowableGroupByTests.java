@@ -32,7 +32,7 @@ public class FlowableGroupByTests extends RxJavaTest {
             FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(event -> (Object)event.type)
+        .groupBy(event -> (Object) event.type())
         .take(1)
         .blockingForEach(v -> {
             System.out.println(v);
@@ -49,9 +49,9 @@ public class FlowableGroupByTests extends RxJavaTest {
             FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(event -> (Object)event.type)
+        .groupBy(event -> (Object) event.type())
         .flatMap((Function<GroupedFlowable<Object, Event>, Publisher<Object>>)
-                g -> g.map(event -> event.instanceId + " - " + event.values.get("count200")))
+                g -> g.map(event -> event.instanceId() + " - " + event.values().get("count200")))
         .take(20)
         .blockingForEach(System.out::println);
 

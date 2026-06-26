@@ -35,39 +35,31 @@ public final class SingleMap<T, R> extends Single<R> {
         source.subscribe(new MapSingleObserver<T, R>(t, mapper));
     }
 
-    static final class MapSingleObserver<T, R> implements SingleObserver<T> {
-
-        final SingleObserver<? super R> t;
-
-        final Function<? super T, ? extends R> mapper;
-
-        MapSingleObserver(SingleObserver<? super R> t, Function<? super T, ? extends R> mapper) {
-            this.t = t;
-            this.mapper = mapper;
-        }
+    record MapSingleObserver<T, R>(SingleObserver<? super R> t,
+                                   Function<? super T, ? extends R> mapper) implements SingleObserver<T> {
 
         @Override
-        public void onSubscribe(Disposable d) {
-            t.onSubscribe(d);
-        }
-
-        @Override
-        public void onSuccess(T value) {
-            R v;
-            try {
-                v = Objects.requireNonNull(mapper.apply(value), "The mapper function returned a null value.");
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                onError(e);
-                return;
+            public void onSubscribe(Disposable d) {
+                t.onSubscribe(d);
             }
 
-            t.onSuccess(v);
-        }
+            @Override
+            public void onSuccess(T value) {
+                R v;
+                try {
+                    v = Objects.requireNonNull(mapper.apply(value), "The mapper function returned a null value.");
+                } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
+                    onError(e);
+                    return;
+                }
 
-        @Override
-        public void onError(Throwable e) {
-            t.onError(e);
+                t.onSuccess(v);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                t.onError(e);
+            }
         }
-    }
 }

@@ -60,37 +60,28 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
         source.subscribe(new SourceObserver<>(subject, o));
     }
 
-    static final class SourceObserver<T> implements Observer<T> {
-
-        final PublishSubject<T> subject;
-
-        final AtomicReference<Disposable> target;
-
-        SourceObserver(PublishSubject<T> subject, AtomicReference<Disposable> target) {
-            this.subject = subject;
-            this.target = target;
-        }
+    record SourceObserver<T>(PublishSubject<T> subject, AtomicReference<Disposable> target) implements Observer<T> {
 
         @Override
-        public void onSubscribe(Disposable d) {
-            DisposableHelper.setOnce(target, d);
-        }
+            public void onSubscribe(Disposable d) {
+                DisposableHelper.setOnce(target, d);
+            }
 
-        @Override
-        public void onNext(T value) {
-            subject.onNext(value);
-        }
+            @Override
+            public void onNext(T value) {
+                subject.onNext(value);
+            }
 
-        @Override
-        public void onError(Throwable e) {
-            subject.onError(e);
-        }
+            @Override
+            public void onError(Throwable e) {
+                subject.onError(e);
+            }
 
-        @Override
-        public void onComplete() {
-            subject.onComplete();
+            @Override
+            public void onComplete() {
+                subject.onComplete();
+            }
         }
-    }
 
     static final class TargetObserver<R>
     extends AtomicReference<Disposable> implements Observer<R>, Disposable {

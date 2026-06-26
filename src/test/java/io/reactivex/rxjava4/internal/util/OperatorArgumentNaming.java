@@ -152,18 +152,11 @@ public final class OperatorArgumentNaming {
         }
     }
 
-    static final class ArgumentNameAndType {
-        final String type;
-        final String name;
-
-        ArgumentNameAndType(String type, String name) {
-            this.type = type;
-            this.name = name;
-        }
+    record ArgumentNameAndType(String type, String name) {
 
         @Override
-        public String toString() {
-            return type + " " + name;
+            public String toString() {
+                return type + " " + name;
+            }
         }
-    }
 }

@@ -29,7 +29,7 @@ public class ObservableGroupByTests extends RxJavaTest {
             ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(event -> event.type)
+        .groupBy(Event::type)
         .take(1)
         .blockingForEach(v -> {
             System.out.println(v);
@@ -48,9 +48,9 @@ public class ObservableGroupByTests extends RxJavaTest {
             ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(event -> event.type)
+        .groupBy(Event::type)
         .flatMap((Function<GroupedObservable<String, Event>, Observable<Object>>) g ->
-            g.map((Function<Event, Object>) event -> event.instanceId + " - " + event.values.get("count200")))
+            g.map((Function<Event, Object>) event -> event.instanceId() + " - " + event.values().get("count200")))
         .take(20)
         .blockingForEach(System.out::println);
 

@@ -93,8 +93,10 @@ public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
      */
     default Streamer<T> finishVia(@NonNull DisposableContainer canceller) {
         Objects.requireNonNull(canceller, "canceller is null");
-        if (this instanceof StreamerFinishViaDisposableContainerCanceller<T> augment) {
-            if (augment.streamer == this && augment.canceller == canceller) {
+        if (this instanceof StreamerFinishViaDisposableContainerCanceller<T>(
+                Streamer<T> streamer, DisposableContainer canceller1
+        )) {
+            if (streamer == this && canceller1 == canceller) {
                 // DO not rewrap!
                 return this;
             }

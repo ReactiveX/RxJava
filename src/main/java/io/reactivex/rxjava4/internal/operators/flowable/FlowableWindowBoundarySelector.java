@@ -329,13 +329,8 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
             }
         }
 
-        static final class WindowStartItem<B> {
+        record WindowStartItem<B>(B item) {
 
-            final B item;
-
-            WindowStartItem(B item) {
-                this.item = item;
-            }
         }
 
         static final class WindowStartSubscriber<B> extends AtomicReference<Subscription>

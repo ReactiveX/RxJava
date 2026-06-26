@@ -107,30 +107,22 @@ public final class MaybeFlatMapSingle<T, R> extends Maybe<R> {
         }
     }
 
-    static final class FlatMapSingleObserver<R> implements SingleObserver<R> {
-
-        final AtomicReference<Disposable> parent;
-
-        final MaybeObserver<? super R> downstream;
-
-        FlatMapSingleObserver(AtomicReference<Disposable> parent, MaybeObserver<? super R> downstream) {
-            this.parent = parent;
-            this.downstream = downstream;
-        }
+    record FlatMapSingleObserver<R>(AtomicReference<Disposable> parent,
+                                    MaybeObserver<? super R> downstream) implements SingleObserver<R> {
 
         @Override
-        public void onSubscribe(final Disposable d) {
-            DisposableHelper.replace(parent, d);
-        }
+            public void onSubscribe(final Disposable d) {
+                DisposableHelper.replace(parent, d);
+            }
 
-        @Override
-        public void onSuccess(final R value) {
-            downstream.onSuccess(value);
-        }
+            @Override
+            public void onSuccess(final R value) {
+                downstream.onSuccess(value);
+            }
 
-        @Override
-        public void onError(final Throwable e) {
-            downstream.onError(e);
+            @Override
+            public void onError(final Throwable e) {
+                downstream.onError(e);
+            }
         }
-    }
 }

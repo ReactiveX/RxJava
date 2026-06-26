@@ -32,8 +32,8 @@ public final class NewThreadScheduler extends Scheduler {
     private static final String KEY_NEWTHREAD_PRIORITY = "rxjava4.newthread-priority";
 
     static {
-        int priority = Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY,
-                Integer.getInteger(KEY_NEWTHREAD_PRIORITY, Thread.NORM_PRIORITY)));
+        int priority = Math.clamp(
+                Integer.getInteger(KEY_NEWTHREAD_PRIORITY, Thread.NORM_PRIORITY), Thread.MIN_PRIORITY, Thread.MAX_PRIORITY);
 
         THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX, priority);
     }

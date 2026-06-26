@@ -94,33 +94,25 @@ public final class TestScheduler extends Scheduler {
         this.useOnScheduleHook = useOnScheduleHook;
     }
 
-    static final class TimedRunnable implements Comparable<TimedRunnable> {
-
-        final long time;
-        final Runnable run;
-        final TestWorker scheduler;
-        final long count; // for differentiating tasks at same time
-
-        TimedRunnable(TestWorker scheduler, long time, Runnable run, long count) {
-            this.time = time;
-            this.run = run;
-            this.scheduler = scheduler;
-            this.count = count;
-        }
+    /**
+     * @param count for differentiating tasks at same time
+     */
+    record TimedRunnable(TestWorker scheduler, long time, Runnable run,
+                         long count) implements Comparable<TimedRunnable> {
 
         @Override
-        public String toString() {
-            return String.format("TimedRunnable(time = %d, run = %s)", time, run.toString());
-        }
-
-        @Override
-        public int compareTo(TimedRunnable o) {
-            if (time == o.time) {
-                return Long.compare(count, o.count);
+            public String toString() {
+                return String.format("TimedRunnable(time = %d, run = %s)", time, run.toString());
             }
-            return Long.compare(time, o.time);
+
+            @Override
+            public int compareTo(TimedRunnable o) {
+                if (time == o.time) {
+                    return Long.compare(count, o.count);
+                }
+                return Long.compare(time, o.time);
+            }
         }
-    }
 
     @Override
     public long now(@NonNull TimeUnit unit) {

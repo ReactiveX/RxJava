@@ -45,38 +45,28 @@ public final class SingleFromCompletionStage<T> extends Single<T> {
         stage.whenComplete(whenReference);
     }
 
-    static final class CompletionStageHandler<T>
-    implements Disposable, BiConsumer<T, Throwable> {
-
-        final SingleObserver<? super T> downstream;
-
-        final BiConsumerAtomicReference<T> whenReference;
-
-        CompletionStageHandler(SingleObserver<? super T> downstream, BiConsumerAtomicReference<T> whenReference) {
-            this.downstream = downstream;
-            this.whenReference = whenReference;
-        }
+    record CompletionStageHandler<T>(SingleObserver<? super T> downstream, BiConsumerAtomicReference<T> whenReference)
+            implements Disposable, BiConsumer<T, Throwable> {
 
         @Override
-        public void accept(T item, Throwable error) {
-            if (error != null) {
-                downstream.onError(error);
+            public void accept(T item, Throwable error) {
+                if (error != null) {
+                    downstream.onError(error);
+                } else if (item != null) {
+                    downstream.onSuccess(item);
+                } else {
+                    downstream.onError(new NullPointerException("The CompletionStage terminated with null."));
+                }
             }
-            else if (item != null) {
-                downstream.onSuccess(item);
-            } else {
-                downstream.onError(new NullPointerException("The CompletionStage terminated with null."));
+
+            @Override
+            public void dispose() {
+                whenReference.set(null);
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return whenReference.get() == null;
             }
         }
-
-        @Override
-        public void dispose() {
-            whenReference.set(null);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return whenReference.get() == null;
-        }
-    }
 }

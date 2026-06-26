@@ -488,7 +488,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
 
             System.out.println("testOnBackpressureDrop => Received: " + onNextEvents.size() + "  Emitted: " + c.get() + " Last value: " + lastEvent);
             // it drops, so we should get some number far higher than what would have sequentially incremented
-            assertTrue(num - 1 <= lastEvent.intValue());
+            assertTrue(num - 1 <= lastEvent);
         }
     }
 
@@ -519,7 +519,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
             // in reality, num < passCount
             assertTrue(num <= passCount.get());
             // it drops, so we should get some number far higher than what would have sequentially incremented
-            assertTrue(num - 1 <= lastEvent.intValue());
+            assertTrue(num - 1 <= lastEvent);
             assertTrue(0 < dropCount.get());
             assertEquals(emitCount.get(), passCount.get() + dropCount.get());
         }
@@ -543,7 +543,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
 
             System.out.println("testOnBackpressureDrop => Received: " + onNextEvents.size() + "  Emitted: " + c.get() + " Last value: " + lastEvent);
             // it drops, so we should get some number far higher than what would have sequentially incremented
-            assertTrue(num - 1 <= lastEvent.intValue());
+            assertTrue(num - 1 <= lastEvent);
         }
     }
 
@@ -567,7 +567,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
             System.out.println("testOnBackpressureDrop => Received: " + onNextEvents.size() + " Dropped: " + dropCount.get()
                 + "  Emitted: " + c.get() + " Last value: " + lastEvent);
             // it drops, so we should get some number far higher than what would have sequentially incremented
-            assertTrue(num - 1 <= lastEvent.intValue());
+            assertTrue(num - 1 <= lastEvent);
             // no drop in synchronous mode
             assertEquals(0, dropCount.get());
             assertEquals(c.get(), onNextEvents.size());

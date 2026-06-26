@@ -53,8 +53,8 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
         SHUTDOWN_WORKER = new PoolWorker(new RxThreadFactory("RxComputationShutdown"));
         SHUTDOWN_WORKER.dispose();
 
-        int priority = Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY,
-                Integer.getInteger(KEY_COMPUTATION_PRIORITY, Thread.NORM_PRIORITY)));
+        int priority = Math.clamp(
+                Integer.getInteger(KEY_COMPUTATION_PRIORITY, Thread.NORM_PRIORITY), Thread.MIN_PRIORITY, Thread.MAX_PRIORITY);
 
         THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX, priority, true);
 

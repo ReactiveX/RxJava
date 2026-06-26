@@ -44,57 +44,45 @@ public abstract class InputWithIncrementingInteger {
         }
     }
 
-    static final class IncrementingIterable implements Iterable<Integer> {
+    record IncrementingIterable(int size) implements Iterable<Integer> {
 
-        final class IncrementingIterator implements Iterator<Integer> {
-            int i;
+            final class IncrementingIterator implements Iterator<Integer> {
+                int i;
 
-            @Override
-            public boolean hasNext() {
-                return i < size;
+                @Override
+                public boolean hasNext() {
+                    return i < size;
+                }
+
+                @Override
+                public Integer next() {
+                    Blackhole.consumeCPU(10);
+                    return i++;
+                }
+
+                @Override
+                public void remove() {
+
+                }
             }
-
-            @Override
-            public Integer next() {
-                Blackhole.consumeCPU(10);
-                return i++;
-            }
-
-            @Override
-            public void remove() {
-
-            }
-        }
-
-        final int size;
-
-        IncrementingIterable(int size) {
-            this.size = size;
-        }
 
         @Override
-        public Iterator<Integer> iterator() {
-            return new IncrementingIterator();
+            public Iterator<Integer> iterator() {
+                return new IncrementingIterator();
+            }
         }
-    }
 
-    static final class IncrementingPublisher implements Publisher<Integer> {
-
-        final int size;
-
-        IncrementingPublisher(int size) {
-            this.size = size;
-        }
+    record IncrementingPublisher(int size) implements Publisher<Integer> {
 
         @Override
-        public void subscribe(Subscriber<? super Integer> s) {
-            s.onSubscribe(EmptySubscription.INSTANCE);
-            for (int i = 0; i < size; i++) {
-                s.onNext(i);
+            public void subscribe(Subscriber<? super Integer> s) {
+                s.onSubscribe(EmptySubscription.INSTANCE);
+                for (int i = 0; i < size; i++) {
+                    s.onNext(i);
+                }
+                s.onComplete();
             }
-            s.onComplete();
         }
-    }
 
     public Iterable<Integer> iterable;
     public Flowable<Integer> flowable;

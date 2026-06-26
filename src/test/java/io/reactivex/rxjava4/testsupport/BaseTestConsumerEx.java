@@ -297,11 +297,11 @@ extends BaseTestConsumer<T, U> {
     }
 
     static String fusionModeToString(int mode) {
-        switch (mode) {
-        case QueueFuseable.NONE : return "NONE";
-        case QueueFuseable.SYNC : return "SYNC";
-        case QueueFuseable.ASYNC : return "ASYNC";
-        default: return "Unknown(" + mode + ")";
-        }
+        return switch (mode) {
+            case QueueFuseable.NONE -> "NONE";
+            case QueueFuseable.SYNC -> "SYNC";
+            case QueueFuseable.ASYNC -> "ASYNC";
+            default -> "Unknown(" + mode + ")";
+        };
     }
 }
