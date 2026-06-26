@@ -5206,7 +5206,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="321" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toCompletionStage.s.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and

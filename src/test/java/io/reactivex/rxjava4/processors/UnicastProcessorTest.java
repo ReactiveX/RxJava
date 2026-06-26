@@ -147,7 +147,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void onTerminateCalledWhenCanceled() {
+    public void onTerminateCalledWhenCancelled() {
         final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
 
         UnicastProcessor<Integer> up = UnicastProcessor.create(Observable.bufferSize(), () -> didRunOnTerminate.set(true));

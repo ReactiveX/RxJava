@@ -104,7 +104,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  *  <dt><b>Backpressure:</b></dt>
  *  <dd>The {@code BehaviorProcessor} does not coordinate requests of its downstream {@code Subscriber}s and
  *  expects each individual {@code Subscriber} is ready to receive {@code onNext} items when {@link #onNext(Object)}
- *  is called. If a {@code Subscriber} is not ready, a {@code MissingBackpressureException} is signalled to it.
+ *  is called. If a {@code Subscriber} is not ready, a {@code MissingBackpressureException} is signaled to it.
  *  To avoid overflowing the current {@code Subscriber}s, the conditional {@link #offer(Object)} method is available
  *  that returns true if any of the {@code Subscriber}s is not ready to receive {@code onNext} events. If
  *  there are no {@code Subscriber}s to the processor, {@code offer()} always succeeds.
@@ -163,8 +163,6 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  */
 public final class BehaviorProcessor<@NonNull T> extends FlowableProcessor<T> {
     final AtomicReference<BehaviorSubscription<T>[]> subscribers;
-
-    static final Object[] EMPTY_ARRAY = new Object[0];
 
     @SuppressWarnings("rawtypes")
     static final BehaviorSubscription[] EMPTY = new BehaviorSubscription[0];

@@ -79,7 +79,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
  * if the processor is used as a standalone source. However, calling {@code onSubscribe}
  * after the {@code UnicastProcessor} reached its terminal state will result in the
- * given {@code Subscription} being canceled immediately.
+ * given {@code Subscription} being cancelled immediately.
  * <p>
  * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
  * is required to be serialized (called from the same thread or called non-overlappingly from different threads

@@ -3257,8 +3257,8 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Creates a {@link TestObserver} optionally in canceled state, then subscribes it to this {@code Completable}.
-     * @param dispose if {@code true}, the {@code TestObserver} will be canceled before subscribing to this
+     * Creates a {@link TestObserver} optionally in cancelled state, then subscribes it to this {@code Completable}.
+     * @param dispose if {@code true}, the {@code TestObserver} will be cancelled before subscribing to this
      * {@code Completable}.
      * <p>
      * <img width="640" height="499" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.test.b.png" alt="">
@@ -3324,10 +3324,10 @@ public abstract class Completable implements CompletableSource {
      * <p>
      * <img width="640" height="323" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toCompletionStage.c.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
-     * The upstream will be also canceled if the resulting {@code CompletionStage} is converted to and
+     * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
      * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
      * <p>
      * {@code CompletionStage}s don't have a notion of emptiness and allow {@code null}s, therefore, one can either use

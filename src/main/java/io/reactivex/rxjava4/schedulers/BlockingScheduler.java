@@ -24,17 +24,17 @@ import io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler;
  * @implNote No need to instantiate this record by client applications, it serves as a way to
  *           give access to the {@code Scheduler} interface as well as the blocking-specific
  *           {@link #execute()} methods.
- * @param bcts the scheduler instance
+ * @param backingScheduler the scheduler instance
  * @since 4.0.0
  */
-public record BlockingScheduler(BlockingCurrentThreadScheduler bcts) {
+public record BlockingScheduler(BlockingCurrentThreadScheduler backingScheduler) {
 
     /**
      * Returns the Scheduler view to submit tasks to or use it as a parameter.
      * @return the Scheduler view of the underlying blocking current thread scheduler.
      */
     public Scheduler scheduler( ) {
-        return bcts;
+        return backingScheduler;
     }
 
     /**
@@ -55,13 +55,13 @@ public record BlockingScheduler(BlockingCurrentThreadScheduler bcts) {
      * @param action the action to execute
      */
     public void execute(Action action) {
-        bcts.execute(action);
+        backingScheduler.execute(action);
     }
 
     /**
      * Shuts down the underlying blocking current thread scheduler
      */
     public void shutdown() {
-        bcts.shutdown();
+        backingScheduler.shutdown();
     }
 }

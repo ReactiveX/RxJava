@@ -4388,7 +4388,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
      * Note that the inner {@code Publisher} returned by the handler function should signal
      * either {@code onNext}, {@code onError} or {@code onComplete} in response to the received
      * {@code Throwable} to indicate the operator should retry or terminate. If the upstream to
-     * the operator is asynchronous, signalling {@code onNext} followed by {@code onComplete} immediately may
+     * the operator is asynchronous, signaling {@code onNext} followed by {@code onComplete} immediately may
      * result in the sequence to be completed immediately. Similarly, if this inner
      * {@code Publisher} signals {@code onError} or {@code onComplete} while the upstream is
      * active, the sequence is terminated with the same signal immediately.
@@ -5571,7 +5571,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
      * <p>
      * <img width="640" height="349" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toCompletionStage.m.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
@@ -5604,7 +5604,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
      * <p>
      * <img width="640" height="323" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toCompletionStage.mv.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and

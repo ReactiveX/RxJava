@@ -85,7 +85,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
  * if the processor is used as a standalone source. However, calling {@code onSubscribe}
  * after the {@code ReplayProcessor} reached its terminal state will result in the
- * given {@code Subscription} being canceled immediately.
+ * given {@code Subscription} being cancelled immediately.
  * <p>
  * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
  * is required to be serialized (called from the same thread or called non-overlappingly from different threads
@@ -210,7 +210,7 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
      * {@code size} {@code onNext} events followed by a termination event.
      * <p>
      * If a {@code Subscriber} subscribes while the {@code ReplayProcessor} is active, it will observe all items in the
-     * buffer at that point in time and each item observed afterwards, even if the buffer evicts items due to
+     * buffer at that point in time and each item observed afterward, even if the buffer evicts items due to
      * the size constraint in the meantime. In other words, once a {@code Subscriber} subscribes, it will receive items
      * without gaps in the sequence.
      *

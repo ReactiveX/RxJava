@@ -591,7 +591,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         }
 
         void cleanupQueue(long emitted, boolean polled) {
-            // if this group is canceled, all accumulated emissions and
+            // if this group is cancelled, all accumulated emissions and
             // remaining items in the queue should be requested
             // so that other groups can proceed
             while (queue.poll() != null) {

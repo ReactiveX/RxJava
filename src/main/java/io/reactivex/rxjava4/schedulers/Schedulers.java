@@ -406,7 +406,7 @@ public final class Schedulers {
      * If the {@link Executor#execute(Runnable)} or {@link ExecutorService#submit(Callable)} throws,
      * the {@code RejectedExecutionException} is routed to the global error handler via
      * {@link RxJavaPlugins#onError(Throwable)}. To avoid shutdown-related problems, it is recommended
-     * all flows using the returned {@code Scheduler} to be canceled/disposed before the underlying
+     * all flows using the returned {@code Scheduler} to be cancelled/disposed before the underlying
      * {@code Executor} is shut down. To avoid problems due to the {@code Executor} having a bounded-queue,
      * it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
      * <p>
@@ -484,7 +484,7 @@ public final class Schedulers {
      * If the {@link Executor#execute(Runnable)} or {@link ExecutorService#submit(Callable)} throws,
      * the {@code RejectedExecutionException} is routed to the global error handler via
      * {@link RxJavaPlugins#onError(Throwable)}. To avoid shutdown-related problems, it is recommended
-     * all flows using the returned {@code Scheduler} to be canceled/disposed before the underlying
+     * all flows using the returned {@code Scheduler} to be cancelled/disposed before the underlying
      * {@code Executor} is shut down. To avoid problems due to the {@code Executor} having a bounded-queue,
      * it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
      * <p>
@@ -568,7 +568,7 @@ public final class Schedulers {
      * If the {@link Executor#execute(Runnable)} or {@link ExecutorService#submit(Callable)} throws,
      * the {@code RejectedExecutionException} is routed to the global error handler via
      * {@link RxJavaPlugins#onError(Throwable)}. To avoid shutdown-related problems, it is recommended
-     * all flows using the returned {@code Scheduler} to be canceled/disposed before the underlying
+     * all flows using the returned {@code Scheduler} to be cancelled/disposed before the underlying
      * {@code Executor} is shut down. To avoid problems due to the {@code Executor} having a bounded-queue,
      * it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
      * <p>

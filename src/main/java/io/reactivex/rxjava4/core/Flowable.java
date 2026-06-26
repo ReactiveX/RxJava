@@ -172,7 +172,7 @@ FlowableDocBasic<T>
      * <img width="640" height="417" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.amb.png" alt="">
      * <p>
      * When one of the {@code Publisher}s signal an item or terminates first, all subscriptions to the other
-     * {@code Publisher}s are canceled.
+     * {@code Publisher}s are cancelled.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
@@ -210,7 +210,7 @@ FlowableDocBasic<T>
      * <img width="640" height="417" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.ambArray.png" alt="">
      * <p>
      * When one of the {@code Publisher}s signal an item or terminates first, all subscriptions to the other
-     * {@code Publisher}s are canceled.
+     * {@code Publisher}s are cancelled.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
@@ -2151,7 +2151,7 @@ FlowableDocBasic<T>
      *  <dt><b>Error handling:</b></dt>
      *  <dd> If the {@code Action} throws an exception, the respective {@link Throwable} is
      *  delivered to the downstream via {@link Subscriber#onError(Throwable)},
-     *  except when the downstream has canceled the resulting {@code Flowable} source.
+     *  except when the downstream has cancelled the resulting {@code Flowable} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava4.exceptions.UndeliverableException UndeliverableException}.
      *  </dd>
@@ -2223,7 +2223,7 @@ FlowableDocBasic<T>
      *   <dt><b>Error handling:</b></dt>
      *   <dd> If the {@link Callable} throws an exception, the respective {@link Throwable} is
      *   delivered to the downstream via {@link Subscriber#onError(Throwable)},
-     *   except when the downstream has canceled this {@code Flowable} source.
+     *   except when the downstream has cancelled this {@code Flowable} source.
      *   In this latter case, the {@code Throwable} is delivered to the global error handler via
      *   {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava4.exceptions.UndeliverableException UndeliverableException}.
      *   </dd>
@@ -2540,7 +2540,7 @@ FlowableDocBasic<T>
      *  <dt><b>Error handling:</b></dt>
      *  <dd> If the {@code Runnable} throws an exception, the respective {@code Throwable} is
      *  delivered to the downstream via {@link Subscriber#onError(Throwable)},
-     *  except when the downstream has canceled the resulting {@code Flowable} source.
+     *  except when the downstream has cancelled the resulting {@code Flowable} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava4.exceptions.UndeliverableException UndeliverableException}.
      *  </dd>
@@ -2603,7 +2603,7 @@ FlowableDocBasic<T>
      *   <dt><b>Error handling:</b></dt>
      *   <dd> If the {@link Supplier} throws an exception, the respective {@link Throwable} is
      *   delivered to the downstream via {@link Subscriber#onError(Throwable)},
-     *   except when the downstream has canceled this {@code Flowable} source.
+     *   except when the downstream has cancelled this {@code Flowable} source.
      *   In this latter case, the {@code Throwable} is delivered to the global error handler via
      *   {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava4.exceptions.UndeliverableException UndeliverableException}.
      *   </dd>
@@ -2718,7 +2718,7 @@ FlowableDocBasic<T>
      * {@code onComplete} to signal a value or a terminal event. Signaling multiple {@code onNext}
      * in a call will make the operator signal {@link IllegalStateException}.
      * @param disposeState the {@code Consumer} that is called with the current state when the generator
-     * terminates the sequence or it gets canceled
+     * terminates the sequence or it gets cancelled
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code initialState}, {@code generator} or {@code disposeState} is {@code null}
      */
@@ -2788,7 +2788,7 @@ FlowableDocBasic<T>
      * the next invocation. Signaling multiple {@code onNext}
      * in a call will make the operator signal {@link IllegalStateException}.
      * @param disposeState the {@link Consumer} that is called with the current state when the generator
-     * terminates the sequence or it gets canceled
+     * terminates the sequence or it gets cancelled
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code initialState}, {@code generator} or {@code disposeState} is {@code null}
      */
@@ -3472,13 +3472,13 @@ FlowableDocBasic<T>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code Publisher}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are canceled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are cancelled.
      *  If more than one {@code Publisher} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@link CompositeException} containing two or more of the various error signals.
      *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Flowable} has been canceled or terminated with a
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
      *  (composite) error will be sent to the same global error handler.
      *  Use {@link #mergeDelayError(Iterable, int, int)} to merge sources and terminate only when all source {@code Publisher}s
      *  have completed or failed with an error.
@@ -3524,13 +3524,13 @@ FlowableDocBasic<T>
      *  <dd>{@code mergeArray} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code Publisher}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are canceled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are cancelled.
      *  If more than one {@code Publisher} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@link CompositeException} containing two or more of the various error signals.
      *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Flowable} has been canceled or terminated with a
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
      *  (composite) error will be sent to the same global error handler.
      *  Use {@link #mergeArrayDelayError(int, int, Publisher[])} to merge sources and terminate only when all source {@code Publisher}s
      *  have completed or failed with an error.
@@ -3576,13 +3576,13 @@ FlowableDocBasic<T>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code Publisher}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are canceled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are cancelled.
      *  If more than one {@code Publisher} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@link CompositeException} containing two or more of the various error signals.
      *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Flowable} has been canceled or terminated with a
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
      *  (composite) error will be sent to the same global error handler.
      *  Use {@link #mergeDelayError(Iterable)} to merge sources and terminate only when all source {@code Publisher}s
      *  have completed or failed with an error.
@@ -3622,13 +3622,13 @@ FlowableDocBasic<T>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code Publisher}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are canceled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are cancelled.
      *  If more than one {@code Publisher} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@link CompositeException} containing two or more of the various error signals.
      *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Flowable} has been canceled or terminated with a
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
      *  (composite) error will be sent to the same global error handler.
      *  Use {@link #mergeDelayError(Iterable, int)} to merge sources and terminate only when all source {@code Publisher}s
      *  have completed or failed with an error.
@@ -3673,13 +3673,13 @@ FlowableDocBasic<T>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code Publisher}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are canceled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are cancelled.
      *  If more than one {@code Publisher} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@link CompositeException} containing two or more of the various error signals.
      *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Flowable} has been canceled or terminated with a
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
      *  (composite) error will be sent to the same global error handler.
      *  Use {@link #mergeDelayError(Publisher)} to merge sources and terminate only when all source {@code Publisher}s
      *  have completed or failed with an error.
@@ -3719,13 +3719,13 @@ FlowableDocBasic<T>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code Publisher}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are canceled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are cancelled.
      *  If more than one {@code Publisher} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@link CompositeException} containing two or more of the various error signals.
      *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Flowable} has been canceled or terminated with a
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
      *  (composite) error will be sent to the same global error handler.
      *  Use {@link #mergeDelayError(Publisher, int)} to merge sources and terminate only when all source {@code Publisher}s
      *  have completed or failed with an error.
@@ -3769,13 +3769,13 @@ FlowableDocBasic<T>
      *  <dd>{@code mergeArray} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code Publisher}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are canceled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are cancelled.
      *  If more than one {@code Publisher} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@link CompositeException} containing two or more of the various error signals.
      *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Flowable} has been canceled or terminated with a
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
      *  (composite) error will be sent to the same global error handler.
      *  Use {@link #mergeArrayDelayError(Publisher...)} to merge sources and terminate only when all source {@code Publisher}s
      *  have completed or failed with an error.
@@ -3815,13 +3815,13 @@ FlowableDocBasic<T>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code Publisher}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are canceled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are cancelled.
      *  If more than one {@code Publisher} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@link CompositeException} containing two or more of the various error signals.
      *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Flowable} has been canceled or terminated with a
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
      *  (composite) error will be sent to the same global error handler.
      *  Use {@link #mergeDelayError(Publisher, Publisher)} to merge sources and terminate only when all source {@code Publisher}s
      *  have completed or failed with an error.
@@ -3864,13 +3864,13 @@ FlowableDocBasic<T>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code Publisher}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are canceled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are cancelled.
      *  If more than one {@code Publisher} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@link CompositeException} containing two or more of the various error signals.
      *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Flowable} has been canceled or terminated with a
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
      *  (composite) error will be sent to the same global error handler.
      *  Use {@link #mergeDelayError(Publisher, Publisher, Publisher)} to merge sources and terminate only when all source {@code Publisher}s
      *  have completed or failed with an error.
@@ -3916,13 +3916,13 @@ FlowableDocBasic<T>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code Publisher}s signal a {@link Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are canceled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are cancelled.
      *  If more than one {@code Publisher} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@link CompositeException} containing two or more of the various error signals.
      *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
-     *  signaled by source(s) after the returned {@code Flowable} has been canceled or terminated with a
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
      *  (composite) error will be sent to the same global error handler.
      *  Use {@link #mergeDelayError(Publisher, Publisher, Publisher, Publisher)} to merge sources and terminate only when all source {@code Publisher}s
      *  have completed or failed with an error.
@@ -4644,7 +4644,7 @@ FlowableDocBasic<T>
      * from the earlier-emitted {@code Publisher} and begins emitting items from the new one.
      * <p>
      * The resulting {@code Flowable} completes if both the outer {@code Publisher} and the last inner {@code Publisher}, if any, complete.
-     * If the outer {@code Publisher} signals an {@code onError}, the inner {@code Publisher} is canceled and the error delivered in-sequence.
+     * If the outer {@code Publisher} signals an {@code onError}, the inner {@code Publisher} is cancelled and the error delivered in-sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed in an
@@ -4686,7 +4686,7 @@ FlowableDocBasic<T>
      * from the earlier-emitted {@code Publisher} and begins emitting items from the new one.
      * <p>
      * The resulting {@code Flowable} completes if both the outer {@code Publisher} and the last inner {@code Publisher}, if any, complete.
-     * If the outer {@code Publisher} signals an {@code onError}, the inner {@code Publisher} is canceled and the error delivered in-sequence.
+     * If the outer {@code Publisher} signals an {@code onError}, the inner {@code Publisher} is cancelled and the error delivered in-sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed in an
@@ -5959,8 +5959,8 @@ FlowableDocBasic<T>
      * <img width="640" height="376" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.ambWith.png" alt="">
      * <p>
      * When the current {@code Flowable} signals an item or terminates first, the subscription to the other
-     * {@code Publisher} is canceled. If the other {@code Publisher} signals an item or terminates first,
-     * the subscription to the current {@code Flowable} is canceled.
+     * {@code Publisher} is cancelled. If the other {@code Publisher} signals an item or terminates first,
+     * the subscription to the current {@code Flowable} is cancelled.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
@@ -9334,7 +9334,7 @@ FlowableDocBasic<T>
      * returned {@code Flowable} cancels of the flow and terminates with that type of terminal event:
      * <pre><code>
      * Flowable.just(createOnNext(1), createOnComplete(), createOnNext(2))
-     * .doOnCancel(() -&gt; System.out.println("Canceled!"));
+     * .doOnCancel(() -&gt; System.out.println("Cancelled!"));
      * .dematerialize(notification -&gt; notification)
      * .test()
      * .assertResult(1);
@@ -9628,7 +9628,7 @@ FlowableDocBasic<T>
     }
 
     /**
-     * Calls the specified action after this {@code Flowable} signals {@code onError} or {@code onComplete} or gets canceled by
+     * Calls the specified action after this {@code Flowable} signals {@code onError} or {@code onComplete} or gets cancelled by
      * the downstream.
      * <p>In case of a race between a terminal event and a cancellation, the provided {@code onFinally} action
      * is executed once per subscription.
@@ -9645,7 +9645,7 @@ FlowableDocBasic<T>
      *  synchronous or asynchronous queue-fusion.</dd>
      * </dl>
      * <p>History: 2.0.1 - experimental
-     * @param onFinally the action called when this {@code Flowable} terminates or gets canceled
+     * @param onFinally the action called when this {@code Flowable} terminates or gets cancelled
      * @throws NullPointerException if {@code onFinally} is {@code null}
      * @return the new {@code Flowable} instance
      * @since 2.1
@@ -9736,7 +9736,7 @@ FlowableDocBasic<T>
      * </dl>
      *
      * @param onCancel
-     *            the action that gets called when the current {@code Flowable}'s {@link Subscription} is canceled
+     *            the action that gets called when the current {@code Flowable}'s {@link Subscription} is cancelled
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code onCancel} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
@@ -11844,7 +11844,7 @@ FlowableDocBasic<T>
      *     // Some operators may use their own resources which should be cleaned up if
      *     // the downstream cancels the flow before it completed. Operators without
      *     // resources can simply forward the cancellation to the upstream.
-     *     // In some cases, a canceled flag may be set by this method so that other parts
+     *     // In some cases, a cancelled flag may be set by this method so that other parts
      *     // of this class may detect the cancellation and stop sending events
      *     // to the downstream.
      *     &#64;Override
@@ -15046,7 +15046,7 @@ FlowableDocBasic<T>
     /**
      * Returns a new {@code Flowable} that multicasts (and shares a single subscription to) the current {@code Flowable}. As long as
      * there is at least one {@link Subscriber}, the current {@code Flowable} will be subscribed and emitting data.
-     * When all subscribers have canceled it will cancel the current {@code Flowable}.
+     * When all subscribers have cancelled it will cancel the current {@code Flowable}.
      * <p>
      * This is an alias for {@link #publish()}.{@link ConnectableFlowable#refCount() refCount()}.
      * <p>
@@ -16184,7 +16184,7 @@ FlowableDocBasic<T>
      * of these {@code Publisher}s.
      * <p>
      * The resulting {@code Flowable} completes if both the current {@code Flowable} and the last inner {@code Publisher}, if any, complete.
-     * If the current {@code Flowable} signals an {@code onError}, the inner {@code Publisher} is canceled and the error delivered in-sequence.
+     * If the current {@code Flowable} signals an {@code onError}, the inner {@code Publisher} is cancelled and the error delivered in-sequence.
      * <p>
      * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
@@ -16220,7 +16220,7 @@ FlowableDocBasic<T>
      * of these {@code Publisher}s.
      * <p>
      * The resulting {@code Flowable} completes if both the current {@code Flowable} and the last inner {@code Publisher}, if any, complete.
-     * If the current {@code Flowable} signals an {@code onError}, the inner {@code Publisher} is canceled and the error delivered in-sequence.
+     * If the current {@code Flowable} signals an {@code onError}, the inner {@code Publisher} is cancelled and the error delivered in-sequence.
      * <p>
      * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
@@ -17551,7 +17551,7 @@ FlowableDocBasic<T>
      *                 upstream item is ignored and the flow terminates.
      * @param onDropped called when an item is replaced by a newer item that doesn't get delivered
      *                 to the downstream, including the very last item if {@code emitLast} is {@code false}
-     *                 and the current undelivered item when the sequence gets canceled.
+     *                 and the current undelivered item when the sequence gets cancelled.
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code onDropped} is {@code null}
      * @since 3.1.6 - Experimental
@@ -20073,7 +20073,7 @@ FlowableDocBasic<T>
      *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param initialRequest the initial request amount, positive
-     * @param cancel should the {@code TestSubscriber} be canceled before the subscription?
+     * @param cancel should the {@code TestSubscriber} be cancelled before the subscription?
      * @return the new {@code TestSubscriber} instance
      * @since 2.0
      */
@@ -20281,7 +20281,7 @@ FlowableDocBasic<T>
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstStage.f.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
@@ -20318,7 +20318,7 @@ FlowableDocBasic<T>
      * <p>
      * <img width="640" height="229" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleStage.f.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
@@ -20354,7 +20354,7 @@ FlowableDocBasic<T>
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastStage.f.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
@@ -20390,7 +20390,7 @@ FlowableDocBasic<T>
      * <p>
      * <img width="640" height="343" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrErrorStage.f.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
@@ -20420,7 +20420,7 @@ FlowableDocBasic<T>
      * <p>
      * <img width="640" height="229" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrErrorStage.f.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
@@ -20449,7 +20449,7 @@ FlowableDocBasic<T>
      * <p>
      * <img width="640" height="346" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrErrorStage.f.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and

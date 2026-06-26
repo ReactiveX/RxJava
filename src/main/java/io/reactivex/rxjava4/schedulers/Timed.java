@@ -23,16 +23,13 @@ import io.reactivex.rxjava4.annotations.NonNull;
  *
  * @param <T> the value type
  */
-public final class Timed<T> {
-    final T value;
-    final long time;
-    final TimeUnit unit;
-
+public record Timed<T>(T value, long time, TimeUnit unit) {
     /**
      * Constructs a {@code Timed} instance with the given value and time information.
+     *
      * @param value the value to hold
-     * @param time the time to hold
-     * @param unit the time unit, not null
+     * @param time  the time to hold
+     * @param unit  the time unit, not null
      * @throws NullPointerException if {@code value} or {@code unit} is {@code null}
      */
     public Timed(@NonNull T value, long time, @NonNull TimeUnit unit) {
@@ -42,33 +39,8 @@ public final class Timed<T> {
     }
 
     /**
-     * Returns the contained value.
-     * @return the contained value
-     */
-    @NonNull
-    public T value() {
-        return value;
-    }
-
-    /**
-     * Returns the time unit of the contained time.
-     * @return the time unit of the contained time
-     */
-    @NonNull
-    public TimeUnit unit() {
-        return unit;
-    }
-
-    /**
-     * Returns the time value.
-     * @return the time value
-     */
-    public long time() {
-        return time;
-    }
-
-    /**
      * Returns the contained time value in the time unit specified.
+     *
      * @param unit the time unit
      * @return the converted time
      */
@@ -78,10 +50,10 @@ public final class Timed<T> {
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof Timed<?> o) {
-            return Objects.equals(value, o.value)
-                    && time == o.time
-                    && Objects.equals(unit, o.unit);
+        if (other instanceof Timed<?>(Object value1, long time1, TimeUnit unit1)) {
+            return Objects.equals(value, value1)
+                    && time == time1
+                    && Objects.equals(unit, unit1);
         }
         return false;
     }
@@ -89,7 +61,7 @@ public final class Timed<T> {
     @Override
     public int hashCode() {
         int h = value.hashCode();
-        h = h * 31 + (int)((time >>> 31) ^ time);
+        h = h * 31 + (int) ((time >>> 31) ^ time);
         h = h * 31 + unit.hashCode();
         return h;
     }

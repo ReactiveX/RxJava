@@ -170,7 +170,7 @@ extends BaseTestConsumer<T, U> {
     }
 
     /**
-     * Assert that the upstream signalled the specified values in order and then failed
+     * Assert that the upstream signaled the specified values in order and then failed
      * with a Throwable for which the provided predicate returns true.
      * @param errorPredicate
      *            the predicate that receives the error Throwable
@@ -187,7 +187,7 @@ extends BaseTestConsumer<T, U> {
     }
 
     /**
-     * Assert that the upstream signalled the specified values in order,
+     * Assert that the upstream signaled the specified values in order,
      * then failed with a specific class or subclass of Throwable
      * and with the given exact error message.
      * @param error the expected exception (parent) class

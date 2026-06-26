@@ -76,7 +76,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
         final AtomicLong requested;
         long emitted;
 
-        volatile boolean upstreamCanceled;
+        volatile boolean upstreamCancelled;
 
         volatile boolean upstreamDone;
         volatile boolean openDone;
@@ -152,7 +152,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                     startSubscriber.cancel();
                     resources.dispose();
                     error.tryTerminateAndReport();
-                    upstreamCanceled = true;
+                    upstreamCancelled = true;
                     drain();
                 } else {
                     startSubscriber.cancel();
@@ -167,7 +167,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                 startSubscriber.cancel();
                 resources.dispose();
                 error.tryTerminateAndReport();
-                upstreamCanceled = true;
+                upstreamCancelled = true;
                 drain();
             }
         }
@@ -217,7 +217,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
             final List<UnicastProcessor<T>> windows = this.windows;
 
             for (;;) {
-                if (upstreamCanceled) {
+                if (upstreamCancelled) {
                     queue.clear();
                     windows.clear();
                 } else {
@@ -228,7 +228,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                     if (isDone) {
                         if (isEmpty || error.get() != null) {
                             terminateDownstream(downstream);
-                            upstreamCanceled = true;
+                            upstreamCancelled = true;
                             continue;
                         }
                     }
@@ -302,7 +302,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                         startSubscriber.cancel();
                         resources.dispose();
                         terminateDownstream(downstream);
-                        upstreamCanceled = true;
+                        upstreamCancelled = true;
                         continue;
                     }
                 }

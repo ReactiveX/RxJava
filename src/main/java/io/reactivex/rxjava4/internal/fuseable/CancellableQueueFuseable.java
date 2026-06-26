@@ -17,7 +17,7 @@ import io.reactivex.rxjava4.operators.QueueFuseable;
 
 /**
  * Represents an empty, async-only {@link QueueFuseable} instance that tracks and exposes a
- * canceled/disposed state.
+ * cancelled/disposed state.
  *
  * @param <T> the output value type
  * @since 3.0.0

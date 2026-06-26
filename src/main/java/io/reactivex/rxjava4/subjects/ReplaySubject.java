@@ -197,7 +197,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * {@code size} {@code onNext} events followed by a termination event.
      * <p>
      * If an observer subscribes while the {@code ReplaySubject} is active, it will observe all items in the
-     * buffer at that point in time and each item observed afterwards, even if the buffer evicts items due to
+     * buffer at that point in time and each item observed afterward, even if the buffer evicts items due to
      * the size constraint in the meantime. In other words, once an Observer subscribes, it will receive items
      * without gaps in the sequence.
      *

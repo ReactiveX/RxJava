@@ -175,7 +175,7 @@ public final class MulticastProcessor<@NonNull T> extends FlowableProcessor<T> {
      * Constructs a fresh instance with the default Flowable.bufferSize() prefetch
      * amount and the optional refCount-behavior.
      * @param <T> the input and output value type
-     * @param refCount if true and if all Subscribers have canceled, the upstream
+     * @param refCount if true and if all Subscribers have cancelled, the upstream
      * is cancelled
      * @return the new MulticastProcessor instance
      */
@@ -203,7 +203,7 @@ public final class MulticastProcessor<@NonNull T> extends FlowableProcessor<T> {
      * Constructs a fresh instance with the given prefetch amount and the optional
      * refCount-behavior.
      * @param bufferSize the prefetch amount
-     * @param refCount if true and if all Subscribers have canceled, the upstream
+     * @param refCount if true and if all Subscribers have cancelled, the upstream
      * is cancelled
      * @param <T> the input and output value type
      * @return the new MulticastProcessor instance
@@ -220,7 +220,7 @@ public final class MulticastProcessor<@NonNull T> extends FlowableProcessor<T> {
      * Constructs a fresh instance with the given prefetch amount and the optional
      * refCount-behavior.
      * @param bufferSize the prefetch amount
-     * @param refCount if true and if all Subscribers have canceled, the upstream
+     * @param refCount if true and if all Subscribers have cancelled, the upstream
      * is cancelled
      */
     @SuppressWarnings("unchecked")
@@ -237,7 +237,7 @@ public final class MulticastProcessor<@NonNull T> extends FlowableProcessor<T> {
      * Initializes this Processor by setting an upstream Subscription that
      * ignores request amounts, uses a fixed buffer
      * and allows using the onXXX and offer methods
-     * afterwards.
+     * afterward.
      */
     public void start() {
         if (SubscriptionHelper.setOnce(upstream, EmptySubscription.INSTANCE)) {
@@ -249,7 +249,7 @@ public final class MulticastProcessor<@NonNull T> extends FlowableProcessor<T> {
      * Initializes this Processor by setting an upstream Subscription that
      * ignores request amounts, uses an unbounded buffer
      * and allows using the onXXX and offer methods
-     * afterwards.
+     * afterward.
      */
     public void startUnbounded() {
         if (SubscriptionHelper.setOnce(upstream, EmptySubscription.INSTANCE)) {

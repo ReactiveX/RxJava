@@ -1391,7 +1391,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dt><b>Error handling:</b></dt>
      *  <dd> If the {@code Action} throws an exception, the respective {@link Throwable} is
      *  delivered to the downstream via {@link Observer#onError(Throwable)},
-     *  except when the downstream has canceled the resulting {@code Observable} source.
+     *  except when the downstream has cancelled the resulting {@code Observable} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava4.exceptions.UndeliverableException UndeliverableException}.
      *  </dd>
@@ -1688,7 +1688,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dt><b>Error handling:</b></dt>
      *  <dd> If the {@code Runnable} throws an exception, the respective {@code Throwable} is
      *  delivered to the downstream via {@link Observer#onError(Throwable)},
-     *  except when the downstream has canceled the resulting {@code Observable} source.
+     *  except when the downstream has cancelled the resulting {@code Observable} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava4.exceptions.UndeliverableException UndeliverableException}.
      *  </dd>
@@ -15923,7 +15923,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="313" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstStage.o.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
@@ -15958,7 +15958,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="227" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleStage.o.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
@@ -15992,7 +15992,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="313" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastStage.o.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
@@ -16026,7 +16026,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="341" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrErrorStage.o.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
@@ -16053,7 +16053,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="227" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrErrorStage.o.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
@@ -16079,7 +16079,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="343" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrErrorStage.o.png" alt="">
      * <p>
-     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * The upstream can be cancelled by converting the resulting {@code CompletionStage} into
      * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
      * calling {@link CompletableFuture#cancel(boolean)} on it.
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and

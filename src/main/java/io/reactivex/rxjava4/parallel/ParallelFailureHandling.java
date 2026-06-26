@@ -26,7 +26,7 @@ public enum ParallelFailureHandling implements BiFunction<Long, Throwable, Paral
      */
     STOP,
     /**
-     * The current rail is stopped and the error is signalled.
+     * The current rail is stopped and the error is signaled.
      */
     ERROR,
     /**
