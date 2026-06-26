@@ -595,7 +595,7 @@ because such circumstances prevent RxJava from progressing flow-related activiti
 If the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html#execute(java.lang.Runnable)" class="external-link"><code>Executor.execute(Runnable)</code></a> or <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html#submit(java.util.concurrent.Callable)" class="external-link"><code>ExecutorService.submit(Callable)</code></a> throws,
 the <code>RejectedExecutionException</code> is routed to the global error handler via
 <a href="../plugins/RxJavaPlugins.html#onError(java.lang.Throwable)"><code>RxJavaPlugins.onError(Throwable)</code></a>. To avoid shutdown-related problems, it is recommended
-all flows using the returned <code>Scheduler</code> to be canceled/disposed before the underlying
+all flows using the returned <code>Scheduler</code> to be cancelled/disposed before the underlying
 <code>Executor</code> is shut down. To avoid problems due to the <code>Executor</code> having a bounded-queue,
 it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
 <p>
@@ -684,7 +684,7 @@ because such circumstances prevent RxJava from progressing flow-related activiti
 If the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html#execute(java.lang.Runnable)" class="external-link"><code>Executor.execute(Runnable)</code></a> or <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html#submit(java.util.concurrent.Callable)" class="external-link"><code>ExecutorService.submit(Callable)</code></a> throws,
 the <code>RejectedExecutionException</code> is routed to the global error handler via
 <a href="../plugins/RxJavaPlugins.html#onError(java.lang.Throwable)"><code>RxJavaPlugins.onError(Throwable)</code></a>. To avoid shutdown-related problems, it is recommended
-all flows using the returned <code>Scheduler</code> to be canceled/disposed before the underlying
+all flows using the returned <code>Scheduler</code> to be cancelled/disposed before the underlying
 <code>Executor</code> is shut down. To avoid problems due to the <code>Executor</code> having a bounded-queue,
 it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
 <p>
@@ -781,7 +781,7 @@ because such circumstances prevent RxJava from progressing flow-related activiti
 If the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html#execute(java.lang.Runnable)" class="external-link"><code>Executor.execute(Runnable)</code></a> or <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html#submit(java.util.concurrent.Callable)" class="external-link"><code>ExecutorService.submit(Callable)</code></a> throws,
 the <code>RejectedExecutionException</code> is routed to the global error handler via
 <a href="../plugins/RxJavaPlugins.html#onError(java.lang.Throwable)"><code>RxJavaPlugins.onError(Throwable)</code></a>. To avoid shutdown-related problems, it is recommended
-all flows using the returned <code>Scheduler</code> to be canceled/disposed before the underlying
+all flows using the returned <code>Scheduler</code> to be cancelled/disposed before the underlying
 <code>Executor</code> is shut down. To avoid problems due to the <code>Executor</code> having a bounded-queue,
 it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
 <p>

@@ -306,7 +306,7 @@ calling <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/ja
 <div class="block">Initializes this Processor by setting an upstream Subscription that
 ignores request amounts, uses a fixed buffer
 and allows using the onXXX and offer methods
-afterwards.</div>
+afterward.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startUnbounded()" class="member-name-link">startUnbounded</a>()</code></div>
@@ -314,7 +314,7 @@ afterwards.</div>
 <div class="block">Initializes this Processor by setting an upstream Subscription that
 ignores request amounts, uses an unbounded buffer
 and allows using the onXXX and offer methods
-afterwards.</div>
+afterward.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#subscribeActual(java.util.concurrent.Flow.Subscriber)" class="member-name-link">subscribeActual</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in MulticastProcessor">T</a>&gt;&nbsp;s)</code></div>
@@ -1449,7 +1449,7 @@ of those objects returned by the key selector function.</div>
 <div class="col-first even-row-color"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in MulticastProcessor">T</a>&gt;</code></div>
 <div class="col-second even-row-color"><code><a href="../core/Flowable.html#doFinally(io.reactivex.rxjava4.functions.Action)" class="member-name-link">doFinally</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Action.html" title="interface in io.reactivex.rxjava4.functions">Action</a>&nbsp;onFinally)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Calls the specified action after this <code>Flowable</code> signals <code>onError</code> or <code>onComplete</code> or gets canceled by
+<div class="block">Calls the specified action after this <code>Flowable</code> signals <code>onError</code> or <code>onComplete</code> or gets cancelled by
 the downstream.</div>
 </div>
 <div class="col-first odd-row-color"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in MulticastProcessor">T</a>&gt;</code></div>
@@ -4313,7 +4313,7 @@ amount and the optional refCount-behavior.</div>
 <dt>Type Parameters:</dt>
 <dd><span id="create(boolean)-type-param-T"><code>T</code> - the input and output value type</span></dd>
 <dt>Parameters:</dt>
-<dd><code>refCount</code> - if true and if all Subscribers have canceled, the upstream
+<dd><code>refCount</code> - if true and if all Subscribers have cancelled, the upstream
 is cancelled</dd>
 <dt>Returns:</dt>
 <dd>the new MulticastProcessor instance</dd>
@@ -4357,7 +4357,7 @@ refCount-behavior.</div>
 <dd><span id="create(int,boolean)-type-param-T"><code>T</code> - the input and output value type</span></dd>
 <dt>Parameters:</dt>
 <dd><code>bufferSize</code> - the prefetch amount</dd>
-<dd><code>refCount</code> - if true and if all Subscribers have canceled, the upstream
+<dd><code>refCount</code> - if true and if all Subscribers have cancelled, the upstream
 is cancelled</dd>
 <dt>Returns:</dt>
 <dd>the new MulticastProcessor instance</dd>
@@ -4375,7 +4375,7 @@ is cancelled</dd>
 <div class="block">Initializes this Processor by setting an upstream Subscription that
 ignores request amounts, uses a fixed buffer
 and allows using the onXXX and offer methods
-afterwards.</div>
+afterward.</div>
 </div>
 </section>
 </li>
@@ -4387,7 +4387,7 @@ afterwards.</div>
 <div class="block">Initializes this Processor by setting an upstream Subscription that
 ignores request amounts, uses an unbounded buffer
 and allows using the onXXX and offer methods
-afterwards.</div>
+afterward.</div>
 </div>
 </section>
 </li>

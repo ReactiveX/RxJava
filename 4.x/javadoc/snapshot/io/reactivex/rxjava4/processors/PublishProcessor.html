@@ -143,7 +143,7 @@ Even though <code>PublishProcessor</code> implements the <a href="https://docs.o
 <code>onSubscribe</code> is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
 if the processor is used as a standalone source. However, calling <code>onSubscribe</code>
 after the <code>PublishProcessor</code> reached its terminal state will result in the
-given <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscription</code></a> being canceled immediately.
+given <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscription</code></a> being cancelled immediately.
 <p>
 Calling <a href="#onNext(T)"><code>onNext(Object)</code></a>, <a href="#offer(T)"><code>offer(Object)</code></a>, <a href="#onError(java.lang.Throwable)"><code>onError(Throwable)</code></a> and <a href="#onComplete()"><code>onComplete()</code></a>
 is required to be serialized (called from the same thread or called non-overlappingly from different threads
@@ -1393,7 +1393,7 @@ of those objects returned by the key selector function.</div>
 <div class="col-first even-row-color"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in PublishProcessor">T</a>&gt;</code></div>
 <div class="col-second even-row-color"><code><a href="../core/Flowable.html#doFinally(io.reactivex.rxjava4.functions.Action)" class="member-name-link">doFinally</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Action.html" title="interface in io.reactivex.rxjava4.functions">Action</a>&nbsp;onFinally)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Calls the specified action after this <code>Flowable</code> signals <code>onError</code> or <code>onComplete</code> or gets canceled by
+<div class="block">Calls the specified action after this <code>Flowable</code> signals <code>onError</code> or <code>onComplete</code> or gets cancelled by
 the downstream.</div>
 </div>
 <div class="col-first odd-row-color"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in PublishProcessor">T</a>&gt;</code></div>

@@ -103,7 +103,7 @@ adhere to the following protocol:
 <pre><code>    onSubscribe (onSuccess | onError | onComplete)?</code></pre>
 <p>
 Note that unlike with the <code>Observable</code> protocol, <a href="#onComplete()"><code>onComplete()</code></a> is not called after the success item has been
-signalled via <a href="#onSuccess(T)"><code>onSuccess(Object)</code></a>.
+signaled via <a href="#onSuccess(T)"><code>onSuccess(Object)</code></a>.
 <p>
 Subscribing a <code>MaybeObserver</code> to multiple <code>MaybeSource</code>s is not recommended. If such reuse
 happens, it is the duty of the <code>MaybeObserver</code> implementation to be ready to receive multiple calls to

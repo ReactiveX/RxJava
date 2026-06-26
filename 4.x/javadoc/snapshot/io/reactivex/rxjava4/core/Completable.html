@@ -938,7 +938,7 @@ it to this <code>Completable</code>.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../observers/TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#test(boolean)" class="member-name-link">test</a><wbr>(boolean&nbsp;dispose)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Creates a <a href="../observers/TestObserver.html" title="class in io.reactivex.rxjava4.observers"><code>TestObserver</code></a> optionally in canceled state, then subscribes it to this <code>Completable</code>.</div>
+<div class="block">Creates a <a href="../observers/TestObserver.html" title="class in io.reactivex.rxjava4.observers"><code>TestObserver</code></a> optionally in cancelled state, then subscribes it to this <code>Completable</code>.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#timeout(long,java.util.concurrent.TimeUnit)" class="member-name-link">timeout</a><wbr>(long&nbsp;timeout,
@@ -5116,10 +5116,10 @@ it to this <code>Completable</code>.
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../observers/TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">test</span><wbr><span class="parameters">(boolean&nbsp;dispose)</span></div>
-<div class="block">Creates a <a href="../observers/TestObserver.html" title="class in io.reactivex.rxjava4.observers"><code>TestObserver</code></a> optionally in canceled state, then subscribes it to this <code>Completable</code>.</div>
+<div class="block">Creates a <a href="../observers/TestObserver.html" title="class in io.reactivex.rxjava4.observers"><code>TestObserver</code></a> optionally in cancelled state, then subscribes it to this <code>Completable</code>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>dispose</code> - if <code>true</code>, the <code>TestObserver</code> will be canceled before subscribing to this
+<dd><code>dispose</code> - if <code>true</code>, the <code>TestObserver</code> will be cancelled before subscribing to this
 <code>Completable</code>.
 <p>
 <img width="640" height="499" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.test.b.png" alt="">
@@ -5188,10 +5188,10 @@ a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/uti
 <p>
 <img width="640" height="323" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toCompletionStage.c.png" alt="">
 <p>
-The upstream can be canceled by converting the resulting <code>CompletionStage</code> into
+The upstream can be cancelled by converting the resulting <code>CompletionStage</code> into
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class in java.util.concurrent" class="external-link"><code>CompletableFuture</code></a> via <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html#toCompletableFuture()" class="external-link"><code>CompletionStage.toCompletableFuture()</code></a> and
 calling <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html#cancel(boolean)" class="external-link"><code>CompletableFuture.cancel(boolean)</code></a> on it.
-The upstream will be also canceled if the resulting <code>CompletionStage</code> is converted to and
+The upstream will be also cancelled if the resulting <code>CompletionStage</code> is converted to and
 completed manually by <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html#complete(T)" class="external-link"><code>CompletableFuture.complete(Object)</code></a> or <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html#completeExceptionally(java.lang.Throwable)" class="external-link"><code>CompletableFuture.completeExceptionally(Throwable)</code></a>.
 <p>
 <code>CompletionStage</code>s don't have a notion of emptiness and allow <code>null</code>s, therefore, one can either use

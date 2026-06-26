@@ -77,7 +77,7 @@ initTheme();
 <li><a href="#toString()" tabindex="0">toString()</a></li>
 <li><a href="#hashCode()" tabindex="0">hashCode()</a></li>
 <li><a href="#equals(java.lang.Object)" tabindex="0">equals(Object)</a></li>
-<li><a href="#bcts()" tabindex="0">bcts()</a></li>
+<li><a href="#backingScheduler()" tabindex="0">backingScheduler()</a></li>
 </ol>
 </li>
 </ol>
@@ -95,11 +95,11 @@ initTheme();
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>Record Components:</dt>
-<dd><code><span id="param-bcts">bcts</span></code> - the scheduler instance</dd>
+<dd><code><span id="param-backingScheduler">backingScheduler</span></code> - the scheduler instance</dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">BlockingScheduler</span>(io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler&nbsp;bcts)
+<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">BlockingScheduler</span>(io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler&nbsp;backingScheduler)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Record.html" title="class in java.lang" class="external-link">Record</a></span></div>
 <div class="block">Holds onto a blocking scheduler instance and provides access to its <a href="#execute()"><code>execute()</code></a>
 method and a way to obtain a pure <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance to be used as parameter.</div>
@@ -119,7 +119,7 @@ method and a way to obtain a pure <a href="../core/Scheduler.html" title="class 
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler)" class="member-name-link">BlockingScheduler</a><wbr>(io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler&nbsp;bcts)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler)" class="member-name-link">BlockingScheduler</a><wbr>(io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler&nbsp;backingScheduler)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Creates an instance of a <code>BlockingScheduler</code> record class.</div>
 </div>
@@ -138,9 +138,9 @@ method and a way to obtain a pure <a href="../core/Scheduler.html" title="class 
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#bcts()" class="member-name-link">bcts</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#backingScheduler()" class="member-name-link">backingScheduler</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <a href="#param-bcts"><code>bcts</code></a> record component.</div>
+<div class="block">Returns the value of the <a href="#param-backingScheduler"><code>backingScheduler</code></a> record component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html" title="class in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
@@ -199,11 +199,11 @@ method and a way to obtain a pure <a href="../core/Scheduler.html" title="class 
 <section class="detail" id="&lt;init&gt;(io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler)">
 <h3>BlockingScheduler</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlockingScheduler</span><wbr><span class="parameters">(io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler&nbsp;bcts)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlockingScheduler</span><wbr><span class="parameters">(io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler&nbsp;backingScheduler)</span></div>
 <div class="block">Creates an instance of a <code>BlockingScheduler</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>bcts</code> - the value for the <a href="#param-bcts"><code>bcts</code></a> record component</dd>
+<dd><code>backingScheduler</code> - the value for the <a href="#param-backingScheduler"><code>backingScheduler</code></a> record component</dd>
 </dl>
 </div>
 </section>
@@ -321,14 +321,14 @@ This method will block until the <a href="../core/Scheduler.html#shutdown()"><co
 </section>
 </li>
 <li>
-<section class="detail" id="bcts()">
-<h3>bcts</h3>
+<section class="detail" id="backingScheduler()">
+<h3>backingScheduler</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler</span>&nbsp;<span class="element-name">bcts</span>()</div>
-<div class="block">Returns the value of the <a href="#param-bcts"><code>bcts</code></a> record component.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler</span>&nbsp;<span class="element-name">backingScheduler</span>()</div>
+<div class="block">Returns the value of the <a href="#param-backingScheduler"><code>backingScheduler</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <a href="#param-bcts"><code>bcts</code></a> record component</dd>
+<dd>the value of the <a href="#param-backingScheduler"><code>backingScheduler</code></a> record component</dd>
 </dl>
 </div>
 </section>

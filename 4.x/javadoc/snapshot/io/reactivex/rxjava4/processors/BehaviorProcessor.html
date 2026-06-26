@@ -188,7 +188,7 @@ try to emit an item when all <code>Subscriber</code>s have requested item(s).
  <dt><b>Backpressure:</b></dt>
  <dd>The <code>BehaviorProcessor</code> does not coordinate requests of its downstream <code>Subscriber</code>s and
  expects each individual <code>Subscriber</code> is ready to receive <code>onNext</code> items when <a href="#onNext(T)"><code>onNext(Object)</code></a>
- is called. If a <code>Subscriber</code> is not ready, a <code>MissingBackpressureException</code> is signalled to it.
+ is called. If a <code>Subscriber</code> is not ready, a <code>MissingBackpressureException</code> is signaled to it.
  To avoid overflowing the current <code>Subscriber</code>s, the conditional <a href="#offer(T)"><code>offer(Object)</code></a> method is available
  that returns true if any of the <code>Subscriber</code>s is not ready to receive <code>onNext</code> events. If
  there are no <code>Subscriber</code>s to the processor, <code>offer()</code> always succeeds.
@@ -1452,7 +1452,7 @@ of those objects returned by the key selector function.</div>
 <div class="col-first even-row-color"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in BehaviorProcessor">T</a>&gt;</code></div>
 <div class="col-second even-row-color"><code><a href="../core/Flowable.html#doFinally(io.reactivex.rxjava4.functions.Action)" class="member-name-link">doFinally</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Action.html" title="interface in io.reactivex.rxjava4.functions">Action</a>&nbsp;onFinally)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Calls the specified action after this <code>Flowable</code> signals <code>onError</code> or <code>onComplete</code> or gets canceled by
+<div class="block">Calls the specified action after this <code>Flowable</code> signals <code>onError</code> or <code>onComplete</code> or gets cancelled by
 the downstream.</div>
 </div>
 <div class="col-first odd-row-color"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in BehaviorProcessor">T</a>&gt;</code></div>

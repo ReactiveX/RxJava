@@ -3840,7 +3840,7 @@ When observers subscribe to a terminated <code>ReplaySubject</code>, they are gu
 <code>size</code> <code>onNext</code> events followed by a termination event.
 <p>
 If an observer subscribes while the <code>ReplaySubject</code> is active, it will observe all items in the
-buffer at that point in time and each item observed afterwards, even if the buffer evicts items due to
+buffer at that point in time and each item observed afterward, even if the buffer evicts items due to
 the size constraint in the meantime. In other words, once an Observer subscribes, it will receive items
 without gaps in the sequence.</div>
 <dl class="notes">

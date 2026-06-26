@@ -8139,7 +8139,7 @@ to emit as the success output or an <em>empty</em> <code>Optional</code> to comp
 <p>
 <img width="640" height="321" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toCompletionStage.s.png" alt="">
 <p>
-The upstream can be canceled by converting the resulting <code>CompletionStage</code> into
+The upstream can be cancelled by converting the resulting <code>CompletionStage</code> into
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class in java.util.concurrent" class="external-link"><code>CompletableFuture</code></a> via <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html#toCompletableFuture()" class="external-link"><code>CompletionStage.toCompletableFuture()</code></a> and
 calling <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html#cancel(boolean)" class="external-link"><code>CompletableFuture.cancel(boolean)</code></a> on it.
 The upstream will be also cancelled if the resulting <code>CompletionStage</code> is converted to and

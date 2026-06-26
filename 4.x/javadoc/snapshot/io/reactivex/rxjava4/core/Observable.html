@@ -5621,7 +5621,7 @@ emits either its exception or simply completes.
  <dt><b>Error handling:</b></dt>
  <dd> If the <code>Action</code> throws an exception, the respective <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> is
  delivered to the downstream via <a href="Observer.html#onError(java.lang.Throwable)"><code>Observer.onError(Throwable)</code></a>,
- except when the downstream has canceled the resulting <code>Observable</code> source.
+ except when the downstream has cancelled the resulting <code>Observable</code> source.
  In this latter case, the <code>Throwable</code> is delivered to the global error handler via
  <a href="../plugins/RxJavaPlugins.html#onError(java.lang.Throwable)"><code>RxJavaPlugins.onError(Throwable)</code></a> as an <a href="../exceptions/UndeliverableException.html" title="class in io.reactivex.rxjava4.exceptions"><code>UndeliverableException</code></a>.
  </dd>
@@ -6003,7 +6003,7 @@ exception and will signal it to observers as-is.
  <dt><b>Error handling:</b></dt>
  <dd> If the <code>Runnable</code> throws an exception, the respective <code>Throwable</code> is
  delivered to the downstream via <a href="Observer.html#onError(java.lang.Throwable)"><code>Observer.onError(Throwable)</code></a>,
- except when the downstream has canceled the resulting <code>Observable</code> source.
+ except when the downstream has cancelled the resulting <code>Observable</code> source.
  In this latter case, the <code>Throwable</code> is delivered to the global error handler via
  <a href="../plugins/RxJavaPlugins.html#onError(java.lang.Throwable)"><code>RxJavaPlugins.onError(Throwable)</code></a> as an <a href="../exceptions/UndeliverableException.html" title="class in io.reactivex.rxjava4.exceptions"><code>UndeliverableException</code></a>.
  </dd>
@@ -24194,7 +24194,7 @@ a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/uti
 <p>
 <img width="640" height="313" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstStage.o.png" alt="">
 <p>
-The upstream can be canceled by converting the resulting <code>CompletionStage</code> into
+The upstream can be cancelled by converting the resulting <code>CompletionStage</code> into
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class in java.util.concurrent" class="external-link"><code>CompletableFuture</code></a> via <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html#toCompletableFuture()" class="external-link"><code>CompletionStage.toCompletableFuture()</code></a> and
 calling <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html#cancel(boolean)" class="external-link"><code>CompletableFuture.cancel(boolean)</code></a> on it.
 The upstream will be also cancelled if the resulting <code>CompletionStage</code> is converted to and
@@ -24242,7 +24242,7 @@ via a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java
 <p>
 <img width="640" height="227" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleStage.o.png" alt="">
 <p>
-The upstream can be canceled by converting the resulting <code>CompletionStage</code> into
+The upstream can be cancelled by converting the resulting <code>CompletionStage</code> into
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class in java.util.concurrent" class="external-link"><code>CompletableFuture</code></a> via <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html#toCompletableFuture()" class="external-link"><code>CompletionStage.toCompletableFuture()</code></a> and
 calling <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html#cancel(boolean)" class="external-link"><code>CompletableFuture.cancel(boolean)</code></a> on it.
 The upstream will be also cancelled if the resulting <code>CompletionStage</code> is converted to and
@@ -24289,7 +24289,7 @@ a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/uti
 <p>
 <img width="640" height="313" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastStage.o.png" alt="">
 <p>
-The upstream can be canceled by converting the resulting <code>CompletionStage</code> into
+The upstream can be cancelled by converting the resulting <code>CompletionStage</code> into
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class in java.util.concurrent" class="external-link"><code>CompletableFuture</code></a> via <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html#toCompletableFuture()" class="external-link"><code>CompletionStage.toCompletableFuture()</code></a> and
 calling <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html#cancel(boolean)" class="external-link"><code>CompletableFuture.cancel(boolean)</code></a> on it.
 The upstream will be also cancelled if the resulting <code>CompletionStage</code> is converted to and
@@ -24335,7 +24335,7 @@ a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/uti
 <p>
 <img width="640" height="341" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrErrorStage.o.png" alt="">
 <p>
-The upstream can be canceled by converting the resulting <code>CompletionStage</code> into
+The upstream can be cancelled by converting the resulting <code>CompletionStage</code> into
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class in java.util.concurrent" class="external-link"><code>CompletableFuture</code></a> via <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html#toCompletableFuture()" class="external-link"><code>CompletionStage.toCompletableFuture()</code></a> and
 calling <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html#cancel(boolean)" class="external-link"><code>CompletableFuture.cancel(boolean)</code></a> on it.
 The upstream will be also cancelled if the resulting <code>CompletionStage</code> is converted to and
@@ -24373,7 +24373,7 @@ via a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java
 <p>
 <img width="640" height="227" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrErrorStage.o.png" alt="">
 <p>
-The upstream can be canceled by converting the resulting <code>CompletionStage</code> into
+The upstream can be cancelled by converting the resulting <code>CompletionStage</code> into
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class in java.util.concurrent" class="external-link"><code>CompletableFuture</code></a> via <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html#toCompletableFuture()" class="external-link"><code>CompletionStage.toCompletableFuture()</code></a> and
 calling <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html#cancel(boolean)" class="external-link"><code>CompletableFuture.cancel(boolean)</code></a> on it.
 The upstream will be also cancelled if the resulting <code>CompletionStage</code> is converted to and
@@ -24410,7 +24410,7 @@ a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/uti
 <p>
 <img width="640" height="343" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrErrorStage.o.png" alt="">
 <p>
-The upstream can be canceled by converting the resulting <code>CompletionStage</code> into
+The upstream can be cancelled by converting the resulting <code>CompletionStage</code> into
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class in java.util.concurrent" class="external-link"><code>CompletableFuture</code></a> via <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html#toCompletableFuture()" class="external-link"><code>CompletionStage.toCompletableFuture()</code></a> and
 calling <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletableFuture.html#cancel(boolean)" class="external-link"><code>CompletableFuture.cancel(boolean)</code></a> on it.
 The upstream will be also cancelled if the resulting <code>CompletionStage</code> is converted to and
