@@ -38,14 +38,6 @@ public interface Disposable {
     boolean isDisposed();
 
     /**
-     * Dispose the resource, the operation should be idempotent.
-     * @since 4.0.0
-     */
-    default void close() {
-        dispose();
-    }
-
-    /**
      * Construct a {@code Disposable} by wrapping a {@link Runnable} that is
      * executed exactly once when the {@code Disposable} is disposed.
      * @param run the {@code Runnable} to wrap
