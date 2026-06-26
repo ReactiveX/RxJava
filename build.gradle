@@ -179,7 +179,7 @@ jmh {
 
 def isCI = System.getenv("CI") != null
 def parallelForks = Runtime.getRuntime().availableProcessors();
-def testLoggingConfig = ["skipped", "failed", "started"]
+def testLoggingConfig = ["skipped", "failed", "started", "passed"]
 if (!isCI) {
     testLoggingConfig = ["failed"]
     parallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1;
