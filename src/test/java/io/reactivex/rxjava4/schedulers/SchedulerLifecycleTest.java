@@ -45,7 +45,7 @@ public class SchedulerLifecycleTest extends RxJavaTest {
         StringBuilder b = new StringBuilder();
         for (Thread t : rxThreads) {
             if (t.isAlive()) {
-                b.append("Thread " + t + " failed to shutdown\r\n");
+                b.append("Thread ").append(t).append(" failed to shutdown\r\n");
                 for (StackTraceElement ste : t.getStackTrace()) {
                     b.append("  ").append(ste).append("\r\n");
                 }
@@ -54,7 +54,7 @@ public class SchedulerLifecycleTest extends RxJavaTest {
         if (!b.isEmpty()) {
             System.out.print(b);
             System.out.println("testShutdown >> Restarting schedulers...");
-            Schedulers.start(); // restart them anyways
+            Schedulers.start(); // restart them anyway
             fail("Rx Threads were still alive:\r\n" + b);
         }
 

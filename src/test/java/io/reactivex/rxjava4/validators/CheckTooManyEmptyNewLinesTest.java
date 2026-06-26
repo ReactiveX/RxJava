@@ -78,8 +78,8 @@ public class CheckTooManyEmptyNewLinesTest extends RxJavaTest {
                     if (u.isDirectory()) {
                         dirs.offer(u);
                     } else {
-                        String fname = u.getName();
-                        if (fname.endsWith(".java")) {
+                        String fileName = u.getName();
+                        if (fileName.endsWith(".java")) {
 
                             List<String> lines = new ArrayList<>();
                             try (BufferedReader in = new BufferedReader(new FileReader(u))) {
@@ -106,13 +106,13 @@ public class CheckTooManyEmptyNewLinesTest extends RxJavaTest {
 
                                     if (c == newLines) {
                                         fail
-                                        .append(fname)
+                                        .append(fileName)
                                         .append("#L").append(i + 1)
                                         .append("\n")
                                         .append(" at ")
-                                        .append(fname.replace(".java", ""))
+                                        .append(fileName.replace(".java", ""))
                                         .append(".method(")
-                                        .append(fname)
+                                        .append(fileName)
                                         .append(":").append(i + 1)
                                         .append(")\n")
                                         ;

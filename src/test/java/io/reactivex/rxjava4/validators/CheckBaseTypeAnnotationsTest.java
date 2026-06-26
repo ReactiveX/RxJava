@@ -100,8 +100,8 @@ public class CheckBaseTypeAnnotationsTest extends RxJavaTest {
 
                     if (ann.value().equals(SchedulerSupport.CUSTOM)) {
                         boolean found = false;
-                        for (Class<?> paramclazz : m.getParameterTypes()) {
-                            if (Scheduler.class.isAssignableFrom(paramclazz)) {
+                        for (Class<?> paramClass : m.getParameterTypes()) {
+                            if (Scheduler.class.isAssignableFrom(paramClass)) {
                                 found = true;
                                 break;
                             }
@@ -110,8 +110,8 @@ public class CheckBaseTypeAnnotationsTest extends RxJavaTest {
                             b.append("Marked with CUSTOM scheduler but no Scheduler parameter: ").append(m).append("\r\n");
                         }
                     } else {
-                        for (Class<?> paramclazz : m.getParameterTypes()) {
-                            if (Scheduler.class.isAssignableFrom(paramclazz)) {
+                        for (Class<?> paramClass : m.getParameterTypes()) {
+                            if (Scheduler.class.isAssignableFrom(paramClass)) {
                                 if (!m.getName().equals("timestamp") && !m.getName().equals("timeInterval")) {
                                     b.append("Marked with specific scheduler but Scheduler parameter found: ").append(m).append("\r\n");
                                     break;
@@ -157,8 +157,8 @@ public class CheckBaseTypeAnnotationsTest extends RxJavaTest {
                         }
                     } else {
                         boolean found = false;
-                        for (Class<?> paramclazz : m.getParameterTypes()) {
-                            if (Publisher.class.isAssignableFrom(paramclazz)) {
+                        for (Class<?> paramClass : m.getParameterTypes()) {
+                            if (Publisher.class.isAssignableFrom(paramClass)) {
                                 found = true;
                                 break;
                             }

@@ -1151,7 +1151,6 @@ public class FlowableMergeTest extends RxJavaTest {
     Function<Integer, Flowable<Integer>> toScalar = Flowable::just;
 
     Function<Integer, Flowable<Integer>> toHiddenScalar = t -> Flowable.just(t).hide();
-    ;
 
     void runMerge(Function<Integer, Flowable<Integer>> func, TestSubscriberEx<Integer> ts) {
         List<Integer> list = new ArrayList<>();

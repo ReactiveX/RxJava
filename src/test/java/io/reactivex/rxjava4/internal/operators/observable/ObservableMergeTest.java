@@ -914,7 +914,6 @@ public class ObservableMergeTest extends RxJavaTest {
     Function<Integer, Observable<Integer>> toScalar = Observable::just;
 
     Function<Integer, Observable<Integer>> toHiddenScalar = t -> Observable.just(t).hide();
-    ;
 
     void runMerge(Function<Integer, Observable<Integer>> func, TestObserverEx<Integer> to) {
         List<Integer> list = new ArrayList<>();

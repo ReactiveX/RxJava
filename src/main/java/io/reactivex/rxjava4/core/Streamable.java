@@ -208,7 +208,7 @@ public interface Streamable<@NonNull T> {
                 }
             }, emitter.canceller(), exec)) {
                 mainSource.await(emitter.canceller());
-            };
+            }
         }, exec);
     }
 

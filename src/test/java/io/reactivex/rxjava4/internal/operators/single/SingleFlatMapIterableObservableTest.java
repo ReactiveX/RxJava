@@ -75,7 +75,6 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2);
-        ;
     }
 
     @Test
@@ -88,7 +87,6 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2);
-        ;
     }
 
     @Test

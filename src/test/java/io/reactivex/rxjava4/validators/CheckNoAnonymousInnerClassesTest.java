@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.validators;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
@@ -25,6 +26,9 @@ public class CheckNoAnonymousInnerClassesTest extends RxJavaTest {
     @Test
     public void verify() throws Exception {
         URL u = CheckNoAnonymousInnerClassesTest.class.getResource("");
+        if (u == null) {
+            throw new FileNotFoundException("CheckNoAnonymousInnerClassesTest.class.''");
+        }
         File f = new File(u.toURI());
 
         String fs = f.toString().toLowerCase().replace("\\", "/");
@@ -77,10 +81,9 @@ public class CheckNoAnonymousInnerClassesTest extends RxJavaTest {
                             boolean found = false;
 
                             try (FileInputStream fin = new FileInputStream(f)) {
-                                byte[] data = new byte[fin.available()];
-                                fin.read(data);
+                                byte[] data = fin.readAllBytes();
 
-                                String content = new String(data, "ISO-8859-1");
+                                String content = new String(data, StandardCharsets.ISO_8859_1);
 
                                 if (content.contains("$SwitchMap$")) {
                                     // the parent class can reference these synthetic inner classes
@@ -88,6 +91,9 @@ public class CheckNoAnonymousInnerClassesTest extends RxJavaTest {
                                     // but the synthetic inner classes should not have further inner classes
 
                                     File[] filesInTheSameDir = f.getParentFile().listFiles();
+                                    if (filesInTheSameDir == null) {
+                                        throw new FileNotFoundException(f.getParentFile().toString());
+                                    }
 
                                     for (File fsame : filesInTheSameDir) {
                                         String fsameName = fsame.getName();

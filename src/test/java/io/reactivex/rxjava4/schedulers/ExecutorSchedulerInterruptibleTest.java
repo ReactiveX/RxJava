@@ -997,7 +997,6 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             }, 100, TimeUnit.MILLISECONDS);
 
             Thread.sleep(150);
-            ;
             d.dispose();
 
             int i = 50;

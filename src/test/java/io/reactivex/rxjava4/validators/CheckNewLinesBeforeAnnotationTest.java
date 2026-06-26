@@ -78,9 +78,7 @@ public class CheckNewLinesBeforeAnnotationTest extends RxJavaTest {
         StringBuilder fail = new StringBuilder();
         fail.append("The following code pattern was found: ");
         fail.append("\\}\\R");
-        for (int i = 0; i < newLines; i++) {
-            fail.append("\\R");
-        }
+        fail.repeat("\\R", Math.max(0, newLines));
         fail.append("[    ]+@\n");
 
         File parent = f.getParentFile().getParentFile();

@@ -65,7 +65,7 @@ public class MaybeDetachTest extends RxJavaTest {
             @Override
             protected void subscribeActual(MaybeObserver<? super Object> observer) {
                 observer.onSubscribe(wr.get());
-            };
+            }
         }
         .onTerminateDetach()
         .test();
@@ -93,7 +93,7 @@ public class MaybeDetachTest extends RxJavaTest {
                 observer.onSubscribe(wr.get());
                 observer.onComplete();
                 observer.onComplete();
-            };
+            }
         }
         .onTerminateDetach()
         .test();
@@ -119,7 +119,7 @@ public class MaybeDetachTest extends RxJavaTest {
                 observer.onSubscribe(wr.get());
                 observer.onError(new TestException());
                 observer.onError(new IOException());
-            };
+            }
         }
         .onTerminateDetach()
         .test();
@@ -145,7 +145,7 @@ public class MaybeDetachTest extends RxJavaTest {
                 observer.onSubscribe(wr.get());
                 observer.onSuccess(1);
                 observer.onSuccess(2);
-            };
+            }
         }
         .onTerminateDetach()
         .test();

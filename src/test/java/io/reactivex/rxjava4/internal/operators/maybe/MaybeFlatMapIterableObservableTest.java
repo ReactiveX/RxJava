@@ -82,7 +82,6 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2);
-        ;
     }
 
     @Test

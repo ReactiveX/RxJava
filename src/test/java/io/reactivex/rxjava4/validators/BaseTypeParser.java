@@ -129,10 +129,10 @@ public final class BaseTypeParser {
                     m.backpressureKind = b.substring(backpressureSpec + 21, backpressureSpecEnd);
                 }
 
-                int schhedulerSpec = b.indexOf("@SchedulerSupport(", javadocEnd);
-                if (schhedulerSpec > 0 && schhedulerSpec < definitionStart) {
-                    int schedulerSpecEnd = b.indexOf(")", schhedulerSpec + 18);
-                    m.schedulerKind = b.substring(schhedulerSpec + 18, schedulerSpecEnd);
+                int schedulerSpec = b.indexOf("@SchedulerSupport(", javadocEnd);
+                if (schedulerSpec > 0 && schedulerSpec < definitionStart) {
+                    int schedulerSpecEnd = b.indexOf(")", schedulerSpec + 18);
+                    m.schedulerKind = b.substring(schedulerSpec + 18, schedulerSpecEnd);
                 }
 
                 list.add(m);

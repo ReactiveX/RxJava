@@ -69,8 +69,8 @@ public class CheckJavadocForAnnotationsTest extends RxJavaTest {
         return b;
     }
 
-    static final void scanFor(StringBuilder sourceCode, String annotation, String inDoc,
-            StringBuilder e, String baseClassName) {
+    static void scanFor(StringBuilder sourceCode, String annotation, String inDoc,
+                        StringBuilder e, String baseClassName) {
         int index = 0;
         for (;;) {
             int idx = sourceCode.indexOf(annotation, index);
@@ -105,8 +105,8 @@ public class CheckJavadocForAnnotationsTest extends RxJavaTest {
         }
     }
 
-    static final void scanForBadMethod(StringBuilder sourceCode, String annotation, String inDoc,
-            StringBuilder e, String baseClassName) {
+    static void scanForBadMethod(StringBuilder sourceCode, String annotation, String inDoc,
+                                 StringBuilder e, String baseClassName) {
         int index = 0;
         for (;;) {
             int idx = sourceCode.indexOf(annotation, index);

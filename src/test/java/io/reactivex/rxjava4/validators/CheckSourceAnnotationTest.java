@@ -385,7 +385,7 @@ public class CheckSourceAnnotationTest extends RxJavaTest {
                 }
             }
 
-            for (String typeName : TYPES_REQUIRING_NONNULL_TYPEARG) {
+            for (String typeName : TYPES_REQUIRING_NONNULL_TYPE_ARG) {
                 String pattern = typeName + "<?";
                 String patternRegex = ".*" + typeName + "<\\? (extends|super) " + COMMON_TYPE_ARG_NAMES + ">.*";
                 if (line.contains(pattern) && !line.matches(patternRegex)) {
@@ -406,7 +406,7 @@ public class CheckSourceAnnotationTest extends RxJavaTest {
                     ;
                 }
             }
-            for (String typeName : TYPES_FORBIDDEN_NONNULL_TYPEARG) {
+            for (String typeName : TYPES_FORBIDDEN_NONNULL_TYPE_ARG) {
                 String patternRegex = ".*" + typeName + "<@NonNull (\\? (extends|super) )?" + COMMON_TYPE_ARG_NAMES + ">.*";
 
                 if (line.matches(patternRegex)) {
@@ -427,8 +427,8 @@ public class CheckSourceAnnotationTest extends RxJavaTest {
                 }
             }
 
-            for (String typeName : TYPES_REQUIRING_NONNULL_TYPEARG_ON_FUNC) {
-                if (line.matches(".*Function[\\d]?<.*, (\\? (extends|super) )?" + typeName + ".*")) {
+            for (String typeName : TYPES_REQUIRING_NONNULL_TYPE_ARG_ON_FUNC) {
+                if (line.matches(".*Function\\d?<.*, (\\? (extends|super) )?" + typeName + ".*")) {
                     errorCount++;
                     errors.append("L")
                     .append(j)
@@ -487,14 +487,14 @@ public class CheckSourceAnnotationTest extends RxJavaTest {
             "T", "R", "U", "V"
     );
 
-    static final List<String> TYPES_REQUIRING_NONNULL_TYPEARG = Arrays.asList(
+    static final List<String> TYPES_REQUIRING_NONNULL_TYPE_ARG = Arrays.asList(
             "Iterable", "Stream", "Publisher", "Processor", "Subscriber", "Optional"
     );
-    static final List<String> TYPES_FORBIDDEN_NONNULL_TYPEARG = Arrays.asList(
+    static final List<String> TYPES_FORBIDDEN_NONNULL_TYPE_ARG = Arrays.asList(
             "Iterable", "Stream", "Publisher", "Processor", "Subscriber", "Optional"
     );
 
-    static final List<String> TYPES_REQUIRING_NONNULL_TYPEARG_ON_FUNC = Arrays.asList(
+    static final List<String> TYPES_REQUIRING_NONNULL_TYPE_ARG_ON_FUNC = Arrays.asList(
             "Iterable", "Stream", "Publisher", "Processor", "Subscriber", "Optional",
             "Observer", "SingleObserver", "MaybeObserver", "CompletableObserver"
     );

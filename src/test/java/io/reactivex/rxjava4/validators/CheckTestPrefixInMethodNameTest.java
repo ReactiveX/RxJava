@@ -28,7 +28,6 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class CheckTestPrefixInMethodNameTest extends RxJavaTest {
 
     private static final String pattern = "void\\s+test[a-zA-Z0-9]";
-    private static final String replacement = "void ";
 
     @Test
     public void checkAndUpdateTestMethodNames() throws Exception {
@@ -63,11 +62,10 @@ public class CheckTestPrefixInMethodNameTest extends RxJavaTest {
                     if (u.isDirectory()) {
                         dirs.offer(u);
                     } else {
-                        String fname = u.getName();
-                        if (fname.endsWith(".java")) {
+                        String fileName = u.getName();
+                        if (fileName.endsWith(".java")) {
 
                             int lineNum = 0;
-                            List<String> lines = new ArrayList<>();
                             //boolean found = false;
                             try (BufferedReader in = new BufferedReader(new FileReader(u))) {
                                 for (; ; ) {
@@ -81,36 +79,14 @@ public class CheckTestPrefixInMethodNameTest extends RxJavaTest {
                                     if (!line.startsWith("//") && !line.startsWith("*") && matcher.find()) {
                                         // found = true;
                                         fail
-                                                .append(fname)
+                                                .append(fileName)
                                                 .append("#L").append(lineNum)
                                                 .append("    ").append(line)
                                                 .append("\n");
                                         total++;
-
-                                        int methodNameStartIndex = matcher.end() - 1;
-                                        char firstChar = Character.toLowerCase(line.charAt(methodNameStartIndex));
-
-                                        String newLine = matcher.replaceAll(replacement + firstChar);
-
-                                        lines.add(newLine);
-                                    } else {
-                                        lines.add(line);
                                     }
-
                                 }
                             }
-
-                            /*if (found && System.getenv("CI") == null) {
-                                PrintWriter w = new PrintWriter(new FileWriter(u));
-
-                                try {
-                                    for (String s : lines) {
-                                        w.println(s);
-                                    }
-                                } finally {
-                                    w.close();
-                                }
-                            }*/
                         }
                     }
                 }

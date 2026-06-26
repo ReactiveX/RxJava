@@ -895,9 +895,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
             params[i] = ArgsToString.INSTANCE;
 
             StringBuilder b = new StringBuilder();
-            for (int j = 0; j < i; j++) {
-                b.append('1');
-            }
+            b.repeat("1", i);
 
             ((Flowable)m.invoke(null, params)).test().assertResult(b.toString());
 

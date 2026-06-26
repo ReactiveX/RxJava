@@ -23,7 +23,7 @@ import io.reactivex.rxjava4.disposables.*;
 public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
 
     public StreamableJust(T item) {
-        this.item = Objects.requireNonNull(item, "item is null");;
+        this.item = Objects.requireNonNull(item, "item is null");
     }
 
     @Override

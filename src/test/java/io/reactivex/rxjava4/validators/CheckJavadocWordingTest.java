@@ -993,7 +993,7 @@ public class CheckJavadocWordingTest extends RxJavaTest {
             if (t.contains("Completable")) {
                 regex = "(?s).*?\\s" + t + "\\s+\\w+\\(.*";
             } else {
-                regex = "(?s).*?\\s" + t + "\\<.*?\\>\\s+\\w+\\(.*";
+                regex = "(?s).*?\\s" + t + "<.*?>\\s+\\w+\\(.*";
             }
             if (m.signature.matches(regex)) {
                 for (String at : AT_RETURN_WORDS) {
@@ -1159,7 +1159,7 @@ public class CheckJavadocWordingTest extends RxJavaTest {
 
             int idx3 = m.javadoc.indexOf("<dd>", idx1 + 4);
 
-            if (idx1 > 0 && idx2 > 0 && (idx3 < 0 || (idx2 < idx3 && idx3 > 0))) {
+            if (idx1 > 0 && idx2 > 0 && (idx3 < 0 || idx2 < idx3)) {
                 jdx = idx2 + 5;
             } else {
                 e.append("java.lang.RuntimeException: unbalanced <dd></dd> ")
@@ -1169,7 +1169,9 @@ public class CheckJavadocWordingTest extends RxJavaTest {
                 .append(baseTypeName)
                 .append(".method(")
                 .append(baseTypeName)
-                .append(".java:").append(m.javadocLine + lineNumber(m.javadoc, idx1) - 1).append(")\r\n\r\n");
+                .append(".java:")
+                        .append(m.javadocLine + lineNumber(m.javadoc, idx1) - 1)
+                        .append(")\r\n\r\n");
                 break;
             }
         }

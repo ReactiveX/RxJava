@@ -156,20 +156,18 @@ public class CheckJavadocCodesAndLinksTest extends RxJavaTest {
                                 if (jdxLink < 0) {
                                     break;
                                 }
-                                if (jdxLink >= 0) {
-                                    errorCount++;
-                                    errors.append("The subsequent mention should be code: ")
-                                    .append("{@code ").append(name)
-                                    .append("}\r\n at ")
-                                    .append(packageName)
-                                    .append(".")
-                                    .append(baseClassName)
-                                    .append(".method(")
-                                    .append(baseClassName)
-                                    .append(".java:")
-                                    .append(i + 2 + j)
-                                    .append(")\r\n");
-                                }
+                                errorCount++;
+                                errors.append("The subsequent mention should be code: ")
+                                .append("{@code ").append(name)
+                                .append("}\r\n at ")
+                                .append(packageName)
+                                .append(".")
+                                .append(baseClassName)
+                                .append(".method(")
+                                .append(baseClassName)
+                                .append(".java:")
+                                .append(i + 2 + j)
+                                .append(")\r\n");
                                 k = jdxLink + asLink.length();
                             }
                         }
@@ -208,7 +206,7 @@ public class CheckJavadocCodesAndLinksTest extends RxJavaTest {
                                 }
                             } else {
                                 if ((idxLink < 0 && idxCode >= 0 && !isAlwaysCode)
-                                        || (idxLink >= 0 && idxCode >= 0 && idxCode < idxLink)) {
+                                        || (idxCode >= 0 && idxCode < idxLink)) {
                                     errorCount++;
                                     if (isAlwaysCode) {
                                         errors.append("The first mention should be code: ")

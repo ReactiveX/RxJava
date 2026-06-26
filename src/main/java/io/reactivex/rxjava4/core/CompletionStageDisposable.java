@@ -86,7 +86,7 @@ public final class CompletionStageDisposable<T> implements AutoCloseable {
      * Await the completion of the current stage.
      */
     public void await() {
-        state.lazySet(true);;
+        state.lazySet(true);
         AwaitCoordinatorStatic.await(stage);
     }
 
@@ -95,7 +95,7 @@ public final class CompletionStageDisposable<T> implements AutoCloseable {
      * @param canceller the canceller link
      */
     public void await(DisposableContainer canceller) {
-        state.lazySet(true);;
+        state.lazySet(true);
         AwaitCoordinatorStatic.await(stage, canceller);
     }
 
@@ -103,7 +103,7 @@ public final class CompletionStageDisposable<T> implements AutoCloseable {
      * Indicate this instance is deliberately not awaiting its stage.
      */
     public void ignore() {
-        state.lazySet(true);;
+        state.lazySet(true);
     }
 
     @Override
