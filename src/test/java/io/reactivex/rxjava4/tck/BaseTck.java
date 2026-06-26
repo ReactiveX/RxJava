@@ -91,46 +91,42 @@ public abstract class BaseTck<T> extends FlowPublisherVerification<T> {
         return a;
     }
 
-    static final class FiniteRange implements Iterable<Long> {
-        final long end;
-        FiniteRange(long end) {
-            this.end = end;
-        }
+    record FiniteRange(long end) implements Iterable<Long> {
 
         @Override
-        public Iterator<Long> iterator() {
-            return new FiniteRangeIterator(end);
-        }
-
-        static final class FiniteRangeIterator implements Iterator<Long> {
-            final long end;
-            long count;
-
-            FiniteRangeIterator(long end) {
-                this.end = end;
+            public Iterator<Long> iterator() {
+                return new FiniteRangeIterator(end);
             }
 
-            @Override
-            public boolean hasNext() {
-                return count != end;
-            }
+            static final class FiniteRangeIterator implements Iterator<Long> {
+                final long end;
+                long count;
 
-            @Override
-            public Long next() {
-                long c = count;
-                if (c != end) {
-                    count = c + 1;
-                    return c;
+                FiniteRangeIterator(long end) {
+                    this.end = end;
                 }
-                throw new NoSuchElementException();
-            }
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
+                @Override
+                public boolean hasNext() {
+                    return count != end;
+                }
+
+                @Override
+                public Long next() {
+                    long c = count;
+                    if (c != end) {
+                        count = c + 1;
+                        return c;
+                    }
+                    throw new NoSuchElementException();
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
             }
         }
-    }
 
     static final class InfiniteRange implements Iterable<Long> {
         @Override

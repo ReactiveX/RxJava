@@ -31,7 +31,7 @@ public class ObservableZipTests extends RxJavaTest {
     @Test
     public void zipObservableOfObservables() throws Exception {
         ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
-                .groupBy(e -> e.instanceId)
+                .groupBy(Event::instanceId)
                 // now we have streams of cluster+instanceId
                 .flatMap((Function<GroupedObservable<String, Event>, Observable<HashMap<String, String>>>) ge ->
                     ge.scan(new HashMap<>(),

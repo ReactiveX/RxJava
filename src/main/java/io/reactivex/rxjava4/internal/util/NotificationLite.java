@@ -29,72 +29,54 @@ public enum NotificationLite {
     ;
 
     /**
-     * Wraps a Throwable.
-     */
-    static final class ErrorNotification implements Serializable {
+         * Wraps a Throwable.
+         */
+        record ErrorNotification(Throwable e) implements Serializable {
 
-        @Serial
-        private static final long serialVersionUID = -8759979445933046293L;
-        final Throwable e;
-        ErrorNotification(Throwable e) {
-            this.e = e;
-        }
+            @Serial
+            private static final long serialVersionUID = -8759979445933046293L;
 
         @Override
         public String toString() {
-            return "NotificationLite.Error[" + e + "]";
-        }
-
-        @Override
-        public int hashCode() {
-            return e.hashCode();
-        }
+                return "NotificationLite.Error[" + e + "]";
+            }
 
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof ErrorNotification n) {
-                return Objects.equals(e, n.e);
+            if (obj instanceof ErrorNotification(Throwable e1)) {
+                return Objects.equals(e, e1);
             }
             return false;
         }
     }
 
     /**
-     * Wraps a Subscription.
-     */
-    static final class SubscriptionNotification implements Serializable {
+         * Wraps a Subscription.
+         */
+        record SubscriptionNotification(Subscription upstream) implements Serializable {
 
-        @Serial
-        private static final long serialVersionUID = -1322257508628817540L;
-        final Subscription upstream;
-        SubscriptionNotification(Subscription s) {
-            this.upstream = s;
-        }
+            @Serial
+            private static final long serialVersionUID = -1322257508628817540L;
 
         @Override
-        public String toString() {
-            return "NotificationLite.Subscription[" + upstream + "]";
+            public String toString() {
+                return "NotificationLite.Subscription[" + upstream + "]";
+            }
         }
-    }
 
     /**
-     * Wraps a Disposable.
-     */
-    static final class DisposableNotification implements Serializable {
+         * Wraps a Disposable.
+         */
+        record DisposableNotification(Disposable upstream) implements Serializable {
 
-        @Serial
-        private static final long serialVersionUID = -7482590109178395495L;
-        final Disposable upstream;
-
-        DisposableNotification(Disposable d) {
-            this.upstream = d;
-        }
+            @Serial
+            private static final long serialVersionUID = -7482590109178395495L;
 
         @Override
-        public String toString() {
-            return "NotificationLite.Disposable[" + upstream + "]";
+            public String toString() {
+                return "NotificationLite.Disposable[" + upstream + "]";
+            }
         }
-    }
 
     /**
      * Converts a value into a notification value.

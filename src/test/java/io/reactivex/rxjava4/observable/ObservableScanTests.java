@@ -28,7 +28,7 @@ public class ObservableScanTests extends RxJavaTest {
 
         ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
         .scan(new HashMap<>(), (BiFunction<HashMap<String, String>, Event, HashMap<String, String>>) (accum, perInstanceEvent) -> {
-            accum.put("instance", perInstanceEvent.instanceId);
+            accum.put("instance", perInstanceEvent.instanceId());
             return accum;
         })
         .take(10)

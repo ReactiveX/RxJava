@@ -57,11 +57,7 @@ public final class CompletableMergeArrayDelayError extends Completable {
         }
     }
 
-    static final class TryTerminateAndReportDisposable implements Disposable {
-        final AtomicThrowable errors;
-        TryTerminateAndReportDisposable(AtomicThrowable errors) {
-            this.errors = errors;
-        }
+    record TryTerminateAndReportDisposable(AtomicThrowable errors) implements Disposable {
 
         @Override
         public void dispose() {
@@ -74,20 +70,9 @@ public final class CompletableMergeArrayDelayError extends Completable {
         }
     }
 
-    static final class MergeInnerCompletableObserver
-    implements CompletableObserver {
-        final CompletableObserver downstream;
-        final CompositeDisposable set;
-        final AtomicThrowable errors;
-        final AtomicInteger wip;
-
-        MergeInnerCompletableObserver(CompletableObserver observer, CompositeDisposable set, AtomicThrowable error,
-                AtomicInteger wip) {
-            this.downstream = observer;
-            this.set = set;
-            this.errors = error;
-            this.wip = wip;
-        }
+    record MergeInnerCompletableObserver(CompletableObserver downstream, CompositeDisposable set,
+                                         AtomicThrowable errors, AtomicInteger wip)
+            implements CompletableObserver {
 
         @Override
         public void onSubscribe(Disposable d) {

@@ -99,31 +99,24 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
             }
         }
 
-        static final class OtherSingleObserver<T> implements SingleObserver<T> {
-
-            final SingleObserver<? super T> downstream;
-
-            final AtomicReference<Disposable> parent;
-            OtherSingleObserver(SingleObserver<? super T> actual, AtomicReference<Disposable> parent) {
-                this.downstream = actual;
-                this.parent = parent;
-            }
+        record OtherSingleObserver<T>(SingleObserver<? super T> downstream,
+                                      AtomicReference<Disposable> parent) implements SingleObserver<T> {
 
             @Override
-            public void onSubscribe(Disposable d) {
-                DisposableHelper.setOnce(parent, d);
-            }
+                    public void onSubscribe(Disposable d) {
+                        DisposableHelper.setOnce(parent, d);
+                    }
 
-            @Override
-            public void onSuccess(T value) {
-                downstream.onSuccess(value);
-            }
+                    @Override
+                    public void onSuccess(T value) {
+                        downstream.onSuccess(value);
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                downstream.onError(e);
-            }
-        }
+                    @Override
+                    public void onError(Throwable e) {
+                        downstream.onError(e);
+                    }
+                }
 
     }
 }

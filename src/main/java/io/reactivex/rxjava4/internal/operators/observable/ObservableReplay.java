@@ -956,22 +956,13 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
     }
 
-    static final class ReplayBufferSupplier<T> implements BufferSupplier<T> {
-
-        final int bufferSize;
-
-        final boolean eagerTruncate;
-
-        ReplayBufferSupplier(int bufferSize, boolean eagerTruncate) {
-            this.bufferSize = bufferSize;
-            this.eagerTruncate = eagerTruncate;
-        }
+    record ReplayBufferSupplier<T>(int bufferSize, boolean eagerTruncate) implements BufferSupplier<T> {
 
         @Override
-        public ReplayBuffer<T> call() {
-            return new SizeBoundReplayBuffer<>(bufferSize, eagerTruncate);
+            public ReplayBuffer<T> call() {
+                return new SizeBoundReplayBuffer<>(bufferSize, eagerTruncate);
+            }
         }
-    }
 
     static final class ScheduledReplaySupplier<T> implements BufferSupplier<T> {
         private final int bufferSize;

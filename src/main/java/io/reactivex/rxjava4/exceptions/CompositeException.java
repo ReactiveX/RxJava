@@ -64,13 +64,11 @@ public final class CompositeException extends RuntimeException {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<>();
         if (errors != null) {
             for (Throwable ex : errors) {
-                if (ex instanceof CompositeException) {
-                    deDupedExceptions.addAll(((CompositeException) ex).getExceptions());
-                } else
-                if (ex != null) {
-                    deDupedExceptions.add(ex);
+                if (ex instanceof CompositeException ce) {
+                    deDupedExceptions.addAll(ce.getExceptions());
                 } else {
-                    deDupedExceptions.add(new NullPointerException("Throwable was null!"));
+                    deDupedExceptions.add(Objects.requireNonNullElseGet(ex,
+                            () -> new NullPointerException("Throwable was null!")));
                 }
             }
         } else {

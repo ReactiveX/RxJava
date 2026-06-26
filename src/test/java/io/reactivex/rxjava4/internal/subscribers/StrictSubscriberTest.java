@@ -64,33 +64,28 @@ public class StrictSubscriberTest extends RxJavaTest {
         assertTrue(list.toString(), list.getFirst() instanceof StrictSubscriber);
     }
 
-    static final class SubscriberWrapper<T> implements Subscriber<T> {
-        final TestSubscriberEx<T> tester;
-
-        SubscriberWrapper(TestSubscriberEx<T> tester) {
-            this.tester = tester;
-        }
+    record SubscriberWrapper<T>(TestSubscriberEx<T> tester) implements Subscriber<T> {
 
         @Override
-        public void onSubscribe(Subscription s) {
-            tester.onSubscribe(s);
-        }
+            public void onSubscribe(Subscription s) {
+                tester.onSubscribe(s);
+            }
 
-        @Override
-        public void onNext(T t) {
-            tester.onNext(t);
-        }
+            @Override
+            public void onNext(T t) {
+                tester.onNext(t);
+            }
 
-        @Override
-        public void onError(Throwable t) {
-            tester.onError(t);
-        }
+            @Override
+            public void onError(Throwable t) {
+                tester.onError(t);
+            }
 
-        @Override
-        public void onComplete() {
-            tester.onComplete();
+            @Override
+            public void onComplete() {
+                tester.onComplete();
+            }
         }
-    }
 
     @Test
     public void normalOnNext() {

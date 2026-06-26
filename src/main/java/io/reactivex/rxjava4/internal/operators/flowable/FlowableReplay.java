@@ -1143,22 +1143,13 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
     }
 
-    static final class ReplayBufferSupplier<T> implements Supplier<ReplayBuffer<T>> {
-
-        final int bufferSize;
-
-        final boolean eagerTruncate;
-
-        ReplayBufferSupplier(int bufferSize, boolean eagerTruncate) {
-            this.bufferSize = bufferSize;
-            this.eagerTruncate = eagerTruncate;
-        }
+    record ReplayBufferSupplier<T>(int bufferSize, boolean eagerTruncate) implements Supplier<ReplayBuffer<T>> {
 
         @Override
-        public ReplayBuffer<T> get() {
-            return new SizeBoundReplayBuffer<>(bufferSize, eagerTruncate);
+            public ReplayBuffer<T> get() {
+                return new SizeBoundReplayBuffer<>(bufferSize, eagerTruncate);
+            }
         }
-    }
 
     static final class ScheduledReplayBufferSupplier<T> implements Supplier<ReplayBuffer<T>> {
         private final int bufferSize;

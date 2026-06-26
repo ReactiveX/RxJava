@@ -80,35 +80,27 @@ public final class MaybeDelayWithCompletable<T> extends Maybe<T> {
         }
     }
 
-    static final class DelayWithMainObserver<T> implements MaybeObserver<T> {
-
-        final AtomicReference<Disposable> parent;
-
-        final MaybeObserver<? super T> downstream;
-
-        DelayWithMainObserver(AtomicReference<Disposable> parent, MaybeObserver<? super T> downstream) {
-            this.parent = parent;
-            this.downstream = downstream;
-        }
+    record DelayWithMainObserver<T>(AtomicReference<Disposable> parent,
+                                    MaybeObserver<? super T> downstream) implements MaybeObserver<T> {
 
         @Override
-        public void onSubscribe(Disposable d) {
-            DisposableHelper.replace(parent, d);
-        }
+            public void onSubscribe(Disposable d) {
+                DisposableHelper.replace(parent, d);
+            }
 
-        @Override
-        public void onSuccess(T value) {
-            downstream.onSuccess(value);
-        }
+            @Override
+            public void onSuccess(T value) {
+                downstream.onSuccess(value);
+            }
 
-        @Override
-        public void onError(Throwable e) {
-            downstream.onError(e);
-        }
+            @Override
+            public void onError(Throwable e) {
+                downstream.onError(e);
+            }
 
-        @Override
-        public void onComplete() {
-            downstream.onComplete();
+            @Override
+            public void onComplete() {
+                downstream.onComplete();
+            }
         }
-    }
 }

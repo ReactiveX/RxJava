@@ -104,35 +104,28 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
             downstream.onComplete();
         }
 
-        static final class NextMaybeObserver<T> implements MaybeObserver<T> {
-            final MaybeObserver<? super T> downstream;
-
-            final AtomicReference<Disposable> upstream;
-
-            NextMaybeObserver(MaybeObserver<? super T> actual, AtomicReference<Disposable> d) {
-                this.downstream = actual;
-                this.upstream = d;
-            }
+        record NextMaybeObserver<T>(MaybeObserver<? super T> downstream,
+                                    AtomicReference<Disposable> upstream) implements MaybeObserver<T> {
 
             @Override
-            public void onSubscribe(Disposable d) {
-                DisposableHelper.setOnce(this.upstream, d);
-            }
+                    public void onSubscribe(Disposable d) {
+                        DisposableHelper.setOnce(this.upstream, d);
+                    }
 
-            @Override
-            public void onSuccess(T value) {
-                downstream.onSuccess(value);
-            }
+                    @Override
+                    public void onSuccess(T value) {
+                        downstream.onSuccess(value);
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                downstream.onError(e);
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        downstream.onError(e);
+                    }
 
-            @Override
-            public void onComplete() {
-                downstream.onComplete();
-            }
-        }
+                    @Override
+                    public void onComplete() {
+                        downstream.onComplete();
+                    }
+                }
     }
 }

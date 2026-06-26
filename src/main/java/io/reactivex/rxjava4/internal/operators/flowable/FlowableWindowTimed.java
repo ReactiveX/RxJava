@@ -526,22 +526,13 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             return window;
         }
 
-        static final class WindowBoundaryRunnable implements Runnable {
-
-            final WindowExactBoundedSubscriber<?> parent;
-
-            final long index;
-
-            WindowBoundaryRunnable(WindowExactBoundedSubscriber<?> parent, long index) {
-                this.parent = parent;
-                this.index = index;
-            }
+        record WindowBoundaryRunnable(WindowExactBoundedSubscriber<?> parent, long index) implements Runnable {
 
             @Override
-            public void run() {
-                parent.boundary(this);
-            }
-        }
+                    public void run() {
+                        parent.boundary(this);
+                    }
+                }
     }
 
     static final class WindowSkipSubscriber<T>
@@ -703,22 +694,13 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
         static final Object WINDOW_OPEN = new Object();
         static final Object WINDOW_CLOSE = new Object();
 
-        static final class WindowBoundaryRunnable implements Runnable {
-
-            final WindowSkipSubscriber<?> parent;
-
-            final boolean isOpen;
-
-            WindowBoundaryRunnable(WindowSkipSubscriber<?> parent, boolean isOpen) {
-                this.parent = parent;
-                this.isOpen = isOpen;
-            }
+        record WindowBoundaryRunnable(WindowSkipSubscriber<?> parent, boolean isOpen) implements Runnable {
 
             @Override
-            public void run() {
-                parent.boundary(isOpen);
-            }
-        }
+                    public void run() {
+                        parent.boundary(isOpen);
+                    }
+                }
     }
 
     static MissingBackpressureException missingBackpressureMessage(long index) {

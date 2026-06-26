@@ -33,98 +33,69 @@ public final class FlowableInternalHelper {
         throw new IllegalStateException("No instances!");
     }
 
-    static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
-        final Consumer<Emitter<T>> consumer;
-
-        SimpleGenerator(Consumer<Emitter<T>> consumer) {
-            this.consumer = consumer;
-        }
+    record SimpleGenerator<T, S>(Consumer<Emitter<T>> consumer) implements BiFunction<S, Emitter<T>, S> {
 
         @Override
-        public S apply(S t1, Emitter<T> t2) throws Throwable {
-            consumer.accept(t2);
-            return t1;
+            public S apply(S t1, Emitter<T> t2) throws Throwable {
+                consumer.accept(t2);
+                return t1;
+            }
         }
-    }
 
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Consumer<Emitter<T>> consumer) {
         return new SimpleGenerator<>(consumer);
     }
 
-    static final class SimpleBiGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
-        final BiConsumer<S, Emitter<T>> consumer;
-
-        SimpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
-            this.consumer = consumer;
-        }
+    record SimpleBiGenerator<T, S>(BiConsumer<S, Emitter<T>> consumer) implements BiFunction<S, Emitter<T>, S> {
 
         @Override
-        public S apply(S t1, Emitter<T> t2) throws Throwable {
-            consumer.accept(t1, t2);
-            return t1;
+            public S apply(S t1, Emitter<T> t2) throws Throwable {
+                consumer.accept(t1, t2);
+                return t1;
+            }
         }
-    }
 
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
         return new SimpleBiGenerator<>(consumer);
     }
 
-    static final class ItemDelayFunction<T, U> implements Function<T, Publisher<T>> {
-        final Function<? super T, ? extends Publisher<U>> itemDelay;
-
-        ItemDelayFunction(Function<? super T, ? extends Publisher<U>> itemDelay) {
-            this.itemDelay = itemDelay;
-        }
+    record ItemDelayFunction<T, U>(
+            Function<? super T, ? extends Publisher<U>> itemDelay) implements Function<T, Publisher<T>> {
 
         @Override
-        public Publisher<T> apply(final T v) throws Throwable {
-            Publisher<U> p = Objects.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null Publisher");
-            return new FlowableTakePublisher<>(p, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+            public Publisher<T> apply(final T v) throws Throwable {
+                Publisher<U> p = Objects.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null Publisher");
+                return new FlowableTakePublisher<>(p, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+            }
         }
-    }
 
     public static <T, U> Function<T, Publisher<T>> itemDelay(final Function<? super T, ? extends Publisher<U>> itemDelay) {
         return new ItemDelayFunction<>(itemDelay);
     }
 
-    static final class SubscriberOnNext<T> implements Consumer<T> {
-        final Subscriber<T> subscriber;
-
-        SubscriberOnNext(Subscriber<T> subscriber) {
-            this.subscriber = subscriber;
-        }
+    record SubscriberOnNext<T>(Subscriber<T> subscriber) implements Consumer<T> {
 
         @Override
-        public void accept(T v) {
-            subscriber.onNext(v);
+            public void accept(T v) {
+                subscriber.onNext(v);
+            }
         }
-    }
 
-    static final class SubscriberOnError<T> implements Consumer<Throwable> {
-        final Subscriber<T> subscriber;
-
-        SubscriberOnError(Subscriber<T> subscriber) {
-            this.subscriber = subscriber;
-        }
+    record SubscriberOnError<T>(Subscriber<T> subscriber) implements Consumer<Throwable> {
 
         @Override
-        public void accept(Throwable v) {
-            subscriber.onError(v);
+            public void accept(Throwable v) {
+                subscriber.onError(v);
+            }
         }
-    }
 
-    static final class SubscriberOnComplete<T> implements Action {
-        final Subscriber<T> subscriber;
-
-        SubscriberOnComplete(Subscriber<T> subscriber) {
-            this.subscriber = subscriber;
-        }
+    record SubscriberOnComplete<T>(Subscriber<T> subscriber) implements Action {
 
         @Override
-        public void run() {
-            subscriber.onComplete();
+            public void run() {
+                subscriber.onComplete();
+            }
         }
-    }
 
     public static <T> Consumer<T> subscriberOnNext(Subscriber<T> subscriber) {
         return new SubscriberOnNext<>(subscriber);
@@ -220,63 +191,31 @@ public final class FlowableInternalHelper {
         }
     }
 
-    static final class ReplaySupplier<T> implements Supplier<ConnectableFlowable<T>> {
-
-        final Flowable<T> parent;
-
-        ReplaySupplier(Flowable<T> parent) {
-            this.parent = parent;
-        }
+    record ReplaySupplier<T>(Flowable<T> parent) implements Supplier<ConnectableFlowable<T>> {
 
         @Override
-        public ConnectableFlowable<T> get() {
-            return parent.replay();
+            public ConnectableFlowable<T> get() {
+                return parent.replay();
+            }
         }
-    }
 
-    static final class BufferedReplaySupplier<T> implements Supplier<ConnectableFlowable<T>> {
-
-        final Flowable<T> parent;
-
-        final int bufferSize;
-
-        final boolean eagerTruncate;
-
-        BufferedReplaySupplier(Flowable<T> parent, int bufferSize, boolean eagerTruncate) {
-            this.parent = parent;
-            this.bufferSize = bufferSize;
-            this.eagerTruncate = eagerTruncate;
-        }
+    record BufferedReplaySupplier<T>(Flowable<T> parent, int bufferSize,
+                                     boolean eagerTruncate) implements Supplier<ConnectableFlowable<T>> {
 
         @Override
-        public ConnectableFlowable<T> get() {
-            return parent.replay(bufferSize, eagerTruncate);
+            public ConnectableFlowable<T> get() {
+                return parent.replay(bufferSize, eagerTruncate);
+            }
         }
-    }
 
-    static final class BufferedTimedReplay<T> implements Supplier<ConnectableFlowable<T>> {
-        final Flowable<T> parent;
-        final int bufferSize;
-        final long time;
-        final TimeUnit unit;
-        final Scheduler scheduler;
-
-        final boolean eagerTruncate;
-
-        BufferedTimedReplay(Flowable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
-            this.parent = parent;
-            this.bufferSize = bufferSize;
-            this.time = time;
-            this.unit = unit;
-            this.scheduler = scheduler;
-            this.eagerTruncate = eagerTruncate;
-        }
+    record BufferedTimedReplay<T>(Flowable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler,
+                                  boolean eagerTruncate) implements Supplier<ConnectableFlowable<T>> {
 
         @Override
-        public ConnectableFlowable<T> get() {
-            return parent.replay(bufferSize, time, unit, scheduler, eagerTruncate);
+            public ConnectableFlowable<T> get() {
+                return parent.replay(bufferSize, time, unit, scheduler, eagerTruncate);
+            }
         }
-    }
 
     static final class TimedReplay<T> implements Supplier<ConnectableFlowable<T>> {
         private final Flowable<T> parent;

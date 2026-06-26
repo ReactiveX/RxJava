@@ -126,33 +126,28 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         abstract void run();
     }
 
-    static final class SamplerObserver<T> implements Observer<Object> {
-        final SampleMainObserver<T> parent;
-        SamplerObserver(SampleMainObserver<T> parent) {
-            this.parent = parent;
-
-        }
+    record SamplerObserver<T>(SampleMainObserver<T> parent) implements Observer<Object> {
 
         @Override
-        public void onSubscribe(Disposable d) {
-            parent.setOther(d);
-        }
+            public void onSubscribe(Disposable d) {
+                parent.setOther(d);
+            }
 
-        @Override
-        public void onNext(Object t) {
-            parent.run();
-        }
+            @Override
+            public void onNext(Object t) {
+                parent.run();
+            }
 
-        @Override
-        public void onError(Throwable t) {
-            parent.error(t);
-        }
+            @Override
+            public void onError(Throwable t) {
+                parent.error(t);
+            }
 
-        @Override
-        public void onComplete() {
-            parent.complete();
+            @Override
+            public void onComplete() {
+                parent.complete();
+            }
         }
-    }
 
     static final class SampleMainNoLast<T> extends SampleMainObserver<T> {
 

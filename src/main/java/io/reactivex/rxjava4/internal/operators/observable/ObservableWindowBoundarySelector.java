@@ -314,13 +314,8 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
             }
         }
 
-        static final class WindowStartItem<B> {
+        record WindowStartItem<B>(B item) {
 
-            final B item;
-
-            WindowStartItem(B item) {
-                this.item = item;
-            }
         }
 
         static final class WindowStartObserver<B> extends AtomicReference<Disposable>

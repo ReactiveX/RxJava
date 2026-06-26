@@ -31,7 +31,7 @@ public class FlowableZipTests extends RxJavaTest {
     @Test
     public void zipObservableOfObservables() {
         FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
-                .groupBy(e -> e.instanceId)
+                .groupBy(Event::instanceId)
                 // now we have streams of cluster+instanceId
                 .flatMap((Function<GroupedFlowable<String, Event>, Publisher<HashMap<String, String>>>) ge -> ge.scan(new HashMap<>(), (accum, _) -> {
                      synchronized (accum) {

@@ -41,20 +41,13 @@ public final class MaybeSubscribeOn<T> extends AbstractMaybeWithUpstream<T, T> {
         parent.task.replace(scheduler.scheduleDirect(new SubscribeTask<>(parent, source)));
     }
 
-    static final class SubscribeTask<T> implements Runnable {
-        final MaybeObserver<? super T> observer;
-        final MaybeSource<T> source;
-
-        SubscribeTask(MaybeObserver<? super T> observer, MaybeSource<T> source) {
-            this.observer = observer;
-            this.source = source;
-        }
+    record SubscribeTask<T>(MaybeObserver<? super T> observer, MaybeSource<T> source) implements Runnable {
 
         @Override
-        public void run() {
-            source.subscribe(observer);
+            public void run() {
+                source.subscribe(observer);
+            }
         }
-    }
 
     static final class SubscribeOnMaybeObserver<T>
     extends AtomicReference<Disposable>

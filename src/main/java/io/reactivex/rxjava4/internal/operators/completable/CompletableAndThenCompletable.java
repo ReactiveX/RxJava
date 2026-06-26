@@ -80,30 +80,22 @@ public final class CompletableAndThenCompletable extends Completable {
         }
     }
 
-    static final class NextObserver implements CompletableObserver {
+    record NextObserver(AtomicReference<Disposable> parent,
+                        CompletableObserver downstream) implements CompletableObserver {
 
-        final AtomicReference<Disposable> parent;
+            @Override
+            public void onSubscribe(Disposable d) {
+                DisposableHelper.replace(parent, d);
+            }
 
-        final CompletableObserver downstream;
+            @Override
+            public void onComplete() {
+                downstream.onComplete();
+            }
 
-        NextObserver(AtomicReference<Disposable> parent, CompletableObserver downstream) {
-            this.parent = parent;
-            this.downstream = downstream;
+            @Override
+            public void onError(Throwable e) {
+                downstream.onError(e);
+            }
         }
-
-        @Override
-        public void onSubscribe(Disposable d) {
-            DisposableHelper.replace(parent, d);
-        }
-
-        @Override
-        public void onComplete() {
-            downstream.onComplete();
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            downstream.onError(e);
-        }
-    }
 }

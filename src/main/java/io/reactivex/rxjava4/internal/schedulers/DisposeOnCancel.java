@@ -22,13 +22,7 @@ import io.reactivex.rxjava4.disposables.Disposable;
  * Implements the Future interface and calls dispose() on cancel() but
  * the other methods are not implemented.
  */
-final class DisposeOnCancel implements Future<Object> {
-
-    final Disposable upstream;
-
-    DisposeOnCancel(Disposable d) {
-        this.upstream = d;
-    }
+record DisposeOnCancel(Disposable upstream) implements Future<Object> {
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {

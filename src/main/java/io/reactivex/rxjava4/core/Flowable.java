@@ -2467,18 +2467,13 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source, "source is null");
         Objects.requireNonNull(strategy, "strategy is null");
         Flowable<T> f = new FlowableFromObservable<>(source);
-        switch (strategy) {
-            case DROP:
-                return f.onBackpressureDrop();
-            case LATEST:
-                return f.onBackpressureLatest();
-            case MISSING:
-                return f;
-            case ERROR:
-                return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<>(f));
-            default:
-                return f.onBackpressureBuffer();
-        }
+        return switch (strategy) {
+            case DROP -> f.onBackpressureDrop();
+            case LATEST -> f.onBackpressureLatest();
+            case MISSING -> f;
+            case ERROR -> RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<>(f));
+            default -> f.onBackpressureBuffer();
+        };
     }
 
     /**

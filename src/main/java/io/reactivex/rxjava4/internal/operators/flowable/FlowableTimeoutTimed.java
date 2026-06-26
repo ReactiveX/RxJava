@@ -156,22 +156,13 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         }
     }
 
-    static final class TimeoutTask implements Runnable {
-
-        final TimeoutSupport parent;
-
-        final long idx;
-
-        TimeoutTask(long idx, TimeoutSupport parent) {
-            this.idx = idx;
-            this.parent = parent;
-        }
+    record TimeoutTask(long idx, TimeoutSupport parent) implements Runnable {
 
         @Override
-        public void run() {
-            parent.onTimeout(idx);
+            public void run() {
+                parent.onTimeout(idx);
+            }
         }
-    }
 
     static final class TimeoutFallbackSubscriber<T> extends SubscriptionArbiter
     implements FlowableSubscriber<T>, TimeoutSupport {
@@ -287,37 +278,29 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         }
     }
 
-    static final class FallbackSubscriber<T> implements FlowableSubscriber<T> {
-
-        final Subscriber<? super T> downstream;
-
-        final SubscriptionArbiter arbiter;
-
-        FallbackSubscriber(Subscriber<? super T> actual, SubscriptionArbiter arbiter) {
-            this.downstream = actual;
-            this.arbiter = arbiter;
-        }
+    record FallbackSubscriber<T>(Subscriber<? super T> downstream,
+                                 SubscriptionArbiter arbiter) implements FlowableSubscriber<T> {
 
         @Override
-        public void onSubscribe(Subscription s) {
-            arbiter.setSubscription(s);
-        }
+            public void onSubscribe(Subscription s) {
+                arbiter.setSubscription(s);
+            }
 
-        @Override
-        public void onNext(T t) {
-            downstream.onNext(t);
-        }
+            @Override
+            public void onNext(T t) {
+                downstream.onNext(t);
+            }
 
-        @Override
-        public void onError(Throwable t) {
-            downstream.onError(t);
-        }
+            @Override
+            public void onError(Throwable t) {
+                downstream.onError(t);
+            }
 
-        @Override
-        public void onComplete() {
-            downstream.onComplete();
+            @Override
+            public void onComplete() {
+                downstream.onComplete();
+            }
         }
-    }
 
     interface TimeoutSupport {
 
