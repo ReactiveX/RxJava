@@ -1644,6 +1644,18 @@ public class TestSubscriberTest extends RxJavaTest {
         ts.assertFailure(NullPointerException.class);
     }
 
+    @Test
+    public void asDisposable() {
+        var ts = new TestSubscriber<>();
+        var d = ts.asDisposable();
+
+        assertFalse("d is disposed", d.isDisposed());
+
+        d.dispose();
+
+        assertTrue("d is disposed", d.isDisposed());
+    }
+
     static final class TestSubscriberImpl<T> extends TestSubscriber<T> {
         public boolean isTimeout() {
             return timeout;

@@ -76,7 +76,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         final AtomicLong requested;
         long emitted;
 
-        volatile boolean upstreamCanceled;
+        volatile boolean upstreamCancelled;
 
         volatile boolean upstreamDone;
         volatile boolean openDone;
@@ -143,7 +143,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                     startObserver.dispose();
                     resources.dispose();
                     error.tryTerminateAndReport();
-                    upstreamCanceled = true;
+                    upstreamCancelled = true;
                     drain();
                 } else {
                     startObserver.dispose();
@@ -163,7 +163,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                 startObserver.dispose();
                 resources.dispose();
                 error.tryTerminateAndReport();
-                upstreamCanceled = true;
+                upstreamCancelled = true;
                 drain();
             }
         }
@@ -213,7 +213,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
             final List<UnicastSubject<T>> windows = this.windows;
 
             for (;;) {
-                if (upstreamCanceled) {
+                if (upstreamCancelled) {
                     queue.clear();
                     windows.clear();
                 } else {
@@ -224,7 +224,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                     if (isDone) {
                         if (isEmpty || error.get() != null) {
                             terminateDownstream(downstream);
-                            upstreamCanceled = true;
+                            upstreamCancelled = true;
                             continue;
                         }
                     }
@@ -287,7 +287,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                         startObserver.dispose();
                         resources.dispose();
                         terminateDownstream(downstream);
-                        upstreamCanceled = true;
+                        upstreamCancelled = true;
                         continue;
                     }
                 }

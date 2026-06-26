@@ -1365,13 +1365,13 @@ public class FlowableGroupByTest extends RxJavaTest {
 
         final List<String> list = new CopyOnWriteArrayList<>();
         Flowable<Integer> stream = source //
-                .doOnCancel(() -> list.add("Source canceled"))
+                .doOnCancel(() -> list.add("Source cancelled"))
                 .<Integer, Integer>groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), false,
                         Flowable.bufferSize(), mapFactory) //
                 .flatMap(group -> group //
-                        .doOnComplete(() -> list.add("Group completed")).doOnCancel(() -> list.add("Group canceled")));
+                        .doOnComplete(() -> list.add("Group completed")).doOnCancel(() -> list.add("Group cancelled")));
         TestSubscriber<Integer> ts = stream //
-                .doOnCancel(() -> list.add("Outer group by canceled")).test();
+                .doOnCancel(() -> list.add("Outer group by cancelled")).test();
 
         // Send 3 in the same group and wait for them to be seen
         source.onNext(1);
@@ -1391,16 +1391,16 @@ public class FlowableGroupByTest extends RxJavaTest {
         ts.cancel();
 
         // Observe the result.  Note that right now the result differs depending on whether eviction occurred or
-        // not.  The observed sequence in that case is:  Group completed, Outer group by canceled., Group canceled.
+        // not.  The observed sequence in that case is:  Group completed, Outer group by cancelled., Group cancelled.
         // The addition of the "Group completed" is actually fine, but the fact that the cancel doesn't reach the
         // source seems like a bug.  Commenting out the setting of "tick" above will produce the "expected" sequence.
         System.out.println(list);
-        assertTrue(list.contains("Source canceled"));
+        assertTrue(list.contains("Source cancelled"));
         assertEquals(Arrays.asList(
                 "Group completed", // this is here when eviction occurs
-                "Outer group by canceled",
-                "Group canceled",
-                "Source canceled"  // This is *not* here when eviction occurs
+                "Outer group by cancelled",
+                "Group cancelled",
+                "Source cancelled"  // This is *not* here when eviction occurs
         ), list);
     }
 

@@ -168,7 +168,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             for (int i = 0; i < n; i++) {
                 Object o = ara.get(i);
                 if (o == null) {
-                    // somebody hasn't signalled yet, skip this T
+                    // somebody hasn't signaled yet, skip this T
                     return false;
                 }
                 objects[i + 1] = o;

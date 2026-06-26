@@ -24,7 +24,7 @@ import io.reactivex.rxjava4.internal.util.BackpressureHelper;
 
 /**
  * Relays signals from upstream according to downstream requests and allows
- * signalling a final value followed by onComplete in a backpressure-aware manner.
+ * signaling a final value followed by onComplete in a backpressure-aware manner.
  *
  * @param <T> the input value type
  * @param <R> the output value type

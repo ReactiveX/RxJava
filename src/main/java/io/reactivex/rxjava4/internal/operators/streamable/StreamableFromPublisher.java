@@ -67,7 +67,7 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
             // System.out.println("onNext | " + item);
             this.item.getAndSet(item);
             resumer.resume();
-            // System.out.println("Got " + item + " resume signalled");
+            // System.out.println("Got " + item + " resume signaled");
         }
 
         @Override

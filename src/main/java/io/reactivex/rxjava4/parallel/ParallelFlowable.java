@@ -1265,7 +1265,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Generates and concatenates {@link Publisher}s on each 'rail', signalling errors immediately
+     * Generates and concatenates {@link Publisher}s on each 'rail', signaling errors immediately
      * and generating 2 publishers upfront.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -1293,7 +1293,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Generates and concatenates {@link Publisher}s on each 'rail', signalling errors immediately
+     * Generates and concatenates {@link Publisher}s on each 'rail', signaling errors immediately
      * and using the given prefetch amount for generating {@code Publisher}s upfront.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>

@@ -19,7 +19,7 @@ import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamMaybeSource;
 
 /**
- * Signals 1L if the source signalled an item or 0L if the source is empty.
+ * Signals 1L if the source signaled an item or 0L if the source is empty.
  *
  * @param <T> the source value type
  */

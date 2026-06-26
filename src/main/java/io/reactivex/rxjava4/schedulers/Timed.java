@@ -22,76 +22,33 @@ import io.reactivex.rxjava4.annotations.NonNull;
  * Holds onto a value along with time information.
  *
  * @param <T> the value type
+ * @param value the item to store
+ * @param time the time value
+ * @param unit the unit of time
+ * @since 4.0.0
  */
-public final class Timed<T> {
-    final T value;
-    final long time;
-    final TimeUnit unit;
-
+public record Timed<T>(T value, long time, TimeUnit unit) {
     /**
      * Constructs a {@code Timed} instance with the given value and time information.
+     *
      * @param value the value to hold
-     * @param time the time to hold
-     * @param unit the time unit, not null
+     * @param time  the time to hold
+     * @param unit  the time unit, not null
      * @throws NullPointerException if {@code value} or {@code unit} is {@code null}
      */
-    public Timed(@NonNull T value, long time, @NonNull TimeUnit unit) {
-        this.value = Objects.requireNonNull(value, "value is null");
-        this.time = time;
-        this.unit = Objects.requireNonNull(unit, "unit is null");
-    }
-
-    /**
-     * Returns the contained value.
-     * @return the contained value
-     */
-    @NonNull
-    public T value() {
-        return value;
-    }
-
-    /**
-     * Returns the time unit of the contained time.
-     * @return the time unit of the contained time
-     */
-    @NonNull
-    public TimeUnit unit() {
-        return unit;
-    }
-
-    /**
-     * Returns the time value.
-     * @return the time value
-     */
-    public long time() {
-        return time;
+    public Timed {
+        Objects.requireNonNull(value, "value is null");
+        Objects.requireNonNull(unit, "unit is null");
     }
 
     /**
      * Returns the contained time value in the time unit specified.
+     *
      * @param unit the time unit
      * @return the converted time
      */
     public long time(@NonNull TimeUnit unit) {
         return unit.convert(time, this.unit);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof Timed<?> o) {
-            return Objects.equals(value, o.value)
-                    && time == o.time
-                    && Objects.equals(unit, o.unit);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int h = value.hashCode();
-        h = h * 31 + (int)((time >>> 31) ^ time);
-        h = h * 31 + unit.hashCode();
-        return h;
     }
 
     @Override

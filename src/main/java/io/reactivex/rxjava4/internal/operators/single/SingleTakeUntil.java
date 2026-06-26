@@ -27,7 +27,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**
  * Signals the events of the source Single or signals a CancellationException if the
- * other Publisher signalled first.
+ * other Publisher signaled first.
  * @param <T> the main value type
  * @param <U> the other value type
  */

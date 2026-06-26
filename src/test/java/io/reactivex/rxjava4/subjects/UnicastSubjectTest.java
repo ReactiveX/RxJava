@@ -185,7 +185,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void onTerminateCalledWhenCanceled() {
+    public void onTerminateCalledWhenCancelled() {
         final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
 
         UnicastSubject<Integer> us = UnicastSubject.create(Observable.bufferSize(), () -> didRunOnTerminate.set(true));

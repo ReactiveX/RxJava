@@ -31,7 +31,7 @@ import io.reactivex.rxjava4.disposables.Disposable;
  * <pre><code>    onSubscribe (onSuccess | onError | onComplete)?</code></pre>
  * <p>
  * Note that unlike with the {@code Observable} protocol, {@link #onComplete()} is not called after the success item has been
- * signalled via {@link #onSuccess(Object)}.
+ * signaled via {@link #onSuccess(Object)}.
  * <p>
  * Subscribing a {@code MaybeObserver} to multiple {@code MaybeSource}s is not recommended. If such reuse
  * happens, it is the duty of the {@code MaybeObserver} implementation to be ready to receive multiple calls to

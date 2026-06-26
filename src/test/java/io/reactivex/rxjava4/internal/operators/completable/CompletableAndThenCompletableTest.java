@@ -90,7 +90,7 @@ public class CompletableAndThenCompletableTest extends RxJavaTest {
     }
 
     @Test
-    public void andThenCanceled() {
+    public void andThenCancelled() {
         final AtomicInteger completableRunCount = new AtomicInteger();
         Completable.fromRunnable(completableRunCount::incrementAndGet)
                 .andThen(Completable.complete())

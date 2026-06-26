@@ -68,7 +68,7 @@ public enum DisposableHelper implements Disposable {
      * or returns false if the field is non-null.
      * If the target field contains the common DISPOSED instance, the supplied disposable
      * is disposed. If the field contains other non-null Disposable, an IllegalStateException
-     * is signalled to the RxJavaPlugins.onError hook.
+     * is signaled to the RxJavaPlugins.onError hook.
      * 
      * @param field the target field
      * @param d the disposable to set, not null
