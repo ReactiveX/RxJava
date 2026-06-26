@@ -94,7 +94,7 @@ public class CheckNewLinesBeforeAnnotationTest extends RxJavaTest {
             f = dirs.poll();
 
             File[] list = f.listFiles();
-            if (list != null && list.length != 0) {
+            if (list != null) {
 
                 for (File u : list) {
                     if (u.isDirectory()) {

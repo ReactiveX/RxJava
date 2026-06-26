@@ -293,7 +293,7 @@ public class FlowableToListTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
 
-            if (ts.values().size() != 0) {
+            if (!ts.values().isEmpty()) {
                 ts.assertValue(List.of(1))
                 .assertNoErrors();
             }

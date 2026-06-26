@@ -44,7 +44,7 @@ public class CheckJavadocForAnnotationsTest extends RxJavaTest {
             scanFor(b, "@BackpressureSupport", "Backpressure:", e, baseClassName);
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -195,7 +195,7 @@ public class CheckJavadocForAnnotationsTest extends RxJavaTest {
 
         scanForBadMethod(b, "@SchedulerSupport", "Scheduler:", e, baseClassName);
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());

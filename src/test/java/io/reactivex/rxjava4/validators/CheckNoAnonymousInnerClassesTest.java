@@ -52,7 +52,7 @@ public class CheckNoAnonymousInnerClassesTest extends RxJavaTest {
 
             if (f.isDirectory()) {
                 File[] dir = f.listFiles();
-                if (dir != null && dir.length != 0) {
+                if (dir != null) {
                     for (File g : dir) {
                         queue.offer(g);
                     }

@@ -66,7 +66,7 @@ public class CheckAndFixLicenseHeadersTest extends RxJavaTest {
             f = dirs.poll();
 
             File[] list = f.listFiles();
-            if (list != null && list.length != 0) {
+            if (list != null) {
 
                 for (File u : list) {
                     if (u.isDirectory()) {
@@ -120,7 +120,7 @@ public class CheckAndFixLicenseHeadersTest extends RxJavaTest {
             }
         }
 
-        if (fail.length() != 0) {
+        if (!fail.isEmpty()) {
             System.out.println(fail);
             throw new AssertionError(fail.toString());
         }

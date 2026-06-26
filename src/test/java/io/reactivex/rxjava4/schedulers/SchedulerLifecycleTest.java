@@ -51,7 +51,7 @@ public class SchedulerLifecycleTest extends RxJavaTest {
                 }
             }
         }
-        if (b.length() > 0) {
+        if (!b.isEmpty()) {
             System.out.print(b);
             System.out.println("testShutdown >> Restarting schedulers...");
             Schedulers.start(); // restart them anyways

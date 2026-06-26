@@ -195,7 +195,7 @@ public class MaybeTimeoutPublisherTest extends RxJavaTest {
 
             to.assertSubscribed().assertNoValues();
 
-            if (to.errors().size() != 0) {
+            if (!to.errors().isEmpty()) {
                 to.assertError(TimeoutException.class).assertNotComplete();
             } else {
                 to.assertNoErrors().assertComplete();

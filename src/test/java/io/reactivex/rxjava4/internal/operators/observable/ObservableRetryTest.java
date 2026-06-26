@@ -646,7 +646,7 @@ public class ObservableRetryTest extends RxJavaTest {
                 }
                 cdl.await();
                 assertEquals(0, timeouts.get());
-                if (data.size() > 0) {
+                if (!data.isEmpty()) {
                     fail("Data content mismatch: " + allSequenceFrequency(data));
                 }
             }
@@ -657,7 +657,7 @@ public class ObservableRetryTest extends RxJavaTest {
     static <T> StringBuilder allSequenceFrequency(Map<Integer, List<T>> its) {
         StringBuilder b = new StringBuilder();
         for (Map.Entry<Integer, List<T>> e : its.entrySet()) {
-            if (b.length() > 0) {
+            if (!b.isEmpty()) {
                 b.append(", ");
             }
             b.append(e.getKey()).append("={");
@@ -673,7 +673,7 @@ public class ObservableRetryTest extends RxJavaTest {
         int cnt = 0;
 
         for (Object curr : it) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 if (!curr.equals(prev)) {
                     if (cnt > 1) {
                         sb.append(" x ").append(cnt);

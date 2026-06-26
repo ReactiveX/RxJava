@@ -447,8 +447,8 @@ public class ObservableTimeoutTests extends RxJavaTest {
 
             TestHelper.race(r1, r2);
 
-            if (to.values().size() != 0) {
-                if (to.errors().size() != 0) {
+            if (!to.values().isEmpty()) {
+                if (!to.errors().isEmpty()) {
                     to.assertFailure(TimeoutException.class, 1);
                     to.assertErrorMessage(timeoutMessage(1, TimeUnit.SECONDS));
                 } else {

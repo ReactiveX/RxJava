@@ -59,7 +59,7 @@ public final class FlowableCollectTest extends RxJavaTest {
             .collect(
                     StringBuilder::new,
                 (sb, v) -> {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                     sb.append("-");
                 }
                 sb.append(v);
@@ -177,7 +177,7 @@ public final class FlowableCollectTest extends RxJavaTest {
             .collect(
                     StringBuilder::new,
                 (sb, v) -> {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                     sb.append("-");
                 }
                 sb.append(v);

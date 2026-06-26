@@ -75,7 +75,7 @@ public class CheckBaseTypeAnnotationsTest extends RxJavaTest {
             }
         }
 
-        if (b.length() != 0) {
+        if (!b.isEmpty()) {
             System.out.println(clazz);
             System.out.println("------------------------");
             System.out.println(b);
@@ -123,7 +123,7 @@ public class CheckBaseTypeAnnotationsTest extends RxJavaTest {
             }
         }
 
-        if (b.length() != 0) {
+        if (!b.isEmpty()) {
             System.out.println(clazz);
             System.out.println("------------------------");
             System.out.println(b);
@@ -178,7 +178,7 @@ public class CheckBaseTypeAnnotationsTest extends RxJavaTest {
             }
         }
 
-        if (b.length() != 0) {
+        if (!b.isEmpty()) {
             System.out.println(clazz);
             System.out.println("------------------------");
             System.out.println(b);

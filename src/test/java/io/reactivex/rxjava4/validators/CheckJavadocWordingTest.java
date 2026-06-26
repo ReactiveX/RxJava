@@ -218,7 +218,7 @@ public class CheckJavadocWordingTest extends RxJavaTest {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -363,7 +363,7 @@ public class CheckJavadocWordingTest extends RxJavaTest {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -507,7 +507,7 @@ public class CheckJavadocWordingTest extends RxJavaTest {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -611,7 +611,7 @@ public class CheckJavadocWordingTest extends RxJavaTest {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -788,7 +788,7 @@ public class CheckJavadocWordingTest extends RxJavaTest {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());
@@ -980,7 +980,7 @@ public class CheckJavadocWordingTest extends RxJavaTest {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             fail(e.toString());

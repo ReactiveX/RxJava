@@ -70,7 +70,7 @@ public class CheckAnonClassForLambdaTest extends RxJavaTest {
             f = dirs.poll();
 
             File[] list = f.listFiles();
-            if (list != null && list.length != 0) {
+            if (list != null) {
 
                 for (File u : list) {
                     if (u.isDirectory()) {
@@ -102,7 +102,7 @@ public class CheckAnonClassForLambdaTest extends RxJavaTest {
             }
         }
 
-        if (fail.length() != 0) {
+        if (!fail.isEmpty()) {
             System.out.println(fail);
             System.out.println(total);
             throw new AssertionError(fail.toString());

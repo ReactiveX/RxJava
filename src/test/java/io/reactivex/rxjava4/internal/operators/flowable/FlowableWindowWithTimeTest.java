@@ -181,7 +181,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertComplete();
-        Assert.assertTrue(ts.values().size() != 0);
+        Assert.assertTrue(!ts.values().isEmpty());
     }
 
     @Test

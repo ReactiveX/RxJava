@@ -298,10 +298,10 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
             TestHelper.race(r1, r2);
 
-            if (ts1.errors().size() == 0) {
+            if (ts1.errors().isEmpty()) {
                 ts2.assertFailure(IllegalStateException.class);
             } else
-            if (ts2.errors().size() == 0) {
+            if (ts2.errors().isEmpty()) {
                 ts1.assertFailure(IllegalStateException.class);
             } else {
                 fail("Neither TestObserver failed");

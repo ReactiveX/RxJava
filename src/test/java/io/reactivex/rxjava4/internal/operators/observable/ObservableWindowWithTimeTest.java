@@ -180,7 +180,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertComplete();
-        Assert.assertTrue(to.values().size() != 0);
+        Assert.assertTrue(!to.values().isEmpty());
     }
 
     @Test

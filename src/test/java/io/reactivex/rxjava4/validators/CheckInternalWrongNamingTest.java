@@ -70,7 +70,7 @@ public class CheckInternalWrongNamingTest extends RxJavaTest {
                 }
             }
 
-            if (fail.length() != 0) {
+            if (!fail.isEmpty()) {
                 System.out.println(fail);
 
                 System.out.println();

@@ -62,7 +62,7 @@ public class CheckOperatorsAreFinalTest extends RxJavaTest {
             }
         }
 
-        if (e.length() != 0) {
+        if (!e.isEmpty()) {
             System.out.println(e);
 
             throw new AssertionError(e.toString());
