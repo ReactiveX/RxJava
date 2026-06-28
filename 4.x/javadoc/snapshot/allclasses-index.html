@@ -296,321 +296,317 @@ Pattern and offers factory methods, intermediate operators and the ability to co
 <div class="block">Convenience interface and callback used by the <a href="io/reactivex/rxjava4/core/Flowable.html#to(io.reactivex.rxjava4.core.FlowableConverter)"><code>Flowable.to(FlowableConverter)</code></a> operator to turn a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> into another
 value fluently.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/docs/FlowableDocBasic.html" title="interface in io.reactivex.rxjava4.core.docs">FlowableDocBasic&lt;T&gt;</a></div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/FlowableEmitter.html" title="interface in io.reactivex.rxjava4.core">FlowableEmitter&lt;T&gt;</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
-<div class="block">Documents a set of operators so that the main Flowable source file is not cluttered.</div>
-</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/FlowableEmitter.html" title="interface in io.reactivex.rxjava4.core">FlowableEmitter&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Abstraction over a Reactive Streams <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> that allows associating
 a resource with it and exposes the current number of downstream
 requested amount.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/FlowableOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">FlowableOnSubscribe&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/FlowableOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">FlowableOnSubscribe&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface that has a <code>subscribe()</code> method that receives
 a <a href="io/reactivex/rxjava4/core/FlowableEmitter.html" title="interface in io.reactivex.rxjava4.core"><code>FlowableEmitter</code></a> instance that allows pushing
 events in a backpressure-safe and cancellation-safe manner.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/FlowableOperator.html" title="interface in io.reactivex.rxjava4.core">FlowableOperator&lt;Downstream, Upstream&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/FlowableOperator.html" title="interface in io.reactivex.rxjava4.core">FlowableOperator&lt;Downstream, Upstream&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to map/wrap a downstream <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to an upstream <code>Subscriber</code>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors">FlowableProcessor&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors">FlowableProcessor&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Represents a Subscriber and a Flowable (Publisher) at the same time, allowing
 multicasting events from a single source to multiple child Subscribers.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava4.core">FlowableSubscriber&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava4.core">FlowableSubscriber&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Represents a Reactive-Streams inspired <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> that is RxJava 4 only
 and weakens the Reactive Streams rules <a href='https://github.com/reactive-streams/reactive-streams-jvm#1.3'>§1.3</a>
 and <a href='https://github.com/reactive-streams/reactive-streams-jvm#3.9'>§3.9</a> of the specification
 for gaining performance.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/FlowableTransformer.html" title="interface in io.reactivex.rxjava4.core">FlowableTransformer&lt;Upstream, Downstream&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/FlowableTransformer.html" title="interface in io.reactivex.rxjava4.core">FlowableTransformer&lt;Upstream, Downstream&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to compose <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a>s.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function&lt;T,<wbr>R&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function&lt;T,<wbr>R&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface that takes a value and returns another value, possibly with a
 different type and allows throwing a checked exception.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function3.html" title="interface in io.reactivex.rxjava4.functions">Function3&lt;T1,<wbr>T2,<wbr>T3,<wbr>R&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
-<div class="block">A functional interface (callback) that computes a value based on multiple input values.</div>
-</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function4.html" title="interface in io.reactivex.rxjava4.functions">Function4&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>R&gt;</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function3.html" title="interface in io.reactivex.rxjava4.functions">Function3&lt;T1,<wbr>T2,<wbr>T3,<wbr>R&gt;</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface (callback) that computes a value based on multiple input values.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function5.html" title="interface in io.reactivex.rxjava4.functions">Function5&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>T5,<wbr>R&gt;</a></div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function4.html" title="interface in io.reactivex.rxjava4.functions">Function4&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>R&gt;</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface (callback) that computes a value based on multiple input values.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function6.html" title="interface in io.reactivex.rxjava4.functions">Function6&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>T5,<wbr>T6,<wbr>R&gt;</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function5.html" title="interface in io.reactivex.rxjava4.functions">Function5&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>T5,<wbr>R&gt;</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface (callback) that computes a value based on multiple input values.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function7.html" title="interface in io.reactivex.rxjava4.functions">Function7&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>T5,<wbr>T6,<wbr>T7,<wbr>R&gt;</a></div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function6.html" title="interface in io.reactivex.rxjava4.functions">Function6&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>T5,<wbr>T6,<wbr>R&gt;</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface (callback) that computes a value based on multiple input values.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function8.html" title="interface in io.reactivex.rxjava4.functions">Function8&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>T5,<wbr>T6,<wbr>T7,<wbr>T8,<wbr>R&gt;</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function7.html" title="interface in io.reactivex.rxjava4.functions">Function7&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>T5,<wbr>T6,<wbr>T7,<wbr>R&gt;</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface (callback) that computes a value based on multiple input values.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function9.html" title="interface in io.reactivex.rxjava4.functions">Function9&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>T5,<wbr>T6,<wbr>T7,<wbr>T8,<wbr>T9,<wbr>R&gt;</a></div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function8.html" title="interface in io.reactivex.rxjava4.functions">Function8&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>T5,<wbr>T6,<wbr>T7,<wbr>T8,<wbr>R&gt;</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface (callback) that computes a value based on multiple input values.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables">GroupedFlowable&lt;K,<wbr>T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Function9.html" title="interface in io.reactivex.rxjava4.functions">Function9&lt;T1,<wbr>T2,<wbr>T3,<wbr>T4,<wbr>T5,<wbr>T6,<wbr>T7,<wbr>T8,<wbr>T9,<wbr>R&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">A functional interface (callback) that computes a value based on multiple input values.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables">GroupedFlowable&lt;K,<wbr>T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> that has been grouped by key, the value of which can be obtained with <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html#getKey()"><code>GroupedFlowable.getKey()</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observables/GroupedObservable.html" title="class in io.reactivex.rxjava4.observables">GroupedObservable&lt;K,<wbr>T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observables/GroupedObservable.html" title="class in io.reactivex.rxjava4.observables">GroupedObservable&lt;K,<wbr>T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> that has been grouped by key, the value of which can be obtained with <a href="io/reactivex/rxjava4/observables/GroupedObservable.html#getKey()"><code>GroupedObservable.getKey()</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/IntFunction.html" title="interface in io.reactivex.rxjava4.functions">IntFunction&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/IntFunction.html" title="interface in io.reactivex.rxjava4.functions">IntFunction&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface (callback) that takes a primitive value and return value of type T.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/observers/LambdaConsumerIntrospection.html" title="interface in io.reactivex.rxjava4.observers">LambdaConsumerIntrospection</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/observers/LambdaConsumerIntrospection.html" title="interface in io.reactivex.rxjava4.observers">LambdaConsumerIntrospection</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">An interface that indicates that the implementing type is composed of individual components and exposes information
 about their behavior.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/LongConsumer.html" title="interface in io.reactivex.rxjava4.functions">LongConsumer</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/LongConsumer.html" title="interface in io.reactivex.rxjava4.functions">LongConsumer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface (callback) that consumes a primitive long value.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">The <code>Maybe</code> class represents a deferred computation and emission of a single value, no value at all or an exception.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeConverter.html" title="interface in io.reactivex.rxjava4.core">MaybeConverter&lt;T,<wbr>R&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeConverter.html" title="interface in io.reactivex.rxjava4.core">MaybeConverter&lt;T,<wbr>R&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Convenience interface and callback used by the <a href="io/reactivex/rxjava4/core/Maybe.html#to(io.reactivex.rxjava4.core.MaybeConverter)"><code>Maybe.to(MaybeConverter)</code></a> operator to turn a <a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a> into another
 value fluently.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeEmitter.html" title="interface in io.reactivex.rxjava4.core">MaybeEmitter&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeEmitter.html" title="interface in io.reactivex.rxjava4.core">MaybeEmitter&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Abstraction over an RxJava <a href="io/reactivex/rxjava4/core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeObserver</code></a> that allows associating
 a resource with it.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core">MaybeObserver&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core">MaybeObserver&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Provides a mechanism for receiving push-based notification of a single value, an error or completion without any value.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">MaybeOnSubscribe&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">MaybeOnSubscribe&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface that has a <code>subscribe()</code> method that receives
 a <a href="io/reactivex/rxjava4/core/MaybeEmitter.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeEmitter</code></a> instance that allows pushing
 an event in a cancellation-safe manner.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeOperator.html" title="interface in io.reactivex.rxjava4.core">MaybeOperator&lt;Downstream, Upstream&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeOperator.html" title="interface in io.reactivex.rxjava4.core">MaybeOperator&lt;Downstream, Upstream&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to map/wrap a downstream <a href="io/reactivex/rxjava4/core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeObserver</code></a> to an upstream <code>MaybeObserver</code>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core">MaybeSource&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core">MaybeSource&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Represents a basic <a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a> source base interface,
 consumable via an <a href="io/reactivex/rxjava4/core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeObserver</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/MaybeSubject.html" title="class in io.reactivex.rxjava4.subjects">MaybeSubject&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/MaybeSubject.html" title="class in io.reactivex.rxjava4.subjects">MaybeSubject&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Represents a hot Maybe-like source and consumer of events similar to Subjects.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeTransformer.html" title="interface in io.reactivex.rxjava4.core">MaybeTransformer&lt;Upstream, Downstream&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/MaybeTransformer.html" title="interface in io.reactivex.rxjava4.core">MaybeTransformer&lt;Upstream, Downstream&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to compose <a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a>s.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="io/reactivex/rxjava4/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava4.exceptions">MissingBackpressureException</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="io/reactivex/rxjava4/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava4.exceptions">MissingBackpressureException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Indicates that an operator attempted to emit a value but the downstream wasn't ready for it.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/MulticastProcessor.html" title="class in io.reactivex.rxjava4.processors">MulticastProcessor&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/MulticastProcessor.html" title="class in io.reactivex.rxjava4.processors">MulticastProcessor&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <a href="io/reactivex/rxjava4/processors/FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors"><code>FlowableProcessor</code></a> implementation that coordinates downstream requests through
 a front-buffer and stable-prefetching, optionally canceling the upstream if all
 subscribers have cancelled.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab6"><a href="io/reactivex/rxjava4/annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">NonNull</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab6">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab6"><a href="io/reactivex/rxjava4/annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">NonNull</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab6">
 <div class="block">Indicates that a field/parameter/variable/type parameter/return type is never null.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core">Notification&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core">Notification&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Represents the reactive signal types: <code>onNext</code>, <code>onError</code> and <code>onComplete</code> and
 holds their parameter values (a value, a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a>, nothing).</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab6"><a href="io/reactivex/rxjava4/annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">Nullable</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab6">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab6"><a href="io/reactivex/rxjava4/annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">Nullable</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab6">
 <div class="block">Indicates that a field/parameter/variable/type parameter/return type may be null.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">The <code>Observable</code> class is the non-backpressured, optionally multi-valued base reactive class that
 offers factory methods, intermediate operators and the ability to consume synchronous
 and/or asynchronous reactive dataflows.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableConverter.html" title="interface in io.reactivex.rxjava4.core">ObservableConverter&lt;T,<wbr>R&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableConverter.html" title="interface in io.reactivex.rxjava4.core">ObservableConverter&lt;T,<wbr>R&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Convenience interface and callback used by the <a href="io/reactivex/rxjava4/core/Observable.html#to(io.reactivex.rxjava4.core.ObservableConverter)"><code>Observable.to(ObservableConverter)</code></a> operator to turn an <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> into another
 value fluently.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableEmitter.html" title="interface in io.reactivex.rxjava4.core">ObservableEmitter&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableEmitter.html" title="interface in io.reactivex.rxjava4.core">ObservableEmitter&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Abstraction over an RxJava <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> that allows associating
 a resource with it.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">ObservableOnSubscribe&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">ObservableOnSubscribe&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface that has a <code>subscribe()</code> method that receives
 an <a href="io/reactivex/rxjava4/core/ObservableEmitter.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableEmitter</code></a> instance that allows pushing
 events in a cancellation-safe manner.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableOperator.html" title="interface in io.reactivex.rxjava4.core">ObservableOperator&lt;Downstream, Upstream&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableOperator.html" title="interface in io.reactivex.rxjava4.core">ObservableOperator&lt;Downstream, Upstream&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to map/wrap a downstream <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to an upstream <code>Observer</code>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Configuration record for Observable.sequenceEqual() operators.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Represents a basic, non-backpressured <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> source base interface,
 consumable via an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableTransformer.html" title="interface in io.reactivex.rxjava4.core">ObservableTransformer&lt;Upstream, Downstream&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableTransformer.html" title="interface in io.reactivex.rxjava4.core">ObservableTransformer&lt;Upstream, Downstream&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to compose <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a>s.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core">Observer&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core">Observer&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Provides a mechanism for receiving push-based notifications.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="io/reactivex/rxjava4/exceptions/OnErrorNotImplementedException.html" title="class in io.reactivex.rxjava4.exceptions">OnErrorNotImplementedException</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="io/reactivex/rxjava4/exceptions/OnErrorNotImplementedException.html" title="class in io.reactivex.rxjava4.exceptions">OnErrorNotImplementedException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Represents an exception used to signal to the <code>RxJavaPlugins.onError()</code> that a
 callback-based subscribe() method on a base reactive type didn't specify
 an onError handler.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab3"><a href="io/reactivex/rxjava4/parallel/ParallelFailureHandling.html" title="enum class in io.reactivex.rxjava4.parallel">ParallelFailureHandling</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab3">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab3"><a href="io/reactivex/rxjava4/parallel/ParallelFailureHandling.html" title="enum class in io.reactivex.rxjava4.parallel">ParallelFailureHandling</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab3">
 <div class="block">Enumerations for handling failure within a parallel operator.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Abstract base class for parallel publishing of events signaled to an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>s.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/parallel/ParallelFlowableConverter.html" title="interface in io.reactivex.rxjava4.parallel">ParallelFlowableConverter&lt;T,<wbr>R&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/parallel/ParallelFlowableConverter.html" title="interface in io.reactivex.rxjava4.parallel">ParallelFlowableConverter&lt;T,<wbr>R&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Convenience interface and callback used by the <a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#to(io.reactivex.rxjava4.parallel.ParallelFlowableConverter)"><code>ParallelFlowable.to(ParallelFlowableConverter)</code></a> operator to turn a ParallelFlowable into
 another value fluently.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Configuration record for <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#createParallel(io.reactivex.rxjava4.core.config.ParallelSchedulerConfig)"><code>Schedulers.createParallel(ParallelSchedulerConfig)</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/parallel/ParallelTransformer.html" title="interface in io.reactivex.rxjava4.parallel">ParallelTransformer&lt;Upstream, Downstream&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/parallel/ParallelTransformer.html" title="interface in io.reactivex.rxjava4.parallel">ParallelTransformer&lt;Upstream, Downstream&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to compose ParallelFlowable.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Predicate.html" title="interface in io.reactivex.rxjava4.functions">Predicate&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Predicate.html" title="interface in io.reactivex.rxjava4.functions">Predicate&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface (callback) that returns true or false for the given input value.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="io/reactivex/rxjava4/exceptions/ProtocolViolationException.html" title="class in io.reactivex.rxjava4.exceptions">ProtocolViolationException</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="io/reactivex/rxjava4/exceptions/ProtocolViolationException.html" title="class in io.reactivex.rxjava4.exceptions">ProtocolViolationException</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Explicitly named exception to indicate a Reactive-Streams
 protocol violation.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/PublishProcessor.html" title="class in io.reactivex.rxjava4.processors">PublishProcessor&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/PublishProcessor.html" title="class in io.reactivex.rxjava4.processors">PublishProcessor&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Processor that multicasts all subsequently observed items to its current <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>s.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/PublishSubject.html" title="class in io.reactivex.rxjava4.subjects">PublishSubject&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/PublishSubject.html" title="class in io.reactivex.rxjava4.subjects">PublishSubject&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A Subject that emits (multicasts) items to currently subscribed <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a>s and terminal events to current
 or late <code>Observer</code>s.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/QueueDisposable.html" title="interface in io.reactivex.rxjava4.operators">QueueDisposable&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/QueueDisposable.html" title="interface in io.reactivex.rxjava4.operators">QueueDisposable&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">An interface extending <a href="io/reactivex/rxjava4/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators"><code>SimpleQueue</code></a> and <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> and allows negotiating
 the fusion mode between subsequent operators of the <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> base reactive type.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava4.operators">QueueFuseable&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava4.operators">QueueFuseable&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Represents a <a href="io/reactivex/rxjava4/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators"><code>SimpleQueue</code></a> plus the means and constants for requesting a fusion mode.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="io/reactivex/rxjava4/exceptions/QueueOverflowException.html" title="class in io.reactivex.rxjava4.exceptions">QueueOverflowException</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="io/reactivex/rxjava4/exceptions/QueueOverflowException.html" title="class in io.reactivex.rxjava4.exceptions">QueueOverflowException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Indicates an overflow happened because the upstream disregarded backpressure completely or
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" class="external-link"><code>Flow.Subscriber.onNext(Object)</code></a> was called concurrently from multiple threads
 without synchronization.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/QueueSubscription.html" title="interface in io.reactivex.rxjava4.operators">QueueSubscription&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/QueueSubscription.html" title="interface in io.reactivex.rxjava4.operators">QueueSubscription&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">An interface extending <a href="io/reactivex/rxjava4/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators"><code>SimpleQueue</code></a> and <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscription</code></a> and allows negotiating
 the fusion mode between subsequent operators of the <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> base reactive type.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/ReplayProcessor.html" title="class in io.reactivex.rxjava4.processors">ReplayProcessor&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/ReplayProcessor.html" title="class in io.reactivex.rxjava4.processors">ReplayProcessor&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Replays events to Subscribers.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava4.subjects">ReplaySubject&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava4.subjects">ReplaySubject&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Replays events (in a configurable bounded or unbounded manner) to current and late <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a>s.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/ResourceCompletableObserver.html" title="class in io.reactivex.rxjava4.observers">ResourceCompletableObserver</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/ResourceCompletableObserver.html" title="class in io.reactivex.rxjava4.observers">ResourceCompletableObserver</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An abstract <a href="io/reactivex/rxjava4/core/CompletableObserver.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableObserver</code></a> that allows asynchronous cancellation of its subscription and associated resources.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/ResourceMaybeObserver.html" title="class in io.reactivex.rxjava4.observers">ResourceMaybeObserver&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/ResourceMaybeObserver.html" title="class in io.reactivex.rxjava4.observers">ResourceMaybeObserver&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An abstract <a href="io/reactivex/rxjava4/core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeObserver</code></a> that allows asynchronous cancellation of its subscription and associated resources.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/ResourceObserver.html" title="class in io.reactivex.rxjava4.observers">ResourceObserver&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/ResourceObserver.html" title="class in io.reactivex.rxjava4.observers">ResourceObserver&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An abstract <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> that allows asynchronous cancellation of its subscription and associated resources.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/ResourceSingleObserver.html" title="class in io.reactivex.rxjava4.observers">ResourceSingleObserver&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/ResourceSingleObserver.html" title="class in io.reactivex.rxjava4.observers">ResourceSingleObserver&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An abstract <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> that allows asynchronous cancellation of its subscription
 and the associated resources.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/ResourceSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">ResourceSubscriber&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/ResourceSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">ResourceSubscriber&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An abstract Subscriber that allows asynchronous cancellation of its
 subscription and associated resources.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Utility class to inject handlers to certain standard RxJava operations.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/SafeObserver.html" title="class in io.reactivex.rxjava4.observers">SafeObserver&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/SafeObserver.html" title="class in io.reactivex.rxjava4.observers">SafeObserver&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Wraps another <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> and ensures all <code>onXXX</code> methods conform the protocol
 (except the requirement for serialized access).</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/SafeSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">SafeSubscriber&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/SafeSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">SafeSubscriber&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Wraps another <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> and ensures all <code>onXXX</code> methods conform the protocol
 (except the requirement for serialized access).</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/ScalarSupplier.html" title="interface in io.reactivex.rxjava4.operators">ScalarSupplier&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/ScalarSupplier.html" title="interface in io.reactivex.rxjava4.operators">ScalarSupplier&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A marker interface indicating that a scalar, constant value
 is held by the implementing reactive type which can be
 safely extracted during assembly time can be used for
 optimization.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <code>Scheduler</code> is an object that specifies an API for scheduling
 units of work provided in the form of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link"><code>Runnable</code></a>s to be
 executed without delay (effectively as soon as possible), after a specified time delay or periodically
@@ -620,187 +616,187 @@ these units of work get executed by some underlying task-execution scheme
 with some uniform properties and guarantees regardless of the particular underlying
 scheme.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core">Scheduler.Worker</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core">Scheduler.Worker</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Represents an isolated, sequential worker of a parent Scheduler for executing <code>Runnable</code> tasks on
 an underlying task-execution scheme (such as custom Threads, event loop, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link"><code>Executor</code></a> or Actor system).</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/schedulers/SchedulerRunnableIntrospection.html" title="interface in io.reactivex.rxjava4.schedulers">SchedulerRunnableIntrospection</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/schedulers/SchedulerRunnableIntrospection.html" title="interface in io.reactivex.rxjava4.schedulers">SchedulerRunnableIntrospection</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to indicate the implementor class wraps a <code>Runnable</code> that can
 be accessed via <a href="io/reactivex/rxjava4/schedulers/SchedulerRunnableIntrospection.html#getWrappedRunnable()"><code>SchedulerRunnableIntrospection.getWrappedRunnable()</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Static factory methods for returning standard <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instances.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab6"><a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">SchedulerSupport</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab6">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab6"><a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">SchedulerSupport</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab6">
 <div class="block">Indicates what kind of scheduler the class or method uses.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/disposables/SerialDisposable.html" title="class in io.reactivex.rxjava4.disposables">SerialDisposable</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/disposables/SerialDisposable.html" title="class in io.reactivex.rxjava4.disposables">SerialDisposable</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A Disposable container that allows atomically updating/replacing the contained
 Disposable with another Disposable, disposing the old one when updating plus
 handling the disposition when the container itself is disposed.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/SerializedObserver.html" title="class in io.reactivex.rxjava4.observers">SerializedObserver&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/SerializedObserver.html" title="class in io.reactivex.rxjava4.observers">SerializedObserver&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Serializes access to the <a href="io/reactivex/rxjava4/core/Observer.html#onNext(T)"><code>Observer.onNext(Object)</code></a>, <a href="io/reactivex/rxjava4/core/Observer.html#onError(java.lang.Throwable)"><code>Observer.onError(Throwable)</code></a> and
 <a href="io/reactivex/rxjava4/core/Observer.html#onComplete()"><code>Observer.onComplete()</code></a> methods of another <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/SerializedSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">SerializedSubscriber&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/SerializedSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">SerializedSubscriber&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Serializes access to the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" class="external-link"><code>Flow.Subscriber.onNext(Object)</code></a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onError(java.lang.Throwable)" class="external-link"><code>Flow.Subscriber.onError(Throwable)</code></a> and
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onComplete()" class="external-link"><code>Flow.Subscriber.onComplete()</code></a> methods of another <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/SimplePlainQueue.html" title="interface in io.reactivex.rxjava4.operators">SimplePlainQueue&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/SimplePlainQueue.html" title="interface in io.reactivex.rxjava4.operators">SimplePlainQueue&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Override of the <a href="io/reactivex/rxjava4/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators"><code>SimpleQueue</code></a> interface with no <code>throws Throwable</code> on <code>poll()</code>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators">SimpleQueue&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators">SimpleQueue&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A simplified interface for offering, polling and clearing a queue.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">The <code>Single</code> class implements the Reactive Pattern for a single value response.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleConverter.html" title="interface in io.reactivex.rxjava4.core">SingleConverter&lt;T,<wbr>R&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleConverter.html" title="interface in io.reactivex.rxjava4.core">SingleConverter&lt;T,<wbr>R&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Convenience interface and callback used by the <a href="io/reactivex/rxjava4/core/Single.html#to(io.reactivex.rxjava4.core.SingleConverter)"><code>Single.to(SingleConverter)</code></a> operator to turn a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> into another
 value fluently.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleEmitter.html" title="interface in io.reactivex.rxjava4.core">SingleEmitter&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleEmitter.html" title="interface in io.reactivex.rxjava4.core">SingleEmitter&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Abstraction over an RxJava <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> that allows associating
 a resource with it.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core">SingleObserver&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core">SingleObserver&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Provides a mechanism for receiving push-based notification of a single value or an error.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">SingleOnSubscribe&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">SingleOnSubscribe&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface that has a <code>subscribe()</code> method that receives
 a <a href="io/reactivex/rxjava4/core/SingleEmitter.html" title="interface in io.reactivex.rxjava4.core"><code>SingleEmitter</code></a> instance that allows pushing
 an event in a cancellation-safe manner.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleOperator.html" title="interface in io.reactivex.rxjava4.core">SingleOperator&lt;Downstream, Upstream&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleOperator.html" title="interface in io.reactivex.rxjava4.core">SingleOperator&lt;Downstream, Upstream&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to map/wrap a downstream <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> to an upstream <code>SingleObserver</code>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Represents a basic <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> source base interface,
 consumable via an <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/SingleSubject.html" title="class in io.reactivex.rxjava4.subjects">SingleSubject&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/SingleSubject.html" title="class in io.reactivex.rxjava4.subjects">SingleSubject&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Represents a hot Single-like source and consumer of events similar to Subjects.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleTransformer.html" title="interface in io.reactivex.rxjava4.core">SingleTransformer&lt;Upstream, Downstream&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/SingleTransformer.html" title="interface in io.reactivex.rxjava4.core">SingleTransformer&lt;Upstream, Downstream&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to compose <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a>s.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/operators/SpscArrayQueue.html" title="class in io.reactivex.rxjava4.operators">SpscArrayQueue&lt;E&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/operators/SpscArrayQueue.html" title="class in io.reactivex.rxjava4.operators">SpscArrayQueue&lt;E&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A Single-Producer-Single-Consumer queue backed by a pre-allocated buffer.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava4.operators">SpscLinkedArrayQueue&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava4.operators">SpscLinkedArrayQueue&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A single-producer single-consumer array-backed queue which can allocate new arrays in case the consumer is slower
 than the producer.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Configuration record for operators which have three error handling modes and a buffer size or prefetch like parameter.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Standard configuration block with option to delay errors, change max concurrency
 amounts and buffer/prefetch sizes.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/StandardConcurrentConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentConfig</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/StandardConcurrentConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentConfig</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Standard configuration block with option to delay errors and change max concurrency
 amounts.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">The holographically emergent <code>IAsyncEnumerable</code> of the Java world.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A realized stream which can then be consumed asynchronously in steps.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/Streamer.HiddenStreamer.html" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/Streamer.HiddenStreamer.html" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Hides the identity of the Streamer for debug or deoptimization purposes.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/Streamer.StreamerFinishViaDisposableContainerCanceller.html" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/Streamer.StreamerFinishViaDisposableContainerCanceller.html" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Augments the base streamer with a canceller so that it can be injected at the various await calls.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/Subject.html" title="class in io.reactivex.rxjava4.subjects">Subject&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/Subject.html" title="class in io.reactivex.rxjava4.subjects">Subject&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Represents an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> and an <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> at the same time, allowing
 multicasting events from a single source to multiple child <code>Observer</code>s.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface (callback) that provides a single value or
 throws an exception.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a>, <a href="io/reactivex/rxjava4/core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeObserver</code></a>, <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> and
 <a href="io/reactivex/rxjava4/core/CompletableObserver.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableObserver</code></a> composite that can record events from
 <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a>s, <a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a>s, <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a>s and <a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a>s
  and allows making assertions about them.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/schedulers/TestScheduler.html" title="class in io.reactivex.rxjava4.schedulers">TestScheduler</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/schedulers/TestScheduler.html" title="class in io.reactivex.rxjava4.schedulers">TestScheduler</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A special, non thread-safe scheduler for testing operators that require
 a scheduler without introducing real concurrency and allows manually advancing
 a virtual time.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/TestSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">TestSubscriber&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/TestSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">TestSubscriber&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> implementation that records events and allows making assertions about them.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/schedulers/Timed.html" title="class in io.reactivex.rxjava4.schedulers">Timed&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/schedulers/Timed.html" title="class in io.reactivex.rxjava4.schedulers">Timed&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Holds onto a value along with time information.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="io/reactivex/rxjava4/exceptions/UndeliverableException.html" title="class in io.reactivex.rxjava4.exceptions">UndeliverableException</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="io/reactivex/rxjava4/exceptions/UndeliverableException.html" title="class in io.reactivex.rxjava4.exceptions">UndeliverableException</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Wrapper for Throwable errors that are sent to <a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#onError(java.lang.Throwable)"><code>RxJavaPlugins.onError</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/UnicastProcessor.html" title="class in io.reactivex.rxjava4.processors">UnicastProcessor&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/UnicastProcessor.html" title="class in io.reactivex.rxjava4.processors">UnicastProcessor&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <a href="io/reactivex/rxjava4/processors/FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors"><code>FlowableProcessor</code></a> variant that queues up events until a single <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> subscribes to it, replays
 those events to it until the <code>Subscriber</code> catches up and then switches to relaying events live to
 this single <code>Subscriber</code> until this <code>UnicastProcessor</code> terminates or the <code>Subscriber</code> cancels
 its subscription.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/UnicastSubject.html" title="class in io.reactivex.rxjava4.subjects">UnicastSubject&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/UnicastSubject.html" title="class in io.reactivex.rxjava4.subjects">UnicastSubject&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A Subject that queues up events until a single <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> subscribes to it, replays
 those events to it until the <code>Observer</code> catches up and then switches to relaying events live to
 this single <code>Observer</code> until this <code>UnicastSubject</code> terminates or the <code>Observer</code> disposes.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface handed to user code in <a href="io/reactivex/rxjava4/core/Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)"><code>Flowable.virtualCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></a> callback.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to implement to produce elements when asked by
 <a href="io/reactivex/rxjava4/core/Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)"><code>Flowable.virtualCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer&lt;T,<wbr>R&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer&lt;T,<wbr>R&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface called by the <a href="io/reactivex/rxjava4/core/Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)"><code>Flowable.virtualTransform(VirtualTransformer, java.util.concurrent.ExecutorService)</code></a>
 operator to generate any number of output values based of the current input of the upstream.</div>
 </div>

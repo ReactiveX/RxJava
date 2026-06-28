@@ -70,7 +70,7 @@ initTheme();
 <li><a href="#DELAY_ERRORS" tabindex="0">DELAY_ERRORS</a></li>
 <li><a href="#DELAY_ERRORS_BOUNDARY" tabindex="0">DELAY_ERRORS_BOUNDARY</a></li>
 <li><a href="#MIN_DEFAULT" tabindex="0">MIN_DEFAULT</a></li>
-<li><a href="#MIN_DELAYS_ERRORS" tabindex="0">MIN_DELAYS_ERRORS</a></li>
+<li><a href="#MIN_DELAY_ERRORS" tabindex="0">MIN_DELAY_ERRORS</a></li>
 <li><a href="#MIN_DELAY_ERRORS_BOUNDARY" tabindex="0">MIN_DELAY_ERRORS_BOUNDARY</a></li>
 </ol>
 </li>
@@ -154,14 +154,14 @@ initTheme();
 <div class="block">The default config with no error delay and 2 as the maximum buffer size / prefetch amount setting.</div>
 </div>
 <div class="col-first even-row-color"><code>static final <a href="StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></code></div>
-<div class="col-second even-row-color"><code><a href="#MIN_DELAY_ERRORS_BOUNDARY" class="member-name-link">MIN_DELAY_ERRORS_BOUNDARY</a></code></div>
+<div class="col-second even-row-color"><code><a href="#MIN_DELAY_ERRORS" class="member-name-link">MIN_DELAY_ERRORS</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+<div class="block">The default config with error delay and 2 as the maximum buffer size / prefetch amount setting.</div>
 </div>
 <div class="col-first odd-row-color"><code>static final <a href="StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#MIN_DELAYS_ERRORS" class="member-name-link">MIN_DELAYS_ERRORS</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#MIN_DELAY_ERRORS_BOUNDARY" class="member-name-link">MIN_DELAY_ERRORS_BOUNDARY</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+<div class="block">The default config with error delay till the boundary and 2 as the maximum buffer size / prefetch amount setting.</div>
 </div>
 </div>
 </section>
@@ -294,11 +294,11 @@ initTheme();
 </section>
 </li>
 <li>
-<section class="detail" id="MIN_DELAYS_ERRORS">
-<h3>MIN_DELAYS_ERRORS</h3>
+<section class="detail" id="MIN_DELAY_ERRORS">
+<h3>MIN_DELAY_ERRORS</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></span>&nbsp;<span class="element-name">MIN_DELAYS_ERRORS</span></div>
-<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></span>&nbsp;<span class="element-name">MIN_DELAY_ERRORS</span></div>
+<div class="block">The default config with error delay and 2 as the maximum buffer size / prefetch amount setting.</div>
 </div>
 </section>
 </li>
@@ -307,7 +307,7 @@ initTheme();
 <h3>MIN_DELAY_ERRORS_BOUNDARY</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></span>&nbsp;<span class="element-name">MIN_DELAY_ERRORS_BOUNDARY</span></div>
-<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+<div class="block">The default config with error delay till the boundary and 2 as the maximum buffer size / prefetch amount setting.</div>
 </div>
 </section>
 </li>

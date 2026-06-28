@@ -1359,7 +1359,7 @@ aggregation is defined by a specified function.</div>
 the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
 aggregation is defined by a specified function.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#combineLatest(java.lang.Iterable,io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">combineLatest(Iterable, Function, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#combineLatest(java.lang.Iterable,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">combineLatest(Iterable, Function, StandardBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Combines a collection of source <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s by emitting an item that aggregates the latest values of each of
 the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
@@ -1431,38 +1431,11 @@ aggregation is defined by a specified function.</div>
 the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
 aggregation is defined by a specified function.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#combineLatestArray(java.util.concurrent.Flow.Publisher%5B%5D,io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">combineLatestArray(Flow.Publisher[], Function, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#combineLatestArray(java.util.concurrent.Flow.Publisher%5B%5D,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">combineLatestArray(Flow.Publisher[], Function, StandardBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Combines a collection of source <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s by emitting an item that aggregates the latest values of each of
 the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
 aggregation is defined by a specified function.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#combineLatestArrayDelayError(java.util.concurrent.Flow.Publisher%5B%5D,io.reactivex.rxjava4.functions.Function)" class="member-name-link">combineLatestArrayDelayError(Flow.Publisher[], Function)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Combines a collection of source <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s by emitting an item that aggregates the latest values of each of
-the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
-aggregation is defined by a specified function.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#combineLatestArrayDelayError(java.util.concurrent.Flow.Publisher%5B%5D,io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">combineLatestArrayDelayError(Flow.Publisher[], Function, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Combines a collection of source <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s by emitting an item that aggregates the latest values of each of
-the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
-aggregation is defined by a specified function and delays any error from the sources until
-all source <code>Publisher</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#combineLatestDelayError(java.lang.Iterable,io.reactivex.rxjava4.functions.Function)" class="member-name-link">combineLatestDelayError(Iterable, Function)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Combines a collection of source <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s by emitting an item that aggregates the latest values of each of
-the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
-aggregation is defined by a specified function and delays any error from the sources until
-all source <code>Publisher</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#combineLatestDelayError(java.lang.Iterable,io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">combineLatestDelayError(Iterable, Function, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Combines a collection of source <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s by emitting an item that aggregates the latest values of each of
-the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
-aggregation is defined by a specified function and delays any error from the sources until
-all source <code>Publisher</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Completable</a> - Class in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -1607,18 +1580,6 @@ scheduler</a> or takes timing information from it.</div>
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided by
 an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a> sequence.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concat(io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource)" class="member-name-link">concat(SingleSource, SingleSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> that emits the items emitted by two <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s, one after the other.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concat(io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource)" class="member-name-link">concat(SingleSource, SingleSource, SingleSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> that emits the items emitted by three <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s, one after the other.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#concat(io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource,io.reactivex.rxjava4.core.SingleSource)" class="member-name-link">concat(SingleSource, SingleSource, SingleSource, SingleSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> that emits the items emitted by four <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s, one after the other.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#concat(io.reactivex.rxjava4.core.Streamable,java.util.concurrent.ExecutorService)" class="member-name-link">concat(Streamable, ExecutorService)</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
 <div class="block">Emits the elements of each inner sequence produced by the outher sequence.</div>
@@ -1669,20 +1630,10 @@ as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reacti
 <div class="block">Concatenates elements of each <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> provided via an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence into a single sequence
 of elements without interleaving them.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concat(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher)" class="member-name-link">concat(Flow.Publisher, Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concat(java.lang.Iterable,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">concat(Iterable, StandardBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
-<div class="block">Returns a <code>Flowable</code> that emits the items emitted by two <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s, one after the other, without
-interleaving them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concat(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher)" class="member-name-link">concat(Flow.Publisher, Flow.Publisher, Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the items emitted by three <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s, one after the other, without
-interleaving them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concat(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher)" class="member-name-link">concat(Flow.Publisher, Flow.Publisher, Flow.Publisher, Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the items emitted by four <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s, one after the other, without
-interleaving them.</div>
+<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into a single sequence by subscribing to each <code>Publisher</code>,
+one after the other, one at a time and delays any errors till the all inner <code>Publisher</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#concat(java.util.concurrent.Flow.Publisher)" class="member-name-link">concat(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -1717,7 +1668,7 @@ a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/uti
 <div class="block">Returns a <code>Flowable</code> that emits the items emitted by each of the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s emitted by the source
 <code>Publisher</code>, one after the other, without interleaving them.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concat(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">concat(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concat(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">concat(Flow.Publisher, StandardBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits the items emitted by each of the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s emitted by the source
 <code>Publisher</code>, one after the other, without interleaving them.</div>
@@ -1758,18 +1709,14 @@ till all terminate as a <a href="io/reactivex/rxjava4/core/Flowable.html" title=
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s provided in
 an array.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArray(java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArray(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Concatenates a variable number of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sources.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArrayDelayError(java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArrayDelayError(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArray(io.reactivex.rxjava4.core.config.StandardBufferedConfig,java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArray(StandardBufferedConfig, Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Concatenates a variable number of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sources and delays errors from any of them
 till all terminate.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArrayEager(int,int,java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArrayEager(int, int, Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArray(java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArray(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
-<div class="block">Concatenates an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s eagerly into a single stream of values.</div>
+<div class="block">Concatenates a variable number of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sources.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#concatArrayEager(io.reactivex.rxjava4.core.MaybeSource...)" class="member-name-link">concatArrayEager(MaybeSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -1795,34 +1742,13 @@ till all terminate.</div>
 <dd>
 <div class="block">Concatenates a sequence of <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> eagerly into a single stream of values.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArrayEager(java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArrayEager(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArrayEager(io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig,java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArrayEager(StandardConcurrentBufferedConfig, Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Concatenates an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s eagerly into a single stream of values.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArrayEagerDelayError(int,int,java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArrayEagerDelayError(int, int, Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArrayEager(java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArrayEager(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
-<div class="block">Concatenates an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s eagerly into a single stream of values
-and delaying any errors until all sources terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatArrayEagerDelayError(java.util.concurrent.Flow.Publisher...)" class="member-name-link">concatArrayEagerDelayError(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Concatenates an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s eagerly into a single stream of values
-and delaying any errors until all sources terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatDelayError(java.lang.Iterable)" class="member-name-link">concatDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into a single sequence by subscribing to each <code>Publisher</code>,
-one after the other, one at a time and delays any errors till the all inner <code>Publisher</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">concatDelayError(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <code>Publisher</code>s into a single sequence by subscribing to each inner <code>Publisher</code>,
-one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatDelayError(java.util.concurrent.Flow.Publisher,int,boolean)" class="member-name-link">concatDelayError(Flow.Publisher, int, boolean)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <code>Publisher</code>s into a single sequence by subscribing to each inner <code>Publisher</code>,
-one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code>s terminate.</div>
+<div class="block">Concatenates an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s eagerly into a single stream of values.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#concatEager(io.reactivex.rxjava4.core.ObservableSource)" class="member-name-link">concatEager(ObservableSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
@@ -1957,21 +1883,21 @@ that result from concatenating those returned <code>Publisher</code>s.</div>
 <div class="block">Generates and concatenates <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s on each 'rail', signaling errors immediately
 and generating 2 publishers upfront.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMap(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">concatMap(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a new <code>Flowable</code> that emits items resulting from applying a function that you supply to each item
-emitted by the current <code>Flowable</code>, where that function returns a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, and then emitting the items
-that result from concatenating those returned <code>Publisher</code>s.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#concatMap(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">concatMap(Function, int)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
 <dd>
 <div class="block">Generates and concatenates <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s on each 'rail', signaling errors immediately
 and using the given prefetch amount for generating <code>Publisher</code>s upfront.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMap(io.reactivex.rxjava4.functions.Function,int,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">concatMap(Function, int, Scheduler)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">concatMap(Function, Scheduler, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a new <code>Flowable</code> that emits items resulting from applying a function (on a designated scheduler)
 that you supply to each item emitted by the current <code>Flowable</code>, where that function returns a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, and then emitting the items
+that result from concatenating those returned <code>Publisher</code>s.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">concatMap(Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Returns a new <code>Flowable</code> that emits items resulting from applying a function that you supply to each item
+emitted by the current <code>Flowable</code>, where that function returns a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, and then emitting the items
 that result from concatenating those returned <code>Publisher</code>s.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapCompletable(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapCompletable(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
@@ -2022,31 +1948,10 @@ inner <code>CompletableSource</code>s terminate.</div>
 other terminates, optionally delaying all errors till both this <code>Flowable</code> and all
 inner <code>CompletableSource</code>s terminate.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps each of the items into a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, subscribes to them one after the other,
-one at a time and emits their values in order
-while delaying any error from either this or any of the inner <code>Publisher</code>s
-till all of them terminate.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#concatMapDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
 <dd>
 <div class="block">Generates and concatenates <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s on each 'rail', optionally delaying errors
 and generating 2 publishers upfront.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapDelayError(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">concatMapDelayError(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps each of the items into a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, subscribes to them one after the other,
-one at a time and emits their values in order
-while delaying any error from either this or any of the inner <code>Publisher</code>s
-till all of them terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapDelayError(io.reactivex.rxjava4.functions.Function,boolean,int,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">concatMapDelayError(Function, boolean, int, Scheduler)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps each of the upstream items into a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, subscribes to them one after the other,
-one at a time and emits their values in order
-while executing the mapper function on the designated scheduler, delaying any error from either this or any of the
-inner <code>Publisher</code>s till all of them terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#concatMapDelayError(io.reactivex.rxjava4.functions.Function,int,boolean)" class="member-name-link">concatMapDelayError(Function, int, boolean)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -2068,20 +1973,10 @@ and using the given prefetch amount for generating <code>Publisher</code>s upfro
 <div class="block">Maps a sequence of values into <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s and concatenates these <code>Publisher</code>s eagerly into a single
 <code>Publisher</code>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)" class="member-name-link">concatMapEager(Function, int, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapEager(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">concatMapEager(Function, StandardConcurrentBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps a sequence of values into <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s and concatenates these <code>Publisher</code>s eagerly into a single
 <code>Publisher</code>.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapEagerDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapEagerDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps a sequence of values into <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s and concatenates these <code>Publisher</code>s eagerly into a single
-<code>Publisher</code>.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapEagerDelayError(io.reactivex.rxjava4.functions.Function,boolean,int,int)" class="member-name-link">concatMapEagerDelayError(Function, boolean, int, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps a sequence of values into <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s and concatenates these <code>Publisher</code>s eagerly into a single
-<code>Flowable</code> sequence.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapIterable(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapIterable(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -2093,7 +1988,7 @@ and using the given prefetch amount for generating <code>Publisher</code>s upfro
 <div class="block">Returns an <code>Observable</code> that concatenate each item emitted by the current <code>Observable</code> with the values in an
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> corresponding to that item that is generated by a selector.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapIterable(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">concatMapIterable(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapIterable(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">concatMapIterable(Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that concatenate each item emitted by the current <code>Flowable</code> with the values in an
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> corresponding to that item that is generated by a selector.</div>
@@ -2115,7 +2010,7 @@ either the current <code>Observable</code> or the current inner <code>MaybeSourc
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
 where that function returns a <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapMaybe(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">concatMapMaybe(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapMaybe(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">concatMapMaybe(Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and subscribes to them one after the
 other succeeds or completes, emits their success value if available or terminates immediately if
@@ -2126,24 +2021,6 @@ either this <code>Flowable</code> or the current inner <code>MaybeSource</code> 
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and subscribes to them one after the
 other succeeds or completes, emits their success value if available or terminates immediately if
 either the current <code>Observable</code> or the current inner <code>MaybeSource</code> fail.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapMaybeDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapMaybeDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and subscribes to them one after the
-other terminates, emits their success value if available and delaying all errors
-till both this <code>Flowable</code> and all inner <code>MaybeSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapMaybeDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapMaybeDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and subscribes to them one after the
-other terminates, emits their success value if available and optionally delaying all errors
-till both this <code>Flowable</code> and all inner <code>MaybeSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapMaybeDelayError(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">concatMapMaybeDelayError(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and subscribes to them one after the
-other terminates, emits their success value if available and optionally delaying all errors
-till both this <code>Flowable</code> and all inner <code>MaybeSource</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapSingle(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapSingle(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -2162,7 +2039,7 @@ current <code>Maybe</code>, where that function returns a <a href="io/reactivex/
 other succeeds, emits their success values or terminates immediately if
 either the current <code>Observable</code> or the current inner <code>SingleSource</code> fail.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapSingle(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">concatMapSingle(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapSingle(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">concatMapSingle(Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s and subscribes to them one after the
 other succeeds, emits their success values or terminates immediately if
@@ -2174,24 +2051,6 @@ either this <code>Flowable</code> or the current inner <code>SingleSource</code>
 other succeeds, emits their success values or terminates immediately if
 either the current <code>Observable</code> or the current inner <code>SingleSource</code> fail.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapSingleDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapSingleDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s and subscribes to them one after the
-other succeeds or fails, emits their success values and delays all errors
-till both this <code>Flowable</code> and all inner <code>SingleSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapSingleDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapSingleDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s and subscribes to them one after the
-other succeeds or fails, emits their success values and optionally delays all errors
-till both this <code>Flowable</code> and all inner <code>SingleSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapSingleDelayError(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">concatMapSingleDelayError(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s and subscribes to them one after the
-other succeeds or fails, emits their success values and optionally delays errors
-till both this <code>Flowable</code> and all inner <code>SingleSource</code>s terminate.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapStream(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapStream(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Stream.html" title="interface in java.util.stream" class="external-link"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
@@ -2200,7 +2059,7 @@ till both this <code>Flowable</code> and all inner <code>SingleSource</code>s te
 <dd>
 <div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Stream.html" title="interface in java.util.stream" class="external-link"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapStream(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">concatMapStream(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapStream(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">concatMapStream(Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Stream.html" title="interface in java.util.stream" class="external-link"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
 </dd>
@@ -3760,10 +3619,6 @@ might change without warning from one release to the next.</div>
 <dd>
 <div class="block">Fail with the given message and add the sequence of errors as suppressed ones.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/docs/FlowableDocBasic.html#filter(io.reactivex.rxjava4.functions.Predicate)" class="member-name-link">filter(Predicate)</a> - Method in interface io.reactivex.rxjava4.core.docs.<a href="io/reactivex/rxjava4/core/docs/FlowableDocBasic.html" title="interface in io.reactivex.rxjava4.core.docs">FlowableDocBasic</a></dt>
-<dd>
-<div class="block">Filters items emitted by the current <code>Flowable</code> by only emitting those that satisfy a specified predicate.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#filter(io.reactivex.rxjava4.functions.Predicate)" class="member-name-link">filter(Predicate)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Filters items emitted by the current <code>Flowable</code> by only emitting those that satisfy a specified predicate.</div>
@@ -3961,7 +3816,7 @@ subscriptions to these <code>Publisher</code>s.</div>
 <div class="block">Returns a <code>Flowable</code> that applies a function to each item emitted or notification raised by the current
 <code>Flowable</code> and then flattens the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s returned from these functions and emits the resulting items.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Supplier,int)" class="member-name-link">flatMap(Function, Function, Supplier, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Supplier,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">flatMap(Function, Function, Supplier, StandardConcurrentBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that applies a function to each item emitted or notification raised by the current
 <code>Flowable</code> and then flattens the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s returned from these functions and emits the resulting items,
@@ -3972,24 +3827,7 @@ while limiting the maximum number of concurrent subscriptions to these <code>Pub
 <div class="block">Returns a <code>Flowable</code> that emits the results of a specified function to the pair of values emitted by the
 current <code>Flowable</code> and a specified collection <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,boolean)" class="member-name-link">flatMap(Function, BiFunction, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the results of a specified function to the pair of values emitted by the
-current <code>Flowable</code> and a specified inner <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,boolean,int)" class="member-name-link">flatMap(Function, BiFunction, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the results of a specified function to the pair of values emitted by the
-current <code>Flowable</code> and a specified collection <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, while limiting the maximum number of concurrent
-subscriptions to these <code>Publisher</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,boolean,int,int)" class="member-name-link">flatMap(Function, BiFunction, boolean, int, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the results of a specified function to the pair of values emitted by the
-current <code>Flowable</code> and a specified collection <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, while limiting the maximum number of concurrent
-subscriptions to these <code>Publisher</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,int)" class="member-name-link">flatMap(Function, BiFunction, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">flatMap(Function, BiFunction, StandardConcurrentBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits the results of a specified function to the pair of values emitted by the
 current <code>Flowable</code> and a specified collection <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, while limiting the maximum number of concurrent
@@ -4015,14 +3853,14 @@ waits until the upstream and all <code>CompletableSource</code>s complete.</div>
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a> that completes based on applying a specified function to the item emitted by the
 current <code>Single</code>, where that function returns a <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapCompletable(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">flatMapCompletable(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps each element of the upstream <code>Flowable</code> into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to them and
-waits until the upstream and all <code>CompletableSource</code>s complete, optionally delaying all errors.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMapCompletable(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">flatMapCompletable(Function, StandardConcurrentBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to them and
+waits until the upstream and all <code>CompletableSource</code>s complete, optionally delaying all errors.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapCompletable(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentConfig)" class="member-name-link">flatMapCompletable(Function, StandardConcurrentConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Maps each element of the upstream <code>Flowable</code> into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to them and
 waits until the upstream and all <code>CompletableSource</code>s complete, optionally delaying all errors.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapIterable(io.reactivex.rxjava4.functions.Function)" class="member-name-link">flatMapIterable(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
@@ -4040,15 +3878,15 @@ the current <code>Observable</code> into a single <code>Observable</code> sequen
 <div class="block">Returns a <code>ParallelFlowable</code> that merges each item emitted by the source on each rail with the values in an
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> corresponding to that item that is generated by a selector.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapIterable(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">flatMapIterable(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Merges <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a>s generated by a mapper <a href="io/reactivex/rxjava4/functions/Function.html" title="interface in io.reactivex.rxjava4.functions"><code>Function</code></a> for each individual item emitted by
-the current <code>Flowable</code> into a single <code>Flowable</code> sequence.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#flatMapIterable(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">flatMapIterable(Function, int)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
 <dd>
 <div class="block">Returns a <code>ParallelFlowable</code> that merges each item emitted by the source <code>ParallelFlowable</code> with the values in an
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> corresponding to that item that is generated by a selector.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapIterable(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">flatMapIterable(Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Merges <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a>s generated by a mapper <a href="io/reactivex/rxjava4/functions/Function.html" title="interface in io.reactivex.rxjava4.functions"><code>Function</code></a> for each individual item emitted by
+the current <code>Flowable</code> into a single <code>Flowable</code> sequence.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapIterable(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction)" class="member-name-link">flatMapIterable(Function, BiFunction)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -4064,7 +3902,7 @@ the current <code>Observable</code> into a single <code>Observable</code> sequen
 be the combination of the original item and each inner item of the respective <code>Iterable</code> as returned
 by the <code>resultSelector</code> <a href="io/reactivex/rxjava4/functions/BiFunction.html" title="interface in io.reactivex.rxjava4.functions"><code>BiFunction</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapIterable(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,int)" class="member-name-link">flatMapIterable(Function, BiFunction, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapIterable(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">flatMapIterable(Function, BiFunction, StandardConcurrentBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Merges <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a>s generated by a mapper <a href="io/reactivex/rxjava4/functions/Function.html" title="interface in io.reactivex.rxjava4.functions"><code>Function</code></a> for each individual item emitted by
 the current <code>Flowable</code> into a single <code>Flowable</code> sequence where the resulting items will
@@ -4086,17 +3924,17 @@ and merges their <code>onSuccess</code> values, in no particular order, into a s
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
 where that function returns a <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapMaybe(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">flatMapMaybe(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps each element of the upstream <code>Flowable</code> into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s, subscribes to at most
-<code>maxConcurrency</code> <code>MaybeSource</code>s at a time and merges their <code>onSuccess</code> values,
-in no particular order, into a single <code>Flowable</code> sequence, optionally delaying all errors.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMapMaybe(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">flatMapMaybe(Function, StandardConcurrentBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s, subscribes to them
 and merges their <code>onSuccess</code> values, in no particular order, into a single <code>Observable</code> sequence,
 optionally delaying all errors.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapMaybe(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentConfig)" class="member-name-link">flatMapMaybe(Function, StandardConcurrentConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Maps each element of the upstream <code>Flowable</code> into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s, subscribes to at most
+<code>maxConcurrency</code> <code>MaybeSource</code>s at a time and merges their <code>onSuccess</code> values,
+in no particular order, into a single <code>Flowable</code> sequence, optionally delaying all errors.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#flatMapObservable(io.reactivex.rxjava4.functions.Function)" class="member-name-link">flatMapObservable(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -4133,17 +3971,17 @@ current <code>Maybe</code>, where that function returns a <a href="io/reactivex/
 <div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s, subscribes to all of them
 and merges their <code>onSuccess</code> values, in no particular order, into a single <code>Observable</code> sequence.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapSingle(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">flatMapSingle(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps each element of the upstream <code>Flowable</code> into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s, subscribes to at most
-<code>maxConcurrency</code> <code>SingleSource</code>s at a time and merges their <code>onSuccess</code> values,
-in no particular order, into a single <code>Flowable</code> sequence, optionally delaying all errors.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMapSingle(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">flatMapSingle(Function, StandardConcurrentBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s, subscribes to them
 and merges their <code>onSuccess</code> values, in no particular order, into a single <code>Observable</code> sequence,
 optionally delaying all errors.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapSingle(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentConfig)" class="member-name-link">flatMapSingle(Function, StandardConcurrentConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Maps each element of the upstream <code>Flowable</code> into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s, subscribes to at most
+<code>maxConcurrency</code> <code>SingleSource</code>s at a time and merges their <code>onSuccess</code> values,
+in no particular order, into a single <code>Flowable</code> sequence, optionally delaying all errors.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapStream(io.reactivex.rxjava4.functions.Function)" class="member-name-link">flatMapStream(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -4157,13 +3995,13 @@ optionally delaying all errors.</div>
 <dd>
 <div class="block">Maps each upstream item on each rail into a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Stream.html" title="interface in java.util.stream" class="external-link"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapStream(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">flatMapStream(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Stream.html" title="interface in java.util.stream" class="external-link"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#flatMapStream(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">flatMapStream(Function, int)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
 <dd>
 <div class="block">Maps each upstream item of each rail into a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Stream.html" title="interface in java.util.stream" class="external-link"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapStream(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">flatMapStream(Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Stream.html" title="interface in java.util.stream" class="external-link"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#flattenAsFlowable(io.reactivex.rxjava4.functions.Function)" class="member-name-link">flattenAsFlowable(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -4216,10 +4054,6 @@ Pattern and offers factory methods, intermediate operators and the ability to co
 <dd>
 <div class="block">Convenience interface and callback used by the <a href="io/reactivex/rxjava4/core/Flowable.html#to(io.reactivex.rxjava4.core.FlowableConverter)"><code>Flowable.to(FlowableConverter)</code></a> operator to turn a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> into another
 value fluently.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/docs/FlowableDocBasic.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core.docs">FlowableDocBasic&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/docs/package-summary.html">io.reactivex.rxjava4.core.docs</a></dt>
-<dd>
-<div class="block">Documents a set of operators so that the main Flowable source file is not cluttered.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/FlowableEmitter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">FlowableEmitter&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -5471,10 +5305,6 @@ other common base interfaces.</div>
 <div class="block">Configuration record types to support operators and reduce the number of convenience overloads
 on the main reactive types.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/docs/package-summary.html">io.reactivex.rxjava4.core.docs</a> - package io.reactivex.rxjava4.core.docs</dt>
-<dd>
-<div class="block">Sealed interfaces to debloat the main reactive types' source code.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/package-summary.html">io.reactivex.rxjava4.disposables</a> - package io.reactivex.rxjava4.disposables</dt>
 <dd>
 <div class="block">Default implementations for <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>-based resource management
@@ -5923,11 +5753,6 @@ used in the subscription process going further upstream.</div>
 </dl>
 <h2 class="title" id="I:M">M</h2>
 <dl class="index">
-<dt><a href="io/reactivex/rxjava4/core/docs/FlowableDocBasic.html#map(io.reactivex.rxjava4.functions.Function)" class="member-name-link">map(Function)</a> - Method in interface io.reactivex.rxjava4.core.docs.<a href="io/reactivex/rxjava4/core/docs/FlowableDocBasic.html" title="interface in io.reactivex.rxjava4.core.docs">FlowableDocBasic</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that applies a specified function to each item emitted by the current <code>Flowable</code> and
-emits the results of these function applications.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#map(io.reactivex.rxjava4.functions.Function)" class="member-name-link">map(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that applies a specified function to each item emitted by the current <code>Flowable</code> and
@@ -6386,13 +6211,13 @@ or waits both to complete normally if the <code>MaybeSource</code> is empty.</di
 <dd>
 <div class="block">The default config with no error delay and 2 as the maximum buffer size / prefetch amount setting.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html#MIN_DELAY_ERRORS" class="member-name-link">MIN_DELAY_ERRORS</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></dt>
+<dd>
+<div class="block">The default config with error delay and 2 as the maximum buffer size / prefetch amount setting.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html#MIN_DELAY_ERRORS_BOUNDARY" class="member-name-link">MIN_DELAY_ERRORS_BOUNDARY</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></dt>
 <dd>
-<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html#MIN_DELAYS_ERRORS" class="member-name-link">MIN_DELAYS_ERRORS</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></dt>
-<dd>
-<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+<div class="block">The default config with error delay till the boundary and 2 as the maximum buffer size / prefetch amount setting.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/BackpressureStrategy.html#MISSING" class="member-name-link">MISSING</a> - Enum constant in enum class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/BackpressureStrategy.html" title="enum class in io.reactivex.rxjava4.core">BackpressureStrategy</a></dt>
 <dd>
