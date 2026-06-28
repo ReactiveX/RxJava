@@ -56,6 +56,6 @@ public record ObservableSwitchConfig(boolean delayError, int bufferSize) {
      * @param bufferSize the expected number of row combination items to be buffered internally
      */
     public ObservableSwitchConfig {
-        ObjectHelper.verifyPositive(bufferSize, "prefetch");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
     }
 }

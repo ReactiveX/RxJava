@@ -56,6 +56,6 @@ public record ObservableCombineLatestConfig(boolean delayError, int bufferSize) 
      * @param bufferSize the expected number of row combination items to be buffered internally
      */
     public ObservableCombineLatestConfig {
-        ObjectHelper.verifyPositive(bufferSize, "prefetch");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
     }
 }

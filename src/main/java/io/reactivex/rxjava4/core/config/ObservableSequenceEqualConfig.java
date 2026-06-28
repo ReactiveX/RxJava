@@ -56,7 +56,7 @@ public record ObservableSequenceEqualConfig<T>(int bufferSize, BiPredicate<? sup
      * @param isEqual the custom lambda to compare two elements
      */
     public ObservableSequenceEqualConfig {
-        ObjectHelper.verifyPositive(bufferSize, "prefetch");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         Objects.requireNonNull(isEqual, "isEqual is null");
     }
 }
