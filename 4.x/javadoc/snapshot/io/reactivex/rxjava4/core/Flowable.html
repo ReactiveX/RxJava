@@ -323,7 +323,7 @@ initTheme();
 <li><a href="#first(T)" tabindex="0">first(T)</a></li>
 <li><a href="#firstOrError()" tabindex="0">firstOrError()</a></li>
 <li><a href="#flatMap(io.reactivex.rxjava4.functions.Function)" tabindex="0">flatMap(Function)</a></li>
-<li><a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.FlatMapConfig)" tabindex="0">flatMap(Function, FlatMapConfig)</a></li>
+<li><a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" tabindex="0">flatMap(Function, StandardConcurrentBufferedConfig)</a></li>
 <li><a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Supplier)" tabindex="0">flatMap(Function, Function, Supplier)</a></li>
 <li><a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Supplier,int)" tabindex="0">flatMap(Function, Function, Supplier, int)</a></li>
 <li><a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction)" tabindex="0">flatMap(Function, BiFunction)</a></li>
@@ -2024,8 +2024,8 @@ by the current <code>Flowable</code>, where that function returns a <a href="htt
 <code>Publisher</code>s and emitting the results of this merger.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;R&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.FlatMapConfig)" class="member-name-link">flatMap</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Flowable">T</a>, <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a>&nbsp;config)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">flatMap</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Flowable">T</a>, <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/StandardConcurrentBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a <code>Flowable</code> that emits items based on applying a function that you supply to each item emitted
 by the current <code>Flowable</code>, where that function returns a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, and then merging those resulting
@@ -17194,7 +17194,7 @@ by the current <code>Flowable</code>, where that function returns a <a href="htt
 </section>
 </li>
 <li>
-<section class="detail" id="flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.FlatMapConfig)">
+<section class="detail" id="flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)">
 <h3>flatMap</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
@@ -17204,7 +17204,7 @@ by the current <code>Flowable</code>, where that function returns a <a href="htt
 </span><span class="modifiers">public final</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">flatMap</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Flowable">T</a>, <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a>&nbsp;config)</span></div>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/StandardConcurrentBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a>&nbsp;config)</span></div>
 <div class="block">Returns a <code>Flowable</code> that emits items based on applying a function that you supply to each item emitted
 by the current <code>Flowable</code>, where that function returns a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, and then merging those resulting
 <code>Publisher</code>s and emitting the results of this merger, while limiting the maximum number of concurrent
@@ -17222,11 +17222,11 @@ subscriptions to these <code>Publisher</code>s.
 </dl></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.FlatMapConfig)-type-param-R"><code>R</code> - the value type of the inner <code>Publisher</code>s and the output type</span></dd>
+<dd><span id="flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)-type-param-R"><code>R</code> - the value type of the inner <code>Publisher</code>s and the output type</span></dd>
 <dt>Parameters:</dt>
 <dd><code>mapper</code> - a function that, when applied to an item emitted by the current <code>Flowable</code>, returns a
            <code>Publisher</code></dd>
-<dd><code>config</code> - the <a href="config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config"><code>FlatMapConfig</code></a> record to customize behavior</dd>
+<dd><code>config</code> - the <a href="config/StandardConcurrentConfig.html" title="class in io.reactivex.rxjava4.core.config"><code>StandardConcurrentConfig</code></a> record to customize behavior</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Flowable</code> instance</dd>
 <dt>Throws:</dt>
@@ -18206,7 +18206,7 @@ discard their buffers by applying an operator like <a href="#ignoreElements()"><
 Note that the <code>GroupedFlowable</code>s should be subscribed to as soon as possible, otherwise,
 the unconsumed groups may starve other groups due to the internal backpressure
 coordination of the <code>groupBy</code> operator. Such hangs can be usually avoided by using
-<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.FlatMapConfig)"><code>flatMap(Function, FlatMapConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
+<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)"><code>flatMap(Function, StandardConcurrentBufferedConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
 value to be greater or equal to the expected number of groups, possibly using
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Integer.html#MAX_VALUE" class="external-link"><code>Integer.MAX_VALUE</code></a> if the number of expected groups is unknown.
 <p>
@@ -18277,7 +18277,7 @@ discard their buffers by applying an operator like <a href="#ignoreElements()"><
 Note that the <code>GroupedFlowable</code>s should be subscribed to as soon as possible, otherwise,
 the unconsumed groups may starve other groups due to the internal backpressure
 coordination of the <code>groupBy</code> operator. Such hangs can be usually avoided by using
-<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.FlatMapConfig)"><code>flatMap(Function, FlatMapConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
+<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)"><code>flatMap(Function, StandardConcurrentBufferedConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
 value to be greater or equal to the expected number of groups, possibly using
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Integer.html#MAX_VALUE" class="external-link"><code>Integer.MAX_VALUE</code></a> if the number of expected groups is unknown.
 <p>
@@ -18349,7 +18349,7 @@ discard their buffers by applying an operator like <a href="#ignoreElements()"><
 Note that the <code>GroupedFlowable</code>s should be subscribed to as soon as possible, otherwise,
 the unconsumed groups may starve other groups due to the internal backpressure
 coordination of the <code>groupBy</code> operator. Such hangs can be usually avoided by using
-<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.FlatMapConfig)"><code>flatMap(Function, FlatMapConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
+<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)"><code>flatMap(Function, StandardConcurrentBufferedConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
 value to be greater or equal to the expected number of groups, possibly using
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Integer.html#MAX_VALUE" class="external-link"><code>Integer.MAX_VALUE</code></a> if the number of expected groups is unknown.
 <p>
@@ -18425,7 +18425,7 @@ discard their buffers by applying an operator like <a href="#ignoreElements()"><
 Note that the <code>GroupedFlowable</code>s should be subscribed to as soon as possible, otherwise,
 the unconsumed groups may starve other groups due to the internal backpressure
 coordination of the <code>groupBy</code> operator. Such hangs can be usually avoided by using
-<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.FlatMapConfig)"><code>flatMap(Function, FlatMapConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
+<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)"><code>flatMap(Function, StandardConcurrentBufferedConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
 value to be greater or equal to the expected number of groups, possibly using
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Integer.html#MAX_VALUE" class="external-link"><code>Integer.MAX_VALUE</code></a> if the number of expected groups is unknown.
 <p>
@@ -18502,7 +18502,7 @@ discard their buffers by applying an operator like <a href="#ignoreElements()"><
 Note that the <code>GroupedFlowable</code>s should be subscribed to as soon as possible, otherwise,
 the unconsumed groups may starve other groups due to the internal backpressure
 coordination of the <code>groupBy</code> operator. Such hangs can be usually avoided by using
-<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.FlatMapConfig)"><code>flatMap(Function, FlatMapConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
+<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)"><code>flatMap(Function, StandardConcurrentBufferedConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
 value to be greater or equal to the expected number of groups, possibly using
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Integer.html#MAX_VALUE" class="external-link"><code>Integer.MAX_VALUE</code></a> if the number of expected groups is unknown.
 <p>
@@ -18624,7 +18624,7 @@ discard their buffers by applying an operator like <a href="#ignoreElements()"><
 Note that the <code>GroupedFlowable</code>s should be subscribed to as soon as possible, otherwise,
 the unconsumed groups may starve other groups due to the internal backpressure
 coordination of the <code>groupBy</code> operator. Such hangs can be usually avoided by using
-<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.FlatMapConfig)"><code>flatMap(Function, FlatMapConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
+<a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)"><code>flatMap(Function, StandardConcurrentBufferedConfig)</code></a> or <a href="#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)"><code>concatMapEager(Function, int, int)</code></a> and overriding the default maximum concurrency
 value to be greater or equal to the expected number of groups, possibly using
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Integer.html#MAX_VALUE" class="external-link"><code>Integer.MAX_VALUE</code></a> if the number of expected groups is unknown.
 <p>
@@ -30345,7 +30345,7 @@ will be emitted to the downstream</dd>
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list-long">
-<li><a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.FlatMapConfig)"><code>flatMap(Function, FlatMapConfig)</code></a></li>
+<li><a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)"><code>flatMap(Function, StandardConcurrentBufferedConfig)</code></a></li>
 <li><a href="#flatMapIterable(io.reactivex.rxjava4.functions.Function,int)"><code>flatMapIterable(Function, int)</code></a></li>
 <li><a href="#concatMapStream(io.reactivex.rxjava4.functions.Function,int)"><code>concatMapStream(Function, int)</code></a></li>
 </ul>
