@@ -1084,11 +1084,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SafeVarargs
     public static <@NonNull T> Observable<T> concatArrayEager(@NonNull ObservableConcatEagerConfig config, @NonNull ObservableSource<? extends T>... sources) {
         Objects.requireNonNull(config, "config is null");
-        if (config.errorMode() == ErrorMode.IMMEDIATE) {
-            return fromArray(sources).concatMapEager((Function)Functions.identity(), config.maxConcurrency(), config.bufferSize());
-        }
-        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(),
-                config.errorMode() == ErrorMode.END, config.maxConcurrency(), config.bufferSize());
+        return fromArray(sources).concatMapEager((Function)Functions.identity(), config);
     }
 
     /**
@@ -1143,11 +1139,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <@NonNull T> Observable<T> concatEager(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
                                                          @NonNull ObservableConcatEagerConfig config) {
         Objects.requireNonNull(config, "config is null");
-        if (config.errorMode() == ErrorMode.IMMEDIATE) {
-            return fromIterable(sources).concatMapEager((Function)Functions.identity(), config.maxConcurrency(), config.bufferSize());
-        }
-        return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(),
-                config.errorMode() == ErrorMode.END, config.maxConcurrency(), config.bufferSize());
+        return fromIterable(sources).concatMapEager((Function)Functions.identity(), config);
     }
 
     /**
@@ -1203,10 +1195,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <@NonNull T> Observable<T> concatEager(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources,
                                                          @NonNull ObservableConcatEagerConfig config) {
         Objects.requireNonNull(config, "config is null");
-        if (config.errorMode() == ErrorMode.IMMEDIATE) {
-            return wrap(sources).concatMapEager((Function) Functions.identity(), config.maxConcurrency(), config.bufferSize());
-        }
-        return wrap(sources).concatMapEagerDelayError((Function) Functions.identity(), config.errorMode() == ErrorMode.END,  config.maxConcurrency(), config.bufferSize());
+        return wrap(sources).concatMapEager((Function) Functions.identity(), config);
     }
 
     /**
@@ -5542,7 +5531,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, int, Scheduler)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, Scheduler, ObservableConcatMapConfig)} overload.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5555,13 +5544,13 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @see #concatMap(Function, int, Scheduler)
+     * @see #concatMap(Function, Scheduler, ObservableConcatMapConfig)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return concatMap(mapper, 2);
+        return concatMap(mapper, ObservableConcatMapConfig.DEFAULT);
     }
 
     /**
@@ -5573,7 +5562,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, int, Scheduler)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, Scheduler, ObservableConcatMapConfig)} overload.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5583,20 +5572,22 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param mapper
      *            a function that, when applied to an item emitted by the current {@code Observable}, returns an
      *            {@code ObservableSource}
-     * @param bufferSize
-     *            the number of elements expected from the current {@code Observable} to be buffered
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @see #concatMap(Function, int, Scheduler)
+     * @see #concatMap(Function, Scheduler, ObservableConcatMapConfig)
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> Observable<R> concatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
+    public final <@NonNull R> Observable<R> concatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
+            @NonNull ObservableConcatMapConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        Objects.requireNonNull(config, "config is null");
         if (this instanceof ScalarSupplier) {
             @SuppressWarnings("unchecked")
             T v = ((ScalarSupplier<T>)this).get();
@@ -5605,7 +5596,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             }
             return ObservableScalarXMap.scalarXMap(v, mapper);
         }
-        return RxJavaPlugins.onAssembly(new ObservableConcatMap<>(this, mapper, bufferSize, ErrorMode.IMMEDIATE));
+        return RxJavaPlugins.onAssembly(new ObservableConcatMap<>(this, mapper, config.bufferSize(), config.errorMode()));
     }
 
     /**
@@ -5615,7 +5606,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <p>
-     * The difference between {@link #concatMap(Function, int)} and this operator is that this operator guarantees the {@code mapper}
+     * The difference between {@link #concatMap(Function, ObservableConcatMapConfig)} and this operator is that this operator guarantees the {@code mapper}
      * function is executed on the specified scheduler.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -5626,138 +5617,25 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param mapper
      *            a function that, when applied to an item emitted by the current {@code Observable}, returns an
      *            {@code ObservableSource}
-     * @param bufferSize
-     *            the number of elements expected from the current {@code Observable} to be buffered
      * @param scheduler
      *            the scheduler where the {@code mapper} function will be executed
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} or {@code scheduler} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @since 3.0.0
+     * @throws NullPointerException if {@code mapper} or {@code scheduler} or {@code config} is {@code null}
+     * @since 4.0.0
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final <@NonNull R> Observable<R> concatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            int bufferSize, @NonNull Scheduler scheduler) {
+            @NonNull Scheduler scheduler,
+            @NonNull ObservableConcatMapConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        Objects.requireNonNull(config, "config is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMapScheduler<>(this, mapper, bufferSize, ErrorMode.IMMEDIATE, scheduler));
-    }
-
-    /**
-     * Maps each of the items into an {@link ObservableSource}, subscribes to them one after the other,
-     * one at a time and emits their values in order
-     * while delaying any error from either this or any of the inner {@code ObservableSource}s
-     * till all of them terminate.
-     * <p>
-     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapDelayError.o.png" alt="">
-     * <p>
-     * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
-     * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, boolean, int, Scheduler)} overload.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the result value type
-     * @param mapper the function that maps the items of the current {@code Observable} into the inner {@code ObservableSource}s.
-     * @return the new {@code Observable} instance with the concatenation behavior
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> concatMapDelayError(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return concatMapDelayError(mapper, true, bufferSize());
-    }
-
-    /**
-     * Maps each of the items into an {@link ObservableSource}, subscribes to them one after the other,
-     * one at a time and emits their values in order
-     * while delaying any error from either this or any of the inner {@code ObservableSource}s
-     * till all of them terminate.
-     * <p>
-     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapDelayError.o.png" alt="">
-     * <p>
-     * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
-     * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, boolean, int, Scheduler)} overload.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the result value type
-     * @param mapper the function that maps the items of the current {@code Observable} into the inner {@code ObservableSource}s.
-     * @param tillTheEnd
-     *            if {@code true}, all errors from the outer and inner {@code ObservableSource} sources are delayed until the end,
-     *            if {@code false}, an error from the main source is signaled when the current {@code Observable} source terminates
-     * @param bufferSize
-     *            the number of elements expected from the current {@code Observable} to be buffered
-     * @return the new {@code Observable} instance with the concatenation behavior
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> concatMapDelayError(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            boolean tillTheEnd, int bufferSize) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        if (this instanceof ScalarSupplier) {
-            @SuppressWarnings("unchecked")
-            T v = ((ScalarSupplier<T>)this).get();
-            if (v == null) {
-                return empty();
-            }
-            return ObservableScalarXMap.scalarXMap(v, mapper);
-        }
-        return RxJavaPlugins.onAssembly(new ObservableConcatMap<>(this, mapper, bufferSize, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
-    }
-
-    /**
-     * Maps each of the items into an {@link ObservableSource}, subscribes to them one after the other,
-     * one at a time and emits their values in order
-     * while delaying any error from either this or any of the inner {@code ObservableSource}s
-     * till all of them terminate.
-     * <p>
-     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapDelayError.o.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the result value type
-     * @param mapper the function that maps the items of the current {@code Observable} into the inner {@code ObservableSource}s.
-     * @param tillTheEnd
-     *            if {@code true}, all errors from the outer and inner {@code ObservableSource} sources are delayed until the end,
-     *            if {@code false}, an error from the main source is signaled when the current {@code Observable} source terminates
-     * @param bufferSize
-     *            the number of elements expected from the current {@code Observable} to be buffered
-     * @param scheduler
-     *            the scheduler where the {@code mapper} function will be executed
-     * @return the new {@code Observable} instance with the concatenation behavior
-     * @throws NullPointerException if {@code mapper} or {@code scheduler} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see #concatMapDelayError(Function, boolean, int)
-     * @since 3.0.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    @NonNull
-    public final <@NonNull R> Observable<R> concatMapDelayError(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            boolean tillTheEnd, int bufferSize, @NonNull Scheduler scheduler) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMapScheduler<>(this, mapper, bufferSize, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, scheduler));
+        return RxJavaPlugins.onAssembly(new ObservableConcatMapScheduler<>(this, mapper, config.bufferSize(), config.errorMode(), scheduler));
     }
 
     /**
@@ -5784,7 +5662,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMapEager(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return concatMapEager(mapper, Integer.MAX_VALUE, bufferSize());
+        return concatMapEager(mapper, ObservableConcatEagerConfig.MAX_DEFAULT);
     }
 
     /**
@@ -5803,92 +5681,21 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param <R> the value type
      * @param mapper the function that maps a sequence of values into a sequence of {@code ObservableSource}s that will be
      *               eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscribed {@code ObservableSource}s
-     * @param bufferSize hints about the number of expected items from each inner {@code ObservableSource}, must be positive
+     * @param config
+     *               the configuration record for this operator
      * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @since 2.0
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMapEager(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            int maxConcurrency, int bufferSize) {
+            @NonNull ObservableConcatEagerConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMapEager<>(this, mapper, ErrorMode.IMMEDIATE, maxConcurrency, bufferSize));
-    }
-
-    /**
-     * Maps a sequence of values into {@link ObservableSource}s and concatenates these {@code ObservableSource}s eagerly into a single
-     * {@code Observable} sequence.
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * current {@code Observable}s. The operator buffers the values emitted by these {@code ObservableSource}s and then drains them in
-     * order, each one after the previous one completes.
-     * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapEagerDelayError.o.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <R> the value type
-     * @param mapper the function that maps a sequence of values into a sequence of {@code ObservableSource}s that will be
-     *               eagerly concatenated
-     * @param tillTheEnd
-     *            if {@code true}, all errors from the outer and inner {@code ObservableSource} sources are delayed until the end,
-     *            if {@code false}, an error from the main source is signaled when the current {@code Observable} source terminates
-     * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> concatMapEagerDelayError(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            boolean tillTheEnd) {
-        return concatMapEagerDelayError(mapper, tillTheEnd, Integer.MAX_VALUE, bufferSize());
-    }
-
-    /**
-     * Maps a sequence of values into {@link ObservableSource}s and concatenates these {@code ObservableSource}s eagerly into a single
-     * {@code Observable} sequence.
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * current {@code Observable}s. The operator buffers the values emitted by these {@code ObservableSource}s and then drains them in
-     * order, each one after the previous one completes.
-     * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapEagerDelayError.o.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <R> the value type
-     * @param mapper the function that maps a sequence of values into a sequence of {@code ObservableSource}s that will be
-     *               eagerly concatenated
-     * @param tillTheEnd
-     *               if {@code true}, exceptions from the current {@code Observable} and all the inner {@code ObservableSource}s are delayed until
-     *               all of them terminate, if {@code false}, exception from the current {@code Observable} is delayed until the
-     *               currently running {@code ObservableSource} terminates
-     * @param maxConcurrency the maximum number of concurrent subscribed {@code ObservableSource}s
-     * @param bufferSize
-     *               the number of elements expected from the current {@code Observable} and each inner {@code ObservableSource} to be buffered
-     * @return the new {@code Observable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> concatMapEagerDelayError(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            boolean tillTheEnd, int maxConcurrency, int bufferSize) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMapEager<>(this, mapper, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, maxConcurrency, bufferSize));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableConcatMapEager<>(this, mapper,
+                config.errorMode(), config.maxConcurrency(), config.bufferSize()));
     }
 
     /**
@@ -5911,7 +5718,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Completable concatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
-        return concatMapCompletable(mapper, 2);
+        return concatMapCompletable(mapper, ObservableConcatMapConfig.DEFAULT);
     }
 
     /**
@@ -5926,117 +5733,20 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>History: 2.1.6 - experimental
      * @param mapper
      *            a function that, when applied to an item emitted by the current {@code Observable}, returns a {@code CompletableSource}
-     *
-     * @param capacityHint
-     *            the number of upstream items expected to be buffered until the current {@code CompletableSource}, mapped from
-     *            the current item, completes.
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@link Completable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code capacityHint} is non-positive
-     * @since 2.2
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Completable concatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper, int capacityHint) {
+    public final Completable concatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper,
+            @NonNull ObservableConcatMapConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMapCompletable<>(this, mapper, ErrorMode.IMMEDIATE, capacityHint));
-    }
-
-    /**
-     * Maps the upstream items into {@link CompletableSource}s and subscribes to them one after the
-     * other terminates, delaying all errors till both the current {@code Observable} and all
-     * inner {@code CompletableSource}s terminate.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapCompletableDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code CompletableSource} to become the next source to
-     *               be subscribed to
-     * @return the new {@link Completable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapCompletable(Function, int)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final Completable concatMapCompletableDelayError(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
-        return concatMapCompletableDelayError(mapper, true, 2);
-    }
-
-    /**
-     * Maps the upstream items into {@link CompletableSource}s and subscribes to them one after the
-     * other terminates, optionally delaying all errors till both the current {@code Observable} and all
-     * inner {@code CompletableSource}s terminate.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapCompletableDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code CompletableSource} to become the next source to
-     *               be subscribed to
-     * @param tillTheEnd If {@code true}, errors from the current {@code Observable} or any of the
-     *                   inner {@code CompletableSource}s are delayed until all
-     *                   of them terminate. If {@code false}, an error from the current
-     *                   {@code Observable} is delayed until the current inner
-     *                   {@code CompletableSource} terminates and only then is
-     *                   it emitted to the downstream.
-     * @return the new {@link Completable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapCompletable(Function)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final Completable concatMapCompletableDelayError(@NonNull Function<? super T, ? extends CompletableSource> mapper, boolean tillTheEnd) {
-        return concatMapCompletableDelayError(mapper, tillTheEnd, 2);
-    }
-
-    /**
-     * Maps the upstream items into {@link CompletableSource}s and subscribes to them one after the
-     * other terminates, optionally delaying all errors till both the current {@code Observable} and all
-     * inner {@code CompletableSource}s terminate.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapCompletableDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code CompletableSource} to become the next source to
-     *               be subscribed to
-     * @param tillTheEnd If {@code true}, errors from the current {@code Observable} or any of the
-     *                   inner {@code CompletableSource}s are delayed until all
-     *                   of them terminate. If {@code false}, an error from the current
-     *                   {@code Observable} is delayed until the current inner
-     *                   {@code CompletableSource} terminates and only then is
-     *                   it emitted to the downstream.
-     * @param bufferSize The number of upstream items expected to be buffered so that fresh items are
-     *                 ready to be mapped when a previous {@code CompletableSource} terminates.
-     * @return the new {@link Completable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see #concatMapCompletable(Function, int)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final Completable concatMapCompletableDelayError(@NonNull Function<? super T, ? extends CompletableSource> mapper, boolean tillTheEnd, int bufferSize) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMapCompletable<>(this, mapper, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, bufferSize));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableConcatMapCompletable<>(this, mapper, config.errorMode(), config.bufferSize()));
     }
 
     /**
@@ -6084,15 +5794,14 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *               be subscribed to
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapMaybeDelayError(Function)
-     * @see #concatMapMaybe(Function, int)
+     * @see #concatMapMaybe(Function, ObservableConcatMapConfig)
      * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
-        return concatMapMaybe(mapper, 2);
+        return concatMapMaybe(mapper, ObservableConcatMapConfig.DEFAULT);
     }
 
     /**
@@ -6105,128 +5814,24 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code MaybeSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code MaybeSource} to become the next source to
      *               be subscribed to
-     * @param bufferSize The number of upstream items expected to be buffered so that fresh items are
-     *                 ready to be mapped when a previous {@code MaybeSource} terminates.
+     * @param config the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see #concatMapMaybe(Function)
-     * @see #concatMapMaybeDelayError(Function, boolean, int)
-     * @since 2.2
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> Observable<R> concatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper, int bufferSize) {
+    public final <@NonNull R> Observable<R> concatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper,
+            @NonNull ObservableConcatMapConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMapMaybe<>(this, mapper, ErrorMode.IMMEDIATE, bufferSize));
-    }
-
-    /**
-     * Maps the upstream items into {@link MaybeSource}s and subscribes to them one after the
-     * other terminates, emits their success value if available and delaying all errors
-     * till both the current {@code Observable} and all inner {@code MaybeSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapMaybeDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code MaybeSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code MaybeSource} to become the next source to
-     *               be subscribed to
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapMaybe(Function)
-     * @see #concatMapMaybeDelayError(Function, boolean)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> concatMapMaybeDelayError(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
-        return concatMapMaybeDelayError(mapper, true, 2);
-    }
-
-    /**
-     * Maps the upstream items into {@link MaybeSource}s and subscribes to them one after the
-     * other terminates, emits their success value if available and optionally delaying all errors
-     * till both the current {@code Observable} and all inner {@code MaybeSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapMaybeDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code MaybeSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code MaybeSource} to become the next source to
-     *               be subscribed to
-     * @param tillTheEnd If {@code true}, errors from the current {@code Observable} or any of the
-     *                   inner {@code MaybeSource}s are delayed until all
-     *                   of them terminate. If {@code false}, an error from the current
-     *                   {@code Observable} is delayed until the current inner
-     *                   {@code MaybeSource} terminates and only then is
-     *                   it emitted to the downstream.
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapMaybe(Function, int)
-     * @see #concatMapMaybeDelayError(Function, boolean, int)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> concatMapMaybeDelayError(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean tillTheEnd) {
-        return concatMapMaybeDelayError(mapper, tillTheEnd, 2);
-    }
-
-    /**
-     * Maps the upstream items into {@link MaybeSource}s and subscribes to them one after the
-     * other terminates, emits their success value if available and optionally delaying all errors
-     * till both the current {@code Observable} and all inner {@code MaybeSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapMaybeDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code MaybeSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code MaybeSource} to become the next source to
-     *               be subscribed to
-     * @param tillTheEnd If {@code true}, errors from the current {@code Observable} or any of the
-     *                   inner {@code MaybeSource}s are delayed until all
-     *                   of them terminate. If {@code false}, an error from the current
-     *                   {@code Observable} is delayed until the current inner
-     *                   {@code MaybeSource} terminates and only then is
-     *                   it emitted to the downstream.
-     * @param bufferSize The number of upstream items expected to be buffered so that fresh items are
-     *                 ready to be mapped when a previous {@code MaybeSource} terminates.
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see #concatMapMaybe(Function, int)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> concatMapMaybeDelayError(
-            @NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean tillTheEnd, int bufferSize) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMapMaybe<>(this, mapper, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, bufferSize));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableConcatMapMaybe<>(this, mapper, config.errorMode(), config.bufferSize()));
     }
 
     /**
@@ -6246,15 +5851,14 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *               be subscribed to
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapSingleDelayError(Function)
-     * @see #concatMapSingle(Function, int)
+     * @see #concatMapSingle(Function, ObservableConcatMapConfig)
      * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return concatMapSingle(mapper, 2);
+        return concatMapSingle(mapper, ObservableConcatMapConfig.DEFAULT);
     }
 
     /**
@@ -6267,128 +5871,24 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code SingleSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code SingleSource} to become the next source to
      *               be subscribed to
-     * @param bufferSize The number of upstream items expected to be buffered so that fresh items are
-     *                 ready to be mapped when a previous {@code SingleSource} terminates.
+     * @param config the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see #concatMapSingle(Function)
-     * @see #concatMapSingleDelayError(Function, boolean, int)
-     * @since 2.2
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> Observable<R> concatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper, int bufferSize) {
+    public final <@NonNull R> Observable<R> concatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper,
+            @NonNull ObservableConcatMapConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMapSingle<>(this, mapper, ErrorMode.IMMEDIATE, bufferSize));
-    }
-
-    /**
-     * Maps the upstream items into {@link SingleSource}s and subscribes to them one after the
-     * other succeeds or fails, emits their success values and delays all errors
-     * till both the current {@code Observable} and all inner {@code SingleSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapSingleDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code SingleSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code SingleSource} to become the next source to
-     *               be subscribed to
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapSingle(Function)
-     * @see #concatMapSingleDelayError(Function, boolean)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> concatMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return concatMapSingleDelayError(mapper, true, 2);
-    }
-
-    /**
-     * Maps the upstream items into {@link SingleSource}s and subscribes to them one after the
-     * other succeeds or fails, emits their success values and optionally delays all errors
-     * till both the current {@code Observable} and all inner {@code SingleSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapSingleDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code SingleSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code SingleSource} to become the next source to
-     *               be subscribed to
-     * @param tillTheEnd If {@code true}, errors from the current {@code Observable} or any of the
-     *                   inner {@code SingleSource}s are delayed until all
-     *                   of them terminate. If {@code false}, an error from the current
-     *                   {@code Observable} is delayed until the current inner
-     *                   {@code SingleSource} terminates and only then is
-     *                   it emitted to the downstream.
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapSingle(Function, int)
-     * @see #concatMapSingleDelayError(Function, boolean, int)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> concatMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean tillTheEnd) {
-        return concatMapSingleDelayError(mapper, tillTheEnd, 2);
-    }
-
-    /**
-     * Maps the upstream items into {@link SingleSource}s and subscribes to them one after the
-     * other succeeds or fails, emits their success values and optionally delays  errors
-     * till both the current {@code Observable} and all inner {@code SingleSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapSingleDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code SingleSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code SingleSource} to become the next source to
-     *               be subscribed to
-     * @param tillTheEnd If {@code true}, errors from the current {@code Observable} or any of the
-     *                   inner {@code SingleSource}s are delayed until all
-     *                   of them terminate. If {@code false}, an error from the current
-     *                   {@code Observable} is delayed until the current inner
-     *                   {@code SingleSource} terminates and only then is
-     *                   it emitted to the downstream.
-     * @param bufferSize The number of upstream items expected to be buffered so that fresh items are
-     *                 ready to be mapped when a previous {@code SingleSource} terminates.
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see #concatMapSingle(Function, int)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> concatMapSingleDelayError(
-            @NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean tillTheEnd, int bufferSize) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMapSingle<>(this, mapper, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, bufferSize));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableConcatMapSingle<>(this, mapper, config.errorMode(), config.bufferSize()));
     }
 
     /**

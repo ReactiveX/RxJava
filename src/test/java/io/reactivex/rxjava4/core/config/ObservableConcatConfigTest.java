@@ -23,15 +23,15 @@ public class ObservableConcatConfigTest extends RxJavaTest {
 
     @Test
     public void validation() {
-        assertEquals(ErrorMode.IMMEDIATE, new ObservableConcatConfig(ErrorMode.IMMEDIATE).errorMode(), "errorMode - true");
-        assertEquals(ErrorMode.BOUNDARY, new ObservableConcatConfig(ErrorMode.BOUNDARY).errorMode(), "errorMode - false");
-        assertEquals(ErrorMode.END, new ObservableConcatConfig(ErrorMode.END).errorMode(), "errorMode - false");
-        assertEquals(5, new ObservableConcatConfig(5).bufferSize(), "bufferSize - 5");
-        assertEquals(5, new ObservableConcatConfig(ErrorMode.IMMEDIATE, 5).bufferSize(), "bufferSize both - true, 5");
-        assertEquals(5, new ObservableConcatConfig(ErrorMode.BOUNDARY, 5).bufferSize(), "bufferSize both - false, 5");
-        assertEquals(5, new ObservableConcatConfig(ErrorMode.END, 5).bufferSize(), "bufferSize both - false, 5");
-        assertEquals(ErrorMode.IMMEDIATE, new ObservableConcatConfig(ErrorMode.IMMEDIATE, 5).errorMode(), "errorMode both - true, 5");
-        assertEquals(ErrorMode.BOUNDARY, new ObservableConcatConfig(ErrorMode.BOUNDARY, 5).errorMode(), "errorMode both - false, 5");
-        assertEquals(ErrorMode.END, new ObservableConcatConfig(ErrorMode.END, 5).errorMode(), "errorMode both - false, 5");
+        assertEquals(ErrorMode.IMMEDIATE, new ObservableConcatMapConfig(ErrorMode.IMMEDIATE).errorMode(), "errorMode - IMMEDIATE");
+        assertEquals(ErrorMode.BOUNDARY, new ObservableConcatMapConfig(ErrorMode.BOUNDARY).errorMode(), "errorMode - BOUNDARY");
+        assertEquals(ErrorMode.END, new ObservableConcatMapConfig(ErrorMode.END).errorMode(), "errorMode - END");
+        assertEquals(5, new ObservableConcatMapConfig(5).bufferSize(), "bufferSize - 5");
+        assertEquals(5, new ObservableConcatMapConfig(ErrorMode.IMMEDIATE, 5).bufferSize(), "bufferSize both - IMMEDIATE, 5");
+        assertEquals(5, new ObservableConcatMapConfig(ErrorMode.BOUNDARY, 5).bufferSize(), "bufferSize both - BOUNDARY, 5");
+        assertEquals(5, new ObservableConcatMapConfig(ErrorMode.END, 5).bufferSize(), "bufferSize both - END, 5");
+        assertEquals(ErrorMode.IMMEDIATE, new ObservableConcatMapConfig(ErrorMode.IMMEDIATE, 5).errorMode(), "errorMode both - IMMEDIATE, 5");
+        assertEquals(ErrorMode.BOUNDARY, new ObservableConcatMapConfig(ErrorMode.BOUNDARY, 5).errorMode(), "errorMode both - BOUNDARY, 5");
+        assertEquals(ErrorMode.END, new ObservableConcatMapConfig(ErrorMode.END, 5).errorMode(), "errorMode both - END, 5");
     }
 }

@@ -14,11 +14,15 @@
 package io.reactivex.rxjava4.core;
 
 /**
- * Indicates when an error from the main source should be reported.
+ * Indicates when an error from the any of the involved sources should be handled.
+ * <p>
+ * Usually appears with {@code concat} and {@code concatMap} operators where the outer and inner source(s)
+ * may error out in the middle of streaming and the user would like to finish the current source before
+ * cancelling the rest and signaling the error(s) to the consumers.
  * @since 4.0.0
  */
 public enum ErrorMode {
-    /** Report the error immediately, cancelling the active inner source. */
+    /** Report the error immediately, cancelling the active sources. */
     IMMEDIATE,
     /** Report error after an inner source terminated. */
     BOUNDARY,
