@@ -29,7 +29,7 @@ public class FlowableConcatTests extends RxJavaTest {
         Flowable<String> f1 = Flowable.just("one", "two");
         Flowable<String> f2 = Flowable.just("three", "four");
 
-        List<String> values = Flowable.concat(f1, f2).toList().blockingGet();
+        List<String> values = Flowable.concatArray(f1, f2).toList().blockingGet();
 
         assertEquals("one", values.get(0));
         assertEquals("two", values.get(1));
@@ -127,7 +127,7 @@ public class FlowableConcatTests extends RxJavaTest {
         Flowable<Movie> f1 = Flowable.just(horrorMovie1, movie);
         Flowable<Media> f2 = Flowable.just(media, horrorMovie2);
 
-        List<Media> values = Flowable.concat(f1, f2).toList().blockingGet();
+        List<Media> values = Flowable.concatArray(f1, f2).toList().blockingGet();
 
         assertEquals(horrorMovie1, values.get(0));
         assertEquals(movie, values.get(1));
@@ -152,7 +152,7 @@ public class FlowableConcatTests extends RxJavaTest {
 
         Flowable<Media> f2 = Flowable.just(media, horrorMovie2);
 
-        List<Media> values = Flowable.concat(f1, f2).toList().blockingGet();
+        List<Media> values = Flowable.concatArray(f1, f2).toList().blockingGet();
 
         assertEquals(horrorMovie1, values.get(0));
         assertEquals(movie, values.get(1));

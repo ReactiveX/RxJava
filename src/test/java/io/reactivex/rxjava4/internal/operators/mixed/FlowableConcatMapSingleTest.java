@@ -16,19 +16,19 @@ package io.reactivex.rxjava4.internal.operators.mixed;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.rxjava4.disposables.Disposable;
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.operators.mixed.FlowableConcatMapSingle.ConcatMapSingleSubscriber;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
-import io.reactivex.rxjava4.core.ErrorMode;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.*;
 import io.reactivex.rxjava4.subjects.SingleSubject;
@@ -48,7 +48,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void simpleLongPrefetch() {
         Flowable.range(1, 1024)
-        .concatMapSingle(Single::just, 32)
+        .concatMapSingle(Single::just, new StandardBufferedConfig(32))
         .test()
         .assertValueCount(1024)
         .assertNoErrors()
@@ -58,7 +58,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void simpleLongPrefetchHidden() {
         Flowable.range(1, 1024).hide()
-        .concatMapSingle(Single::just, 32)
+        .concatMapSingle(Single::just, new StandardBufferedConfig(32))
         .test()
         .assertValueCount(1024)
         .assertNoErrors()
@@ -68,7 +68,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void backpressure() {
         TestSubscriber<Integer> ts = Flowable.range(1, 1024)
-        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, 32)
+        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, new StandardBufferedConfig(32))
         .test(0);
 
         for (int i = 1; i <= 1024; i++) {
@@ -104,7 +104,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestSubscriber<Integer> ts = pp.concatMapSingleDelayError(Functions.justFunction(ss), false).test();
+        TestSubscriber<Integer> ts = pp.concatMapSingle(Functions.justFunction(ss), StandardBufferedConfig.MIN_DELAY_ERRORS_BOUNDARY).test();
 
         ts.assertEmpty();
 
@@ -126,8 +126,8 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(
-                (Function<Flowable<Object>, Flowable<Object>>) f -> f.concatMapSingleDelayError(
-                        Functions.justFunction(Single.just((Object)1)))
+                (Function<Flowable<Object>, Flowable<Object>>) f -> f.concatMapSingle(
+                        Functions.justFunction(Single.just((Object)1)), StandardBufferedConfig.MIN_DELAY_ERRORS)
         );
     }
 
@@ -146,7 +146,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
                 }
             }
             .concatMapSingle(
-                    Functions.justFunction(Single.never()), 1
+                    Functions.justFunction(Single.never()), new StandardBufferedConfig(1)
             )
             .test()
             .assertFailure(QueueOverflowException.class);
@@ -212,7 +212,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void delayAllErrors() {
         TestSubscriberEx<Object> ts = Flowable.range(1, 5)
-        .concatMapSingleDelayError(_ -> Single.error(new TestException()))
+        .concatMapSingle(_ -> Single.error(new TestException()), StandardBufferedConfig.MIN_DELAY_ERRORS)
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class)
         ;
@@ -295,13 +295,13 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-            upstream.concatMapSingleDelayError((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), false, 2));
+            upstream.concatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), new StandardBufferedConfig(ErrorMode.BOUNDARY, 2)));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-            upstream.concatMapSingleDelayError((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), true, 2));
+            upstream.concatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), new StandardBufferedConfig(ErrorMode.END, 2)));
     }
 
     @Test

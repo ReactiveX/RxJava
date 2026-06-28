@@ -56,5 +56,5 @@ public class StandardConcurrentBufferedConfigTest extends RxJavaTest {
         assertFalse(new StandardConcurrentBufferedConfig(false, 5, 10).delayErrors(), "delayErrors both - false, 5");
         assertEquals(5, new StandardConcurrentBufferedConfig(true, 5, 10).maxConcurrency(), "maxConcurrency both - true, 5");
         assertEquals(10, new StandardConcurrentBufferedConfig(false, 5, 10).bufferSize(), "bufferSize both - false, 5");
-}
+    }
 }

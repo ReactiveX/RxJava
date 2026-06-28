@@ -152,7 +152,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         Flowable<Integer> onComplete = Flowable.fromIterable(List.of(4));
         Flowable<Integer> onError = Flowable.fromIterable(List.of(5));
 
-        Flowable<Integer> source = Flowable.concat(
+        Flowable<Integer> source = Flowable.concatArray(
                 Flowable.fromIterable(Arrays.asList(10, 20, 30)),
                 Flowable.<Integer> error(new RuntimeException("Forced failure!"))
                 );
@@ -298,7 +298,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Flowable<Integer> source = Flowable.range(1, 10)
             .flatMap((Function<Integer, Flowable<Integer>>) t1 -> composer(Flowable.range(t1 * 10, 2), subscriptionCount, m)
-                    .subscribeOn(Schedulers.computation()), (t1, t2) -> t1 * 1000 + t2, m);
+                    .subscribeOn(Schedulers.computation()), (t1, t2) -> t1 * 1000 + t2, new StandardConcurrentBufferedConfig(m));
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
@@ -351,7 +351,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         Function<Integer, Flowable<Integer>> just = just(onNext);
         Function<Throwable, Flowable<Integer>> just2 = just(onError);
         Supplier<Flowable<Integer>> just0 = just0(onComplete);
-        source.flatMap(just, just2, just0, m).subscribe(ts);
+        source.flatMap(just, just2, just0, new StandardConcurrentBufferedConfig(m)).subscribe(ts);
 
         ts.awaitDone(1, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -544,7 +544,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void flatMapBiMapper() {
         Flowable.just(1)
         .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10),
-                Integer::sum, true)
+                Integer::sum, new StandardConcurrentBufferedConfig(true))
         .test()
         .assertResult(11);
     }
@@ -553,7 +553,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void flatMapBiMapperWithError() {
         Flowable.just(1)
         .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10).concatWith(Flowable.<Integer>error(new TestException())),
-                Integer::sum, true)
+                Integer::sum, new StandardConcurrentBufferedConfig(true))
         .test()
         .assertFailure(TestException.class, 11);
     }
@@ -562,7 +562,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void flatMapBiMapperMaxConcurrency() {
         Flowable.just(1, 2)
         .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10),
-                Integer::sum, true, 1)
+                Integer::sum, new StandardConcurrentBufferedConfig(true, 1))
         .test()
         .assertResult(11, 22);
     }

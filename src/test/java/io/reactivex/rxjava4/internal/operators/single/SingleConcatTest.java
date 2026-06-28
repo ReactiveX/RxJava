@@ -34,21 +34,21 @@ public class SingleConcatTest extends RxJavaTest {
 
     @Test
     public void concat2() {
-        Single.concat(Single.just(1), Single.just(2))
+        Single.concatArray(Single.just(1), Single.just(2))
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void concat3() {
-        Single.concat(Single.just(1), Single.just(2), Single.just(3))
+        Single.concatArray(Single.just(1), Single.just(2), Single.just(3))
         .test()
         .assertResult(1, 2, 3);
     }
 
     @Test
     public void concat4() {
-        Single.concat(Single.just(1), Single.just(2), Single.just(3), Single.just(4))
+        Single.concatArray(Single.just(1), Single.just(2), Single.just(3), Single.just(4))
         .test()
         .assertResult(1, 2, 3, 4);
     }

@@ -105,7 +105,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void error() {
         Flowable<String> sourceStrings = Flowable.just("one", "two", "three", "four", "five", "six");
         Flowable<String> errorSource = Flowable.error(new TestException("forced failure"));
-        Flowable<String> source = Flowable.concat(sourceStrings, errorSource);
+        Flowable<String> source = Flowable.concatArray(sourceStrings, errorSource);
 
         Flowable<GroupedFlowable<Integer, String>> grouped = source.groupBy(length);
 
@@ -810,7 +810,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     @SuppressUndeliverable
     public void error2() {
-        Flowable<Integer> source = Flowable.concat(Flowable.just(0),
+        Flowable<Integer> source = Flowable.concatArray(Flowable.just(0),
                 Flowable.<Integer> error(new TestException("Forced failure")));
 
         Flowable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);

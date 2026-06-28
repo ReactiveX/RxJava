@@ -16,20 +16,20 @@ package io.reactivex.rxjava4.internal.operators.mixed;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.operators.mixed.FlowableConcatMapMaybe.ConcatMapMaybeSubscriber;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
-import io.reactivex.rxjava4.core.ErrorMode;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.*;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -50,7 +50,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void simpleLongPrefetch() {
         Flowable.range(1, 1024)
-        .concatMapMaybe(Maybe::just, 32)
+        .concatMapMaybe(Maybe::just, new StandardBufferedConfig(32))
         .test()
         .assertValueCount(1024)
         .assertNoErrors()
@@ -60,7 +60,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void simpleLongPrefetchHidden() {
         Flowable.range(1, 1024).hide()
-        .concatMapMaybe(Maybe::just, 32)
+        .concatMapMaybe(Maybe::just, new StandardBufferedConfig(32))
         .test()
         .assertValueCount(1024)
         .assertNoErrors()
@@ -70,7 +70,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void backpressure() {
         TestSubscriber<Integer> ts = Flowable.range(1, 1024)
-        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, 32)
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, new StandardBufferedConfig(32))
         .test(0);
 
         for (int i = 1; i <= 1024; i++) {
@@ -148,7 +148,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestSubscriber<Integer> ts = pp.concatMapMaybeDelayError(Functions.justFunction(ms), false).test();
+        TestSubscriber<Integer> ts = pp.concatMapMaybe(Functions.justFunction(ms), StandardBufferedConfig.MIN_DELAY_ERRORS_BOUNDARY).test();
 
         ts.assertEmpty();
 
@@ -172,7 +172,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestSubscriber<Integer> ts = pp.concatMapMaybeDelayError(Functions.justFunction(ms), false).test();
+        TestSubscriber<Integer> ts = pp.concatMapMaybe(Functions.justFunction(ms), StandardBufferedConfig.MIN_DELAY_ERRORS_BOUNDARY).test();
 
         ts.assertEmpty();
 
@@ -194,8 +194,8 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(
-                (Function<Flowable<Object>, Flowable<Object>>) f -> f.concatMapMaybeDelayError(
-                        Functions.justFunction(Maybe.empty()))
+                (Function<Flowable<Object>, Flowable<Object>>) f -> f.concatMapMaybe(
+                        Functions.justFunction(Maybe.empty()), StandardBufferedConfig.MIN_DELAY_ERRORS)
         );
     }
 
@@ -214,7 +214,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
                 }
             }
             .concatMapMaybe(
-                    Functions.justFunction(Maybe.never()), 1
+                    Functions.justFunction(Maybe.never()), new StandardBufferedConfig(1)
             )
             .test()
             .assertFailure(QueueOverflowException.class);
@@ -280,7 +280,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void delayAllErrors() {
         TestSubscriberEx<Object> ts = Flowable.range(1, 5)
-        .concatMapMaybeDelayError(_ -> Maybe.error(new TestException()))
+        .concatMapMaybe(_ -> Maybe.error(new TestException()), StandardBufferedConfig.MIN_DELAY_ERRORS)
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class)
         ;
@@ -363,13 +363,13 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-            upstream.concatMapMaybeDelayError((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(), false, 2));
+            upstream.concatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(), new StandardBufferedConfig(ErrorMode.BOUNDARY, 2)));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-            upstream.concatMapMaybeDelayError((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(), true, 2));
+            upstream.concatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(), new StandardBufferedConfig(ErrorMode.END, 2)));
     }
 
     @Test

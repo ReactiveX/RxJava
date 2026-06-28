@@ -129,7 +129,7 @@ public class FlowableSkipTest extends RxJavaTest {
         Flowable<String> ok = Flowable.just("one");
         Flowable<String> error = Flowable.error(e);
 
-        Flowable<String> skip = Flowable.concat(ok, error).skip(100);
+        Flowable<String> skip = Flowable.concatArray(ok, error).skip(100);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         skip.subscribe(subscriber);

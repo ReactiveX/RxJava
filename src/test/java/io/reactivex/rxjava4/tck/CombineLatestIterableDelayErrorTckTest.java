@@ -14,11 +14,12 @@
 package io.reactivex.rxjava4.tck;
 
 import java.util.Arrays;
+import java.util.concurrent.Flow.Publisher;
 
-import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 
 @Test
 public class CombineLatestIterableDelayErrorTckTest extends BaseTck<Long> {
@@ -26,11 +27,11 @@ public class CombineLatestIterableDelayErrorTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createFlowPublisher(long elements) {
         return
-            Flowable.combineLatestDelayError(Arrays.asList(
+            Flowable.combineLatest(Arrays.asList(
                     Flowable.just(1L),
                     Flowable.fromIterable(iterate(elements))
                 ),
-                    a -> (Long)a[0]
+                a -> (Long)a[0], StandardBufferedConfig.DELAY_ERRORS
             )
         ;
     }

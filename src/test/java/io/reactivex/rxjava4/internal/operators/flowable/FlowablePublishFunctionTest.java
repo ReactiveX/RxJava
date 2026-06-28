@@ -37,7 +37,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 3)
-                .publish(f -> Flowable.concat(f.take(5), f.takeLast(5)))
+                .publish(f -> Flowable.concatArray(f.take(5), f.takeLast(5)))
                 .subscribe(ts);
 
         ts.assertValues(1, 2, 3);
@@ -50,7 +50,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
 
         Flowable.range(1, 6)
-                .publish(f -> Flowable.concat(f.take(5), f.takeLast(5)))
+                .publish(f -> Flowable.concatArray(f.take(5), f.takeLast(5)))
                 .subscribe(ts);
 
         ts.assertNoValues();
@@ -77,7 +77,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        pp.publish(f -> Flowable.concat(f.take(5), f.takeLast(5))).subscribe(ts);
+        pp.publish(f -> Flowable.concatArray(f.take(5), f.takeLast(5))).subscribe(ts);
 
         pp.onNext(1);
         pp.onNext(2);
@@ -430,7 +430,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
         AtomicBoolean parentUpstreamCancelled = new AtomicBoolean(false);
         Flowable.range(1, 10)
                 .doOnCancel(() -> parentUpstreamCancelled.set(true))
-                .publish(v -> Flowable.concat(v.take(1), v.skip(5)))
+                .publish(v -> Flowable.concatArray(v.take(1), v.skip(5)))
                 .test()
                 .awaitDone(1, TimeUnit.SECONDS);
         assertFalse("Unnecessary upstream .cancel() call in FlowablePublishMulticast", parentUpstreamCancelled.get());
