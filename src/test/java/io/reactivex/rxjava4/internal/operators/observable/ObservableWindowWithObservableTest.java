@@ -26,9 +26,10 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.core.config.ObservableMergeConfig;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observers.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -259,7 +260,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
     public void boundaryOnError() {
         TestObserverEx<Object> to = Observable.error(new TestException())
         .window(Observable.never())
-        .flatMap(Functions.<Observable<Object>>identity(), true)
+        .flatMap(Functions.<Observable<Object>>identity(), new ObservableMergeConfig(true))
         .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 

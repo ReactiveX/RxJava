@@ -16,13 +16,14 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.ObservableObserveOnConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.*;
@@ -281,7 +282,7 @@ public class FlowableTakeLastTimedTest extends RxJavaTest {
         Observable.range(1, 1000)
         .takeLast(1, TimeUnit.DAYS)
         .take(500)
-        .observeOn(Schedulers.single(), true, 1)
+        .observeOn(Schedulers.single(), new ObservableObserveOnConfig(true, 1))
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()

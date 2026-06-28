@@ -13,12 +13,11 @@
 
 package io.reactivex.rxjava4.core.config;
 
-import io.reactivex.rxjava4.core.Flowable;
-import io.reactivex.rxjava4.core.Observable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 
 /**
- * Configuration record for Observable.merge() operators.
+ * Configuration record for Observable.merge() and Observable.flatMap operators.
  * @param delayErrors should the error be delayed?
  * @param maxConcurrency the maximum number of concurrent flows?
  * @param bufferSize what would be the buffer size?
@@ -27,25 +26,25 @@ import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 public record ObservableMergeConfig(boolean delayErrors, int maxConcurrency, int bufferSize) {
 
     /**
-     * The default configuration with no error delays and bufferSize of {@link Observable#bufferSize()}.
+     * The default configuration with no error delays, MAX_VALUE concurrency and bufferSize of {@link Observable#bufferSize()}.
      */
-    public static final ObservableMergeConfig DEFAULT = new ObservableMergeConfig(false, Observable.bufferSize());
+    public static final ObservableMergeConfig DEFAULT = new ObservableMergeConfig(false);
 
     /**
-     * The default configuration with error delays and bufferSize of {@link Observable#bufferSize()}.
+     * The default configuration with error delays, MAX_VALUE concurrency and bufferSize of {@link Observable#bufferSize()}.
      */
-    public static final ObservableMergeConfig DELAY_ERROR = new ObservableMergeConfig(true, Observable.bufferSize());
+    public static final ObservableMergeConfig DELAY_ERROR = new ObservableMergeConfig(true);
 
     /**
-     * Optionally delay error, {@link Flowable#bufferSize()} sizes
+     * Optionally delay error, {@link Observable#bufferSize()} sizes
      * @param delayErrors should the error be delayed?
      */
     public ObservableMergeConfig(boolean delayErrors) {
-        this(delayErrors, Flowable.bufferSize(), Flowable.bufferSize());
+        this(delayErrors, Integer.MAX_VALUE, Observable.bufferSize());
     }
 
     /**
-     * Optionally set the buffer size, no delay errors.
+     * Optionally set the maximum concurrency levels, no errors and a buffer size of {@link Observable#bufferSize()}.
      * @param maxConcurrency the maximum number of concurrent flows
      */
     public ObservableMergeConfig(int maxConcurrency) {

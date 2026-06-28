@@ -21,6 +21,7 @@ import java.util.concurrent.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.ObservableMergeConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
@@ -52,7 +53,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normalDelayError() {
         Observable.range(1, 10)
-        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, true)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, new ObservableMergeConfig(true))
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
@@ -110,7 +111,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     public void normalDelayErrorAll() {
         TestObserverEx<Integer> to = Observable.range(1, 10)
                 .concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> Maybe.error(new TestException()), true)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> Maybe.error(new TestException()), new ObservableMergeConfig(true))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -188,7 +189,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
                 return ps.singleElement();
             }
             return Maybe.error(new TestException());
-        }, true)
+        }, new ObservableMergeConfig(true))
         .test();
 
         ps.onNext(1);
@@ -208,7 +209,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
                 return ps.singleElement();
             }
             return Maybe.error(new TestException());
-        }, true)
+        }, new ObservableMergeConfig(true))
         .test();
 
         ps.onComplete();
@@ -371,7 +372,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream ->
-            upstream.flatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(), true));
+            upstream.flatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(), new ObservableMergeConfig(true)));
     }
 
     @Test

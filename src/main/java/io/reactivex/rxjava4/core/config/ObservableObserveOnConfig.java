@@ -17,45 +17,45 @@ import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 
 /**
- * Configuration record for Observable.zip() operators.
+ * Configuration record for Observable.observeOn() operators.
  * @param delayError should the error propagation be delayed?
- * @param bufferSize the expected number of items to cache from the inner {@code ObservableSource}s
+ * @param bufferSize the expected number of items to cache from the upstream
  * @since 4.0.0
  */
-public record ObservableZipConfig(boolean delayError, int bufferSize) {
+public record ObservableObserveOnConfig(boolean delayError, int bufferSize) {
 
     /**
      * The default configuration with no error delays and bufferSize of Observable.bufferSize().
      */
-    public static final ObservableZipConfig DEFAULT = new ObservableZipConfig(false);
+    public static final ObservableObserveOnConfig DEFAULT = new ObservableObserveOnConfig(false);
 
     /**
      * The default configuration with error delays and bufferSize of Observable.bufferSize().
      */
-    public static final ObservableZipConfig DELAY_ERROR = new ObservableZipConfig(true);
+    public static final ObservableObserveOnConfig DELAY_ERROR = new ObservableObserveOnConfig(true);
 
     /**
      * Constructs a configuration record.
      * @param delayError should the error propagation be delayed?
      */
-    public ObservableZipConfig(boolean delayError) {
+    public ObservableObserveOnConfig(boolean delayError) {
         this(delayError, Observable.bufferSize());
     }
 
     /**
      * Constructs a configuration record.
-     * @param bufferSize the expected number of row combination items to be buffered internally
+     * @param bufferSize the expected number of items to cache from the upstream
      */
-    public ObservableZipConfig(int bufferSize) {
+    public ObservableObserveOnConfig(int bufferSize) {
         this(false, bufferSize);
     }
 
     /**
      * Constructs a configuration record.
      * @param delayError should the error propagation be delayed?
-     * @param bufferSize the expected number of row combination items to be buffered internally
+     * @param bufferSize the expected number of items to cache from the upstream
      */
-    public ObservableZipConfig {
+    public ObservableObserveOnConfig {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
     }
 }

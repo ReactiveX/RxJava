@@ -27,9 +27,10 @@ import org.mockito.Mockito;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.core.config.ObservableGroupByConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observables.GroupedObservable;
 import io.reactivex.rxjava4.observers.*;
@@ -932,7 +933,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     @SuppressUndeliverable
     public void keySelectorAndDelayError() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-        .groupBy(Functions.<Integer>identity(), true)
+        .groupBy(Functions.<Integer>identity(), new ObservableGroupByConfig(true))
         .flatMap((Function<GroupedObservable<Integer, Integer>, ObservableSource<Integer>>) g -> g)
         .test()
         .assertFailure(TestException.class, 1);
@@ -942,7 +943,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     @SuppressUndeliverable
     public void keyAndValueSelectorAndDelayError() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-        .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true)
+        .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), new ObservableGroupByConfig(true))
         .flatMap((Function<GroupedObservable<Integer, Integer>, ObservableSource<Integer>>) g -> g)
         .test()
         .assertFailure(TestException.class, 1);
@@ -1006,7 +1007,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     @Test
     public void delayErrorSimpleComplete() {
         Observable.just(1)
-        .groupBy(Functions.justFunction(1), true)
+        .groupBy(Functions.justFunction(1), new ObservableGroupByConfig(true))
         .flatMap(Functions.<Observable<Integer>>identity())
         .test()
         .assertResult(1);
@@ -1142,7 +1143,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     public void delayErrorCompleteMoreWorkInGroup() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = ps.groupBy(_ -> 1, true)
+        TestObserver<Integer> to = ps.groupBy(_ -> 1,new ObservableGroupByConfig(true))
         .flatMap(g -> g.doOnNext(v -> {
             if (v == 1) {
                 ps.onNext(2);

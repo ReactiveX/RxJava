@@ -38,16 +38,19 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
 
     final boolean delayErrors;
 
+    final int bufferSize;
+
     public ObservableFlatMapCompletableCompletable(ObservableSource<T> source,
-            Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors) {
+            Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors, int bufferSize) {
         this.source = source;
         this.mapper = mapper;
         this.delayErrors = delayErrors;
+        this.bufferSize = bufferSize;
     }
 
     @Override
     protected void subscribeActual(CompletableObserver observer) {
-        source.subscribe(new FlatMapCompletableMainObserver<>(observer, mapper, delayErrors));
+        source.subscribe(new FlatMapCompletableMainObserver<>(observer, mapper, delayErrors, bufferSize));
     }
 
     @Override
@@ -67,16 +70,20 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
 
         final boolean delayErrors;
 
+        final int bufferSize;
+
         final CompositeDisposable set;
 
         Disposable upstream;
 
         volatile boolean disposed;
 
-        FlatMapCompletableMainObserver(CompletableObserver observer, Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors) {
+        FlatMapCompletableMainObserver(CompletableObserver observer, Function<? super T, ? extends CompletableSource> mapper,
+                boolean delayErrors, int bufferSize) {
             this.downstream = observer;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
+            this.bufferSize = bufferSize;
             this.errors = new AtomicThrowable();
             this.set = new CompositeDisposable();
             this.lazySet(1);

@@ -36,16 +36,20 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
 
     final boolean delayErrors;
 
+    final int bufferSize;
+
     public ObservableFlatMapMaybe(ObservableSource<T> source, Function<? super T, ? extends MaybeSource<? extends R>> mapper,
-            boolean delayError) {
+            boolean delayError,
+            int bufferSize) {
         super(source);
         this.mapper = mapper;
         this.delayErrors = delayError;
+        this.bufferSize = bufferSize;
     }
 
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
-        source.subscribe(new FlatMapMaybeObserver<>(observer, mapper, delayErrors));
+        source.subscribe(new FlatMapMaybeObserver<>(observer, mapper, delayErrors, bufferSize));
     }
 
     static final class FlatMapMaybeObserver<T, R>
@@ -58,6 +62,8 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
         final Observer<? super R> downstream;
 
         final boolean delayErrors;
+
+        final int bufferSize;
 
         final CompositeDisposable set;
 
@@ -74,10 +80,11 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
         volatile boolean cancelled;
 
         FlatMapMaybeObserver(Observer<? super R> actual,
-                Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayErrors) {
+                Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayErrors, int bufferSize) {
             this.downstream = actual;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
+            this.bufferSize = bufferSize;
             this.set = new CompositeDisposable();
             this.errors = new AtomicThrowable();
             this.active = new AtomicInteger(1);
@@ -178,7 +185,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
             if (current != null) {
                 return current;
             }
-            current = new SpscLinkedArrayQueue<>(Observable.bufferSize());
+            current = new SpscLinkedArrayQueue<>(bufferSize);
             if (queue.compareAndSet(null, current)) {
                 return current;
             }
