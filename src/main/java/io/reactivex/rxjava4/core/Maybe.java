@@ -342,14 +342,13 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
      * @return the new {@code Flowable} instance with the specified concatenation behavior
      * @throws NullPointerException if {@code sources} is {@code null}
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     @SafeVarargs
     public static <@NonNull T> Flowable<T> concatArrayEager(@NonNull MaybeSource<? extends T>... sources) {
-        return Flowable.fromArray(sources).concatMapEager((Function)MaybeToPublisher.instance());
+        return concatArrayEager(StandardConcurrentBufferedConfig.DELAY_ERRORS_BOUNDARY, sources);
     }
     /**
      * Concatenates a sequence of {@link MaybeSource} eagerly into a {@link Flowable} sequence.
@@ -379,10 +378,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @NonNull
     @SafeVarargs
     public static <@NonNull T> Flowable<T> concatArrayEager(@NonNull StandardConcurrentBufferedConfig config, @NonNull MaybeSource<? extends T>... sources) {
-        if (config.delayErrors()) {
-            return Flowable.fromArray(sources).concatMapEagerDelayError((Function)MaybeToPublisher.instance(), true, config.maxConcurrency(), config.bufferSize());
-        }
-        return Flowable.fromArray(sources).concatMapEager((Function)MaybeToPublisher.instance(), config.maxConcurrency(), config.bufferSize());
+        return Flowable.fromArray(sources).concatMapEager((Function)MaybeToPublisher.instance(), config);
     }
 
     /**
@@ -410,11 +406,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Flowable<T> concat(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources, @NonNull StandardBufferedConfig config) {
-        Objects.requireNonNull(config, "config is null");
-        if (config.delayErrors()) {
-            return Flowable.fromIterable(sources).concatMapMaybeDelayError(Functions.identity(), true, config.bufferSize());
-        }
-        return Flowable.fromIterable(sources).concatMapMaybe(Functions.identity(), config.bufferSize());
+        return Flowable.fromIterable(sources).concatMapMaybe(Functions.identity(), config);
     }
 
     /**
@@ -442,7 +434,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources) {
-        return Flowable.fromIterable(sources).concatMapEagerDelayError((Function)MaybeToPublisher.instance(), false);
+        return Flowable.fromIterable(sources).concatMapEager((Function)MaybeToPublisher.instance(), StandardConcurrentBufferedConfig.DELAY_ERRORS_BOUNDARY);
     }
 
     /**
@@ -474,11 +466,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @NonNull
     public static <@NonNull T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources,
             @NonNull StandardConcurrentBufferedConfig config) {
-        Objects.requireNonNull(config, "config is null");
-        if (config.delayErrors()) {
-            return Flowable.fromIterable(sources).concatMapEagerDelayError((Function)MaybeToPublisher.instance(), true, config.maxConcurrency(), config.bufferSize());
-        }
-        return Flowable.fromIterable(sources).concatMapEager((Function)MaybeToPublisher.instance(), config.maxConcurrency(), config.bufferSize());
+        return Flowable.fromIterable(sources).concatMapEager((Function)MaybeToPublisher.instance(), config);
     }
 
     /**
@@ -543,11 +531,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @NonNull
     public static <@NonNull T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources,
             @NonNull StandardConcurrentBufferedConfig config) {
-        Objects.requireNonNull(config, "config is null");
-        if (config.delayErrors()) {
-            return Flowable.fromPublisher(sources).concatMapEagerDelayError((Function)MaybeToPublisher.instance(), true, config.maxConcurrency(), config.bufferSize());
-        }
-        return Flowable.fromPublisher(sources).concatMapEager((Function)MaybeToPublisher.instance(), config.maxConcurrency(), config.bufferSize());
+        return Flowable.fromPublisher(sources).concatMapEager((Function)MaybeToPublisher.instance(), config);
     }
 
     /**
@@ -1086,7 +1070,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> merge(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources) {
-        return Flowable.fromIterable(sources).flatMapMaybe(Functions.identity(), false, Integer.MAX_VALUE);
+        return Flowable.fromIterable(sources).flatMapMaybe(Functions.identity(), StandardConcurrentConfig.MAX_DEFAULT);
     }
 
     /**
@@ -1278,7 +1262,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     public static <@NonNull T> Flowable<T> mergeArray(@NonNull StandardConcurrentConfig config, @NonNull MaybeSource<? extends T>... sources) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
-        return Flowable.fromArray(sources).flatMapMaybe(Functions.identity(), config.delayErrors(), config.maxConcurrency());
+        return Flowable.fromArray(sources).flatMapMaybe(Functions.identity(), config);
     }
 
     /**
@@ -1318,7 +1302,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @NonNull
     public static <@NonNull T> Flowable<T> merge(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources, @NonNull StandardConcurrentConfig config) {
         Objects.requireNonNull(config, "config is null");
-        return Flowable.fromIterable(sources).flatMapMaybe(Functions.identity(), config.delayErrors(), config.maxConcurrency());
+        return Flowable.fromIterable(sources).flatMapMaybe(Functions.identity(), config);
     }
 
     /**
@@ -4478,7 +4462,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     public final Flowable<T> startWith(@NonNull CompletableSource other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Completable.wrap(other).<T>toFlowable(), toFlowable());
+        return Flowable.concatArray(Completable.wrap(other).<T>toFlowable(), toFlowable());
     }
 
     /**
@@ -4503,7 +4487,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     public final Flowable<T> startWith(@NonNull SingleSource<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Single.wrap(other).toFlowable(), toFlowable());
+        return Flowable.concatArray(Single.wrap(other).toFlowable(), toFlowable());
     }
 
     /**
@@ -4528,7 +4512,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     public final Flowable<T> startWith(@NonNull MaybeSource<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Maybe.wrap(other).toFlowable(), toFlowable());
+        return Flowable.concatArray(Maybe.wrap(other).toFlowable(), toFlowable());
     }
 
     /**

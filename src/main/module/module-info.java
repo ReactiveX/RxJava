@@ -14,7 +14,6 @@
 module io.reactivex.rxjava4 {
     exports io.reactivex.rxjava4.annotations;
     exports io.reactivex.rxjava4.core;
-    exports io.reactivex.rxjava4.core.docs;
     exports io.reactivex.rxjava4.core.config;
     exports io.reactivex.rxjava4.disposables;
     exports io.reactivex.rxjava4.exceptions;

@@ -16,16 +16,16 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -68,7 +68,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void normalDelayBoundary() {
         Flowable.range(1, 5)
-        .concatMapEagerDelayError((Function<Integer, Publisher<Integer>>) t -> Flowable.range(t, 2), false)
+        .concatMapEager((Function<Integer, Publisher<Integer>>) t -> Flowable.range(t, 2), StandardConcurrentBufferedConfig.DELAY_ERRORS_BOUNDARY)
         .test()
         .assertResult(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
     }
@@ -76,7 +76,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void normalDelayBoundaryBackpressured() {
         TestSubscriber<Integer> ts = Flowable.range(1, 5)
-        .concatMapEagerDelayError((Function<Integer, Publisher<Integer>>) t -> Flowable.range(t, 2), false)
+        .concatMapEager((Function<Integer, Publisher<Integer>>) t -> Flowable.range(t, 2), StandardConcurrentBufferedConfig.DELAY_ERRORS_BOUNDARY)
         .test(3);
 
         ts.assertValues(1, 2, 2);
@@ -97,7 +97,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void normalDelayEnd() {
         Flowable.range(1, 5)
-        .concatMapEagerDelayError((Function<Integer, Publisher<Integer>>) t -> Flowable.range(t, 2), true)
+        .concatMapEager((Function<Integer, Publisher<Integer>>) t -> Flowable.range(t, 2), StandardConcurrentBufferedConfig.DELAY_ERRORS)
         .test()
         .assertResult(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
     }
@@ -105,7 +105,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void normalDelayEndBackpressured() {
         TestSubscriber<Integer> ts = Flowable.range(1, 5)
-        .concatMapEagerDelayError((Function<Integer, Publisher<Integer>>) t -> Flowable.range(t, 2), true)
+        .concatMapEager((Function<Integer, Publisher<Integer>>) t -> Flowable.range(t, 2), StandardConcurrentBufferedConfig.DELAY_ERRORS)
         .test(3);
 
         ts.assertValues(1, 2, 2);
@@ -128,8 +128,8 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         PublishProcessor<Integer> main = PublishProcessor.create();
         final PublishProcessor<Integer> inner = PublishProcessor.create();
 
-        TestSubscriberEx<Integer> ts = main.concatMapEagerDelayError(
-                (Function<Integer, Publisher<Integer>>) _ -> inner, false).to(TestHelper.<Integer>testConsumer());
+        TestSubscriberEx<Integer> ts = main.concatMapEager(
+                (Function<Integer, Publisher<Integer>>) _ -> inner, StandardConcurrentBufferedConfig.DELAY_ERRORS_BOUNDARY).to(TestHelper.<Integer>testConsumer());
 
         main.onNext(1);
 
@@ -152,8 +152,8 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         PublishProcessor<Integer> main = PublishProcessor.create();
         final PublishProcessor<Integer> inner = PublishProcessor.create();
 
-        TestSubscriberEx<Integer> ts = main.concatMapEagerDelayError(
-                (Function<Integer, Publisher<Integer>>) _ -> inner, true).to(TestHelper.<Integer>testConsumer());
+        TestSubscriberEx<Integer> ts = main.concatMapEager(
+                (Function<Integer, Publisher<Integer>>) _ -> inner, StandardConcurrentBufferedConfig.DELAY_ERRORS).to(TestHelper.<Integer>testConsumer());
 
         main.onNext(1);
         main.onNext(2);
@@ -431,12 +431,12 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void invalidMaxConcurrent() {
-        Flowable.just(1).concatMapEager(toJust, 0, Flowable.bufferSize());
+        Flowable.just(1).concatMapEager(toJust, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 0, Flowable.bufferSize()));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void invalidCapacityHint() {
-        Flowable.just(1).concatMapEager(toJust, Flowable.bufferSize(), 0);
+        Flowable.just(1).concatMapEager(toJust, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, Flowable.bufferSize(), 0));
     }
 
     @Test
@@ -510,7 +510,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     public void maxConcurrent5() {
         final List<Long> requests = new ArrayList<>();
         Flowable.range(1, 100).doOnRequest(requests::add)
-        .concatMapEager(toJust, 5, Flowable.bufferSize())
+        .concatMapEager(toJust, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 5, Flowable.bufferSize()))
         .subscribe(ts);
 
         ts.assertNoErrors();
@@ -577,9 +577,9 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     public void mappingBadCapacityHint() throws Exception {
         Flowable<Integer> source = Flowable.just(1);
         try {
-            Flowable.just(source, source, source).concatMapEager((Function)Functions.identity(), 10, -99);
+            Flowable.just(source, source, source).concatMapEager((Function)Functions.identity(), new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 10, -99));
         } catch (IllegalArgumentException ex) {
-            assertEquals("prefetch > 0 required but it was -99", ex.getMessage());
+            assertEquals("bufferSize > 0 required but it was -99", ex.getMessage());
         }
 
     }
@@ -701,7 +701,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void innerErrorMaxConcurrency() {
         Flowable.<Integer>just(1).hide()
-        .concatMapEager((Function<Integer, Flowable<Integer>>) _ -> Flowable.error(new TestException()), 1, 128)
+        .concatMapEager((Function<Integer, Flowable<Integer>>) _ -> Flowable.error(new TestException()), new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 1, 128))
         .test()
         .assertFailure(TestException.class);
     }
@@ -730,7 +730,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         };
 
         Flowable.<Integer>just(1).hide()
-        .concatMapEager((Function<Integer, Flowable<Integer>>) _ -> up, 1, 128)
+        .concatMapEager((Function<Integer, Flowable<Integer>>) _ -> up, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 1, 128))
         .subscribe(ts);
 
         ts
@@ -763,7 +763,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         .concatMapEager((Function<Integer, Flowable<Integer>>) _ -> {
             ts.cancel();
             return Flowable.never();
-        }, 1, 128)
+        }, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 1, 128))
         .subscribe(ts);
 
         ts.assertEmpty();
@@ -840,7 +840,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
                     s.onNext(2);
                     s.onError(new TestException());
                 }
-            }, 1, 1)
+            }, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 1, 1))
             .test(0L)
             .assertFailure(MissingBackpressureException.class);
 
@@ -854,7 +854,8 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     public void unboundedIn() {
         int n = Flowable.bufferSize() * 2;
         Flowable.range(1, n)
-        .concatMapEager((Function<Integer, Publisher<Integer>>) _ -> Flowable.just(1), Integer.MAX_VALUE, 16)
+        .concatMapEager((Function<Integer, Publisher<Integer>>) _ -> Flowable.just(1),
+                new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, Integer.MAX_VALUE, 16))
         .test()
         .assertValueCount(n)
         .assertComplete()
@@ -923,7 +924,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         .concatMapEager((Function<List<Integer>, Flowable<List<Integer>>>) v -> Flowable.just(v)
                 .subscribeOn(Schedulers.cached())
                 .doOnNext(_ -> Thread.sleep(new Random().nextInt(20)))
-                , 2, 3)
+                , new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 2, 3))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(list);
@@ -935,7 +936,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
         PublishProcessor<Integer> pp3 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Flowable.concatArrayEagerDelayError(pp1, pp2, pp3)
+        TestSubscriber<Integer> ts = Flowable.concatArrayEager(StandardConcurrentBufferedConfig.DELAY_ERRORS, pp1, pp2, pp3)
         .test();
 
         ts.assertEmpty();
@@ -968,7 +969,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
         PublishProcessor<Integer> pp3 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Flowable.concatArrayEagerDelayError(2, 2, pp1, pp2, pp3)
+        TestSubscriber<Integer> ts = Flowable.concatArrayEager(new StandardConcurrentBufferedConfig(ErrorMode.END, 2, 2), pp1, pp2, pp3)
         .test();
 
         ts.assertEmpty();
@@ -1003,7 +1004,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
         PublishProcessor<Integer> pp3 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Flowable.concatArrayEagerDelayError(2, 2, pp1, pp2, pp3)
+        TestSubscriber<Integer> ts = Flowable.concatArrayEager(new StandardConcurrentBufferedConfig(ErrorMode.END, 2, 2), pp1, pp2, pp3)
         .test();
 
         ts.assertEmpty();
@@ -1075,13 +1076,13 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-        upstream.concatMapEagerDelayError((Function<Integer, Flowable<Integer>>) v -> Flowable.just(v).hide(), false));
+        upstream.concatMapEager((Function<Integer, Flowable<Integer>>) v -> Flowable.just(v).hide(), StandardConcurrentBufferedConfig.DELAY_ERRORS_BOUNDARY));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-        upstream.concatMapEagerDelayError((Function<Integer, Flowable<Integer>>) v -> Flowable.just(v).hide(), true));
+        upstream.concatMapEager((Function<Integer, Flowable<Integer>>) v -> Flowable.just(v).hide(), StandardConcurrentBufferedConfig.DELAY_ERRORS));
     }
 
     @Test
@@ -1132,21 +1133,21 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     public void innerSyncFused() {
         Flowable.just(1)
         .hide()
-        .concatMapEagerDelayError(_ -> Flowable.range(1, 10), true, 1, 1)
+        .concatMapEager(_ -> Flowable.range(1, 10), new StandardConcurrentBufferedConfig(ErrorMode.END, 1, 1))
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.never().concatMapEagerDelayError(_ -> Flowable.never(), false));
+        TestHelper.assertBadRequestReported(Flowable.never().concatMapEager(_ -> Flowable.never(), StandardConcurrentBufferedConfig.DELAY_ERRORS_BOUNDARY));
     }
 
     @Test
     public void cancelAfterOnNext() {
         Flowable.just(1)
         .hide()
-        .concatMapEagerDelayError(_ -> Flowable.range(1, 5).hide(), true)
+        .concatMapEager(_ -> Flowable.range(1, 5).hide(), StandardConcurrentBufferedConfig.DELAY_ERRORS)
         .takeUntil(_ -> true)
         .test()
         .assertResult(1);
@@ -1156,7 +1157,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     public void noInnerQueue() {
         Flowable.just(1)
         .hide()
-        .concatMapEagerDelayError(_ -> Flowable.fromPublisher(_ -> { }), true)
+        .concatMapEager(_ -> Flowable.fromPublisher(_ -> { }), StandardConcurrentBufferedConfig.DELAY_ERRORS)
         .test(0L)
         .assertEmpty()
         .requestMore(1L)

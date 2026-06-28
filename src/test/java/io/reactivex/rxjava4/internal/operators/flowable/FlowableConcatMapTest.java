@@ -15,15 +15,16 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.concurrent.*;
 import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.operators.flowable.FlowableConcatMap.SimpleScalarSubscription;
 import io.reactivex.rxjava4.processors.*;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -78,7 +79,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
             PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = source
-                    .concatMap(v -> v, n + 1)
+                    .concatMap(v -> v, new StandardBufferedConfig(n + 1))
                     .test(1L);
 
             TestHelper.race(() -> {
@@ -103,7 +104,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
             PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = source
-                    .concatMapDelayError(v -> v, true, n + 1)
+                    .concatMap(v -> v, new StandardBufferedConfig(ErrorMode.END, n + 1))
                     .test(1L);
 
             TestHelper.race(() -> {
@@ -131,7 +132,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
             }
             return name;
         })
-        .concatMapDelayError((Function<String, Publisher<?>>) Flowable::just)
+        .concatMap((Function<String, Publisher<?>>) Flowable::just, StandardBufferedConfig.MIN_DELAY_ERRORS)
         .observeOn(Schedulers.computation())
         .distinct()
         .test()
@@ -158,7 +159,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
             throw new TestException();
         })
         .compose(TestHelper.<Integer>flowableStripBoundary())
-        .concatMapDelayError(Flowable::just)
+        .concatMap(Flowable::just, StandardBufferedConfig.MIN_DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class);
     }
@@ -178,12 +179,12 @@ public class FlowableConcatMapTest extends RxJavaTest {
     @Test
     public void delayErrorCallableTillTheEnd() {
         Flowable.just(1, 2, 3, 101, 102, 23, 890, 120, 32)
-        .concatMapDelayError((Function<Integer, Flowable<Integer>>) integer -> Flowable.fromCallable(() -> {
+        .concatMap((Function<Integer, Flowable<Integer>>) integer -> Flowable.fromCallable(() -> {
             if (integer >= 100) {
                 throw new NullPointerException("test null exp");
             }
             return integer;
-        }))
+        }), StandardBufferedConfig.MIN_DELAY_ERRORS)
         .test()
         .assertFailure(CompositeException.class, 1, 2, 3, 23, 32);
     }
@@ -191,12 +192,12 @@ public class FlowableConcatMapTest extends RxJavaTest {
     @Test
     public void delayErrorCallableEager() {
         Flowable.just(1, 2, 3, 101, 102, 23, 890, 120, 32)
-        .concatMapDelayError((Function<Integer, Flowable<Integer>>) integer -> Flowable.fromCallable(() -> {
+        .concatMap((Function<Integer, Flowable<Integer>>) integer -> Flowable.fromCallable(() -> {
             if (integer >= 100) {
                 throw new NullPointerException("test null exp");
             }
             return integer;
-        }), false, 2)
+        }), new StandardBufferedConfig(ErrorMode.BOUNDARY, 2))
         .test()
         .assertFailure(NullPointerException.class, 1, 2, 3);
     }
@@ -210,13 +211,13 @@ public class FlowableConcatMapTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-            upstream.concatMapDelayError(v -> Flowable.just(v).hide(), false, 2));
+            upstream.concatMap(v -> Flowable.just(v).hide(), new StandardBufferedConfig(ErrorMode.BOUNDARY, 2)));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-            upstream.concatMapDelayError(v -> Flowable.just(v).hide(), true, 2));
+            upstream.concatMap(v -> Flowable.just(v).hide(), new StandardBufferedConfig(ErrorMode.END, 2)));
     }
 
     @Test

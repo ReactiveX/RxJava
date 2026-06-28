@@ -917,7 +917,8 @@ public abstract class Completable implements CompletableSource {
             }
             return RxJavaPlugins.onAssembly(new CompletableMergeArray(sources));
         }
-        return Flowable.fromArray(sources).flatMapCompletable(Functions.identity(), config.delayErrors(), config.maxConcurrency());
+        return Flowable.fromArray(sources)
+                .flatMapCompletable(Functions.identity(), config);
     }
 
     /**
@@ -949,7 +950,8 @@ public abstract class Completable implements CompletableSource {
             }
             return RxJavaPlugins.onAssembly(new CompletableMergeIterable(sources));
         }
-        return Flowable.fromIterable(sources).flatMapCompletable(Functions.identity(), config.delayErrors(), config.maxConcurrency());
+        return Flowable.fromIterable(sources)
+                .flatMapCompletable(Functions.identity(), config);
     }
 
     /**
@@ -2614,7 +2616,7 @@ public abstract class Completable implements CompletableSource {
     @BackpressureSupport(BackpressureKind.FULL)
     public final <@NonNull T> Flowable<T> startWith(@NonNull SingleSource<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Single.wrap(other).toFlowable(), toFlowable());
+        return Flowable.concatArray(Single.wrap(other).toFlowable(), toFlowable());
     }
 
     /**
@@ -2640,7 +2642,7 @@ public abstract class Completable implements CompletableSource {
     @BackpressureSupport(BackpressureKind.FULL)
     public final <@NonNull T> Flowable<T> startWith(@NonNull MaybeSource<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Maybe.wrap(other).toFlowable(), toFlowable());
+        return Flowable.concatArray(Maybe.wrap(other).toFlowable(), toFlowable());
     }
 
     /**

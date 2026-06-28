@@ -18,13 +18,14 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.*;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.processors.*;
@@ -272,7 +273,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
                     s.onError(new TestException());
                 }
             }
-            .flatMapStream(_ -> Stream.of(1, 2), 1)
+            .flatMapStream(_ -> Stream.of(1, 2), new StandardBufferedConfig(1))
             .test(0)
             .assertFailure(QueueOverflowException.class);
 
@@ -357,7 +358,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     public void rangeBackpressured() {
         Flowable.range(1, 5)
         .hide()
-        .concatMapStream(Stream::of, 1)
+        .concatMapStream(Stream::of, new StandardBufferedConfig(1))
         .test(0)
         .assertEmpty()
         .requestMore(5)

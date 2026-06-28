@@ -13,14 +13,15 @@
 
 package io.reactivex.rxjava4.flowable;
 
-import org.junit.Test;
-
 import java.util.concurrent.Flow.Publisher;
 
+import org.junit.Test;
+
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.flowable.FlowableEventStream.Event;
 import io.reactivex.rxjava4.flowables.GroupedFlowable;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 
 public class FlowableGroupByTests extends RxJavaTest {
@@ -65,7 +66,7 @@ public class FlowableGroupByTests extends RxJavaTest {
         Flowable.range(0, 20)
         .groupBy(i -> i % 5)
         // need to prefetch as many groups as groupBy produces to avoid MBE
-        .concatMap((Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>) v -> v, 20)
+        .concatMap((Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>) v -> v, new StandardBufferedConfig(20))
         .subscribe(ts);
 
         // Behavior change: this now counts as group abandonment because concatMap

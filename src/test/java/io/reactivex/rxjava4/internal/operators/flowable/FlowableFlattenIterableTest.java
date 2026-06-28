@@ -22,6 +22,7 @@ import org.junit.*;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -431,7 +432,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void normalPrefetchViaFlatMap() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        Flowable.range(1, 5).flatMapIterable(mapper, 2)
+        Flowable.range(1, 5).flatMapIterable(mapper, new StandardBufferedConfig(2))
         .subscribe(ts);
 
         ts.assertValues(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
@@ -445,7 +446,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
         Flowable.range(1, 5)
         .flatMapIterable((Function<Integer, Iterable<Integer>>) _ -> Collections.singletonList(1),
-                (a, b) -> a * 10 + b, 2)
+                (a, b) -> a * 10 + b, new StandardConcurrentBufferedConfig(2))
         .subscribe(ts)
         ;
 
@@ -457,7 +458,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     @Test
     public void flatMapIterablePrefetch() {
         Flowable.just(1, 2)
-        .flatMapIterable((Function<Integer, Iterable<Integer>>) t -> List.of(t * 10), 1)
+        .flatMapIterable((Function<Integer, Iterable<Integer>>) t -> List.of(t * 10), new StandardBufferedConfig(1))
         .test()
         .assertResult(10, 20);
     }
@@ -534,7 +535,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     @Test
     public void smallPrefetch() {
         Flowable.just(1, 2, 3)
-        .flatMapIterable(Functions.justFunction(Arrays.asList(1, 2, 3)), 1)
+        .flatMapIterable(Functions.justFunction(Arrays.asList(1, 2, 3)), new StandardBufferedConfig(1))
         .test()
         .assertResult(1, 2, 3, 1, 2, 3, 1, 2, 3);
     }
@@ -542,7 +543,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     @Test
     public void smallPrefetch2() {
         Flowable.just(1, 2, 3).hide()
-        .flatMapIterable(Functions.justFunction(Collections.emptyList()), 1)
+        .flatMapIterable(Functions.justFunction(Collections.emptyList()), new StandardBufferedConfig(1))
         .test()
         .assertResult();
     }
@@ -645,7 +646,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         .map(_ -> {
             throw new TestException();
         })
-        .flatMapIterable(Functions.justFunction(Collections.emptyList()), 1)
+        .flatMapIterable(Functions.justFunction(Collections.emptyList()), new StandardBufferedConfig(1))
         .test()
         .assertFailure(TestException.class);
     }
@@ -653,7 +654,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     @Test
     public void take() {
         Flowable.range(1, 3)
-        .flatMapIterable(Functions.justFunction(List.of(1)), 1)
+        .flatMapIterable(Functions.justFunction(List.of(1)), new StandardBufferedConfig(1))
         .take(1)
         .test()
         .assertResult(1);
@@ -670,7 +671,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
                 s.onNext(3);
             }
         }
-        .flatMapIterable(Functions.justFunction(List.of(1)), 1)
+        .flatMapIterable(Functions.justFunction(List.of(1)), new StandardBufferedConfig(1))
         .test(0L)
         .assertFailure(QueueOverflowException.class);
     }
@@ -678,7 +679,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     @Test
     public void oneByOne() {
         Flowable.range(1, 3).hide()
-        .flatMapIterable(Functions.justFunction(List.of(1)), 1)
+        .flatMapIterable(Functions.justFunction(List.of(1)), new StandardBufferedConfig(1))
         .rebatchRequests(1)
         .test()
         .assertResult(1, 1, 1);

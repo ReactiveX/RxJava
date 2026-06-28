@@ -63,7 +63,7 @@ public class FlowableReduceTest extends RxJavaTest {
 
     @Test
     public void aggregateAsIntSumSourceThrowsFlowable() {
-        Flowable<Integer> result = Flowable.concat(Flowable.just(1, 2, 3, 4, 5),
+        Flowable<Integer> result = Flowable.concatArray(Flowable.just(1, 2, 3, 4, 5),
                 Flowable.<Integer> error(new TestException()))
                 .reduce(0, sum).toFlowable().map(v -> v);
 
@@ -130,7 +130,7 @@ public class FlowableReduceTest extends RxJavaTest {
 
     @Test
     public void aggregateAsIntSumSourceThrows() {
-        Single<Integer> result = Flowable.concat(Flowable.just(1, 2, 3, 4, 5),
+        Single<Integer> result = Flowable.concatArray(Flowable.just(1, 2, 3, 4, 5),
                 Flowable.<Integer> error(new TestException()))
                 .reduce(0, sum).map(v -> v);
 

@@ -22,6 +22,7 @@ import org.junit.Test;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
@@ -47,7 +48,8 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalDelayError() {
         Flowable.range(1, 10)
-        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, true, Integer.MAX_VALUE)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just,
+                new StandardConcurrentConfig(true, Integer.MAX_VALUE))
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
@@ -69,7 +71,8 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalAsyncMaxConcurrency() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
-        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v).subscribeOn(Schedulers.computation()), false, 3)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v ->
+        Single.just(v).subscribeOn(Schedulers.computation()), new StandardConcurrentConfig(false, 3))
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
@@ -82,7 +85,8 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalAsyncMaxConcurrency1() {
         Flowable.range(1, 10)
-        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v).subscribeOn(Schedulers.computation()), false, 1)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v ->
+            Single.just(v).subscribeOn(Schedulers.computation()), new StandardConcurrentConfig(false, 1))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -127,7 +131,8 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAll() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
-        .flatMapSingle((Function<Integer, SingleSource<Integer>>) _ -> Single.error(new TestException()), true, Integer.MAX_VALUE)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) _ ->
+            Single.error(new TestException()), new StandardConcurrentConfig(true, Integer.MAX_VALUE))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -150,7 +155,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalMaxConcurrent1Backpressured() {
         Flowable.range(1, 10)
-        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, false, 1)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, new StandardConcurrentConfig(false, 1))
         .rebatchRequests(1)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -159,7 +164,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalMaxConcurrent2Backpressured() {
         Flowable.range(1, 10)
-        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, false, 2)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, new StandardConcurrentConfig(false, 2))
         .rebatchRequests(1)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -220,7 +225,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
                 return pp.singleOrError();
             }
             return Single.error(new TestException());
-        }, true, Integer.MAX_VALUE)
+        }, new StandardConcurrentConfig(true, Integer.MAX_VALUE))
         .test();
 
         pp.onNext(1);
@@ -371,7 +376,8 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void errorDelayed() {
         Flowable.just(1)
-        .flatMapSingle(Functions.justFunction(Single.<Integer>error(new TestException())), true, 16)
+        .flatMapSingle(Functions.justFunction(Single.<Integer>error(new TestException())),
+                new StandardConcurrentConfig(true, 16))
         .test(0L)
         .assertFailure(TestException.class);
     }
@@ -392,7 +398,9 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void asyncFlattenErrorMaxConcurrency() {
         Flowable.range(1, 1000)
-        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> Maybe.<Integer>error(new TestException()).subscribeOn(Schedulers.computation()), true, 128)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ ->
+            Maybe.<Integer>error(new TestException()).subscribeOn(Schedulers.computation()),
+            new StandardConcurrentConfig(true, 128))
         .take(500)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -408,7 +416,8 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-            upstream.flatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), true, 2));
+            upstream.flatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(),
+                    new StandardConcurrentConfig(true, 2)));
     }
 
     @Test

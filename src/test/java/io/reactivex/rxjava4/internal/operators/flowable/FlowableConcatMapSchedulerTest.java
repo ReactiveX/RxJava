@@ -18,14 +18,14 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -50,7 +50,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             }
             return name;
         })
-        .concatMap((Function<String, Publisher<?>>) Flowable::just, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap((Function<String, Publisher<?>>) Flowable::just, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .observeOn(Schedulers.computation())
         .distinct()
         .test()
@@ -66,7 +66,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = source
-                    .concatMap(v -> v, n + 1, ImmediateThinScheduler.INSTANCE)
+                    .concatMap(v -> v, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(n + 1))
                     .test(1L);
 
             TestHelper.race(() -> {
@@ -91,7 +91,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = source
-                    .concatMapDelayError(v -> v, true, n + 1, ImmediateThinScheduler.INSTANCE)
+                    .concatMap(v -> v, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, n + 1))
                     .test(1L);
 
             TestHelper.race(() -> {
@@ -119,7 +119,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             }
             return name;
         })
-        .concatMapDelayError((Function<String, Publisher<?>>) Flowable::just, true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap((Function<String, Publisher<?>>) Flowable::just, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .observeOn(Schedulers.computation())
         .distinct()
         .test()
@@ -134,7 +134,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             throw new TestException();
         })
         .compose(TestHelper.<Integer>flowableStripBoundary())
-        .concatMap((Function<Integer, Publisher<Integer>>) Flowable::just, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap((Function<Integer, Publisher<Integer>>) Flowable::just, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .test()
         .assertFailure(TestException.class);
     }
@@ -146,7 +146,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             throw new TestException();
         })
         .compose(TestHelper.<Integer>flowableStripBoundary())
-        .concatMapDelayError((Function<Integer, Publisher<Integer>>) Flowable::just, true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap((Function<Integer, Publisher<Integer>>) Flowable::just, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .test()
         .assertFailure(TestException.class);
     }
@@ -157,7 +157,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.range(1, 5)
         .concatMap((Function<Integer, Flowable<Integer>>) v ->
-            Flowable.just(v).doOnCancel(counter::getAndIncrement), 2, ImmediateThinScheduler.INSTANCE)
+            Flowable.just(v).doOnCancel(counter::getAndIncrement), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
@@ -167,12 +167,12 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void delayErrorCallableTillTheEnd() {
         Flowable.just(1, 2, 3, 101, 102, 23, 890, 120, 32)
-        .concatMapDelayError((Function<Integer, Flowable<Integer>>) integer -> Flowable.fromCallable(() -> {
+        .concatMap((Function<Integer, Flowable<Integer>>) integer -> Flowable.fromCallable(() -> {
             if (integer >= 100) {
                 throw new NullPointerException("test null exp");
             }
             return integer;
-        }), true, 2, ImmediateThinScheduler.INSTANCE)
+        }), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .test()
         .assertFailure(CompositeException.class, 1, 2, 3, 23, 32);
     }
@@ -180,12 +180,12 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void delayErrorCallableEager() {
         Flowable.just(1, 2, 3, 101, 102, 23, 890, 120, 32)
-        .concatMapDelayError((Function<Integer, Flowable<Integer>>) integer -> Flowable.fromCallable(() -> {
+        .concatMap((Function<Integer, Flowable<Integer>>) integer -> Flowable.fromCallable(() -> {
             if (integer >= 100) {
                 throw new NullPointerException("test null exp");
             }
             return integer;
-        }), false, 2, ImmediateThinScheduler.INSTANCE)
+        }), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.BOUNDARY, 2))
         .test()
         .assertFailure(NullPointerException.class, 1, 2, 3);
     }
@@ -193,7 +193,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperScheduled() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMap((Function<Integer, Flowable<String>>) _ -> Flowable.just(Thread.currentThread().getName()), 2, Schedulers.single())
+        .concatMap((Function<Integer, Flowable<String>>) _ -> Flowable.just(Thread.currentThread().getName()), Schedulers.single(),
+                new StandardBufferedConfig(2))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -206,7 +207,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperScheduledHidden() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMap((Function<Integer, Flowable<String>>) _ -> Flowable.just(Thread.currentThread().getName()).hide(), 2, Schedulers.single())
+        .concatMap((Function<Integer, Flowable<String>>) _ -> Flowable.just(Thread.currentThread().getName()).hide(), Schedulers.single(),
+                new StandardBufferedConfig(2))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -219,7 +221,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperDelayErrorScheduled() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMapDelayError((Function<Integer, Flowable<String>>) _ -> Flowable.just(Thread.currentThread().getName()), false, 2, Schedulers.single())
+        .concatMap((Function<Integer, Flowable<String>>) _ -> Flowable.just(Thread.currentThread().getName()), Schedulers.single(),
+                new StandardBufferedConfig(ErrorMode.BOUNDARY, 2))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -232,8 +235,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperDelayErrorScheduledHidden() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMapDelayError((Function<Integer, Flowable<String>>) _ ->
-            Flowable.just(Thread.currentThread().getName()).hide(), false, 2, Schedulers.single())
+        .concatMap((Function<Integer, Flowable<String>>) _ ->
+            Flowable.just(Thread.currentThread().getName()).hide(), Schedulers.single(),
+            new StandardBufferedConfig(ErrorMode.BOUNDARY, 2))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -246,8 +250,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperDelayError2Scheduled() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMapDelayError((Function<Integer, Flowable<String>>) _ ->
-            Flowable.just(Thread.currentThread().getName()), true, 2, Schedulers.single())
+        .concatMap((Function<Integer, Flowable<String>>) _ ->
+            Flowable.just(Thread.currentThread().getName()), Schedulers.single(),
+            new StandardBufferedConfig(ErrorMode.END, 2))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -260,8 +265,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperDelayError2ScheduledHidden() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMapDelayError((Function<Integer, Flowable<String>>) _ ->
-            Flowable.just(Thread.currentThread().getName()).hide(), true, 2, Schedulers.single())
+        .concatMap((Function<Integer, Flowable<String>>) _ ->
+            Flowable.just(Thread.currentThread().getName()).hide(), Schedulers.single(),
+            new StandardBufferedConfig(ErrorMode.END, 2))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -288,7 +294,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         int n = 5000;
         final AtomicInteger counter = new AtomicInteger();
 
-        Flowable.range(1, n).concatMap(func, 2, ImmediateThinScheduler.INSTANCE)
+        Flowable.range(1, n)
+        .concatMap(func, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .subscribe(new DefaultSubscriber<>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
@@ -338,7 +345,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             }
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
             Flowable.range(0, 1000)
-            .concatMap(t -> Flowable.fromIterable(Collections.singletonList(t)), 2, ImmediateThinScheduler.INSTANCE)
+            .concatMap(t -> Flowable.fromIterable(Collections.singletonList(t)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
             .observeOn(Schedulers.computation()).subscribe(ts);
 
             ts.awaitDone(2500, TimeUnit.MILLISECONDS);
@@ -376,7 +383,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void concatMapJustJust() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.just(1)).concatMap((Function)Functions.identity(), 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        Flowable.just(Flowable.just(1))
+        .concatMap((Function)Functions.identity(), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
+        .subscribe(ts);
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -388,7 +397,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void concatMapJustRange() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.range(1, 5)).concatMap((Function)Functions.identity(), 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        Flowable.just(Flowable.range(1, 5))
+        .concatMap((Function)Functions.identity(), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
+        .subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();
@@ -400,7 +411,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void concatMapDelayErrorJustJust() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.just(1)).concatMapDelayError((Function)Functions.identity(), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        Flowable.just(Flowable.just(1))
+        .concatMap((Function)Functions.identity(), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
+        .subscribe(ts);
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -412,7 +425,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void concatMapDelayErrorJustRange() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.range(1, 5)).concatMapDelayError((Function)Functions.identity(), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        Flowable.just(Flowable.range(1, 5))
+        .concatMap((Function)Functions.identity(), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
+        .subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();
@@ -444,7 +459,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapDelayError() {
         Flowable.just(Flowable.just(1), Flowable.just(2))
-        .concatMapDelayError(Functions.<Flowable<Integer>>identity(), true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.<Flowable<Integer>>identity(), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .test()
         .assertResult(1, 2);
     }
@@ -452,7 +467,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapDelayErrorJustSource() {
         Flowable.just(0)
-        .concatMapDelayError(_ -> Flowable.just(1), true, 16, ImmediateThinScheduler.INSTANCE)
+        .concatMap(_ -> Flowable.just(1), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 16))
         .test()
         .assertResult(1);
 
@@ -461,7 +476,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapJustSource() {
         Flowable.just(0).hide()
-        .concatMap(_ -> Flowable.just(1), 16, ImmediateThinScheduler.INSTANCE)
+        .concatMap(_ -> Flowable.just(1), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(16))
         .test()
         .assertResult(1);
     }
@@ -469,7 +484,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapJustSourceDelayError() {
         Flowable.just(0).hide()
-        .concatMapDelayError(_ -> Flowable.just(1), false, 16, ImmediateThinScheduler.INSTANCE)
+        .concatMap(_ -> Flowable.just(1), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.BOUNDARY, 16))
         .test()
         .assertResult(1);
     }
@@ -477,7 +492,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapScalarBackpressured() {
         Flowable.just(1).hide()
-        .concatMap(Functions.justFunction(Flowable.just(2)), 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.justFunction(Flowable.just(2)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .test(1L)
         .assertResult(2);
     }
@@ -485,7 +500,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapScalarBackpressuredDelayError() {
         Flowable.just(1).hide()
-        .concatMapDelayError(Functions.justFunction(Flowable.just(2)), true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.justFunction(Flowable.just(2)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .test(1L)
         .assertResult(2);
     }
@@ -493,7 +508,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapEmpty() {
         Flowable.just(1).hide()
-        .concatMap(Functions.justFunction(Flowable.empty()), 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.justFunction(Flowable.empty()), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .test()
         .assertResult();
     }
@@ -501,7 +516,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapEmptyDelayError() {
         Flowable.just(1).hide()
-        .concatMapDelayError(Functions.justFunction(Flowable.empty()), true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.justFunction(Flowable.empty()), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .test()
         .assertResult();
     }
@@ -517,7 +532,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
                 }
             }
         }
-        .concatMap(Functions.justFunction(Flowable.just(2)), 8, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.justFunction(Flowable.just(2)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(8))
         .test(0L)
         .assertFailure(QueueOverflowException.class);
     }
@@ -525,9 +540,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(f ->
-            f.concatMap(Functions.justFunction(Flowable.just(2)), 2, ImmediateThinScheduler.INSTANCE));
+            f.concatMap(Functions.justFunction(Flowable.just(2)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2)));
         TestHelper.checkDoubleOnSubscribeFlowable(f ->
-            f.concatMapDelayError(Functions.justFunction(Flowable.just(2)), true, 2, ImmediateThinScheduler.INSTANCE));
+            f.concatMap(Functions.justFunction(Flowable.just(2)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2)));
     }
 
     @Test
@@ -544,7 +559,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             }
         };
 
-        pp.concatMap(Functions.justFunction(Flowable.just(1)), 2, ImmediateThinScheduler.INSTANCE)
+        pp.concatMap(Functions.justFunction(Flowable.just(1)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .subscribe(ts);
 
         pp.onNext(1);
@@ -568,7 +583,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             }
         };
 
-        pp.concatMap(Functions.justFunction(Flowable.just(1).hide()), 2, ImmediateThinScheduler.INSTANCE)
+        pp.concatMap(Functions.justFunction(Flowable.just(1).hide()), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .subscribe(ts);
 
         pp.onNext(1);
@@ -581,7 +596,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapInnerError() {
         Flowable.just(1).hide()
-        .concatMap(Functions.justFunction(Flowable.error(new TestException())), 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.justFunction(Flowable.error(new TestException())), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .test()
         .assertFailure(TestException.class);
     }
@@ -589,7 +604,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapInnerErrorDelayError() {
         Flowable.just(1).hide()
-        .concatMapDelayError(Functions.justFunction(Flowable.error(new TestException())), true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.justFunction(Flowable.error(new TestException())), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .test()
         .assertFailure(TestException.class);
     }
@@ -597,7 +612,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void badSource() {
         TestHelper.checkBadSourceFlowable(f ->
-        f.concatMap(Functions.justFunction(Flowable.just(1).hide()), 2, ImmediateThinScheduler.INSTANCE), true, 1, 1, 1);
+        f.concatMap(Functions.justFunction(Flowable.just(1).hide()), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2)), true, 1, 1, 1);
     }
 
     @Test
@@ -612,7 +627,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
                 s.onSubscribe(new BooleanSubscription());
                 s.onError(new TestException("First"));
             }
-        }), 2, ImmediateThinScheduler.INSTANCE)
+        }), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .to(TestHelper.<Integer>testConsumer());
 
         ts.assertFailureAndMessage(TestException.class, "First");
@@ -632,14 +647,14 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         @SuppressWarnings("rawtypes")
         final Subscriber[] ts0 = { null };
         TestSubscriberEx<Integer> ts = Flowable.just(1).hide()
-        .concatMapDelayError(Functions.justFunction(new Flowable<Integer>() /* NFI */ {
+        .concatMap(Functions.justFunction(new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 ts0[0] = s;
                 s.onSubscribe(new BooleanSubscription());
                 s.onError(new TestException("First"));
             }
-        }), true, 2, ImmediateThinScheduler.INSTANCE)
+        }), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .to(TestHelper.<Integer>testConsumer());
 
         ts.assertFailureAndMessage(TestException.class, "First");
@@ -657,14 +672,14 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void badSourceDelayError() {
         TestHelper.checkBadSourceFlowable(f ->
-            f.concatMapDelayError(Functions.justFunction(Flowable.just(1).hide()), true, 2, ImmediateThinScheduler.INSTANCE), true, 1, 1, 1);
+            f.concatMap(Functions.justFunction(Flowable.just(1).hide()), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2)), true, 1, 1, 1);
     }
 
     @Test
     public void fusedCrash() {
         Flowable.range(1, 2)
         .map(_ -> { throw new TestException(); })
-        .concatMap(Functions.justFunction(Flowable.just(1)), 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.justFunction(Flowable.just(1)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .test()
         .assertFailure(TestException.class);
     }
@@ -673,7 +688,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void fusedCrashDelayError() {
         Flowable.range(1, 2)
         .map(_ -> { throw new TestException(); })
-        .concatMapDelayError(Functions.justFunction(Flowable.just(1)), true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.justFunction(Flowable.just(1)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .test()
         .assertFailure(TestException.class);
     }
@@ -683,7 +698,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         Flowable.just(1).hide()
         .concatMap(Functions.justFunction(Flowable.fromCallable(() -> {
             throw new TestException();
-        })), 2, ImmediateThinScheduler.INSTANCE)
+        })), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .test()
         .assertFailure(TestException.class);
     }
@@ -691,9 +706,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void callableCrashDelayError() {
         Flowable.just(1).hide()
-        .concatMapDelayError(Functions.justFunction(Flowable.fromCallable(() -> {
+        .concatMap(Functions.justFunction(Flowable.fromCallable(() -> {
             throw new TestException();
-        })), true, 2, ImmediateThinScheduler.INSTANCE)
+        })), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .test()
         .assertFailure(TestException.class);
     }
@@ -701,16 +716,16 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.range(1, 2)
-        .concatMap(Functions.justFunction(Flowable.just(1)), 2, ImmediateThinScheduler.INSTANCE));
+        .concatMap(Functions.justFunction(Flowable.just(1)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2)));
 
         TestHelper.checkDisposed(Flowable.range(1, 2)
-        .concatMapDelayError(Functions.justFunction(Flowable.just(1)), true, 2, ImmediateThinScheduler.INSTANCE));
+        .concatMap(Functions.justFunction(Flowable.just(1)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2)));
     }
 
     @Test
     public void notVeryEnd() {
         Flowable.range(1, 2)
-        .concatMapDelayError(Functions.justFunction(Flowable.error(new TestException())), false, 16, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.justFunction(Flowable.error(new TestException())), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.BOUNDARY, 16))
         .test()
         .assertFailure(TestException.class);
     }
@@ -718,7 +733,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void error() {
         Flowable.error(new TestException())
-        .concatMapDelayError(Functions.justFunction(Flowable.just(2)), false, 16, ImmediateThinScheduler.INSTANCE)
+        .concatMap(Functions.justFunction(Flowable.just(2)), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.BOUNDARY, 16))
         .test()
         .assertFailure(TestException.class);
     }
@@ -728,7 +743,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         Flowable.range(1, 2)
         .concatMap((Function<Integer, Publisher<Object>>) _ -> {
             throw new TestException();
-        }, 2, ImmediateThinScheduler.INSTANCE)
+        }, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .test()
         .assertFailure(TestException.class);
     }
@@ -739,7 +754,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        source.concatMapDelayError(v -> Flowable.range(v, 2), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        source.concatMap(v -> Flowable.range(v, 2), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
+        .subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -758,7 +774,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(1, 3)
-        .concatMapDelayError((Function<Integer, Flowable<Integer>>) _ -> inner, true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap((Function<Integer, Flowable<Integer>>) _ -> inner, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .subscribe(ts);
 
         ts.assertValues(1, 2, 1, 2, 1, 2);
@@ -774,7 +790,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError((Function<Integer, Flowable<Integer>>) _ -> inner, true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap((Function<Integer, Flowable<Integer>>) _ -> inner, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .subscribe(ts);
 
         ts.assertValues(1, 2);
@@ -788,7 +804,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError((Function<Integer, Flowable<Integer>>) _ -> null, true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap((Function<Integer, Flowable<Integer>>) _ -> null, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .subscribe(ts);
 
         ts.assertNoValues();
@@ -802,9 +818,10 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError((Function<Integer, Flowable<Integer>>) _ -> {
+        .concatMap((Function<Integer, Flowable<Integer>>) _ -> {
             throw new TestException();
-        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        }, ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
+        .subscribe(ts);
 
         ts.assertNoValues();
         ts.assertError(TestException.class);
@@ -816,7 +833,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(1, 3)
-        .concatMapDelayError(v -> v == 2 ? Flowable.<Integer>empty() : Flowable.range(1, 2), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        .concatMap(v -> v == 2 ? Flowable.<Integer>empty() : Flowable.range(1, 2), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
+        .subscribe(ts);
 
         ts.assertValues(1, 2, 1, 2);
         ts.assertNoErrors();
@@ -828,7 +846,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(1, 3)
-        .concatMapDelayError(v -> v == 2 ? Flowable.just(3) : Flowable.range(1, 2), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        .concatMap(v -> v == 2 ? Flowable.just(3) : Flowable.range(1, 2), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
+        .subscribe(ts);
 
         ts.assertValues(1, 2, 3, 1, 2);
         ts.assertNoErrors();
@@ -840,7 +859,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
         Flowable.range(1, 3)
-        .concatMapDelayError(v -> Flowable.range(v, 2), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        .concatMap(v -> Flowable.range(v, 2), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
+        .subscribe(ts);
 
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -870,7 +890,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .observeOn(Schedulers.computation())
         .concatMap(_ -> Flowable.just(Thread.currentThread().getName())
                 .repeat(1000)
-                .observeOn(Schedulers.cached()), 2, Schedulers.single())
+                .observeOn(Schedulers.cached()), Schedulers.single(), new StandardBufferedConfig(2))
         .distinct()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -886,9 +906,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<String> ts = Flowable.range(1, 1000)
         .hide()
         .observeOn(Schedulers.computation())
-        .concatMapDelayError((Function<Integer, Flowable<String>>) _ -> Flowable.just(Thread.currentThread().getName())
+        .concatMap((Function<Integer, Flowable<String>>) _ -> Flowable.just(Thread.currentThread().getName())
                 .repeat(1000)
-                .observeOn(Schedulers.cached()), false, 2, Schedulers.single())
+                .observeOn(Schedulers.cached()), Schedulers.single(), new StandardBufferedConfig(ErrorMode.BOUNDARY, 2))
         .distinct()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -904,9 +924,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<String> ts = Flowable.range(1, 1000)
         .hide()
         .observeOn(Schedulers.computation())
-        .concatMapDelayError((Function<Integer, Flowable<String>>) _ -> Flowable.just(Thread.currentThread().getName())
+        .concatMap((Function<Integer, Flowable<String>>) _ -> Flowable.just(Thread.currentThread().getName())
                 .repeat(1000)
-                .observeOn(Schedulers.cached()), true, 2, Schedulers.single())
+                .observeOn(Schedulers.cached()), Schedulers.single(), new StandardBufferedConfig(ErrorMode.END, 2))
         .distinct()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -920,19 +940,19 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancel() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-        upstream.concatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v).hide(), 2, ImmediateThinScheduler.INSTANCE));
+        upstream.concatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v).hide(), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2)));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-        upstream.concatMapDelayError(v -> Flowable.just(v).hide(), false, 2, ImmediateThinScheduler.INSTANCE));
+        upstream.concatMap(v -> Flowable.just(v).hide(), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.BOUNDARY, 2)));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-        upstream.concatMapDelayError(v -> Flowable.just(v).hide(), true, 2, ImmediateThinScheduler.INSTANCE));
+        upstream.concatMap(v -> Flowable.just(v).hide(), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2)));
     }
 
     @Test
@@ -940,7 +960,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
         TestHelper.rejectFlowableFusion()
-        .concatMap(_ -> Flowable.never(), 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(_ -> Flowable.never(), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .subscribe(ts);
     }
 
@@ -949,7 +969,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
         TestHelper.rejectFlowableFusion()
-        .concatMapDelayError(_ -> Flowable.never(), true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(_ -> Flowable.never(), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .subscribe(ts);
     }
 
@@ -962,7 +982,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .concatMap(_ -> Flowable.fromCallable(() -> {
             ts.cancel();
             return 1;
-        }), 2, ImmediateThinScheduler.INSTANCE)
+        }), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .subscribe(ts);
 
         ts.assertEmpty();
@@ -974,10 +994,10 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide()
-        .concatMapDelayError(_ -> Flowable.fromCallable(() -> {
+        .concatMap(_ -> Flowable.fromCallable(() -> {
             ts.cancel();
             return 1;
-        }), true, 2, ImmediateThinScheduler.INSTANCE)
+        }), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2))
         .subscribe(ts);
 
         ts.assertEmpty();
@@ -1008,8 +1028,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide()
-        .concatMapDelayError(_ -> new EmptyDisposingFlowable(ts),
-                true, 2, ImmediateThinScheduler.INSTANCE
+        .concatMap(_ -> new EmptyDisposingFlowable(ts),
+                ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(ErrorMode.END, 2)
         )
         .subscribe(ts);
 
@@ -1021,7 +1041,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<>();
 
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .concatMap(_ -> Flowable.<Integer>fromPublisher(ref::set), 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(_ -> Flowable.<Integer>fromPublisher(ref::set), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .doOnError(_ -> {
             ref.get().onSubscribe(new BooleanSubscription());
             ref.get().onNext(1);
@@ -1037,7 +1057,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<Integer> ts = pp.concatMap(_ -> Flowable.fromCallable(() -> {
             pp.onError(new TestException());
             return 2;
-        }), 2, ImmediateThinScheduler.INSTANCE)
+        }), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
         .test()
         ;
 
@@ -1057,7 +1077,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
                 AtomicReference<Subscriber<? super Integer>> ref2 = new AtomicReference<>();
 
                 TestSubscriber<Integer> ts = Flowable.<Integer>fromPublisher(ref1::set)
-                .concatMap(_ -> Flowable.<Integer>fromPublisher(ref2::set), 2, ImmediateThinScheduler.INSTANCE)
+                .concatMap(_ -> Flowable.<Integer>fromPublisher(ref2::set), ImmediateThinScheduler.INSTANCE, new StandardBufferedConfig(2))
                 .test();
 
                 ref1.get().onSubscribe(new BooleanSubscription());

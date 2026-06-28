@@ -62,7 +62,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     @Test
     public void withError1Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
-                Flowable.concat(Flowable.just("one"),
+                Flowable.concatArray(Flowable.just("one"),
                         Flowable.<String> error(new TestException())),
                 Flowable.just("one", "two", "three")).toFlowable();
         verifyError(flowable);
@@ -72,7 +72,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void withError2Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three"),
-                Flowable.concat(Flowable.just("one"),
+                Flowable.concatArray(Flowable.just("one"),
                         Flowable.<String> error(new TestException()))).toFlowable();
         verifyError(flowable);
     }
@@ -80,9 +80,9 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     @Test
     public void withError3Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
-                Flowable.concat(Flowable.just("one"),
+                Flowable.concatArray(Flowable.just("one"),
                         Flowable.<String> error(new TestException())),
-                Flowable.concat(Flowable.just("one"),
+                Flowable.concatArray(Flowable.just("one"),
                         Flowable.<String> error(new TestException()))).toFlowable();
         verifyError(flowable);
     }
@@ -147,7 +147,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     @Test
     public void withError1() {
         Single<Boolean> single = Flowable.sequenceEqual(
-                Flowable.concat(Flowable.just("one"),
+                Flowable.concatArray(Flowable.just("one"),
                         Flowable.<String> error(new TestException())),
                 Flowable.just("one", "two", "three"));
         verifyError(single);
@@ -157,7 +157,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void withError2() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three"),
-                Flowable.concat(Flowable.just("one"),
+                Flowable.concatArray(Flowable.just("one"),
                         Flowable.<String> error(new TestException())));
         verifyError(single);
     }
@@ -165,9 +165,9 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     @Test
     public void withError3() {
         Single<Boolean> single = Flowable.sequenceEqual(
-                Flowable.concat(Flowable.just("one"),
+                Flowable.concatArray(Flowable.just("one"),
                         Flowable.<String> error(new TestException())),
-                Flowable.concat(Flowable.just("one"),
+                Flowable.concatArray(Flowable.just("one"),
                         Flowable.<String> error(new TestException())));
         verifyError(single);
     }

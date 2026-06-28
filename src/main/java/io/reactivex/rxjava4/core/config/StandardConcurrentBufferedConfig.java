@@ -47,7 +47,7 @@ public record StandardConcurrentBufferedConfig(@NonNull ErrorMode errorMode, int
     /**
      * The default configuration with error delay at the boundary and Flowable#bufferSize() as the maximum concurrency and buffer size setting.
      */
-    public static final StandardConcurrentBufferedConfig DELAY_ERRORS_BOUNDARY = new StandardConcurrentBufferedConfig(true);
+    public static final StandardConcurrentBufferedConfig DELAY_ERRORS_BOUNDARY = new StandardConcurrentBufferedConfig(ErrorMode.BOUNDARY);
 
     /**
      * The default configuration with no error delay, MAX_VALUE for concurrency and Flowable#bufferSize() as the maximum concurrency setting.
@@ -62,7 +62,8 @@ public record StandardConcurrentBufferedConfig(@NonNull ErrorMode errorMode, int
     /**
      * The default configuration with error delay at the boundary, MAX_VALUE for concurrency and Flowable#bufferSize() as the maximum concurrency setting.
      */
-    public static final StandardConcurrentBufferedConfig MAX_DELAY_ERRORS_BOUNDARY = new StandardConcurrentBufferedConfig(true, Integer.MAX_VALUE, Flowable.bufferSize());
+    public static final StandardConcurrentBufferedConfig MAX_DELAY_ERRORS_BOUNDARY =
+            new StandardConcurrentBufferedConfig(ErrorMode.BOUNDARY, Integer.MAX_VALUE, Flowable.bufferSize());
 
     /**
      * Optionally delay error, {@link Flowable#bufferSize()} sizes

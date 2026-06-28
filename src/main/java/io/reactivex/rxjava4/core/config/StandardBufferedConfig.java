@@ -49,12 +49,12 @@ public record StandardBufferedConfig(@NonNull ErrorMode errorMode, int bufferSiz
     public static final StandardBufferedConfig MIN_DEFAULT = new StandardBufferedConfig(ErrorMode.IMMEDIATE, 2);
 
     /**
-     * The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.
+     * The default config with error delay and 2 as the maximum buffer size / prefetch amount setting.
      */
-    public static final StandardBufferedConfig MIN_DELAYS_ERRORS = new StandardBufferedConfig(ErrorMode.END, 2);
+    public static final StandardBufferedConfig MIN_DELAY_ERRORS = new StandardBufferedConfig(ErrorMode.END, 2);
 
     /**
-     * The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.
+     * The default config with error delay till the boundary and 2 as the maximum buffer size / prefetch amount setting.
      */
     public static final StandardBufferedConfig MIN_DELAY_ERRORS_BOUNDARY = new StandardBufferedConfig(ErrorMode.BOUNDARY, 2);
 

@@ -20,7 +20,6 @@ import java.util.stream.*;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.config.*;
-import io.reactivex.rxjava4.core.docs.FlowableDocBasic;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.flowables.*;
@@ -156,9 +155,7 @@ import io.reactivex.rxjava4.subscribers.*;
  * @see ParallelFlowable
  * @see io.reactivex.rxjava4.subscribers.DisposableSubscriber
  */
-public abstract non-sealed class Flowable<@NonNull T> implements Publisher<T>,
-FlowableDocBasic<T>
-{
+public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /** The default buffer size. */
     static final int BUFFER_SIZE;
     static {
@@ -303,7 +300,7 @@ FlowableDocBasic<T>
     @NonNull
     public static <@NonNull T, @NonNull R> Flowable<R> combineLatestArray(@NonNull Publisher<? extends T>[] sources,
             @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatestArray(sources, combiner, bufferSize());
+        return combineLatestArray(sources, combiner, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -339,26 +336,26 @@ FlowableDocBasic<T>
      *            the collection of source {@code Publisher}s
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
-     * @param bufferSize
-     *            the internal buffer size and prefetch amount applied to every source {@code Flowable}
+     * @param config
+     *            the configuration record of this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code sources} or {@code combiner} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
+     * @since 4.0.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     public static <@NonNull T, @NonNull R> Flowable<R> combineLatestArray(@NonNull Publisher<? extends T>[] sources,
-            @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
+            @NonNull Function<? super Object[], ? extends R> combiner, @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return empty();
         }
         Objects.requireNonNull(combiner, "combiner is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<>(sources, combiner, bufferSize, false));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<>(sources, combiner, config.bufferSize(), config.delayErrors()));
     }
 
     /**
@@ -404,7 +401,7 @@ FlowableDocBasic<T>
     @NonNull
     public static <@NonNull T, @NonNull R> Flowable<R> combineLatest(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources,
             @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatest(sources, combiner, bufferSize());
+        return combineLatest(sources, combiner, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -440,225 +437,23 @@ FlowableDocBasic<T>
      *            the collection of source {@code Publisher}s
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
-     * @param bufferSize
-     *            the internal buffer size and prefetch amount applied to every source {@code Flowable}
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code sources} or {@code combiner} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
+     * @since 4.0.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     public static <@NonNull T, @NonNull R> Flowable<R> combineLatest(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources,
-            @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
+            @NonNull Function<? super Object[], ? extends R> combiner, @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<>(sources, combiner, bufferSize, false));
-    }
-
-    /**
-     * Combines a collection of source {@link Publisher}s by emitting an item that aggregates the latest values of each of
-     * the source {@code Publisher}s each time an item is received from any of the source {@code Publisher}s, where this
-     * aggregation is defined by a specified function.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@link ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If the provided array of source {@code Publisher}s is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
-     *   are requested in a bounded manner, however, their backpressure is not enforced (the operator won't signal
-     *   {@link MissingBackpressureException}) and may lead to {@link OutOfMemoryError} due to internal buffer bloat.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source {@code Publisher}s
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @NonNull
-    public static <@NonNull T, @NonNull R> Flowable<R> combineLatestArrayDelayError(@NonNull Publisher<? extends T>[] sources,
-            @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatestArrayDelayError(sources, combiner, bufferSize());
-    }
-
-    /**
-     * Combines a collection of source {@link Publisher}s by emitting an item that aggregates the latest values of each of
-     * the source {@code Publisher}s each time an item is received from any of the source {@code Publisher}s, where this
-     * aggregation is defined by a specified function and delays any error from the sources until
-     * all source {@code Publisher}s terminate.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@link ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If the provided array of source {@code Publisher}s is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
-     *   are requested in a bounded manner, however, their backpressure is not enforced (the operator won't signal
-     *   {@link MissingBackpressureException}) and may lead to {@link OutOfMemoryError} due to internal buffer bloat.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source {@code Publisher}s
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
-     * @param bufferSize
-     *            the internal buffer size and prefetch amount applied to every source {@code Flowable}
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    public static <@NonNull T, @NonNull R> Flowable<R> combineLatestArrayDelayError(@NonNull Publisher<? extends T>[] sources,
-            @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
-        Objects.requireNonNull(sources, "sources is null");
-        Objects.requireNonNull(combiner, "combiner is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        if (sources.length == 0) {
-            return empty();
-        }
-        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<>(sources, combiner, bufferSize, true));
-    }
-
-    /**
-     * Combines a collection of source {@link Publisher}s by emitting an item that aggregates the latest values of each of
-     * the source {@code Publisher}s each time an item is received from any of the source {@code Publisher}s, where this
-     * aggregation is defined by a specified function and delays any error from the sources until
-     * all source {@code Publisher}s terminate.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@link ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If the provided iterable of source {@code Publisher}s is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
-     *   are requested in a bounded manner, however, their backpressure is not enforced (the operator won't signal
-     *   {@link MissingBackpressureException}) and may lead to {@link OutOfMemoryError} due to internal buffer bloat.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source {@code Publisher}s
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @NonNull
-    public static <@NonNull T, @NonNull R> Flowable<R> combineLatestDelayError(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources,
-            @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatestDelayError(sources, combiner, bufferSize());
-    }
-
-    /**
-     * Combines a collection of source {@link Publisher}s by emitting an item that aggregates the latest values of each of
-     * the source {@code Publisher}s each time an item is received from any of the source {@code Publisher}s, where this
-     * aggregation is defined by a specified function and delays any error from the sources until
-     * all source {@code Publisher}s terminate.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@link ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If the provided iterable of source {@code Publisher}s is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
-     *   are requested in a bounded manner, however, their backpressure is not enforced (the operator won't signal
-     *   {@link MissingBackpressureException}) and may lead to {@link OutOfMemoryError} due to internal buffer bloat.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source {@code Publisher}s
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
-     * @param bufferSize
-     *            the internal buffer size and prefetch amount applied to every source {@code Flowable}
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @NonNull
-    public static <@NonNull T, @NonNull R> Flowable<R> combineLatestDelayError(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources,
-            @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
-        Objects.requireNonNull(sources, "sources is null");
-        Objects.requireNonNull(combiner, "combiner is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<>(sources, combiner, bufferSize, true));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<>(sources, combiner, config.bufferSize(), config.delayErrors()));
     }
 
     /**
@@ -704,7 +499,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new Publisher[] { source1, source2 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new Publisher[] { source1, source2 }, Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -755,7 +550,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new Publisher[] { source1, source2, source3 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new Publisher[] { source1, source2, source3 }, Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -811,7 +606,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(source4, "source4 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new Publisher[] { source1, source2, source3, source4 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new Publisher[] { source1, source2, source3, source4 }, Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -872,7 +667,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source4, "source4 is null");
         Objects.requireNonNull(source5, "source5 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5 }, Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -937,7 +732,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source5, "source5 is null");
         Objects.requireNonNull(source6, "source6 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5, source6 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5, source6 }, Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -1008,7 +803,8 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source6, "source6 is null");
         Objects.requireNonNull(source7, "source7 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5, source6, source7 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5, source6, source7 },
+                Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -1083,7 +879,8 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source7, "source7 is null");
         Objects.requireNonNull(source8, "source8 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5, source6, source7, source8 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5, source6, source7, source8 },
+                Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -1166,7 +963,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(combiner, "combiner is null");
         return combineLatestArray(new Publisher[] { source1, source2, source3,
                 source4, source5, source6,
-                source7, source8, source9 }, Functions.toFunction(combiner), bufferSize());
+                source7, source8, source9 }, Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -1188,7 +985,6 @@ FlowableDocBasic<T>
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1196,7 +992,38 @@ FlowableDocBasic<T>
     public static <@NonNull T> Flowable<T> concat(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         // unlike general sources, fromIterable can only throw on a boundary because it is consumed only there
-        return fromIterable(sources).concatMapDelayError((Function)Functions.identity(), false, 2);
+        return concat(sources, StandardBufferedConfig.MIN_DELAY_ERRORS_BOUNDARY);
+    }
+
+    /**
+     * Concatenates the {@link Iterable} sequence of {@link Publisher}s into a single sequence by subscribing to each {@code Publisher},
+     * one after the other, one at a time and delays any errors till the all inner {@code Publisher}s terminate.
+     *
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Publisher}
+     *  sources are expected to honor backpressure as well. If the outer violates this, a
+     *  {@link MissingBackpressureException} is signaled. If any of the inner {@code Publisher}s violates
+     *  this, it <em>may</em> throw an {@link IllegalStateException} when an inner {@code Publisher} completes.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common element base type
+     * @param sources the {@code Iterable} sequence of {@code Publisher}s
+     * @param config the configuration record for this operator
+     * @return the new {@code Flowable} with the concatenating behavior
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @since 4.0.0
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <@NonNull T> Flowable<T> concat(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources,
+            @NonNull StandardBufferedConfig config) {
+        return fromIterable(sources).concatMap((Function)Functions.identity(), config);
     }
 
     /**
@@ -1226,7 +1053,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends Publisher<? extends T>> sources) {
-        return concat(sources, bufferSize());
+        return concat(sources, StandardBufferedConfig.MIN_DEFAULT);
     }
 
     /**
@@ -1247,135 +1074,21 @@ FlowableDocBasic<T>
      * @param <T> the common element base type
      * @param sources
      *            a {@code Publisher} that emits {@code Publisher}s
-     * @param prefetch
-     *            the number of {@code Publisher}s to prefetch from the sources sequence.
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
+     * @since 4.0.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <@NonNull T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends Publisher<? extends T>> sources, int prefetch) {
-        return fromPublisher(sources).concatMap((Function)Functions.identity(), prefetch);
-    }
-
-    /**
-     * Returns a {@code Flowable} that emits the items emitted by two {@link Publisher}s, one after the other, without
-     * interleaving them.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
-     *  sources are expected to honor backpressure as well.
-     *  If any of the source {@code Publisher}s violate this, it <em>may</em> throw an
-     *  {@link IllegalStateException} when that source {@code Publisher} completes.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            a {@code Publisher} to be concatenated
-     * @param source2
-     *            a {@code Publisher} to be concatenated
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concat(@NonNull Publisher<? extends T> source1, @NonNull Publisher<? extends T> source2) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        return concatArray(source1, source2);
-    }
-
-    /**
-     * Returns a {@code Flowable} that emits the items emitted by three {@link Publisher}s, one after the other, without
-     * interleaving them.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
-     *  sources are expected to honor backpressure as well.
-     *  If any of the source {@code Publisher}s violate this, it <em>may</em> throw an
-     *  {@link IllegalStateException} when that source {@code Publisher} completes.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            a {@code Publisher} to be concatenated
-     * @param source2
-     *            a {@code Publisher} to be concatenated
-     * @param source3
-     *            a {@code Publisher} to be concatenated
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code source1}, {@code source2} or {@code source3} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concat(
-            @NonNull Publisher<? extends T> source1, @NonNull Publisher<? extends T> source2,
-            @NonNull Publisher<? extends T> source3) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        Objects.requireNonNull(source3, "source3 is null");
-        return concatArray(source1, source2, source3);
-    }
-
-    /**
-     * Returns a {@code Flowable} that emits the items emitted by four {@link Publisher}s, one after the other, without
-     * interleaving them.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
-     *  sources are expected to honor backpressure as well.
-     *  If any of the source {@code Publisher}s violate this, it <em>may</em> throw an
-     *  {@link IllegalStateException} when that source {@code Publisher} completes.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param source1
-     *            a {@code Publisher} to be concatenated
-     * @param source2
-     *            a {@code Publisher} to be concatenated
-     * @param source3
-     *            a {@code Publisher} to be concatenated
-     * @param source4
-     *            a {@code Publisher} to be concatenated
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code source4} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concat(
-            @NonNull Publisher<? extends T> source1, @NonNull Publisher<? extends T> source2,
-            @NonNull Publisher<? extends T> source3, @NonNull Publisher<? extends T> source4) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        Objects.requireNonNull(source3, "source3 is null");
-        Objects.requireNonNull(source4, "source4 is null");
-        return concatArray(source1, source2, source3, source4);
+    public static <@NonNull T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends Publisher<? extends T>> sources,
+            @NonNull StandardBufferedConfig config) {
+        return fromPublisher(sources).concatMap((Function)Functions.identity(), config);
     }
 
     /**
@@ -1426,27 +1139,31 @@ FlowableDocBasic<T>
      *  If any of the source {@code Publisher}s violate this, it <em>may</em> throw an
      *  {@link IllegalStateException} when that source {@code Publisher} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code concatArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param sources the array of source {@code Publisher}s
+     * @param config the configuration record for this operator
      * @param <T> the common base value type
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
     @NonNull
-    public static <@NonNull T> Flowable<T> concatArrayDelayError(@NonNull Publisher<? extends T>... sources) {
+    public static <@NonNull T> Flowable<T> concatArray(@NonNull StandardBufferedConfig config,
+            @NonNull Publisher<? extends T>... sources) {
         Objects.requireNonNull(sources, "sources is null");
+        Objects.requireNonNull(config, "config is null");
         if (sources.length == 0) {
             return empty();
         } else
         if (sources.length == 1) {
             return fromPublisher(sources[0]);
         }
-        return RxJavaPlugins.onAssembly(new FlowableConcatArray<>(sources, true));
+        return RxJavaPlugins.onAssembly(new FlowableConcatArray<>(sources, config.delayErrors()));
     }
 
     /**
@@ -1478,7 +1195,7 @@ FlowableDocBasic<T>
     @SafeVarargs
     @NonNull
     public static <@NonNull T> Flowable<T> concatArrayEager(@NonNull Publisher<? extends T>... sources) {
-        return concatArrayEager(bufferSize(), bufferSize(), sources);
+        return concatArrayEager(StandardConcurrentBufferedConfig.DEFAULT, sources);
     }
 
     /**
@@ -1500,13 +1217,10 @@ FlowableDocBasic<T>
      * </dl>
      * @param <T> the value type
      * @param sources an array of {@code Publisher}s that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, {@link Integer#MAX_VALUE}
-     *                       is interpreted as an indication to subscribe to all sources at once
-     * @param prefetch the number of elements to prefetch from each {@code Publisher} source
+     * @param config the configuration record for this operator
      * @return the new {@code Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code prefetch} is non-positive
-     * @since 2.0
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
@@ -1514,164 +1228,12 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @SafeVarargs
-    public static <@NonNull T> Flowable<T> concatArrayEager(int maxConcurrency, int prefetch, @NonNull Publisher<? extends T>... sources) {
+    public static <@NonNull T> Flowable<T> concatArrayEager(@NonNull StandardConcurrentBufferedConfig config,
+            @NonNull Publisher<? extends T>... sources) {
         Objects.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableConcatMapEager(new FlowableFromArray(sources), Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE));
-    }
-
-    /**
-     * Concatenates an array of {@link Publisher}s eagerly into a single stream of values
-     * and delaying any errors until all sources terminate.
-     * <p>
-     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.concatArrayEagerDelayError.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * source {@code Publisher}s. The operator buffers the values emitted by these {@code Publisher}s
-     * and then drains them in order, each one after the previous one completes.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
-     *  sources are expected to honor backpressure as well.
-     *  If any of the source {@code Publisher}s violate this, the operator will signal a
-     *  {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources an array of {@code Publisher}s that need to be eagerly concatenated
-     * @return the new {@code Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @since 2.2.1 - experimental
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SafeVarargs
-    @NonNull
-    public static <@NonNull T> Flowable<T> concatArrayEagerDelayError(@NonNull Publisher<? extends T>... sources) {
-        return concatArrayEagerDelayError(bufferSize(), bufferSize(), sources);
-    }
-
-    /**
-     * Concatenates an array of {@link Publisher}s eagerly into a single stream of values
-     * and delaying any errors until all sources terminate.
-     * <p>
-     * <img width="640" height="359" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.concatArrayEagerDelayError.nn.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * source {@code Publisher}s. The operator buffers the values emitted by these {@code Publisher}s
-     * and then drains them in order, each one after the previous one completes.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
-     *  sources are expected to honor backpressure as well.
-     *  If any of the source {@code Publisher}s violate this, the operator will signal a
-     *  {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources an array of {@code Publisher}s that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, {@link Integer#MAX_VALUE}
-     *                       is interpreted as indication to subscribe to all sources at once
-     * @param prefetch the number of elements to prefetch from each {@code Publisher} source
-     * @return the new {@code Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code prefetch} is non-positive
-     * @since 2.2.1 - experimental
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SafeVarargs
-    @NonNull
-    public static <@NonNull T> Flowable<T> concatArrayEagerDelayError(int maxConcurrency, int prefetch, @NonNull Publisher<? extends T>... sources) {
-        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), true, maxConcurrency, prefetch);
-    }
-
-    /**
-     * Concatenates the {@link Iterable} sequence of {@link Publisher}s into a single sequence by subscribing to each {@code Publisher},
-     * one after the other, one at a time and delays any errors till the all inner {@code Publisher}s terminate.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Publisher}
-     *  sources are expected to honor backpressure as well. If the outer violates this, a
-     *  {@link MissingBackpressureException} is signaled. If any of the inner {@code Publisher}s violates
-     *  this, it <em>may</em> throw an {@link IllegalStateException} when an inner {@code Publisher} completes.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources the {@code Iterable} sequence of {@code Publisher}s
-     * @return the new {@code Flowable} with the concatenating behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concatDelayError(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources) {
-        Objects.requireNonNull(sources, "sources is null");
-        return fromIterable(sources).concatMapDelayError((Function)Functions.identity());
-    }
-
-    /**
-     * Concatenates the {@link Publisher} sequence of {@code Publisher}s into a single sequence by subscribing to each inner {@code Publisher},
-     * one after the other, one at a time and delays any errors till the all inner and the outer {@code Publisher}s terminate.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>{@code concatDelayError} fully supports backpressure.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources the {@code Publisher} sequence of {@code Publisher}s
-     * @return the new {@code Flowable} with the concatenating behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Flowable<T> concatDelayError(@NonNull Publisher<@NonNull ? extends Publisher<? extends T>> sources) {
-        return concatDelayError(sources, bufferSize(), true);
-    }
-
-    /**
-     * Concatenates the {@link Publisher} sequence of {@code Publisher}s into a single sequence by subscribing to each inner {@code Publisher},
-     * one after the other, one at a time and delays any errors till the all inner and the outer {@code Publisher}s terminate.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>{@code concatDelayError} fully supports backpressure.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the common element base type
-     * @param sources the {@code Publisher} sequence of {@code Publisher}s
-     * @param prefetch the number of elements to prefetch from the outer {@code Publisher}
-     * @param tillTheEnd if {@code true}, exceptions from the outer and all inner {@code Publisher}s are delayed to the end
-     *                   if {@code false}, exception from the outer {@code Publisher} is delayed till the current inner {@code Publisher} terminates
-     * @return the new {@code Flowable} with the concatenating behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is {@code null}
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Flowable<T> concatDelayError(@NonNull Publisher<@NonNull ? extends Publisher<? extends T>> sources, int prefetch, boolean tillTheEnd) {
-        return fromPublisher(sources).concatMapDelayError((Function)Functions.identity(), tillTheEnd, prefetch);
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapEager(new FlowableFromArray(sources), Functions.identity(),
+                config.maxConcurrency(), config.bufferSize(), config.errorMode()));
     }
 
     /**
@@ -7631,7 +7193,7 @@ FlowableDocBasic<T>
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, int, Scheduler)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, Scheduler, StandardBufferedConfig)} overload.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the inner {@code Publisher}s are
@@ -7656,7 +7218,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Flowable<R> concatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper) {
-        return concatMap(mapper, 2);
+        return concatMap(mapper, StandardBufferedConfig.MIN_DEFAULT);
     }
 
     /**
@@ -7668,7 +7230,7 @@ FlowableDocBasic<T>
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, int, Scheduler)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, Scheduler, StandardBufferedConfig)} overload.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the inner {@code Publisher}s are
@@ -7684,21 +7246,22 @@ FlowableDocBasic<T>
      * @param mapper
      *            a function that, when applied to an item emitted by the current {@code Flowable}, returns a
      *            {@code Publisher}
-     * @param prefetch
-     *            the number of elements to prefetch from the current {@code Flowable}
+     * @param config
+     *            the configuration record of this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @see #concatMap(Function, int, Scheduler)
+     * @see #concatMap(Function, Scheduler, StandardBufferedConfig)
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull R> Flowable<R> concatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper, int prefetch) {
+    public final <@NonNull R> Flowable<R> concatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
+        Objects.requireNonNull(config, "config is null");
         if (this instanceof ScalarSupplier) {
             @SuppressWarnings("unchecked")
             T v = ((ScalarSupplier<T>)this).get();
@@ -7707,7 +7270,7 @@ FlowableDocBasic<T>
             }
             return FlowableScalarXMap.scalarXMap(v, mapper);
         }
-        return RxJavaPlugins.onAssembly(new FlowableConcatMap<>(this, mapper, prefetch, ErrorMode.IMMEDIATE));
+        return RxJavaPlugins.onAssembly(new FlowableConcatMap<>(this, mapper, config.bufferSize(), config.errorMode()));
     }
 
     /**
@@ -7717,7 +7280,7 @@ FlowableDocBasic<T>
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <p>
-     * The difference between {@link #concatMap(Function, int)} and this operator is that this operator guarantees the {@code mapper}
+     * The difference between {@link #concatMap(Function, StandardBufferedConfig)} and this operator is that this operator guarantees the {@code mapper}
      * function is executed on the specified scheduler.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -7734,28 +7297,26 @@ FlowableDocBasic<T>
      * @param mapper
      *            a function that, when applied to an item emitted by the current {@code Flowable}, returns a
      *            {@code Publisher}
-     * @param prefetch
-     *            the number of elements to prefetch from the current {@code Flowable}
      * @param scheduler
      *            the scheduler where the {@code mapper} function will be executed
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} or {@code scheduler} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code scheduler} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 3.0.0
-     * @see #concatMap(Function, int)
-     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
+     * @since 4.0.0
+     * @see #concatMap(Function, StandardBufferedConfig)
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <@NonNull R> Flowable<R> concatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
-            int prefetch, @NonNull Scheduler scheduler) {
+            @NonNull Scheduler scheduler, @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableConcatMapScheduler<>(this, mapper, prefetch, ErrorMode.IMMEDIATE, scheduler));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapScheduler<>(this, mapper, config.bufferSize(), config.errorMode(), scheduler));
     }
 
     /**
@@ -7933,139 +7494,6 @@ FlowableDocBasic<T>
     }
 
     /**
-     * Maps each of the items into a {@link Publisher}, subscribes to them one after the other,
-     * one at a time and emits their values in order
-     * while delaying any error from either this or any of the inner {@code Publisher}s
-     * till all of them terminate.
-     * <p>
-     * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
-     * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, boolean, int, Scheduler)} overload.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both this and the inner {@code Publisher}s are
-     *  expected to honor backpressure as well. If the current {@code Flowable} violates the rule, the operator will
-     *  signal a {@link MissingBackpressureException}. If any of the inner {@code Publisher}s doesn't honor
-     *  backpressure, that <em>may</em> throw an {@link IllegalStateException} when that
-     *  {@code Publisher} completes.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the result value type
-     * @param mapper the function that maps the items of this {@code Publisher} into the inner {@code Publisher}s.
-     * @return the new {@code Flowable} instance with the concatenation behavior
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Flowable<R> concatMapDelayError(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper) {
-        return concatMapDelayError(mapper, true, 2);
-    }
-
-    /**
-     * Maps each of the items into a {@link Publisher}, subscribes to them one after the other,
-     * one at a time and emits their values in order
-     * while delaying any error from either this or any of the inner {@code Publisher}s
-     * till all of them terminate.
-     * <p>
-     * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
-     * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, boolean, int, Scheduler)} overload.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both this and the inner {@code Publisher}s are
-     *  expected to honor backpressure as well. If the current {@code Flowable} violates the rule, the operator will
-     *  signal a {@link MissingBackpressureException}. If any of the inner {@code Publisher}s doesn't honor
-     *  backpressure, that <em>may</em> throw an {@link IllegalStateException} when that
-     *  {@code Publisher} completes.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the result value type
-     * @param mapper the function that maps the items of this {@code Publisher} into the inner {@code Publisher}s.
-     * @param tillTheEnd
-     *            if {@code true}, all errors from the outer and inner {@code Publisher} sources are delayed until the end,
-     *            if {@code false}, an error from the main source is signaled when the current inner {@code Publisher} source terminates
-     * @param prefetch
-     *            the number of elements to prefetch from the current {@code Flowable}
-     * @return the new {@code Flowable} instance with the concatenation behavior
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
-     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
-     */
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull R> Flowable<R> concatMapDelayError(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
-            boolean tillTheEnd, int prefetch) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        if (this instanceof ScalarSupplier) {
-            @SuppressWarnings("unchecked")
-            T v = ((ScalarSupplier<T>)this).get();
-            if (v == null) {
-                return empty();
-            }
-            return FlowableScalarXMap.scalarXMap(v, mapper);
-        }
-        return RxJavaPlugins.onAssembly(new FlowableConcatMap<>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
-    }
-
-    /**
-     * Maps each of the upstream items into a {@link Publisher}, subscribes to them one after the other,
-     * one at a time and emits their values in order
-     * while executing the mapper function on the designated scheduler, delaying any error from either this or any of the
-     * inner {@code Publisher}s till all of them terminate.
-     * <p>
-     * The difference between {@link #concatMapDelayError(Function, boolean, int)} and this operator is that this operator guarantees the {@code mapper}
-     * function is executed on the specified scheduler.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both this and the inner {@code Publisher}s are
-     *  expected to honor backpressure as well. If the current {@code Flowable} violates the rule, the operator will
-     *  signal a {@link MissingBackpressureException}. If any of the inner {@code Publisher}s doesn't honor
-     *  backpressure, that <em>may</em> throw an {@link IllegalStateException} when that
-     *  {@code Publisher} completes.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapDelayError} executes the given {@code mapper} function on the provided {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the result value type
-     * @param mapper the function that maps the items of this {@code Publisher} into the inner {@code Publisher}s.
-     * @param tillTheEnd
-     *            if {@code true}, all errors from the outer and inner {@code Publisher} sources are delayed until the end,
-     *            if {@code false}, an error from the main source is signaled when the current inner {@code Publisher} source terminates
-     * @param prefetch
-     *            the number of elements to prefetch from the current {@code Flowable}
-     * @param scheduler
-     *            the scheduler where the {@code mapper} function will be executed
-     * @return the new {@code Flowable} instance with the concatenation behavior
-     * @throws NullPointerException if {@code mapper} or {@code scheduler} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
-     * @see #concatMapDelayError(Function, boolean, int)
-     * @since 3.0.0
-     */
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final <@NonNull R> Flowable<R> concatMapDelayError(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
-            boolean tillTheEnd, int prefetch, @NonNull Scheduler scheduler) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableConcatMapScheduler<>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, scheduler));
-    }
-
-    /**
      * Maps a sequence of values into {@link Publisher}s and concatenates these {@code Publisher}s eagerly into a single
      * {@code Publisher}.
      * <p>
@@ -8091,7 +7519,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Flowable<R> concatMapEager(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper) {
-        return concatMapEager(mapper, bufferSize(), bufferSize());
+        return concatMapEager(mapper, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -8111,97 +7539,20 @@ FlowableDocBasic<T>
      * @param <R> the value type
      * @param mapper the function that maps a sequence of values into a sequence of {@code Publisher}s that will be
      *               eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscribed {@code Publisher}s
-     * @param prefetch hints about the number of expected values from each inner {@code Publisher}, must be positive
+     * @param config the configuration record for this operator
      * @return the new {@code Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code prefetch} is non-positive
-     * @since 2.0
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <@NonNull R> Flowable<R> concatMapEager(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
-            int maxConcurrency, int prefetch) {
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableConcatMapEager<>(this, mapper, maxConcurrency, prefetch, ErrorMode.IMMEDIATE));
-    }
-
-    /**
-     * Maps a sequence of values into {@link Publisher}s and concatenates these {@code Publisher}s eagerly into a single
-     * {@code Publisher}.
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * inner {@code Publisher}s. The operator buffers the values emitted by these {@code Publisher}s and then drains them in
-     * order, each one after the previous one completes.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources
-     *      are subscribed to in unbounded mode and their values are queued up in an unbounded buffer.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <R> the value type
-     * @param mapper the function that maps a sequence of values into a sequence of {@code Publisher}s that will be
-     *               eagerly concatenated
-     * @param tillTheEnd
-     *            if {@code true}, all errors from the outer and inner {@code Publisher} sources are delayed until the end,
-     *            if {@code false}, an error from the main source is signaled when the current inner {@code Publisher} source terminates
-     * @return the new {@code Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Flowable<R> concatMapEagerDelayError(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
-            boolean tillTheEnd) {
-        return concatMapEagerDelayError(mapper, tillTheEnd, bufferSize(), bufferSize());
-    }
-
-    /**
-     * Maps a sequence of values into {@link Publisher}s and concatenates these {@code Publisher}s eagerly into a single
-     * {@code Flowable} sequence.
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * inner {@code Publisher}s. The operator buffers the values emitted by these {@code Publisher}s and then drains them in
-     * order, each one after the previous one completes.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources
-     *      are subscribed to in unbounded mode and their values are queued up in an unbounded buffer.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <R> the value type
-     * @param mapper the function that maps a sequence of values into a sequence of {@code Publisher}s that will be
-     *               eagerly concatenated
-     * @param tillTheEnd
-     *               if {@code true}, exceptions from the current {@code Flowable} and all the inner {@code Publisher}s are delayed until
-     *               all of them terminate, if {@code false}, exception from the current {@code Flowable} is delayed until the
-     *               currently running {@code Publisher} terminates
-     * @param maxConcurrency the maximum number of concurrent subscribed {@code Publisher}s
-     * @param prefetch
-     *               the number of elements to prefetch from each source {@code Publisher}
-     * @return the new {@code Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code prefetch} is non-positive
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull R> Flowable<R> concatMapEagerDelayError(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
-            boolean tillTheEnd, int maxConcurrency, int prefetch) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableConcatMapEager<>(this, mapper, maxConcurrency, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapEager<>(this, mapper, config.maxConcurrency(), config.bufferSize(), config.errorMode()));
     }
 
     /**
@@ -8231,7 +7582,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull U> Flowable<U> concatMapIterable(@NonNull Function<? super T, @NonNull ? extends Iterable<? extends U>> mapper) {
-        return concatMapIterable(mapper, 2);
+        return concatMapIterable(mapper, StandardBufferedConfig.MIN_DEFAULT);
     }
 
     /**
@@ -8252,21 +7603,22 @@ FlowableDocBasic<T>
      * @param mapper
      *            a function that returns an {@code Iterable} sequence of values for when given an item emitted by the
      *            current {@code Flowable}
-     * @param prefetch
-     *            the number of elements to prefetch from the current {@code Flowable}
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull U> Flowable<U> concatMapIterable(@NonNull Function<? super T, @NonNull ? extends Iterable<? extends U>> mapper, int prefetch) {
+    public final <@NonNull U> Flowable<U> concatMapIterable(@NonNull Function<? super T, @NonNull ? extends Iterable<? extends U>> mapper,
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableFlattenIterable<>(this, mapper, prefetch));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableFlattenIterable<>(this, mapper, config.bufferSize()));
     }
 
     /**
@@ -8290,8 +7642,7 @@ FlowableDocBasic<T>
      *               be subscribed to
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapMaybeDelayError(Function)
-     * @see #concatMapMaybe(Function, int)
+     * @see #concatMapMaybe(Function, StandardBufferedConfig)
      * @since 2.2
      */
     @CheckReturnValue
@@ -8299,7 +7650,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Flowable<R> concatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
-        return concatMapMaybe(mapper, 2);
+        return concatMapMaybe(mapper, StandardBufferedConfig.MIN_DEFAULT);
     }
 
     /**
@@ -8316,147 +7667,26 @@ FlowableDocBasic<T>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code MaybeSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code MaybeSource} to become the next source to
      *               be subscribed to
-     * @param prefetch The number of upstream items to prefetch so that fresh items are
-     *                 ready to be mapped when a previous {@code MaybeSource} terminates.
-     *                 The operator replenishes after half of the prefetch amount has been consumed
-     *                 and turned into {@code MaybeSource}s.
+     * @param config
+     *               the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see #concatMapMaybe(Function)
-     * @see #concatMapMaybeDelayError(Function, boolean, int)
-     * @since 2.2
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull R> Flowable<R> concatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper, int prefetch) {
+    public final <@NonNull R> Flowable<R> concatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper,
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableConcatMapMaybe<>(this, mapper, ErrorMode.IMMEDIATE, prefetch));
-    }
-
-    /**
-     * Maps the upstream items into {@link MaybeSource}s and subscribes to them one after the
-     * other terminates, emits their success value if available and delaying all errors
-     * till both this {@code Flowable} and all inner {@code MaybeSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapMaybeDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator expects the upstream to support backpressure and honors
-     *  the backpressure from downstream. If this {@code Flowable} violates the rule, the operator will
-     *  signal a {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code MaybeSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code MaybeSource} to become the next source to
-     *               be subscribed to
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapMaybe(Function)
-     * @see #concatMapMaybeDelayError(Function, boolean)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Flowable<R> concatMapMaybeDelayError(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
-        return concatMapMaybeDelayError(mapper, true, 2);
-    }
-
-    /**
-     * Maps the upstream items into {@link MaybeSource}s and subscribes to them one after the
-     * other terminates, emits their success value if available and optionally delaying all errors
-     * till both this {@code Flowable} and all inner {@code MaybeSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapMaybeDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator expects the upstream to support backpressure and honors
-     *  the backpressure from downstream. If this {@code Flowable} violates the rule, the operator will
-     *  signal a {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code MaybeSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code MaybeSource} to become the next source to
-     *               be subscribed to
-     * @param tillTheEnd If {@code true}, errors from this {@code Flowable} or any of the
-     *                   inner {@code MaybeSource}s are delayed until all
-     *                   of them terminate. If {@code false}, an error from this
-     *                   {@code Flowable} is delayed until the current inner
-     *                   {@code MaybeSource} terminates and only then is
-     *                   it emitted to the downstream.
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapMaybe(Function, int)
-     * @see #concatMapMaybeDelayError(Function, boolean, int)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Flowable<R> concatMapMaybeDelayError(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean tillTheEnd) {
-        return concatMapMaybeDelayError(mapper, tillTheEnd, 2);
-    }
-
-    /**
-     * Maps the upstream items into {@link MaybeSource}s and subscribes to them one after the
-     * other terminates, emits their success value if available and optionally delaying all errors
-     * till both this {@code Flowable} and all inner {@code MaybeSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapMaybeDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator expects the upstream to support backpressure and honors
-     *  the backpressure from downstream. If this {@code Flowable} violates the rule, the operator will
-     *  signal a {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code MaybeSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code MaybeSource} to become the next source to
-     *               be subscribed to
-     * @param tillTheEnd If {@code true}, errors from this {@code Flowable} or any of the
-     *                   inner {@code MaybeSource}s are delayed until all
-     *                   of them terminate. If {@code false}, an error from this
-     *                   {@code Flowable} is delayed until the current inner
-     *                   {@code MaybeSource} terminates and only then is
-     *                   it emitted to the downstream.
-     * @param prefetch The number of upstream items to prefetch so that fresh items are
-     *                 ready to be mapped when a previous {@code MaybeSource} terminates.
-     *                 The operator replenishes after half of the prefetch amount has been consumed
-     *                 and turned into {@code MaybeSource}s.
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
-     * @see #concatMapMaybe(Function, int)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull R> Flowable<R> concatMapMaybeDelayError(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean tillTheEnd, int prefetch) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableConcatMapMaybe<>(this, mapper, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, prefetch));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapMaybe<>(this, mapper, config.errorMode(), config.bufferSize()));
     }
 
     /**
@@ -8480,8 +7710,7 @@ FlowableDocBasic<T>
      *               be subscribed to
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapSingleDelayError(Function)
-     * @see #concatMapSingle(Function, int)
+     * @see #concatMapSingle(Function, StandardBufferedConfig)
      * @since 2.2
      */
     @CheckReturnValue
@@ -8489,7 +7718,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Flowable<R> concatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return concatMapSingle(mapper, 2);
+        return concatMapSingle(mapper, StandardBufferedConfig.MIN_DEFAULT);
     }
 
     /**
@@ -8511,143 +7740,21 @@ FlowableDocBasic<T>
      * @param mapper the function called with the upstream item and should return
      *               a {@code SingleSource} to become the next source to
      *               be subscribed to
-     * @param prefetch The number of upstream items to prefetch so that fresh items are
-     *                 ready to be mapped when a previous {@code SingleSource} terminates.
-     *                 The operator replenishes after half of the prefetch amount has been consumed
-     *                 and turned into {@code SingleSource}s.
+     * @param config the configuration record for this observable
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see #concatMapSingle(Function)
-     * @see #concatMapSingleDelayError(Function, boolean, int)
-     * @since 2.2
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull R> Flowable<R> concatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper, int prefetch) {
+    public final <@NonNull R> Flowable<R> concatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper,
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableConcatMapSingle<>(this, mapper, ErrorMode.IMMEDIATE, prefetch));
-    }
-
-    /**
-     * Maps the upstream items into {@link SingleSource}s and subscribes to them one after the
-     * other succeeds or fails, emits their success values and delays all errors
-     * till both this {@code Flowable} and all inner {@code SingleSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapSingleDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator expects the upstream to support backpressure and honors
-     *  the backpressure from downstream. If this {@code Flowable} violates the rule, the operator will
-     *  signal a {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code SingleSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code SingleSource} to become the next source to
-     *               be subscribed to
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapSingle(Function)
-     * @see #concatMapSingleDelayError(Function, boolean)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Flowable<R> concatMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return concatMapSingleDelayError(mapper, true, 2);
-    }
-
-    /**
-     * Maps the upstream items into {@link SingleSource}s and subscribes to them one after the
-     * other succeeds or fails, emits their success values and optionally delays all errors
-     * till both this {@code Flowable} and all inner {@code SingleSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapSingleDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator expects the upstream to support backpressure and honors
-     *  the backpressure from downstream. If this {@code Flowable} violates the rule, the operator will
-     *  signal a {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code SingleSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code SingleSource} to become the next source to
-     *               be subscribed to
-     * @param tillTheEnd If {@code true}, errors from this {@code Flowable} or any of the
-     *                   inner {@code SingleSource}s are delayed until all
-     *                   of them terminate. If {@code false}, an error from this
-     *                   {@code Flowable} is delayed until the current inner
-     *                   {@code SingleSource} terminates and only then is
-     *                   it emitted to the downstream.
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapSingle(Function, int)
-     * @see #concatMapSingleDelayError(Function, boolean, int)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Flowable<R> concatMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean tillTheEnd) {
-        return concatMapSingleDelayError(mapper, tillTheEnd, 2);
-    }
-
-    /**
-     * Maps the upstream items into {@link SingleSource}s and subscribes to them one after the
-     * other succeeds or fails, emits their success values and optionally delays errors
-     * till both this {@code Flowable} and all inner {@code SingleSource}s terminate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapSingleDelayError.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator expects the upstream to support backpressure and honors
-     *  the backpressure from downstream. If this {@code Flowable} violates the rule, the operator will
-     *  signal a {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.11 - experimental
-     * @param <R> the result type of the inner {@code SingleSource}s
-     * @param mapper the function called with the upstream item and should return
-     *               a {@code SingleSource} to become the next source to
-     *               be subscribed to
-     * @param tillTheEnd If {@code true}, errors from this {@code Flowable} or any of the
-     *                   inner {@code SingleSource}s are delayed until all
-     *                   of them terminate. If {@code false}, an error from this
-     *                   {@code Flowable} is delayed until the current inner
-     *                   {@code SingleSource} terminates and only then is
-     *                   it emitted to the downstream.
-     * @param prefetch The number of upstream items to prefetch so that fresh items are
-     *                 ready to be mapped when a previous {@code SingleSource} terminates.
-     *                 The operator replenishes after half of the prefetch amount has been consumed
-     *                 and turned into {@code SingleSource}s.
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
-     * @see #concatMapSingle(Function, int)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull R> Flowable<R> concatMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper,
-            boolean tillTheEnd, int prefetch) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableConcatMapSingle<>(this, mapper, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, prefetch));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapSingle<>(this, mapper, config.errorMode(), config.bufferSize()));
     }
 
     /**
@@ -8676,7 +7783,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> concatWith(@NonNull Publisher<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
-        return concat(this, other);
+        return concatArray(this, other);
     }
 
     /**
@@ -10154,12 +9261,29 @@ FlowableDocBasic<T>
         return RxJavaPlugins.onAssembly(new FlowableElementAtSingle<>(this, index, null));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Filters items emitted by the current {@code Flowable} by only emitting those that satisfy a specified predicate.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
+     *  behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param predicate
+     *            a function that evaluates each item emitted by the current {@code Flowable}, returning {@code true}
+     *            if it passes the filter
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
+     */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Override
     public final Flowable<T> filter(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return RxJavaPlugins.onAssembly(new FlowableFilter<>(this, predicate));
@@ -10290,11 +9414,11 @@ FlowableDocBasic<T>
      * @param mapper
      *            a function that, when applied to an item emitted by the current {@code Flowable}, returns a
      *            {@code Publisher}
-     * @param config the {@link StandardConcurrentConfig} record to customize behavior
+     * @param config the configuration record for this operator
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
@@ -10385,13 +9509,12 @@ FlowableDocBasic<T>
      * @param onCompleteSupplier
      *            a function that returns a {@code Publisher} to merge for an {@code onComplete} notification from the current
      *            {@code Flowable}
-     * @param maxConcurrency
-     *         the maximum number of {@code Publisher}s that may be subscribed to concurrently
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code onNextMapper}, {@code onErrorMapper} or {@code onCompleteSupplier} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
@@ -10401,12 +9524,12 @@ FlowableDocBasic<T>
             @NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> onNextMapper,
             @NonNull Function<Throwable, @NonNull ? extends Publisher<? extends R>> onErrorMapper,
             @NonNull Supplier<? extends Publisher<? extends R>> onCompleteSupplier,
-            int maxConcurrency) {
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(onNextMapper, "onNextMapper is null");
         Objects.requireNonNull(onErrorMapper, "onErrorMapper is null");
         Objects.requireNonNull(onCompleteSupplier, "onCompleteSupplier is null");
         return merge(new FlowableMapNotification<>(
-                this, onNextMapper, onErrorMapper, onCompleteSupplier), maxConcurrency);
+                this, onNextMapper, onErrorMapper, onCompleteSupplier), config.maxConcurrency());
     }
 
     /**
@@ -10443,47 +9566,7 @@ FlowableDocBasic<T>
     @NonNull
     public final <@NonNull U, @NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends U>> mapper,
             @NonNull BiFunction<? super T, ? super U, ? extends R> combiner) {
-        return flatMap(mapper, combiner, false, bufferSize(), bufferSize());
-    }
-
-    /**
-     * Returns a {@code Flowable} that emits the results of a specified function to the pair of values emitted by the
-     * current {@code Flowable} and a specified inner {@link Publisher}.
-     * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt="">
-     * <dl>
-     * <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
-     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items).
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
-     *  the operator <em>may</em> signal {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <U>
-     *            the type of items emitted by the inner {@code Publisher}s
-     * @param <R>
-     *            the type of items emitted by the combiner functions
-     * @param mapper
-     *            a function that returns a {@code Publisher} for each item emitted by the current {@code Flowable}
-     * @param combiner
-     *            a function that combines one item emitted by each of the source and collection {@code Publisher}s and
-     *            returns an item to be emitted by the resulting {@code Flowable}
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Flowable} and all inner {@code Publisher}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} or {@code combiner} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull U, @NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends U>> mapper,
-            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors) {
-        return flatMap(mapper, combiner, delayErrors, bufferSize(), bufferSize());
+        return flatMap(mapper, combiner, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -10511,117 +9594,24 @@ FlowableDocBasic<T>
      * @param combiner
      *            a function that combines one item emitted by each of the source and collection {@code Publisher}s and
      *            returns an item to be emitted by the resulting {@code Flowable}
-     * @param maxConcurrency
-     *         the maximum number of {@code Publisher}s that may be subscribed to concurrently
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Flowable} and all inner {@code Publisher}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code combiner} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull U, @NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends U>> mapper,
-            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency) {
-        return flatMap(mapper, combiner, delayErrors, maxConcurrency, bufferSize());
-    }
-
-    /**
-     * Returns a {@code Flowable} that emits the results of a specified function to the pair of values emitted by the
-     * current {@code Flowable} and a specified collection {@link Publisher}, while limiting the maximum number of concurrent
-     * subscriptions to these {@code Publisher}s.
-     * <!-- <p> -->
-     * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt=""> -->
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
-     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items).
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
-     *  the operator <em>may</em> signal {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <U>
-     *            the type of items emitted by the inner {@code Publisher}s
-     * @param <R>
-     *            the type of items emitted by the combiner function
-     * @param mapper
-     *            a function that returns a {@code Publisher} for each item emitted by the current {@code Flowable}
-     * @param combiner
-     *            a function that combines one item emitted by each of the source and collection {@code Publisher}s and
-     *            returns an item to be emitted by the resulting {@code Flowable}
-     * @param maxConcurrency
-     *         the maximum number of {@code Publisher}s that may be subscribed to concurrently
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Flowable} and all inner {@code Publisher}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
-     * @param bufferSize
-     *            the number of elements to prefetch from the inner {@code Publisher}s.
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <@NonNull U, @NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends U>> mapper,
-            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency, int bufferSize) {
+            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner,
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return flatMap(FlowableInternalHelper.flatMapWithCombiner(mapper, combiner), new StandardConcurrentBufferedConfig(delayErrors, maxConcurrency, bufferSize));
-    }
-
-    /**
-     * Returns a {@code Flowable} that emits the results of a specified function to the pair of values emitted by the
-     * current {@code Flowable} and a specified collection {@link Publisher}, while limiting the maximum number of concurrent
-     * subscriptions to these {@code Publisher}s.
-     * <!-- <p> -->
-     * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt=""> -->
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
-     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items).
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
-     *  the operator <em>may</em> signal {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <U>
-     *            the type of items emitted by the inner {@code Publisher}s
-     * @param <R>
-     *            the type of items emitted by the combiner function
-     * @param mapper
-     *            a function that returns a {@code Publisher} for each item emitted by the current {@code Flowable}
-     * @param combiner
-     *            a function that combines one item emitted by each of the source and collection {@code Publisher}s and
-     *            returns an item to be emitted by the resulting {@code Flowable}
-     * @param maxConcurrency
-     *         the maximum number of {@code Publisher}s that may be subscribed to concurrently
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull U, @NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends U>> mapper,
-            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner, int maxConcurrency) {
-        return flatMap(mapper, combiner, false, maxConcurrency, bufferSize());
+        Objects.requireNonNull(config, "config is null");
+        return flatMap(FlowableInternalHelper.flatMapWithCombiner(mapper, combiner), config);
     }
 
     /**
@@ -10642,7 +9632,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Completable flatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
-        return flatMapCompletable(mapper, false, Integer.MAX_VALUE);
+        return flatMapCompletable(mapper, StandardConcurrentConfig.MAX_DEFAULT);
     }
 
     /**
@@ -10657,21 +9647,20 @@ FlowableDocBasic<T>
      *  <dd>{@code flatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param mapper the function that received each source value and transforms them into {@code CompletableSource}s.
-     * @param delayErrors if {@code true}, errors from the upstream and inner {@code CompletableSource}s are delayed until each of them
-     * terminates.
-     * @param maxConcurrency the maximum number of active subscriptions to the {@code CompletableSource}s.
+     * @param config the configuration record for this operator.
      * @return the new {@link Completable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable flatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors, int maxConcurrency) {
+    public final Completable flatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper,
+            @NonNull StandardConcurrentConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        return RxJavaPlugins.onAssembly(new FlowableFlatMapCompletableCompletable<>(this, mapper, delayErrors, maxConcurrency));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapCompletableCompletable<>(this, mapper, config.delayErrors(), config.maxConcurrency()));
     }
 
     /**
@@ -10702,7 +9691,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull U> Flowable<U> flatMapIterable(@NonNull Function<? super T, @NonNull ? extends Iterable<? extends U>> mapper) {
-        return flatMapIterable(mapper, bufferSize());
+        return flatMapIterable(mapper, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -10724,21 +9713,22 @@ FlowableDocBasic<T>
      * @param mapper
      *            a function that returns an {@code Iterable} sequence of values for when given an item emitted by the
      *            current {@code Flowable}
-     * @param bufferSize
-     *            the number of elements to prefetch from the current {@code Flowable}
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull U> Flowable<U> flatMapIterable(@NonNull Function<? super T, @NonNull ? extends Iterable<? extends U>> mapper, int bufferSize) {
+    public final <@NonNull U> Flowable<U> flatMapIterable(@NonNull Function<? super T, @NonNull ? extends Iterable<? extends U>> mapper,
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableFlattenIterable<>(this, mapper, bufferSize));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableFlattenIterable<>(this, mapper, config.bufferSize()));
     }
 
     /**
@@ -10778,7 +9768,7 @@ FlowableDocBasic<T>
             @NonNull BiFunction<? super T, ? super U, ? extends V> combiner) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return flatMap(FlowableInternalHelper.flatMapIntoIterable(mapper), combiner, false, bufferSize(), bufferSize());
+        return flatMapIterable(mapper, combiner, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -10807,23 +9797,22 @@ FlowableDocBasic<T>
      * @param combiner
      *            a function that returns an item based on the item emitted by the current {@code Flowable} and the
      *            {@code Iterable} returned for that item by the {@code collectionSelector}
-     * @param prefetch
-     *            the number of elements to prefetch from the current {@code Flowable}
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code combiner} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <@NonNull U, @NonNull V> Flowable<V> flatMapIterable(@NonNull Function<? super T, @NonNull ? extends Iterable<? extends U>> mapper,
-            @NonNull BiFunction<? super T, ? super U, ? extends V> combiner, int prefetch) {
+            @NonNull BiFunction<? super T, ? super U, ? extends V> combiner, @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return flatMap(FlowableInternalHelper.flatMapIntoIterable(mapper), combiner, false, bufferSize(), prefetch);
+        return flatMap(FlowableInternalHelper.flatMapIntoIterable(mapper), combiner, config);
     }
 
     /**
@@ -10847,7 +9836,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Flowable<R> flatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
-        return flatMapMaybe(mapper, false, Integer.MAX_VALUE);
+        return flatMapMaybe(mapper, StandardConcurrentConfig.MAX_DEFAULT);
     }
 
     /**
@@ -10866,21 +9855,19 @@ FlowableDocBasic<T>
      * </dl>
      * @param <R> the result value type
      * @param mapper the function that received each source value and transforms them into {@code MaybeSource}s.
-     * @param delayErrors if {@code true}, errors from the upstream and inner {@code MaybeSource}s are delayed until each of them
-     * terminates.
-     * @param maxConcurrency the maximum number of active subscriptions to the {@code MaybeSource}s.
+     * @param config the configuration record for the operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull R> Flowable<R> flatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
+    public final <@NonNull R> Flowable<R> flatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper,
+            @NonNull StandardConcurrentConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        return RxJavaPlugins.onAssembly(new FlowableFlatMapMaybe<>(this, mapper, delayErrors, maxConcurrency));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapMaybe<>(this, mapper, config.delayErrors(), config.maxConcurrency()));
     }
 
     /**
@@ -10902,7 +9889,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Flowable<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return flatMapSingle(mapper, false, Integer.MAX_VALUE);
+        return flatMapSingle(mapper, StandardConcurrentConfig.MAX_DEFAULT);
     }
 
     /**
@@ -10919,21 +9906,19 @@ FlowableDocBasic<T>
      * </dl>
      * @param <R> the result value type
      * @param mapper the function that received each source value and transforms them into {@code SingleSource}s.
-     * @param delayErrors if {@code true}, errors from the upstream and inner {@code SingleSources} are delayed until each of them
-     * terminates.
-     * @param maxConcurrency the maximum number of active subscriptions to the {@code SingleSource}s.
+     * @param config the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull R> Flowable<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
+    public final <@NonNull R> Flowable<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper,
+            @NonNull StandardConcurrentConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        return RxJavaPlugins.onAssembly(new FlowableFlatMapSingle<>(this, mapper, delayErrors, maxConcurrency));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapSingle<>(this, mapper, config.delayErrors(), config.maxConcurrency()));
     }
 
     /**
@@ -11079,7 +10064,8 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, StandardConcurrentBufferedConfig)}
+     *  and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11137,7 +10123,8 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, StandardConcurrentBufferedConfig)}
+     * and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11196,7 +10183,8 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, StandardConcurrentBufferedConfig)}
+     * and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11260,7 +10248,8 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, StandardConcurrentBufferedConfig)}
+     * and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11325,7 +10314,8 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, StandardConcurrentBufferedConfig)}
+     * and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11440,7 +10430,8 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, StandardConcurrentBufferedConfig)}
+     * and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11912,12 +10903,31 @@ FlowableDocBasic<T>
         return RxJavaPlugins.onAssembly(new FlowableLift<>(this, lifter));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns a {@code Flowable} that applies a specified function to each item emitted by the current {@code Flowable} and
+     * emits the results of these function applications.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/map.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
+     *  behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the output type
+     * @param mapper
+     *            a function to apply to each item emitted by the current {@code Flowable}
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
+     * @see Flowable#mapOptional(Function)
+     */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Override
     public final <@NonNull R> Flowable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new FlowableMap<>(this, mapper));
@@ -15627,7 +14637,7 @@ FlowableDocBasic<T>
     @BackpressureSupport(BackpressureKind.FULL)
     public final Flowable<T> startWith(@NonNull CompletableSource other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Completable.wrap(other).<T>toFlowable(), this);
+        return Flowable.concatArray(Completable.wrap(other).<T>toFlowable(), this);
     }
 
     /**
@@ -15652,7 +14662,7 @@ FlowableDocBasic<T>
     @BackpressureSupport(BackpressureKind.FULL)
     public final Flowable<T> startWith(@NonNull SingleSource<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Single.wrap(other).toFlowable(), this);
+        return Flowable.concatArray(Single.wrap(other).toFlowable(), this);
     }
 
     /**
@@ -15677,7 +14687,7 @@ FlowableDocBasic<T>
     @BackpressureSupport(BackpressureKind.FULL)
     public final Flowable<T> startWith(@NonNull MaybeSource<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Maybe.wrap(other).toFlowable(), this);
+        return Flowable.concatArray(Maybe.wrap(other).toFlowable(), this);
     }
 
     /**
@@ -20585,14 +19595,14 @@ FlowableDocBasic<T>
      * @since 3.0.0
      * @see #concatMap(Function)
      * @see #concatMapIterable(Function)
-     * @see #concatMapStream(Function, int)
+     * @see #concatMapStream(Function, StandardBufferedConfig)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Flowable<R> concatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper) {
-        return flatMapStream(mapper, bufferSize());
+        return flatMapStream(mapper, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -20606,7 +19616,7 @@ FlowableDocBasic<T>
      * <p>
      * The operator closes the {@code Stream} upon cancellation and when it terminates. Any exceptions raised when
      * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
-     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #concatMapIterable(Function, int)}:
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #concatMapIterable(Function, StandardBufferedConfig)}:
      * <pre><code>
      * source.concatMapIterable(v -&gt; createStream(v)::iterator, 32);
      * </code></pre>
@@ -20633,23 +19643,23 @@ FlowableDocBasic<T>
      * @param <R> the element type of the {@code Stream}s and the result
      * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
      * will be emitted to the downstream
-     * @param prefetch the number of upstream items to request upfront, then 75% of this amount after each 75% upstream items received
+     * @param config the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
-     * @since 3.0.0
-     * @see #concatMap(Function, int)
-     * @see #concatMapIterable(Function, int)
-     * @see #flatMapStream(Function, int)
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
+     * @since 4.0.0
+     * @see #concatMap(Function, StandardBufferedConfig)
+     * @see #concatMapIterable(Function, StandardBufferedConfig)
+     * @see #flatMapStream(Function, StandardBufferedConfig)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> Flowable<R> concatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper, int prefetch) {
+    public final <@NonNull R> Flowable<R> concatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper,
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableFlatMapStream<>(this, mapper, prefetch));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapStream<>(this, mapper, config.bufferSize()));
     }
 
     /**
@@ -20696,14 +19706,14 @@ FlowableDocBasic<T>
      * @since 3.0.0
      * @see #flatMap(Function)
      * @see #flatMapIterable(Function)
-     * @see #flatMapStream(Function, int)
+     * @see #flatMapStream(Function, StandardBufferedConfig)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Flowable<R> flatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper) {
-        return flatMapStream(mapper, bufferSize());
+        return flatMapStream(mapper, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -20717,7 +19727,7 @@ FlowableDocBasic<T>
      * <p>
      * The operator closes the {@code Stream} upon cancellation and when it terminates. Any exceptions raised when
      * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
-     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #flatMapIterable(Function, int)}:
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #flatMapIterable(Function, StandardBufferedConfig)}:
      * <pre><code>
      * source.flatMapIterable(v -&gt; createStream(v)::iterator, 32);
      * </code></pre>
@@ -20744,23 +19754,23 @@ FlowableDocBasic<T>
      * @param <R> the element type of the {@code Stream}s and the result
      * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
      * will be emitted to the downstream
-     * @param prefetch the number of upstream items to request upfront, then 75% of this amount after each 75% upstream items received
+     * @param config the configuration record for this operator
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
-     * @since 3.0.0
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
+     * @since 4.0.0
      * @see #flatMap(Function, StandardConcurrentBufferedConfig)
-     * @see #flatMapIterable(Function, int)
-     * @see #concatMapStream(Function, int)
+     * @see #flatMapIterable(Function, StandardBufferedConfig)
+     * @see #concatMapStream(Function, StandardBufferedConfig)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> Flowable<R> flatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper, int prefetch) {
+    public final <@NonNull R> Flowable<R> flatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper,
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableFlatMapStream<>(this, mapper, prefetch));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapStream<>(this, mapper, config.bufferSize()));
     }
 
     /**

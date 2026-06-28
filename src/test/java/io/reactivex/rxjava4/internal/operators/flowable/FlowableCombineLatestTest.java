@@ -28,6 +28,7 @@ import org.mockito.*;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -812,9 +813,9 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     public void firstJustError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.combineLatestDelayError(
+        Flowable.combineLatest(
                 Arrays.asList(Flowable.just(1), Flowable.<Integer>error(new TestException())),
-                args -> ((Integer)args[0]) + ((Integer)args[1])
+                args -> ((Integer)args[0]) + ((Integer)args[1]), StandardBufferedConfig.DELAY_ERRORS
         ).subscribe(ts);
 
         ts.assertNoValues();
@@ -826,9 +827,9 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     public void secondJustError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.combineLatestDelayError(
+        Flowable.combineLatest(
                 Arrays.asList(Flowable.<Integer>error(new TestException()), Flowable.just(1)),
-                args -> ((Integer)args[0]) + ((Integer)args[1])
+                args -> ((Integer)args[0]) + ((Integer)args[1]), StandardBufferedConfig.DELAY_ERRORS
         ).subscribe(ts);
 
         ts.assertNoValues();
@@ -840,9 +841,9 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     public void oneErrors() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.combineLatestDelayError(
+        Flowable.combineLatest(
                 Arrays.asList(Flowable.just(10).concatWith(Flowable.<Integer>error(new TestException())), Flowable.just(1)),
-                args -> ((Integer)args[0]) + ((Integer)args[1])
+                args -> ((Integer)args[0]) + ((Integer)args[1]), StandardBufferedConfig.DELAY_ERRORS
         ).subscribe(ts);
 
         ts.assertValues(11);
@@ -854,9 +855,9 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     public void twoErrors() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.combineLatestDelayError(
+        Flowable.combineLatest(
                 Arrays.asList(Flowable.just(1), Flowable.just(10).concatWith(Flowable.<Integer>error(new TestException()))),
-                args -> ((Integer)args[0]) + ((Integer)args[1])
+                args -> ((Integer)args[0]) + ((Integer)args[1]), StandardBufferedConfig.DELAY_ERRORS
         ).subscribe(ts);
 
         ts.assertValues(11);
@@ -868,10 +869,10 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     public void bothError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.combineLatestDelayError(
+        Flowable.combineLatest(
                 Arrays.asList(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
                         Flowable.just(10).concatWith(Flowable.<Integer>error(new TestException()))),
-                args -> ((Integer)args[0]) + ((Integer)args[1])
+                args -> ((Integer)args[0]) + ((Integer)args[1]), StandardBufferedConfig.DELAY_ERRORS
         ).subscribe(ts);
 
         ts.assertValues(11);
@@ -935,7 +936,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
             .test()
             .assertResult(expected);
 
-            Flowable.combineLatestArrayDelayError(sources, Arrays::asList)
+            Flowable.combineLatestArray(sources, Arrays::asList, StandardBufferedConfig.DELAY_ERRORS)
             .test()
             .assertResult(expected);
         }
@@ -956,9 +957,9 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorArrayOfSources() {
 
-        Flowable.combineLatestArrayDelayError(new Flowable[] {
+        Flowable.combineLatestArray(new Flowable[] {
                 Flowable.just(1), Flowable.just(2)
-        }, (Function<Object[], Object>) Arrays::toString)
+        }, (Function<Object[], Object>) Arrays::toString, StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertResult("[1, 2]");
     }
@@ -967,9 +968,9 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorArrayOfSourcesWithError() {
 
-        Flowable.combineLatestArrayDelayError(new Flowable[] {
+        Flowable.combineLatestArray(new Flowable[] {
                 Flowable.just(1), Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException()))
-        }, (Function<Object[], Object>) Arrays::toString)
+        }, (Function<Object[], Object>) Arrays::toString, StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, "[1, 2]");
     }
@@ -977,9 +978,9 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @Test
     public void combineLatestDelayErrorIterableOfSources() {
 
-        Flowable.combineLatestDelayError(Arrays.asList(
+        Flowable.combineLatest(Arrays.asList(
                 Flowable.just(1), Flowable.just(2)
-        ), (Function<Object[], Object>) Arrays::toString)
+        ), (Function<Object[], Object>) Arrays::toString, StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertResult("[1, 2]");
     }
@@ -987,9 +988,9 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @Test
     public void combineLatestDelayErrorIterableOfSourcesWithError() {
 
-        Flowable.combineLatestDelayError(Arrays.asList(
+        Flowable.combineLatest(Arrays.asList(
                 Flowable.just(1), Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException()))
-        ), (Function<Object[], Object>) Arrays::toString)
+        ), (Function<Object[], Object>) Arrays::toString, StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, "[1, 2]");
     }
@@ -997,13 +998,15 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void combineLatestArrayEmpty() {
-        assertSame(Flowable.empty(), Flowable.combineLatestArray(new Flowable[0], (Function)Functions.identity(), 16));
+        assertSame(Flowable.empty(), Flowable.combineLatestArray(new Flowable[0], (Function)Functions.identity(),
+                new StandardBufferedConfig(16)));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void combineLatestDelayErrorEmpty() {
-        assertSame(Flowable.empty(), Flowable.combineLatestArrayDelayError(new Flowable[0], (Function)Functions.identity(), 16));
+        assertSame(Flowable.empty(), Flowable.combineLatestArray(new Flowable[0], (Function)Functions.identity(),
+                new StandardBufferedConfig(true, 16)));
     }
 
     @Test
@@ -1088,10 +1091,10 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void errorDelayed() {
-        Flowable.combineLatestArrayDelayError(
+        Flowable.combineLatestArray(
                 new Publisher[] { Flowable.error(new TestException()), Flowable.just(1) },
                 a -> a,
-                128
+                new StandardBufferedConfig(128)
         )
         .test()
         .assertFailure(TestException.class);
@@ -1100,10 +1103,10 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void errorDelayed2() {
-        Flowable.combineLatestArrayDelayError(
+        Flowable.combineLatestArray(
                 new Publisher[] { Flowable.error(new TestException()).startWithItem(1), Flowable.empty() },
                 a -> a,
-                128
+                new StandardBufferedConfig(128)
         )
         .test()
         .assertFailure(TestException.class);
@@ -1136,12 +1139,12 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         try {
             final int[] count = { 0 };
 
-            Flowable.combineLatestDelayError(
+            Flowable.combineLatest(
                     Arrays.asList(Flowable.empty(),
                         Flowable.error(new TestException())
                         .doOnSubscribe(_ -> count[0]++)
                     ),
-                    _ -> 0)
+                    _ -> 0, StandardBufferedConfig.DELAY_ERRORS)
             .test()
             .assertResult();
 
@@ -1168,7 +1171,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                         throw new Exception();
                     });
 
-            Flowable.combineLatestDelayError(
+            Flowable.combineLatest(
                     Arrays.asList(
                             emptyFlowable
                                     .doOnEach(integerNotification -> System.out.println("emptyFlowable: " + integerNotification))
@@ -1177,7 +1180,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                             errorFlowable
                                     .doOnEach(integerNotification -> System.out.println("errorFlowable: " + integerNotification))
                                     .doFinally(() -> System.out.println("errorFlowable: doFinally"))),
-                        _ -> (Object)0
+                        _ -> (Object)0, StandardBufferedConfig.DELAY_ERRORS
                     )
                     .doOnEach(integerNotification -> System.out.println("combineLatestDelayError: " + integerNotification))
                     .doFinally(() -> System.out.println("combineLatestDelayError: doFinally"))
@@ -1236,11 +1239,11 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void syncFirstErrorsAfterItemDelayError() {
-        Flowable.combineLatestDelayError(Arrays.asList(
+        Flowable.combineLatest(Arrays.asList(
                     Flowable.just(21).concatWith(Flowable.<Integer>error(new TestException())),
                     Flowable.just(21).delay(100, TimeUnit.MILLISECONDS)
                 ),
-                a -> (Integer)a[0] + (Integer)a[1]
+                a -> (Integer)a[0] + (Integer)a[1], StandardBufferedConfig.DELAY_ERRORS
                 )
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1300,7 +1303,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                     }
                 };
 
-                Flowable.combineLatestDelayError(Arrays.asList(f, Flowable.never()), (a) -> a)
+                Flowable.combineLatest(Arrays.asList(f, Flowable.never()), (a) -> a, StandardBufferedConfig.DELAY_ERRORS)
                 .subscribe(ts);
 
                 ref.get().onSubscribe(new BooleanSubscription());
@@ -1442,7 +1445,8 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     public void nonFusedDelayErrorMoreWorkBeforeTermination() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<List<Object>> ts = Flowable.combineLatestDelayError(Arrays.asList(pp, Flowable.just(1)), Arrays::asList)
+        TestSubscriber<List<Object>> ts = Flowable.combineLatest(
+                Arrays.asList(pp, Flowable.just(1)), Arrays::asList, StandardBufferedConfig.DELAY_ERRORS)
         .doOnNext(v -> {
             if (((Integer)v.getFirst()) == 0) {
                 pp.onNext(2);

@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 
 @SuppressWarnings("exports")
@@ -47,7 +47,7 @@ public class FlowableFlatMapCompletableSyncPerf {
         Arrays.fill(array, 777);
 
         flatMapCompletable = Flowable.fromArray(array)
-                .flatMapCompletable(Functions.justFunction(Completable.complete()), false, maxConcurrency);
+                .flatMapCompletable(Functions.justFunction(Completable.complete()), new StandardConcurrentConfig(false, maxConcurrency));
 
         flatMap = Flowable.fromArray(array)
                 .flatMap(Functions.justFunction(Completable.complete().toFlowable()), new StandardConcurrentBufferedConfig(false, maxConcurrency));

@@ -315,7 +315,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void delayedErrorDeliveryWhenSafeSubscriberUnsubscribes() {
         TestScheduler testScheduler = new TestScheduler();
 
-        Flowable<Integer> source = Flowable.concat(Flowable.<Integer> error(new TestException()), Flowable.just(1));
+        Flowable<Integer> source = Flowable.concatArray(Flowable.<Integer> error(new TestException()), Flowable.just(1));
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -1663,7 +1663,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void workerNotDisposedPrematurelyNormalInNormalOut() {
         DisposeTrackingScheduler s = new DisposeTrackingScheduler();
 
-        Flowable.concat(
+        Flowable.concatArray(
                 Flowable.just(1).hide().observeOn(s),
                 Flowable.just(2)
         )
@@ -1677,7 +1677,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void workerNotDisposedPrematurelySyncInNormalOut() {
         DisposeTrackingScheduler s = new DisposeTrackingScheduler();
 
-        Flowable.concat(
+        Flowable.concatArray(
                 Flowable.just(1).observeOn(s),
                 Flowable.just(2)
         )
@@ -1695,7 +1695,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         up.onNext(1);
         up.onComplete();
 
-        Flowable.concat(
+        Flowable.concatArray(
                 up.observeOn(s),
                 Flowable.just(2)
         )
@@ -1735,7 +1735,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void workerNotDisposedPrematurelyNormalInNormalOutConditional() {
         DisposeTrackingScheduler s = new DisposeTrackingScheduler();
 
-        Flowable.concat(
+        Flowable.concatArray(
                 Flowable.just(1).hide().observeOn(s).filter(Functions.alwaysTrue()),
                 Flowable.just(2)
         )
@@ -1749,7 +1749,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void workerNotDisposedPrematurelySyncInNormalOutConditional() {
         DisposeTrackingScheduler s = new DisposeTrackingScheduler();
 
-        Flowable.concat(
+        Flowable.concatArray(
                 Flowable.just(1).observeOn(s).filter(Functions.alwaysTrue()),
                 Flowable.just(2)
         )
@@ -1767,7 +1767,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         up.onNext(1);
         up.onComplete();
 
-        Flowable.concat(
+        Flowable.concatArray(
                 up.observeOn(s).filter(Functions.alwaysTrue()),
                 Flowable.just(2)
         )

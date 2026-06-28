@@ -16,12 +16,13 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Flow.Subscriber;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
@@ -55,7 +56,8 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normalDelayError() {
         Flowable.range(1, 10)
-        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, true, Integer.MAX_VALUE)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just,
+                new StandardConcurrentConfig(true, Integer.MAX_VALUE))
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
@@ -77,7 +79,8 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normalAsyncMaxConcurrency() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
-        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v).subscribeOn(Schedulers.computation()), false, 3)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v).subscribeOn(Schedulers.computation()),
+                new StandardConcurrentConfig(false, 3))
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
@@ -91,7 +94,8 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normalAsyncMaxConcurrency1() {
         Flowable.range(1, 10)
-        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v).subscribeOn(Schedulers.computation()), false, 1)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v).subscribeOn(Schedulers.computation()),
+                new StandardConcurrentConfig(false, 1))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -136,7 +140,8 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAll() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
-        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> Maybe.error(new TestException()), true, Integer.MAX_VALUE)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> Maybe.error(new TestException()),
+                new StandardConcurrentConfig(true, Integer.MAX_VALUE))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -159,7 +164,7 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normalMaxConcurrent1Backpressured() {
         Flowable.range(1, 10)
-        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, false, 1)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, new StandardConcurrentConfig(false, 1))
         .rebatchRequests(1)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -168,7 +173,7 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normalMaxConcurrent2Backpressured() {
         Flowable.range(1, 10)
-        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, false, 2)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, new StandardConcurrentConfig(false, 2))
         .rebatchRequests(1)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -238,7 +243,8 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void asyncFlattenNoneMaxConcurrency() {
         Flowable.range(1, 1000)
-        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> Maybe.<Integer>empty().subscribeOn(Schedulers.computation()), false, 128)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ ->
+            Maybe.<Integer>empty().subscribeOn(Schedulers.computation()), new StandardConcurrentConfig(false, 128))
         .take(500)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -248,7 +254,9 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void asyncFlattenErrorMaxConcurrency() {
         Flowable.range(1, 1000)
-        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> Maybe.<Integer>error(new TestException()).subscribeOn(Schedulers.computation()), true, 128)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ ->
+            Maybe.<Integer>error(new TestException()).subscribeOn(Schedulers.computation()),
+            new StandardConcurrentConfig(true, 128))
         .take(500)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -265,7 +273,7 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
                 return pp.singleElement();
             }
             return Maybe.error(new TestException());
-        }, true, Integer.MAX_VALUE)
+        }, new StandardConcurrentConfig(true, Integer.MAX_VALUE))
         .test();
 
         pp.onNext(1);
@@ -285,7 +293,7 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
                 return pp.singleElement();
             }
             return Maybe.error(new TestException());
-        }, true, Integer.MAX_VALUE)
+        }, new StandardConcurrentConfig(true, Integer.MAX_VALUE))
         .test();
 
         pp.onComplete();
@@ -457,7 +465,8 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void errorDelayed() {
         Flowable.just(1)
-        .flatMapMaybe(Functions.justFunction(Maybe.<Integer>error(new TestException())), true, 16)
+        .flatMapMaybe(Functions.justFunction(Maybe.<Integer>error(new TestException())),
+                new StandardConcurrentConfig(true, 16))
         .test(0L)
         .assertFailure(TestException.class);
     }
@@ -484,7 +493,8 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-            upstream.flatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(), true, 2));
+            upstream.flatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(),
+                    new StandardConcurrentConfig(true, 2)));
     }
 
     @Test

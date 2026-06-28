@@ -24,7 +24,7 @@ public class ConcatTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createFlowPublisher(long elements) {
         return
-                Flowable.concat(
+                Flowable.concatArray(
                     Flowable.fromIterable(iterate(elements / 2)),
                     Flowable.fromIterable(iterate(elements - elements / 2))
                 )
