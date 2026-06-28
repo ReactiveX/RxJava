@@ -27,7 +27,8 @@ import org.mockito.InOrder;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.core.config.ObservableZipConfig;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -1068,7 +1069,8 @@ public class ObservableZipTest extends RxJavaTest {
     public void zip2DelayError() {
         Observable.zip(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(2),
-                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true
+                ObservableZipConfig.DELAY_ERROR,
+                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b
         )
         .test()
         .assertFailure(TestException.class, "12");
@@ -1078,7 +1080,8 @@ public class ObservableZipTest extends RxJavaTest {
     public void zip2Prefetch() {
         Observable.zip(Observable.range(1, 9),
                 Observable.range(21, 9),
-                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, false, 2
+                new ObservableZipConfig(2),
+                (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b
         )
         .takeLast(1)
         .test()
@@ -1089,7 +1092,8 @@ public class ObservableZipTest extends RxJavaTest {
     public void zip2DelayErrorPrefetch() {
         Observable.zip(Observable.range(1, 9).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.range(21, 9),
-                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true, 2
+                new ObservableZipConfig(true, 2),
+                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b
         )
         .skip(8)
         .test()
@@ -1098,7 +1102,8 @@ public class ObservableZipTest extends RxJavaTest {
 
     @Test
     public void zipArrayEmpty() {
-        assertSame(Observable.empty(), Observable.zipArray(Functions.<Object[]>identity(), false, 16));
+        assertSame(Observable.empty(), Observable.zipArray(
+                new Observable<?>[0], new ObservableZipConfig(false, 16), Functions.<Object[]>identity()));
     }
 
     @Test

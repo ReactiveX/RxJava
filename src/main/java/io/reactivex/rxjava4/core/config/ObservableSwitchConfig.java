@@ -17,36 +17,36 @@ import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 
 /**
- * Configuration record for Observable.combineLatest() operators.
+ * Configuration record for Observable.switchOnNext() operators.
  * @param delayError should the error propagation be delayed?
- * @param bufferSize the expected number of row combination items to be buffered internally
+ * @param bufferSize the expected number of items to cache from the inner {@code ObservableSource}s
  * @since 4.0.0
  */
-public record ObservableCombineLatestConfig(boolean delayError, int bufferSize) {
+public record ObservableSwitchConfig(boolean delayError, int bufferSize) {
 
     /**
      * The default configuration with no error delays and bufferSize of Observable.bufferSize().
      */
-    public static final ObservableCombineLatestConfig DEFAULT = new ObservableCombineLatestConfig(false, Observable.bufferSize());
+    public static final ObservableSwitchConfig DEFAULT = new ObservableSwitchConfig(false, Observable.bufferSize());
 
     /**
-     * The default configuration with error delays and  bufferSize of Observable.bufferSize().
+     * The default configuration with error delays and bufferSize of Observable.bufferSize().
      */
-    public static final ObservableCombineLatestConfig DELAY_ERROR = new ObservableCombineLatestConfig(true, Observable.bufferSize());
+    public static final ObservableSwitchConfig DELAY_ERROR = new ObservableSwitchConfig(true, Observable.bufferSize());
 
     /**
      * Constructs a configuration record.
      * @param delayError should the error propagation be delayed?
      */
-    public ObservableCombineLatestConfig(boolean delayError) {
-        this(delayError, 2);
+    public ObservableSwitchConfig(boolean delayError) {
+        this(delayError, Observable.bufferSize());
     }
 
     /**
      * Constructs a configuration record.
      * @param bufferSize the expected number of row combination items to be buffered internally
      */
-    public ObservableCombineLatestConfig(int bufferSize) {
+    public ObservableSwitchConfig(int bufferSize) {
         this(false, bufferSize);
     }
 
@@ -55,7 +55,7 @@ public record ObservableCombineLatestConfig(boolean delayError, int bufferSize) 
      * @param delayError should the error propagation be delayed?
      * @param bufferSize the expected number of row combination items to be buffered internally
      */
-    public ObservableCombineLatestConfig {
+    public ObservableSwitchConfig {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
     }
 }

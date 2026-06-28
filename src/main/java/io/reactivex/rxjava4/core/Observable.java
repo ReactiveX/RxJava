@@ -15,9 +15,8 @@ package io.reactivex.rxjava4.core;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.Publisher;
 import java.util.stream.*;
-
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.config.*;
@@ -270,7 +269,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the configuration record for this operator
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources}, {@code combiner} or {@code config} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      * @since 4.0.0
      */
@@ -368,7 +366,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the configuration record for this operator
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources}, {@code combiner} or {@code config} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      * @since 4.0.0
      */
@@ -1078,7 +1075,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param config the configuration record of this operator
      * @return the new {@code Observable} instance with the specified concatenation behavior
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
      * @since 4.0.0
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1198,7 +1194,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param config the configuration record for this operator
      * @return the new {@code Observable} instance with the specified concatenation behavior
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
      * @since 4.0.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -2926,7 +2921,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Single<Boolean> sequenceEqual(@NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2) {
-        return sequenceEqual(source1, source2, ObjectHelper.equalsPredicate(), bufferSize());
+        return sequenceEqual(source1, source2, ObservableSequenceEqualConfig.DEFAULT);
     }
 
     /**
@@ -2944,91 +2939,25 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the first {@code ObservableSource} to compare
      * @param source2
      *            the second {@code ObservableSource} to compare
-     * @param isEqual
-     *            a function used to compare items emitted by each {@code ObservableSource}
+     * @param config
+     *            the configuration record for this operator
      * @param <T>
      *            the type of items emitted by each {@code ObservableSource}
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code source1}, {@code source2} or {@code isEqual} is {@code null}
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Single<Boolean> sequenceEqual(
             @NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2,
-            @NonNull BiPredicate<? super T, ? super T> isEqual) {
-        return sequenceEqual(source1, source2, isEqual, bufferSize());
-    }
-
-    /**
-     * Returns a {@link Single} that emits a {@link Boolean} value that indicates whether two {@link ObservableSource} sequences are the
-     * same by comparing the items emitted by each {@code ObservableSource} pairwise based on the results of a specified
-     * equality function.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.2.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param source1
-     *            the first {@code ObservableSource} to compare
-     * @param source2
-     *            the second {@code ObservableSource} to compare
-     * @param isEqual
-     *            a function used to compare items emitted by each {@code ObservableSource}
-     * @param bufferSize
-     *            the number of items expected from the first and second source {@code ObservableSource} to be buffered
-     * @param <T>
-     *            the type of items emitted by each {@code ObservableSource}
-     * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code source1}, {@code source2} or {@code isEqual} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Single<Boolean> sequenceEqual(
-            @NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2,
-            @NonNull BiPredicate<? super T, ? super T> isEqual, int bufferSize) {
+            @NonNull ObservableSequenceEqualConfig<? super T> config) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
-        Objects.requireNonNull(isEqual, "isEqual is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableSequenceEqualSingle<>(source1, source2, isEqual, bufferSize));
-    }
-
-    /**
-     * Returns a {@link Single} that emits a {@link Boolean} value that indicates whether two {@link ObservableSource} sequences are the
-     * same by comparing the items emitted by each {@code ObservableSource} pairwise.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.2.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param source1
-     *            the first {@code ObservableSource} to compare
-     * @param source2
-     *            the second {@code ObservableSource} to compare
-     * @param bufferSize
-     *            the number of items expected from the first and second source {@code ObservableSource} to be buffered
-     * @param <T>
-     *            the type of items emitted by each {@code ObservableSource}
-     * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Single<Boolean> sequenceEqual(@NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2,
-            int bufferSize) {
-        return sequenceEqual(source1, source2, ObjectHelper.equalsPredicate(), bufferSize);
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableSequenceEqualSingle<>(source1, source2, config.isEqual(), config.bufferSize()));
     }
 
     /**
@@ -3052,21 +2981,21 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param <T> the item type
      * @param sources
      *            the {@code ObservableSource} that emits {@code ObservableSource}s
-     * @param bufferSize
-     *            the expected number of items to cache from the inner {@code ObservableSource}s
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
+     * @since 4.0.0
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <@NonNull T> Observable<T> switchOnNext(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, int bufferSize) {
+    public static <@NonNull T> Observable<T> switchOnNext(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, @NonNull ObservableSwitchConfig config) {
         Objects.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableSwitchMap(sources, Functions.identity(), bufferSize, false));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableSwitchMap(sources, Functions.identity(), config.bufferSize(), config.delayError()));
     }
 
     /**
@@ -3098,81 +3027,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> switchOnNext(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        return switchOnNext(sources, bufferSize());
-    }
-
-    /**
-     * Converts an {@link ObservableSource} that emits {@code ObservableSource}s into an {@code Observable} that emits the items emitted by the
-     * most recently emitted of those {@code ObservableSource}s and delays any exception until all {@code ObservableSource}s terminate.
-     * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchOnNextDelayError.v3.png" alt="">
-     * <p>
-     * {@code switchOnNext} subscribes to an {@code ObservableSource} that emits {@code ObservableSource}s. Each time it observes one of
-     * these emitted {@code ObservableSource}s, the {@code ObservableSource} returned by {@code switchOnNext} begins emitting the items
-     * emitted by that {@code ObservableSource}. When a new inner {@code ObservableSource} is emitted, {@code switchOnNext} stops emitting items
-     * from the earlier-emitted {@code ObservableSource} and begins emitting items from the new one.
-     * <p>
-     * The resulting {@code Observable} completes if both the main {@code ObservableSource} and the last inner {@code ObservableSource}, if any, complete.
-     * If the main {@code ObservableSource} signals an {@code onError}, the termination of the last inner {@code ObservableSource} will emit that error as is
-     * or wrapped into a {@link CompositeException} along with the other possible errors the former inner {@code ObservableSource}s signaled.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code switchOnNextDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the item type
-     * @param sources
-     *            the {@code ObservableSource} that emits {@code ObservableSource}s
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> switchOnNextDelayError(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        return switchOnNextDelayError(sources, bufferSize());
-    }
-
-    /**
-     * Converts an {@link ObservableSource} that emits {@code ObservableSource}s into an {@code Observable} that emits the items emitted by the
-     * most recently emitted of those {@code ObservableSource}s and delays any exception until all {@code ObservableSource}s terminate.
-     * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchOnNextDelayError.v3.png" alt="">
-     * <p>
-     * {@code switchOnNext} subscribes to an {@code ObservableSource} that emits {@code ObservableSource}s. Each time it observes one of
-     * these emitted {@code ObservableSource}s, the {@code ObservableSource} returned by {@code switchOnNext} begins emitting the items
-     * emitted by that {@code ObservableSource}. When a new inner {@code ObservableSource} is emitted, {@code switchOnNext} stops emitting items
-     * from the earlier-emitted {@code ObservableSource} and begins emitting items from the new one.
-     * <p>
-     * The resulting {@code Observable} completes if both the main {@code ObservableSource} and the last inner {@code ObservableSource}, if any, complete.
-     * If the main {@code ObservableSource} signals an {@code onError}, the termination of the last inner {@code ObservableSource} will emit that error as is
-     * or wrapped into a {@link CompositeException} along with the other possible errors the former inner {@code ObservableSource}s signaled.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code switchOnNextDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T> the item type
-     * @param sources
-     *            the {@code ObservableSource} that emits {@code ObservableSource}s
-     * @param bufferSize
-     *            the expected number of items to cache from the inner {@code ObservableSource}s
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
-     * @since 2.0
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T> Observable<T> switchOnNextDelayError(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, int bufferSize) {
-        Objects.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableSwitchMap(sources, Functions.identity(), bufferSize, true));
+        return switchOnNext(sources, ObservableSwitchConfig.DEFAULT);
     }
 
     /**
@@ -3407,9 +3262,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public static <@NonNull T, @NonNull R> Observable<R> zip(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
             @NonNull Function<? super Object[], ? extends R> zipper) {
-        Objects.requireNonNull(zipper, "zipper is null");
-        Objects.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new ObservableZip<>(null, sources, zipper, bufferSize(), false));
+        return zip(sources, ObservableZipConfig.DEFAULT, zipper);
     }
 
     /**
@@ -3450,30 +3303,29 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *
      * @param sources
      *            an {@code Iterable} of source {@code ObservableSource}s
+     * @param config
+     *            the configuration record for this operator
      * @param zipper
      *            a function that, when applied to an item emitted by each of the {@code ObservableSource}s, results in
      *            an item that will be emitted by the resulting {@code Observable}
-     * @param delayError
-     *            delay errors signaled by any of the {@code ObservableSource} until all {@code ObservableSource}s terminate
-     * @param bufferSize
-     *            the number of elements expected from each source {@code ObservableSource} to be buffered
      * @param <T> the common source value type
      * @param <R> the zipped result type
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} or {@code zipper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code sources} or {@code zipper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T, @NonNull R> Observable<R> zip(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
-            @NonNull Function<? super Object[], ? extends R> zipper, boolean delayError,
-            int bufferSize) {
+            @NonNull ObservableZipConfig config,
+            @NonNull Function<? super Object[], ? extends R> zipper
+    ) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableZip<>(null, sources, zipper, bufferSize, delayError));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableZip<>(null, sources, zipper, config.bufferSize(), config.delayError()));
     }
 
     /**
@@ -3530,7 +3382,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2);
+        return zip(source1, source2, ObservableZipConfig.DEFAULT, zipper);
     }
 
     /**
@@ -3574,81 +3426,26 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param zipper
      *            a function that, when applied to an item emitted by each of the {@code ObservableSource}s, results
      *            in an item that will be emitted by the resulting {@code Observable}
-     * @param delayError delay errors from any of the {@code ObservableSource}s till the other terminates
+     * @param config the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code source1}, {@code source2} or {@code zipper} is {@code null}
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code zipper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T1, @NonNull T2, @NonNull R> Observable<R> zip(
             @NonNull ObservableSource<? extends T1> source1, @NonNull ObservableSource<? extends T2> source2,
-            @NonNull BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError) {
+            @NonNull ObservableZipConfig config,
+            @NonNull BiFunction<? super T1, ? super T2, ? extends R> zipper) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2);
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the results of a specified combiner function applied to combinations of
-     * two items emitted, in sequence, by two other {@link ObservableSource}s.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
-     * <p>
-     * {@code zip} applies this function in strict sequence, so the first item emitted by the resulting {@code Observable}
-     * will be the result of the function applied to the first item emitted by {@code o1} and the first item
-     * emitted by {@code o2}; the second item emitted by the resulting {@code Observable} will be the result of the function
-     * applied to the second item emitted by {@code o1} and the second item emitted by {@code o2}; and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
-     * as many times as the number of {@code onNext} invocations of the {@code ObservableSource} that emits the fewest
-     * items.
-     * <p>
-     * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while disposing the other sources. Therefore, it
-     * is possible those other sources will never be able to run to completion (and thus not calling
-     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
-     * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will dispose B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
-     * {@code action1} will be called but {@code action2} won't.
-     * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
-     * or a dispose() call.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T1> the value type of the first source
-     * @param <T2> the value type of the second source
-     * @param <R> the zipped result type
-     * @param source1
-     *            the first source {@code ObservableSource}
-     * @param source2
-     *            a second source {@code ObservableSource}
-     * @param zipper
-     *            a function that, when applied to an item emitted by each of the {@code ObservableSource}s, results
-     *            in an item that will be emitted by the resulting {@code Observable}
-     * @param delayError delay errors from any of the {@code ObservableSource}s till the other terminates
-     * @param bufferSize the number of elements expected from each source {@code ObservableSource} to be buffered
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code source1}, {@code source2} or {@code zipper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public static <@NonNull T1, @NonNull T2, @NonNull R> Observable<R> zip(
-            @NonNull ObservableSource<? extends T1> source1, @NonNull ObservableSource<? extends T2> source2,
-            @NonNull BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError, int bufferSize) {
-        Objects.requireNonNull(source1, "source1 is null");
-        Objects.requireNonNull(source2, "source2 is null");
-        Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2);
+        Objects.requireNonNull(config, "config is null");
+        return zipArray(new Observable<?>[] {
+                (Observable<?>) source1, (Observable<?>) source2 },
+                config, Functions.toFunction(zipper));
     }
 
     /**
@@ -3711,7 +3508,9 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3);
+        return zipArray(new Observable<?>[] {
+            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3 },
+            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -3779,7 +3578,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(source4, "source4 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4);
+        return zipArray(new Observable<?>[] {
+            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
+            (Observable<?>) source4
+            },
+            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -3851,7 +3654,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source4, "source4 is null");
         Objects.requireNonNull(source5, "source5 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5);
+        return zipArray(new Observable<?>[] {
+            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
+            (Observable<?>) source4, (Observable<?>) source5
+            },
+            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -3926,7 +3733,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source5, "source5 is null");
         Objects.requireNonNull(source6, "source6 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6);
+        return zipArray(new Observable<?>[] {
+            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
+            (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6
+            },
+            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -4007,7 +3818,12 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source6, "source6 is null");
         Objects.requireNonNull(source7, "source7 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7);
+        return zipArray(new Observable<?>[] {
+            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
+            (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6,
+            (Observable<?>) source7
+            },
+            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -4092,7 +3908,12 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source7, "source7 is null");
         Objects.requireNonNull(source8, "source8 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8);
+        return zipArray(new Observable<?>[] {
+            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
+            (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6,
+            (Observable<?>) source7, (Observable<?>) source8
+            },
+            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -4181,7 +4002,12 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source8, "source8 is null");
         Objects.requireNonNull(source9, "source9 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8, source9);
+        return zipArray(new Observable<?>[] {
+            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
+            (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6,
+            (Observable<?>) source7, (Observable<?>) source8, (Observable<?>) source9
+            },
+            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -4224,33 +4050,30 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param <R> the result type
      * @param sources
      *            an array of source {@code ObservableSource}s
+     * @param config
+     *            the configuration record for this operator
      * @param zipper
      *            a function that, when applied to an item emitted by each of the {@code ObservableSource}s, results in
      *            an item that will be emitted by the resulting {@code Observable}
-     * @param delayError
-     *            delay errors signaled by any of the {@code ObservableSource} until all {@code ObservableSource}s terminate
-     * @param bufferSize
-     *            the number of elements expected from each source {@code ObservableSource} to be buffered
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code sources} or {@code zipper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code sources} or {@code zipper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    @SafeVarargs
     @NonNull
     public static <@NonNull T, @NonNull R> Observable<R> zipArray(
-            @NonNull Function<? super Object[], ? extends R> zipper,
-            boolean delayError, int bufferSize,
-            @NonNull ObservableSource<? extends T>... sources) {
+            @NonNull ObservableSource<? extends T>[] sources,
+            @NonNull ObservableZipConfig config,
+            @NonNull Function<? super Object[], ? extends R> zipper
+    ) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return empty();
         }
         Objects.requireNonNull(zipper, "zipper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableZip<>(sources, null, zipper, bufferSize, delayError));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableZip<>(sources, null, zipper, config.bufferSize(), config.delayError()));
     }
 
     // ***************************************************************************************************
@@ -15640,68 +15463,20 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param zipper
      *            a function that combines the pairs of items from the current {@code Observable} and the other {@code ObservableSource} to generate the items to
      *            be emitted by the resulting {@code Observable}
-     * @param delayError
-     *            if {@code true}, errors from the current {@code Observable} or the other {@code ObservableSource} is delayed until both terminate
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code other} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
-     * @since 2.0
+     * @throws NullPointerException if {@code other} or {@code zipper} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull U, @NonNull R> Observable<R> zipWith(@NonNull ObservableSource<? extends U> other,
-            @NonNull BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError) {
-        return zip(this, other, zipper, delayError);
-    }
-
-    /**
-     * Returns an {@code Observable} that emits items that are the result of applying a specified function to pairs of
-     * values, one each from the current {@code Observable} and another specified {@link ObservableSource}.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
-     * <p>
-     * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while disposing the other sources. Therefore, it
-     * is possible those other sources will never be able to run to completion (and thus not calling
-     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
-     * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will dispose B immediately. For example:
-     * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
-     * {@code action1} will be called but {@code action2} won't.
-     * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
-     * or a dispose() call.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <U>
-     *            the type of items emitted by the {@code other} {@code ObservableSource}
-     * @param <R>
-     *            the type of items emitted by the resulting {@code Observable}
-     * @param other
-     *            the other {@code ObservableSource}
-     * @param zipper
-     *            a function that combines the pairs of items from the current {@code Observable} and the other {@code ObservableSource} to generate the items to
-     *            be emitted by the resulting {@code Observable}
-     * @param bufferSize
-     *            the capacity hint for the buffer in the inner windows
-     * @param delayError
-     *            if {@code true}, errors from the current {@code Observable} or the other {@code ObservableSource} is delayed until both terminate
-     * @return the new {@code Observable} instance
-     * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
-     * @throws NullPointerException if {@code other} or {@code zipper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull U, @NonNull R> Observable<R> zipWith(@NonNull ObservableSource<? extends U> other,
-            @NonNull BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError, int bufferSize) {
-        return zip(this, other, zipper, delayError, bufferSize);
+            @NonNull ObservableZipConfig config,
+            @NonNull BiFunction<? super T, ? super U, ? extends R> zipper) {
+        return zip(this, other, config, zipper);
     }
 
     // -------------------------------------------------------------------------

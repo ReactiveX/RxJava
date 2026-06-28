@@ -18,16 +18,16 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ObservableCombineLatestConfigTest extends RxJavaTest {
+public class ObservableZipConfigTest extends RxJavaTest {
 
     @Test
     public void validation() {
-        assertTrue(new ObservableSwitchConfig(true).delayError(), "delayError - true");
-        assertFalse(new ObservableSwitchConfig(false).delayError(), "delayError - false");
-        assertEquals(5, new ObservableSwitchConfig(5).bufferSize(), "bufferSize - 5");
-        assertEquals(5, new ObservableSwitchConfig(true, 5).bufferSize(), "bufferSize both - true, 5");
-        assertEquals(5, new ObservableSwitchConfig(false, 5).bufferSize(), "bufferSize both - false, 5");
-        assertTrue(new ObservableSwitchConfig(true, 5).delayError(), "delayError both - true, 5");
-        assertFalse(new ObservableSwitchConfig(false, 5).delayError(), "delayError both - false, 5");
+        assertTrue(new ObservableZipConfig(true).delayError(), "delayError - true");
+        assertFalse(new ObservableZipConfig(false).delayError(), "delayError - false");
+        assertEquals(5, new ObservableZipConfig(5).bufferSize(), "bufferSize - 5");
+        assertEquals(5, new ObservableZipConfig(true, 5).bufferSize(), "bufferSize both - true, 5");
+        assertEquals(5, new ObservableZipConfig(false, 5).bufferSize(), "bufferSize both - false, 5");
+        assertTrue(new ObservableZipConfig(true, 5).delayError(), "delayError both - true, 5");
+        assertFalse(new ObservableZipConfig(false, 5).delayError(), "delayError both - false, 5");
     }
 }

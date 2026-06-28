@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.core.config;
 
-import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 
 /**
@@ -40,7 +40,7 @@ public record MaybeConcatEagerConfig(boolean delayError, int maxConcurrency, int
      * @param delayError should the error propagation be delayed?
      */
     public MaybeConcatEagerConfig(boolean delayError) {
-        this(delayError, 2, 2);
+        this(delayError, Flowable.bufferSize(), Flowable.bufferSize());
     }
 
     /**
