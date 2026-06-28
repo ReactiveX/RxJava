@@ -1101,6 +1101,10 @@ specified boundary <a href="https://docs.oracle.com/en/java/javase/26/docs/api/j
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
@@ -1985,13 +1989,13 @@ where that function returns a <a href="io/reactivex/rxjava4/core/MaybeSource.htm
 emitted by the current <code>Observable</code>, where that function returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items
 that result from concatenating those returned <code>ObservableSource</code>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMap(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">concatMap(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.ObservableConcatMapConfig)" class="member-name-link">concatMap(Function, Scheduler, ObservableConcatMapConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns a new <code>Observable</code> that emits items resulting from applying a function that you supply to each item
 emitted by the current <code>Observable</code>, where that function returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items
 that result from concatenating those returned <code>ObservableSource</code>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMap(io.reactivex.rxjava4.functions.Function,int,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">concatMap(Function, int, Scheduler)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableConcatMapConfig)" class="member-name-link">concatMap(Function, ObservableConcatMapConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns a new <code>Observable</code> that emits items resulting from applying a function that you supply to each item
 emitted by the current <code>Observable</code>, where that function returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items
@@ -2055,7 +2059,7 @@ current <code>Single</code>, where that function returns a <a href="io/reactivex
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s and subscribes to them one after the
 other completes.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapCompletable(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">concatMapCompletable(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapCompletable(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableConcatMapConfig)" class="member-name-link">concatMapCompletable(Function, ObservableConcatMapConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to them one at a time in
 order and waits until the upstream and all <code>CompletableSource</code>s complete.</div>
@@ -2066,22 +2070,10 @@ order and waits until the upstream and all <code>CompletableSource</code>s compl
 other terminates, delaying all errors till both this <code>Flowable</code> and all
 inner <code>CompletableSource</code>s terminate.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapCompletableDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapCompletableDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s and subscribes to them one after the
-other terminates, delaying all errors till both the current <code>Observable</code> and all
-inner <code>CompletableSource</code>s terminate.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapCompletableDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapCompletableDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s and subscribes to them one after the
 other terminates, optionally delaying all errors till both this <code>Flowable</code> and all
-inner <code>CompletableSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapCompletableDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapCompletableDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s and subscribes to them one after the
-other terminates, optionally delaying all errors till both the current <code>Observable</code> and all
 inner <code>CompletableSource</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapCompletableDelayError(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">concatMapCompletableDelayError(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
@@ -2089,33 +2081,6 @@ inner <code>CompletableSource</code>s terminate.</div>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s and subscribes to them one after the
 other terminates, optionally delaying all errors till both this <code>Flowable</code> and all
 inner <code>CompletableSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapCompletableDelayError(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">concatMapCompletableDelayError(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s and subscribes to them one after the
-other terminates, optionally delaying all errors till both the current <code>Observable</code> and all
-inner <code>CompletableSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps each of the items into an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, subscribes to them one after the other,
-one at a time and emits their values in order
-while delaying any error from either this or any of the inner <code>ObservableSource</code>s
-till all of them terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapDelayError(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">concatMapDelayError(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps each of the items into an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, subscribes to them one after the other,
-one at a time and emits their values in order
-while delaying any error from either this or any of the inner <code>ObservableSource</code>s
-till all of them terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapDelayError(io.reactivex.rxjava4.functions.Function,boolean,int,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">concatMapDelayError(Function, boolean, int, Scheduler)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps each of the items into an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, subscribes to them one after the other,
-one at a time and emits their values in order
-while delaying any error from either this or any of the inner <code>ObservableSource</code>s
-till all of them terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -2153,7 +2118,7 @@ and using the given prefetch amount for generating <code>Publisher</code>s upfro
 <div class="block">Maps a sequence of values into <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s and concatenates these <code>ObservableSource</code>s eagerly into a single
 <code>Observable</code> sequence.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapEager(io.reactivex.rxjava4.functions.Function,int,int)" class="member-name-link">concatMapEager(Function, int, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapEager(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableConcatEagerConfig)" class="member-name-link">concatMapEager(Function, ObservableConcatEagerConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Maps a sequence of values into <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s and concatenates these <code>ObservableSource</code>s eagerly into a single
 <code>Observable</code> sequence.</div>
@@ -2167,16 +2132,6 @@ and using the given prefetch amount for generating <code>Publisher</code>s upfro
 <dd>
 <div class="block">Maps a sequence of values into <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s and concatenates these <code>Publisher</code>s eagerly into a single
 <code>Publisher</code>.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapEagerDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapEagerDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps a sequence of values into <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s and concatenates these <code>ObservableSource</code>s eagerly into a single
-<code>Observable</code> sequence.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapEagerDelayError(io.reactivex.rxjava4.functions.Function,boolean,int,int)" class="member-name-link">concatMapEagerDelayError(Function, boolean, int, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps a sequence of values into <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s and concatenates these <code>ObservableSource</code>s eagerly into a single
-<code>Observable</code> sequence.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapEagerDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapEagerDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -2226,7 +2181,7 @@ where that function returns a <a href="io/reactivex/rxjava4/core/MaybeSource.htm
 other succeeds or completes, emits their success value if available or terminates immediately if
 either this <code>Flowable</code> or the current inner <code>MaybeSource</code> fail.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapMaybe(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">concatMapMaybe(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapMaybe(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableConcatMapConfig)" class="member-name-link">concatMapMaybe(Function, ObservableConcatMapConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and subscribes to them one after the
 other succeeds or completes, emits their success value if available or terminates immediately if
@@ -2238,35 +2193,17 @@ either the current <code>Observable</code> or the current inner <code>MaybeSourc
 other terminates, emits their success value if available and delaying all errors
 till both this <code>Flowable</code> and all inner <code>MaybeSource</code>s terminate.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapMaybeDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapMaybeDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and subscribes to them one after the
-other terminates, emits their success value if available and delaying all errors
-till both the current <code>Observable</code> and all inner <code>MaybeSource</code>s terminate.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapMaybeDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapMaybeDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and subscribes to them one after the
 other terminates, emits their success value if available and optionally delaying all errors
 till both this <code>Flowable</code> and all inner <code>MaybeSource</code>s terminate.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapMaybeDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapMaybeDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and subscribes to them one after the
-other terminates, emits their success value if available and optionally delaying all errors
-till both the current <code>Observable</code> and all inner <code>MaybeSource</code>s terminate.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapMaybeDelayError(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">concatMapMaybeDelayError(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and subscribes to them one after the
 other terminates, emits their success value if available and optionally delaying all errors
 till both this <code>Flowable</code> and all inner <code>MaybeSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapMaybeDelayError(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">concatMapMaybeDelayError(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and subscribes to them one after the
-other terminates, emits their success value if available and optionally delaying all errors
-till both the current <code>Observable</code> and all inner <code>MaybeSource</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapSingle(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapSingle(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -2291,7 +2228,7 @@ either the current <code>Observable</code> or the current inner <code>SingleSour
 other succeeds, emits their success values or terminates immediately if
 either this <code>Flowable</code> or the current inner <code>SingleSource</code> fail.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapSingle(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">concatMapSingle(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapSingle(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableConcatMapConfig)" class="member-name-link">concatMapSingle(Function, ObservableConcatMapConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s and subscribes to them one after the
 other succeeds, emits their success values or terminates immediately if
@@ -2303,35 +2240,17 @@ either the current <code>Observable</code> or the current inner <code>SingleSour
 other succeeds or fails, emits their success values and delays all errors
 till both this <code>Flowable</code> and all inner <code>SingleSource</code>s terminate.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapSingleDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapSingleDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s and subscribes to them one after the
-other succeeds or fails, emits their success values and delays all errors
-till both the current <code>Observable</code> and all inner <code>SingleSource</code>s terminate.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapSingleDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapSingleDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s and subscribes to them one after the
 other succeeds or fails, emits their success values and optionally delays all errors
 till both this <code>Flowable</code> and all inner <code>SingleSource</code>s terminate.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapSingleDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapSingleDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s and subscribes to them one after the
-other succeeds or fails, emits their success values and optionally delays all errors
-till both the current <code>Observable</code> and all inner <code>SingleSource</code>s terminate.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapSingleDelayError(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">concatMapSingleDelayError(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s and subscribes to them one after the
 other succeeds or fails, emits their success values and optionally delays errors
 till both this <code>Flowable</code> and all inner <code>SingleSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#concatMapSingleDelayError(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">concatMapSingleDelayError(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s and subscribes to them one after the
-other succeeds or fails, emits their success values and optionally delays  errors
-till both the current <code>Observable</code> and all inner <code>SingleSource</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapStream(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapStream(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -2863,6 +2782,10 @@ current <code>Flowable</code> that are followed by another item within a compute
 <dd>
 <div class="block">The default configuration with no error delays, maxConcurrency and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a></dt>
+<dd>
+<div class="block">The default configuration with no error delays and bufferSize of 2.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
 <div class="block">The default configuration with no error delays and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
@@ -3088,11 +3011,15 @@ per-item basis.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatConfig</a></dt>
 <dd>
-<div class="block">The default configuration with error delays and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+<div class="block">The default configuration with error delays till the end and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatEagerConfig</a></dt>
 <dd>
 <div class="block">The default configuration with error delays, maxConcurrency and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a></dt>
+<dd>
+<div class="block">The default configuration with error delays till the end and bufferSize of 2.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
@@ -3116,11 +3043,15 @@ per-item basis.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatConfig.html#DELAY_ERROR_BOUNDARY" class="member-name-link">DELAY_ERROR_BOUNDARY</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatConfig</a></dt>
 <dd>
-<div class="block">The default configuration with error delays and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+<div class="block">The default configuration with error delays till the boundary and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html#DELAY_ERROR_BOUNDARY" class="member-name-link">DELAY_ERROR_BOUNDARY</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatEagerConfig</a></dt>
 <dd>
 <div class="block">The default configuration with error delays, maxConcurrency and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#DELAY_ERROR_BOUNDARY" class="member-name-link">DELAY_ERROR_BOUNDARY</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a></dt>
+<dd>
+<div class="block">The default configuration with error delays till the boundary and bufferSize of 2.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#DELAY_ERRORS" class="member-name-link">DELAY_ERRORS</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
 <dd>
@@ -3926,6 +3857,10 @@ immediately.</div>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
@@ -4055,9 +3990,13 @@ in case the downstream can't keep up.</div>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html#param-errorMode"><code>errorMode</code></a> record component.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#errorMode()" class="member-name-link">errorMode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#param-errorMode"><code>errorMode</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/ErrorMode.html" class="type-name-link" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a> - Enum Class in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
-<div class="block">Indicates when an error from the main source should be reported.</div>
+<div class="block">Indicates when an error from the any of the involved sources should be handled.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#errors" class="member-name-link">errors</a> - Variable in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
 <dd>
@@ -5597,6 +5536,10 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
@@ -5830,7 +5773,7 @@ and signals <code>onComplete</code> instead.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/ErrorMode.html#IMMEDIATE" class="member-name-link">IMMEDIATE</a> - Enum constant in enum class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a></dt>
 <dd>
-<div class="block">Report the error immediately, cancelling the active inner source.</div>
+<div class="block">Report the error immediately, cancelling the active sources.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#initCachedScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initCachedScheduler(Supplier)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
@@ -6486,6 +6429,10 @@ and emits it as a <a href="io/reactivex/rxjava4/core/Single.html" title="class i
 <div class="block">Maps the signal types of this <code>Single</code> into a <a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core"><code>Notification</code></a> of the same kind
 and emits it as a single success value to downstream.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html#MAX_DEFAULT" class="member-name-link">MAX_DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatEagerConfig</a></dt>
+<dd>
+<div class="block">The default configuration with no error delays, maxConcurrency of MAX_INT and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#maxConcurrency()" class="member-name-link">maxConcurrency()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/CompletableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">CompletableMergeConfig</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/CompletableMergeConfig.html#param-maxConcurrency"><code>maxConcurrency</code></a> record component.</div>
@@ -7075,7 +7022,23 @@ and/or asynchronous reactive dataflows.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode)" class="member-name-link">ObservableConcatEagerConfig(ErrorMode)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatEagerConfig</a></dt>
 <dd>
-<div class="block">Optionally delay error, <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Optionally delay error, <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a> sizes</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record for Observable.concatMap() operators.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#%3Cinit%3E(int)" class="member-name-link">ObservableConcatMapConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode)" class="member-name-link">ObservableConcatMapConfig(ErrorMode)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode,int)" class="member-name-link">ObservableConcatMapConfig(ErrorMode, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/ObservableConverter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">ObservableConverter&lt;T,<wbr>R&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -11884,6 +11847,10 @@ transparently relaying signals between the two async representations of a sequen
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatEagerConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatMapConfig</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>

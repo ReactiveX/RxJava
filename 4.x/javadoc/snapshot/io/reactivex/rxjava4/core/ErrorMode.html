@@ -98,7 +98,11 @@ initTheme();
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public enum </span><span class="element-name type-name-label">ErrorMode</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Enum.html" title="class in java.lang" class="external-link">Enum</a>&lt;<a href="ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&gt;</span></div>
-<div class="block">Indicates when an error from the main source should be reported.</div>
+<div class="block">Indicates when an error from the any of the involved sources should be handled.
+<p>
+Usually appears with <code>concat</code> and <code>concatMap</code> operators where the outer and inner source(s)
+may error out in the middle of streaming and the user would like to finish the current source before
+cancelling the rest and signaling the error(s) to the consumers.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>4.0.0</dd>
@@ -134,7 +138,7 @@ initTheme();
 </div>
 <div class="col-first even-row-color"><code><a href="#IMMEDIATE" class="member-name-link">IMMEDIATE</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">Report the error immediately, cancelling the active inner source.</div>
+<div class="block">Report the error immediately, cancelling the active sources.</div>
 </div>
 </div>
 </section>
@@ -186,7 +190,7 @@ the order they are declared.</div>
 <h3>IMMEDIATE</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a></span>&nbsp;<span class="element-name">IMMEDIATE</span></div>
-<div class="block">Report the error immediately, cancelling the active inner source.</div>
+<div class="block">Report the error immediately, cancelling the active sources.</div>
 </div>
 </section>
 </li>

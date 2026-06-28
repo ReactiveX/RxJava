@@ -69,6 +69,7 @@ initTheme();
 <li><a href="#DEFAULT" tabindex="0">DEFAULT</a></li>
 <li><a href="#DELAY_ERROR" tabindex="0">DELAY_ERROR</a></li>
 <li><a href="#DELAY_ERROR_BOUNDARY" tabindex="0">DELAY_ERROR_BOUNDARY</a></li>
+<li><a href="#MAX_DEFAULT" tabindex="0">MAX_DEFAULT</a></li>
 </ol>
 </li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
@@ -145,6 +146,11 @@ initTheme();
 <div class="col-last even-row-color">
 <div class="block">The default configuration with error delays, maxConcurrency and bufferSize of <a href="../Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
 </div>
+<div class="col-first odd-row-color"><code>static final <a href="ObservableConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatEagerConfig</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#MAX_DEFAULT" class="member-name-link">MAX_DEFAULT</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">The default configuration with no error delays, maxConcurrency of MAX_INT and bufferSize of <a href="../Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+</div>
 </div>
 </section>
 </li>
@@ -173,7 +179,7 @@ initTheme();
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode)" class="member-name-link">ObservableConcatEagerConfig</a><wbr>(<a href="../ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&nbsp;errorMode)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Optionally delay error, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Optionally delay error, <a href="../Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a> sizes</div>
 </div>
 </div>
 </section>
@@ -263,6 +269,15 @@ initTheme();
 </div>
 </section>
 </li>
+<li>
+<section class="detail" id="MAX_DEFAULT">
+<h3>MAX_DEFAULT</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ObservableConcatEagerConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableConcatEagerConfig</a></span>&nbsp;<span class="element-name">MAX_DEFAULT</span></div>
+<div class="block">The default configuration with no error delays, maxConcurrency of MAX_INT and bufferSize of <a href="../Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+</div>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -276,7 +291,7 @@ initTheme();
 <h3>ObservableConcatEagerConfig</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ObservableConcatEagerConfig</span><wbr><span class="parameters">(<a href="../ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&nbsp;errorMode)</span></div>
-<div class="block">Optionally delay error, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Optionally delay error, <a href="../Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a> sizes</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>errorMode</code> - how to handle when errors appear from the inner or outer sources</dd>
