@@ -10429,7 +10429,7 @@ throws an exception.</div>
 <code>Observable</code> that returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items emitted by the most recently emitted
 of these <code>ObservableSource</code>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#switchMap(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">switchMap(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#switchMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableSwitchConfig)" class="member-name-link">switchMap(Function, ObservableSwitchConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
 <code>Observable</code> that returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items emitted by the most recently emitted
@@ -10459,31 +10459,19 @@ active <code>CompletableSource</code> running.</div>
 disposing the subscription to the previous <code>CompletableSource</code>, thus keeping at most one
 active <code>CompletableSource</code> running.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#switchMapCompletable(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">switchMapCompletable(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dd>
+<div class="block">Maps the upstream values into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to the newer one while
+disposing the subscription to the previous <code>CompletableSource</code>, thus keeping at most one
+active <code>CompletableSource</code> running and delaying any main or inner errors until all
+of them terminate.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchMapCompletableDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapCompletableDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream values into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to the newer one while
 disposing the subscription to the previous <code>CompletableSource</code>, thus keeping at most one
 active <code>CompletableSource</code> running and delaying any main or inner errors until all
 of them terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#switchMapCompletableDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapCompletableDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps the upstream values into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to the newer one while
-disposing the subscription to the previous <code>CompletableSource</code>, thus keeping at most one
-active <code>CompletableSource</code> running and delaying any main or inner errors until all
-of them terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#switchMapDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
-<code>Observable</code> that returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items emitted by the most recently emitted
-of these <code>ObservableSource</code>s and delays any error until all <code>ObservableSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#switchMapDelayError(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">switchMapDelayError(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
-<code>Observable</code> that returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items emitted by the most recently emitted
-of these <code>ObservableSource</code>s and delays any error until all <code>ObservableSource</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchMapDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -10511,17 +10499,17 @@ while disposing the older ones (and ignoring their signals) and emits the latest
 available while failing immediately if the current <code>Observable</code> or any of the
 active inner <code>MaybeSource</code>s fail.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#switchMapMaybe(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">switchMapMaybe(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dd>
+<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and switches (subscribes) to the newer ones
+while disposing the older ones  (and ignoring their signals) and emits the latest success value of the current one if
+available, delaying errors from the current <code>Observable</code> or the inner <code>MaybeSource</code>s until all terminate.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchMapMaybeDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapMaybeDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and switches (subscribes) to the newer ones
 while disposing the older ones  (and ignoring their signals) and emits the latest success value of the current one if
 available, delaying errors from this <code>Flowable</code> or the inner <code>MaybeSource</code>s until all terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#switchMapMaybeDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapMaybeDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and switches (subscribes) to the newer ones
-while disposing the older ones  (and ignoring their signals) and emits the latest success value of the current one if
-available, delaying errors from the current <code>Observable</code> or the inner <code>MaybeSource</code>s until all terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchMapSingle(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapSingle(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -10536,17 +10524,17 @@ active inner <code>SingleSource</code>s fail.</div>
 <code>Observable</code> that returns a <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>, and then emitting the item emitted by the most recently emitted
 of these <code>SingleSource</code>s.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#switchMapSingle(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">switchMapSingle(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dd>
+<div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
+<code>Observable</code> that returns a <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>, and then emitting the item emitted by the most recently emitted
+of these <code>SingleSource</code>s and delays any error until all <code>SingleSource</code>s terminate.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchMapSingleDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapSingleDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s and switches (subscribes) to the newer ones
 while disposing the older ones  (and ignoring their signals) and emits the latest success value of the current one,
 delaying errors from this <code>Flowable</code> or the inner <code>SingleSource</code>s until all terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#switchMapSingleDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapSingleDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
-<code>Observable</code> that returns a <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>, and then emitting the item emitted by the most recently emitted
-of these <code>SingleSource</code>s and delays any error until all <code>SingleSource</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#switchOnNext(io.reactivex.rxjava4.core.ObservableSource)" class="member-name-link">switchOnNext(ObservableSource)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>

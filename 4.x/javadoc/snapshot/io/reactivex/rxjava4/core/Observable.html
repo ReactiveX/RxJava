@@ -397,15 +397,13 @@ initTheme();
 <li><a href="#subscribeOn(io.reactivex.rxjava4.core.Scheduler)" tabindex="0">subscribeOn(Scheduler)</a></li>
 <li><a href="#switchIfEmpty(io.reactivex.rxjava4.core.ObservableSource)" tabindex="0">switchIfEmpty(ObservableSource)</a></li>
 <li><a href="#switchMap(io.reactivex.rxjava4.functions.Function)" tabindex="0">switchMap(Function)</a></li>
-<li><a href="#switchMap(io.reactivex.rxjava4.functions.Function,int)" tabindex="0">switchMap(Function, int)</a></li>
+<li><a href="#switchMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableSwitchConfig)" tabindex="0">switchMap(Function, ObservableSwitchConfig)</a></li>
 <li><a href="#switchMapCompletable(io.reactivex.rxjava4.functions.Function)" tabindex="0">switchMapCompletable(Function)</a></li>
-<li><a href="#switchMapCompletableDelayError(io.reactivex.rxjava4.functions.Function)" tabindex="0">switchMapCompletableDelayError(Function)</a></li>
+<li><a href="#switchMapCompletable(io.reactivex.rxjava4.functions.Function,boolean)" tabindex="0">switchMapCompletable(Function, boolean)</a></li>
 <li><a href="#switchMapMaybe(io.reactivex.rxjava4.functions.Function)" tabindex="0">switchMapMaybe(Function)</a></li>
-<li><a href="#switchMapMaybeDelayError(io.reactivex.rxjava4.functions.Function)" tabindex="0">switchMapMaybeDelayError(Function)</a></li>
+<li><a href="#switchMapMaybe(io.reactivex.rxjava4.functions.Function,boolean)" tabindex="0">switchMapMaybe(Function, boolean)</a></li>
 <li><a href="#switchMapSingle(io.reactivex.rxjava4.functions.Function)" tabindex="0">switchMapSingle(Function)</a></li>
-<li><a href="#switchMapSingleDelayError(io.reactivex.rxjava4.functions.Function)" tabindex="0">switchMapSingleDelayError(Function)</a></li>
-<li><a href="#switchMapDelayError(io.reactivex.rxjava4.functions.Function)" tabindex="0">switchMapDelayError(Function)</a></li>
-<li><a href="#switchMapDelayError(io.reactivex.rxjava4.functions.Function,int)" tabindex="0">switchMapDelayError(Function, int)</a></li>
+<li><a href="#switchMapSingle(io.reactivex.rxjava4.functions.Function,boolean)" tabindex="0">switchMapSingle(Function, boolean)</a></li>
 <li><a href="#take(long)" tabindex="0">take(long)</a></li>
 <li><a href="#take(long,java.util.concurrent.TimeUnit)" tabindex="0">take(long, TimeUnit)</a></li>
 <li><a href="#take(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)" tabindex="0">take(long, TimeUnit, Scheduler)</a></li>
@@ -2858,8 +2856,8 @@ performs the necessary business logic and handles the incoming <a href="Observer
 of these <code>ObservableSource</code>s.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a><wbr>&lt;R&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchMap(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">switchMap</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
- int&nbsp;bufferSize)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableSwitchConfig)" class="member-name-link">switchMap</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/ObservableSwitchConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSwitchConfig</a>&nbsp;config)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
 <code>Observable</code> that returns an <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items emitted by the most recently emitted
@@ -2873,27 +2871,13 @@ disposing the subscription to the previous <code>CompletableSource</code>, thus 
 active <code>CompletableSource</code> running.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchMapCompletableDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapCompletableDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;mapper)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchMapCompletable(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">switchMapCompletable</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;mapper,
+ boolean&nbsp;delayError)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Maps the upstream values into <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to the newer one while
 disposing the subscription to the previous <code>CompletableSource</code>, thus keeping at most one
 active <code>CompletableSource</code> running and delaying any main or inner errors until all
 of them terminate.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a><wbr>&lt;R&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchMapDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
-<code>Observable</code> that returns an <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items emitted by the most recently emitted
-of these <code>ObservableSource</code>s and delays any error until all <code>ObservableSource</code>s terminate.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a><wbr>&lt;R&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchMapDelayError(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">switchMapDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
- int&nbsp;bufferSize)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
-<code>Observable</code> that returns an <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items emitted by the most recently emitted
-of these <code>ObservableSource</code>s and delays any error until all <code>ObservableSource</code>s terminate.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a><wbr>&lt;R&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchMapMaybe(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapMaybe</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="MaybeSource.html" title="interface in io.reactivex.rxjava4.core">MaybeSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper)</code></div>
@@ -2904,7 +2888,8 @@ available while failing immediately if the current <code>Observable</code> or an
 active inner <code>MaybeSource</code>s fail.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a><wbr>&lt;R&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchMapMaybeDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapMaybeDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="MaybeSource.html" title="interface in io.reactivex.rxjava4.core">MaybeSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchMapMaybe(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">switchMapMaybe</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="MaybeSource.html" title="interface in io.reactivex.rxjava4.core">MaybeSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
+ boolean&nbsp;delayError)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Maps the upstream items into <a href="MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and switches (subscribes) to the newer ones
 while disposing the older ones  (and ignoring their signals) and emits the latest success value of the current one if
@@ -2918,7 +2903,8 @@ available, delaying errors from the current <code>Observable</code> or the inner
 of these <code>SingleSource</code>s.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a><wbr>&lt;R&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchMapSingleDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapSingleDelayError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchMapSingle(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">switchMapSingle</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
+ boolean&nbsp;delayError)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
 <code>Observable</code> that returns a <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>, and then emitting the item emitted by the most recently emitted
@@ -17931,7 +17917,7 @@ If the current <code>Observable</code> signals an <code>onError</code>, the inne
 <dd>
 <ul class="tag-list-long">
 <li><a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a></li>
-<li><a href="#switchMapDelayError(io.reactivex.rxjava4.functions.Function)"><code>switchMapDelayError(Function)</code></a></li>
+<li><a href="#switchMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableSwitchConfig)"><code>switchMap(Function, ObservableSwitchConfig)</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -17939,7 +17925,7 @@ If the current <code>Observable</code> signals an <code>onError</code>, the inne
 </section>
 </li>
 <li>
-<section class="detail" id="switchMap(io.reactivex.rxjava4.functions.Function,int)">
+<section class="detail" id="switchMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableSwitchConfig)">
 <h3>switchMap</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
@@ -17947,7 +17933,8 @@ If the current <code>Observable</code> signals an <code>onError</code>, the inne
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">switchMap</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
- int&nbsp;bufferSize)</span></div>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/ObservableSwitchConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSwitchConfig</a>&nbsp;config)</span></div>
 <div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
 <code>Observable</code> that returns an <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items emitted by the most recently emitted
 of these <code>ObservableSource</code>s.
@@ -17962,21 +17949,21 @@ If the current <code>Observable</code> signals an <code>onError</code>, the inne
 </dl></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="switchMap(io.reactivex.rxjava4.functions.Function,int)-type-param-R"><code>R</code> - the element type of the inner <code>ObservableSource</code>s and the output</span></dd>
+<dd><span id="switchMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableSwitchConfig)-type-param-R"><code>R</code> - the element type of the inner <code>ObservableSource</code>s and the output</span></dd>
 <dt>Parameters:</dt>
 <dd><code>mapper</code> - a function that, when applied to an item emitted by the current <code>Observable</code>, returns an
            <code>ObservableSource</code></dd>
-<dd><code>bufferSize</code> - the number of elements expected from the current active inner <code>ObservableSource</code> to be buffered</dd>
+<dd><code>config</code> - the configuration record for this operator</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Observable</code> instance</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>bufferSize</code> is non-positive</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>mapper</code> or <code>config</code> is <code>null</code></dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list-long">
 <li><a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a></li>
-<li><a href="#switchMapDelayError(io.reactivex.rxjava4.functions.Function,int)"><code>switchMapDelayError(Function, int)</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -18008,7 +17995,7 @@ a failure in any of the inner <code>CompletableSource</code>s or the failure of 
  <dt><b>Error handling:</b></dt>
  <dd>If either the current <code>Observable</code> or the active <code>CompletableSource</code> signals an <code>onError</code>,
  the resulting <code>Completable</code> is terminated immediately with that <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a>.
- Use the <a href="#switchMapCompletableDelayError(io.reactivex.rxjava4.functions.Function)"><code>switchMapCompletableDelayError(Function)</code></a> to delay such inner failures until
+ Use the <a href="#switchMapCompletable(io.reactivex.rxjava4.functions.Function,boolean)"><code>switchMapCompletable(Function, boolean)</code></a> to delay such inner failures until
  every inner <code>CompletableSource</code>s and the main <code>Observable</code> terminates in some fashion.
  If they fail concurrently, the operator may combine the <code>Throwable</code>s into a
  <a href="../exceptions/CompositeException.html" title="class in io.reactivex.rxjava4.exceptions"><code>CompositeException</code></a>
@@ -18032,7 +18019,7 @@ a failure in any of the inner <code>CompletableSource</code>s or the failure of 
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list-long">
-<li><a href="#switchMapCompletableDelayError(io.reactivex.rxjava4.functions.Function)"><code>switchMapCompletableDelayError(Function)</code></a></li>
+<li><a href="#switchMapCompletable(io.reactivex.rxjava4.functions.Function,boolean)"><code>switchMapCompletable(Function, boolean)</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -18040,14 +18027,15 @@ a failure in any of the inner <code>CompletableSource</code>s or the failure of 
 </section>
 </li>
 <li>
-<section class="detail" id="switchMapCompletableDelayError(io.reactivex.rxjava4.functions.Function)">
-<h3>switchMapCompletableDelayError</h3>
+<section class="detail" id="switchMapCompletable(io.reactivex.rxjava4.functions.Function,boolean)">
+<h3>switchMapCompletable</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">switchMapCompletableDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;mapper)</span></div>
+</span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></span>&nbsp;<span class="element-name">switchMapCompletable</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core">CompletableSource</a>&gt;&nbsp;mapper,
+ boolean&nbsp;delayError)</span></div>
 <div class="block">Maps the upstream values into <a href="CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to the newer one while
 disposing the subscription to the previous <code>CompletableSource</code>, thus keeping at most one
 active <code>CompletableSource</code> running and delaying any main or inner errors until all
@@ -18061,7 +18049,7 @@ a failure in any of the inner <code>CompletableSource</code>s or the failure of 
 <code>Observable</code>.
 <dl>
  <dt><b>Scheduler:</b></dt>
- <dd><code>switchMapCompletableDelayError</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
+ <dd><code>switchMapCompletable</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
  <dt><b>Error handling:</b></dt>
  <dd>The errors of the current <code>Observable</code> and all the <code>CompletableSource</code>s, who had the chance
  to run to their completion, are delayed until
@@ -18080,12 +18068,13 @@ a failure in any of the inner <code>CompletableSource</code>s or the failure of 
 <dd><code>mapper</code> - the function called with each upstream item and should return a
               <code>CompletableSource</code> to be subscribed to and awaited for
               (non blockingly) for its terminal event</dd>
+<dd><code>delayError</code> - if <code>true</code>, errors from the outer and inner sources will be delayed</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 <dt>Since:</dt>
-<dd>2.2</dd>
+<dd>4.0.0</dd>
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
@@ -18141,7 +18130,7 @@ active inner <code>MaybeSource</code>s fail.
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list-long">
-<li><a href="#switchMapMaybeDelayError(io.reactivex.rxjava4.functions.Function)"><code>switchMapMaybeDelayError(Function)</code></a></li>
+<li><a href="#switchMapMaybe(io.reactivex.rxjava4.functions.Function,boolean)"><code>switchMapMaybe(Function, boolean)</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -18149,14 +18138,15 @@ active inner <code>MaybeSource</code>s fail.
 </section>
 </li>
 <li>
-<section class="detail" id="switchMapMaybeDelayError(io.reactivex.rxjava4.functions.Function)">
-<h3>switchMapMaybeDelayError</h3>
+<section class="detail" id="switchMapMaybe(io.reactivex.rxjava4.functions.Function,boolean)">
+<h3>switchMapMaybe</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public final</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">switchMapMaybeDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="MaybeSource.html" title="interface in io.reactivex.rxjava4.core">MaybeSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper)</span></div>
+</span><span class="modifiers">public final</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">switchMapMaybe</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="MaybeSource.html" title="interface in io.reactivex.rxjava4.core">MaybeSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
+ boolean&nbsp;delayError)</span></div>
 <div class="block">Maps the upstream items into <a href="MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s and switches (subscribes) to the newer ones
 while disposing the older ones  (and ignoring their signals) and emits the latest success value of the current one if
 available, delaying errors from the current <code>Observable</code> or the inner <code>MaybeSource</code>s until all terminate.
@@ -18164,22 +18154,23 @@ available, delaying errors from the current <code>Observable</code> or the inner
 <img width="640" height="469" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMapMaybeDelayError.o.png" alt="">
 <dl>
  <dt><b>Scheduler:</b></dt>
- <dd><code>switchMapMaybeDelayError</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
+ <dd><code>switchMapMaybe</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
 </dl>
 <p>History: 2.1.11 - experimental</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="switchMapMaybeDelayError(io.reactivex.rxjava4.functions.Function)-type-param-R"><code>R</code> - the output value type</span></dd>
+<dd><span id="switchMapMaybe(io.reactivex.rxjava4.functions.Function,boolean)-type-param-R"><code>R</code> - the output value type</span></dd>
 <dt>Parameters:</dt>
 <dd><code>mapper</code> - the function called with the current upstream event and should
               return a <code>MaybeSource</code> to replace the current active inner source
               and get subscribed to.</dd>
+<dd><code>delayError</code> - if <code>true</code>, errors from the outer and inner sources will be delayed</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Observable</code> instance</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 <dt>Since:</dt>
-<dd>2.2</dd>
+<dd>4.0.0</dd>
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
@@ -18228,7 +18219,7 @@ If the current <code>Observable</code> signals an <code>onError</code>, the inne
 <dd>
 <ul class="tag-list-long">
 <li><a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a></li>
-<li><a href="#switchMapSingleDelayError(io.reactivex.rxjava4.functions.Function)"><code>switchMapSingleDelayError(Function)</code></a></li>
+<li><a href="#switchMapSingle(io.reactivex.rxjava4.functions.Function,boolean)"><code>switchMapSingle(Function, boolean)</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -18236,14 +18227,15 @@ If the current <code>Observable</code> signals an <code>onError</code>, the inne
 </section>
 </li>
 <li>
-<section class="detail" id="switchMapSingleDelayError(io.reactivex.rxjava4.functions.Function)">
-<h3>switchMapSingleDelayError</h3>
+<section class="detail" id="switchMapSingle(io.reactivex.rxjava4.functions.Function,boolean)">
+<h3>switchMapSingle</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public final</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">switchMapSingleDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper)</span></div>
+</span><span class="modifiers">public final</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">switchMapSingle</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
+ boolean&nbsp;delayError)</span></div>
 <div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
 <code>Observable</code> that returns a <a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>, and then emitting the item emitted by the most recently emitted
 of these <code>SingleSource</code>s and delays any error until all <code>SingleSource</code>s terminate.
@@ -18255,119 +18247,27 @@ or wrapped into a <a href="../exceptions/CompositeException.html" title="class i
 <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMapSingleDelayError.o.png" alt="">
 <dl>
  <dt><b>Scheduler:</b></dt>
- <dd><code>switchMapSingleDelayError</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
+ <dd><code>switchMapSingle</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
 </dl>
 <p>History: 2.0.8 - experimental</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="switchMapSingleDelayError(io.reactivex.rxjava4.functions.Function)-type-param-R"><code>R</code> - the element type of the inner <code>SingleSource</code>s and the output</span></dd>
+<dd><span id="switchMapSingle(io.reactivex.rxjava4.functions.Function,boolean)-type-param-R"><code>R</code> - the element type of the inner <code>SingleSource</code>s and the output</span></dd>
 <dt>Parameters:</dt>
 <dd><code>mapper</code> - a function that, when applied to an item emitted by the current <code>Observable</code>, returns a
            <code>SingleSource</code></dd>
+<dd><code>delayError</code> - if <code>true</code>, errors from the outer and inner sources will be delayed</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Observable</code> instance</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 <dt>Since:</dt>
-<dd>2.2</dd>
+<dd>4.0.0</dd>
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list-long">
 <li><a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a></li>
 <li><a href="#switchMapSingle(io.reactivex.rxjava4.functions.Function)"><code>switchMapSingle(Function)</code></a></li>
-</ul>
-</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="switchMapDelayError(io.reactivex.rxjava4.functions.Function)">
-<h3>switchMapDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public final</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">switchMapDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper)</span></div>
-<div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
-<code>Observable</code> that returns an <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items emitted by the most recently emitted
-of these <code>ObservableSource</code>s and delays any error until all <code>ObservableSource</code>s terminate.
-<p>
-The resulting <code>Observable</code> completes if both the current <code>Observable</code> and the last inner <code>ObservableSource</code>, if any, complete.
-If the current <code>Observable</code> signals an <code>onError</code>, the termination of the last inner <code>ObservableSource</code> will emit that error as is
-or wrapped into a <a href="../exceptions/CompositeException.html" title="class in io.reactivex.rxjava4.exceptions"><code>CompositeException</code></a> along with the other possible errors the former inner <code>ObservableSource</code>s signaled.
-<p>
-<img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
-<dl>
- <dt><b>Scheduler:</b></dt>
- <dd><code>switchMapDelayError</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Type Parameters:</dt>
-<dd><span id="switchMapDelayError(io.reactivex.rxjava4.functions.Function)-type-param-R"><code>R</code> - the element type of the inner <code>ObservableSource</code>s and the output</span></dd>
-<dt>Parameters:</dt>
-<dd><code>mapper</code> - a function that, when applied to an item emitted by the current <code>Observable</code>, returns an
-           <code>ObservableSource</code></dd>
-<dt>Returns:</dt>
-<dd>the new <code>Observable</code> instance</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
-<dt>Since:</dt>
-<dd>2.0</dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list-long">
-<li><a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a></li>
-<li><a href="#switchMap(io.reactivex.rxjava4.functions.Function)"><code>switchMap(Function)</code></a></li>
-</ul>
-</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="switchMapDelayError(io.reactivex.rxjava4.functions.Function,int)">
-<h3>switchMapDelayError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
-<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
-<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public final</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">switchMapDelayError</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Observable">T</a>, ? extends <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper,
- int&nbsp;bufferSize)</span></div>
-<div class="block">Returns a new <code>Observable</code> by applying a function that you supply to each item emitted by the current
-<code>Observable</code> that returns an <a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then emitting the items emitted by the most recently emitted
-of these <code>ObservableSource</code>s and delays any error until all <code>ObservableSource</code>s terminate.
-<p>
-The resulting <code>Observable</code> completes if both the current <code>Observable</code> and the last inner <code>ObservableSource</code>, if any, complete.
-If the current <code>Observable</code> signals an <code>onError</code>, the termination of the last inner <code>ObservableSource</code> will emit that error as is
-or wrapped into a <a href="../exceptions/CompositeException.html" title="class in io.reactivex.rxjava4.exceptions"><code>CompositeException</code></a> along with the other possible errors the former inner <code>ObservableSource</code>s signaled.
-<p>
-<img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
-<dl>
- <dt><b>Scheduler:</b></dt>
- <dd><code>switchMapDelayError</code> does not operate by default on a particular <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</dd>
-</dl></div>
-<dl class="notes">
-<dt>Type Parameters:</dt>
-<dd><span id="switchMapDelayError(io.reactivex.rxjava4.functions.Function,int)-type-param-R"><code>R</code> - the element type of the inner <code>ObservableSource</code>s and the output</span></dd>
-<dt>Parameters:</dt>
-<dd><code>mapper</code> - a function that, when applied to an item emitted by the current <code>Observable</code>, returns an
-           <code>ObservableSource</code></dd>
-<dd><code>bufferSize</code> - the number of elements expected from the current active inner <code>ObservableSource</code> to be buffered</dd>
-<dt>Returns:</dt>
-<dd>the new <code>Observable</code> instance</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>bufferSize</code> is non-positive</dd>
-<dt>Since:</dt>
-<dd>2.0</dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list-long">
-<li><a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a></li>
-<li><a href="#switchMap(io.reactivex.rxjava4.functions.Function,int)"><code>switchMap(Function, int)</code></a></li>
 </ul>
 </dd>
 </dl>
