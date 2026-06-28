@@ -7312,7 +7312,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return flatMap(mapper, StandardConcurrentBufferedConfig.DEFAULT);
+        return flatMap(mapper, StandardConcurrentBufferedConfig.MAX_DEFAULT);
     }
 
     /**
@@ -7387,7 +7387,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             @NonNull Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
             @NonNull Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
             @NonNull Supplier<? extends ObservableSource<? extends R>> onCompleteSupplier) {
-        return flatMap(onNextMapper, onErrorMapper, onCompleteSupplier, StandardConcurrentBufferedConfig.DEFAULT);
+        return flatMap(onNextMapper, onErrorMapper, onCompleteSupplier, StandardConcurrentBufferedConfig.MAX_DEFAULT);
     }
 
     /**
@@ -7461,7 +7461,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final <@NonNull U, @NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends U>> mapper,
             @NonNull BiFunction<? super T, ? super U, ? extends R> combiner) {
-        return flatMap(mapper, combiner, StandardConcurrentBufferedConfig.DEFAULT);
+        return flatMap(mapper, combiner, StandardConcurrentBufferedConfig.MAX_DEFAULT);
     }
 
     /**
@@ -7519,7 +7519,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Completable flatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
-        return flatMapCompletable(mapper, StandardConcurrentBufferedConfig.DEFAULT);
+        return flatMapCompletable(mapper, StandardConcurrentBufferedConfig.MAX_DEFAULT);
     }
 
     /**
@@ -7628,7 +7628,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
-        return flatMapMaybe(mapper, StandardConcurrentBufferedConfig.DEFAULT);
+        return flatMapMaybe(mapper, StandardConcurrentBufferedConfig.MAX_DEFAULT);
     }
 
     /**
@@ -7675,7 +7675,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return flatMapSingle(mapper, StandardConcurrentBufferedConfig.DEFAULT);
+        return flatMapSingle(mapper, StandardConcurrentBufferedConfig.MAX_DEFAULT);
     }
 
     /**
