@@ -242,7 +242,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
-        return concat(sources, SingleConcatConfig.DEFAULT);
+        return concat(sources, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -268,11 +268,11 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull SingleConcatConfig config) {
+    public static <@NonNull T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new FlowableConcatMapSinglePublisher<>(
-                sources, Functions.identity(), config.delayError() ? ErrorMode.END : ErrorMode.IMMEDIATE, config.prefetch()));
+                sources, Functions.identity(), config.delayErrors() ? ErrorMode.END : ErrorMode.IMMEDIATE, config.bufferSize()));
     }
 
     /**
@@ -431,10 +431,10 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
-    public static <@NonNull T> Flowable<T> concatArray(@NonNull SingleConcatConfig config, @NonNull SingleSource<? extends T>... sources) {
+    public static <@NonNull T> Flowable<T> concatArray(@NonNull StandardBufferedConfig config, @NonNull SingleSource<? extends T>... sources) {
         Objects.requireNonNull(config, "config is null");
         return Flowable.fromArray(sources).concatMapSingleDelayError(
-                Functions.identity(), config.delayError(), config.prefetch());
+                Functions.identity(), config.delayErrors(), config.bufferSize());
     }
 
     /**
@@ -491,10 +491,10 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
-    public static <@NonNull T> Flowable<T> concatArrayEager(@NonNull SingleConcatEagerConfig config, @NonNull SingleSource<? extends T>... sources) {
+    public static <@NonNull T> Flowable<T> concatArrayEager(@NonNull StandardConcurrentBufferedConfig config, @NonNull SingleSource<? extends T>... sources) {
         Objects.requireNonNull(config, "config is null");
         return Flowable.fromArray(sources).concatMapEagerDelayError(
-                SingleInternalHelper.toFlowable(), config.delayError(), config.maxConcurrency(), config.prefetch());
+                SingleInternalHelper.toFlowable(), config.delayErrors(), config.maxConcurrency(), config.bufferSize());
     }
 
     /**
@@ -521,12 +521,12 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concat(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull SingleConcatConfig config) {
+    public static <@NonNull T> Flowable<T> concat(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(config, "config is null");
-        if (config.delayError()) {
-            return Flowable.fromIterable(sources).concatMapSingleDelayError(Functions.identity(), true, config.prefetch());
+        if (config.delayErrors()) {
+            return Flowable.fromIterable(sources).concatMapSingleDelayError(Functions.identity(), true, config.bufferSize());
         }
-        return Flowable.fromIterable(sources).concatMapSingle(Functions.identity(), config.prefetch());
+        return Flowable.fromIterable(sources).concatMapSingle(Functions.identity(), config.bufferSize());
     }
 
     /**
@@ -583,12 +583,13 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull SingleConcatEagerConfig config) {
+    public static <@NonNull T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources,
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(config, "config is null");
-        if (config.delayError()) {
-            return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true, config.maxConcurrency(), config.prefetch());
+        if (config.delayErrors()) {
+            return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true, config.maxConcurrency(), config.bufferSize());
         }
-        return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), false, config.maxConcurrency(), config.prefetch());
+        return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), false, config.maxConcurrency(), config.bufferSize());
     }
 
     /**
@@ -649,12 +650,13 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull SingleConcatEagerConfig config) {
+    public static <@NonNull T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources,
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(config, "config is null");
-        if (config.delayError()) {
-            return Flowable.fromPublisher(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true, config.maxConcurrency(), config.prefetch());
+        if (config.delayErrors()) {
+            return Flowable.fromPublisher(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true, config.maxConcurrency(), config.bufferSize());
         }
-        return Flowable.fromPublisher(sources).concatMapEager(SingleInternalHelper.toFlowable(), config.maxConcurrency(), config.prefetch());
+        return Flowable.fromPublisher(sources).concatMapEager(SingleInternalHelper.toFlowable(), config.maxConcurrency(), config.bufferSize());
     }
 
     /**
@@ -1248,7 +1250,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
     @NonNull
-    public static <@NonNull T> Flowable<T> mergeArray(@NonNull SingleMergeConfig config, @NonNull SingleSource<? extends T>... sources) {
+    public static <@NonNull T> Flowable<T> mergeArray(@NonNull StandardConcurrentConfig config, @NonNull SingleSource<? extends T>... sources) {
         Objects.requireNonNull(config, "config is null");
         return Flowable.fromArray(sources).flatMapSingle(Functions.identity(), config.delayErrors(), config.maxConcurrency());
     }
@@ -1277,7 +1279,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> merge(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull SingleMergeConfig config) {
+    public static <@NonNull T> Flowable<T> merge(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull StandardConcurrentConfig config) {
         Objects.requireNonNull(config, "config is null");
         return Flowable.fromIterable(sources).flatMapSingle(Functions.identity(), config.delayErrors(), config.maxConcurrency());
     }
@@ -1306,7 +1308,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> merge(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull SingleMergeConfig config) {
+    public static <@NonNull T> Flowable<T> merge(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, @NonNull StandardConcurrentConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapSinglePublisher<>(sources, Functions.identity(), config.delayErrors(), config.maxConcurrency()));

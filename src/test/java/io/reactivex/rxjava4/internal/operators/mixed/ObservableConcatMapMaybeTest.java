@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.ObservableConcatMapConfig;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
@@ -47,7 +47,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void simpleLong() {
         Observable.range(1, 1024)
-        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, new ObservableConcatMapConfig(32))
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, new StandardBufferedConfig(32))
         .test()
         .assertValueCount(1024)
         .assertNoErrors()
@@ -117,7 +117,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> to = ps.concatMapMaybe(Functions.justFunction(ms), ObservableConcatMapConfig.DELAY_ERROR_BOUNDARY).test();
+        TestObserver<Integer> to = ps.concatMapMaybe(Functions.justFunction(ms), StandardBufferedConfig.DELAY_ERRORS_BOUNDARY).test();
 
         to.assertEmpty();
 
@@ -141,7 +141,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> to = ps.concatMapMaybe(Functions.justFunction(ms), ObservableConcatMapConfig.DELAY_ERROR_BOUNDARY).test();
+        TestObserver<Integer> to = ps.concatMapMaybe(Functions.justFunction(ms), StandardBufferedConfig.DELAY_ERRORS_BOUNDARY).test();
 
         to.assertEmpty();
 
@@ -164,7 +164,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeObservable(
                 (Function<Observable<Object>, Observable<Object>>) f -> f.concatMapMaybe(
-                        Functions.justFunction(Maybe.empty()), ObservableConcatMapConfig.DELAY_ERROR)
+                        Functions.justFunction(Maybe.empty()), StandardBufferedConfig.DELAY_ERRORS)
         );
     }
 
@@ -201,7 +201,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
                 }
             }
             .concatMapMaybe(
-                    Functions.justFunction(Maybe.error(new TestException("inner"))), new ObservableConcatMapConfig(1)
+                    Functions.justFunction(Maybe.error(new TestException("inner"))), new StandardBufferedConfig(1)
             )
             .to(TestHelper.<Object>testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
@@ -247,7 +247,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void delayAllErrors() {
         TestObserverEx<Object> to = Observable.range(1, 5)
-        .concatMapMaybe(_ -> Maybe.error(new TestException()), ObservableConcatMapConfig.DELAY_ERROR)
+        .concatMapMaybe(_ -> Maybe.error(new TestException()), StandardBufferedConfig.DELAY_ERRORS)
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class)
         ;
@@ -337,7 +337,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
 
         TestObserver<Integer> to = Observable
                 .fromArray(ms, Maybe.just(2), Maybe.just(3), Maybe.just(4))
-                .concatMapMaybe(Functions.<Maybe<Integer>>identity(), new ObservableConcatMapConfig(2))
+                .concatMapMaybe(Functions.<Maybe<Integer>>identity(), new StandardBufferedConfig(2))
                 .test();
 
         to.assertEmpty();
@@ -377,14 +377,14 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream ->
             upstream.concatMapMaybe((Function<Integer, Maybe<Integer>>) v ->
-                Maybe.just(v).hide(), new ObservableConcatMapConfig(ErrorMode.BOUNDARY, 2)));
+                Maybe.just(v).hide(), new StandardBufferedConfig(ErrorMode.BOUNDARY, 2)));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream ->
             upstream.concatMapMaybe((Function<Integer, Maybe<Integer>>) v ->
-                Maybe.just(v).hide(), new ObservableConcatMapConfig(ErrorMode.END, 2)));
+                Maybe.just(v).hide(), new StandardBufferedConfig(ErrorMode.END, 2)));
     }
 
     @Test

@@ -24,7 +24,7 @@ import org.junit.*;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.core.config.ObservableMergeConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
@@ -228,7 +228,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void timespanDefaultSchedulerSizeRestart() {
         Observable.range(1, 10)
         .window(1, TimeUnit.MINUTES, 20, true)
-        .flatMap(Functions.<Observable<Integer>>identity(), new ObservableMergeConfig(true))
+        .flatMap(Functions.<Observable<Integer>>identity(), new StandardConcurrentBufferedConfig(true))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);

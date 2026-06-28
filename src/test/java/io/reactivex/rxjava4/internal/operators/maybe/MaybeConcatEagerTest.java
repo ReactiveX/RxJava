@@ -18,7 +18,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.MaybeConcatEagerConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class MaybeConcatEagerTest {
@@ -40,7 +40,7 @@ public class MaybeConcatEagerTest {
                 Maybe.just(1),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), new MaybeConcatEagerConfig(1))
+        ), new StandardConcurrentBufferedConfig(1))
         .test()
         .assertResult(1, 2);
     }
@@ -64,7 +64,7 @@ public class MaybeConcatEagerTest {
                 Maybe.error(new TestException()),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), new MaybeConcatEagerConfig(1))
+        ), new StandardConcurrentBufferedConfig(1))
         .test()
         .assertFailure(TestException.class, 1);
     }
@@ -86,7 +86,7 @@ public class MaybeConcatEagerTest {
                 Maybe.just(1),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), new MaybeConcatEagerConfig(1))
+        ), new StandardConcurrentBufferedConfig(1))
         .test()
         .assertResult(1, 2);
     }
@@ -110,7 +110,7 @@ public class MaybeConcatEagerTest {
                 Maybe.error(new TestException()),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), MaybeConcatEagerConfig.DELAY_ERROR)
+        ), StandardConcurrentBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
@@ -122,7 +122,7 @@ public class MaybeConcatEagerTest {
                 Maybe.error(new TestException()),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), new MaybeConcatEagerConfig(true, 1))
+        ), new StandardConcurrentBufferedConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
@@ -134,7 +134,7 @@ public class MaybeConcatEagerTest {
                 Maybe.error(new TestException()),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), MaybeConcatEagerConfig.DELAY_ERROR)
+        ), StandardConcurrentBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
@@ -146,7 +146,7 @@ public class MaybeConcatEagerTest {
                 Maybe.error(new TestException()),
                 Maybe.empty(),
                 Maybe.just(2)
-        ), new MaybeConcatEagerConfig(true, 1))
+        ), new StandardConcurrentBufferedConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }

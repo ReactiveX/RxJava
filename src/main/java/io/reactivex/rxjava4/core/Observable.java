@@ -231,7 +231,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <@NonNull T, @NonNull R> Observable<R> combineLatest(
             @NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
             @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatest(sources, combiner, ObservableCombineLatestConfig.DEFAULT);
+        return combineLatest(sources, combiner, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -277,14 +277,14 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T, @NonNull R> Observable<R> combineLatest(
             @NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
-            @NonNull Function<? super Object[], ? extends R> combiner, @NonNull ObservableCombineLatestConfig config) {
+            @NonNull Function<? super Object[], ? extends R> combiner, @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");
         Objects.requireNonNull(config, "config is null");
 
         // the queue holds a pair of values so we need to double the capacity
         int s = config.bufferSize() << 1;
-        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(null, sources, combiner, s, config.delayError()));
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(null, sources, combiner, s, config.delayErrors()));
     }
 
     /**
@@ -328,7 +328,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <@NonNull T, @NonNull R> Observable<R> combineLatestArray(
             @NonNull ObservableSource<? extends T>[] sources,
             @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatestArray(sources, combiner, ObservableCombineLatestConfig.DEFAULT);
+        return combineLatestArray(sources, combiner, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -375,7 +375,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <@NonNull T, @NonNull R> Observable<R> combineLatestArray(
             @NonNull ObservableSource<? extends T>[] sources,
             @NonNull Function<? super Object[], ? extends R> combiner,
-            @NonNull ObservableCombineLatestConfig config) {
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return empty();
@@ -385,7 +385,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
 
         // the queue holds a pair of values so we need to double the capacity
         int s = config.bufferSize() << 1;
-        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(sources, null, combiner, s, config.delayError()));
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(sources, null, combiner, s, config.delayErrors()));
     }
 
     /**
@@ -427,7 +427,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(combiner, "combiner is null");
         return combineLatestArray(new ObservableSource[] { source1, source2 },
-                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
+                Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -474,7 +474,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(combiner, "combiner is null");
         return combineLatestArray(new ObservableSource[] { source1, source2, source3 },
-                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
+                Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -526,7 +526,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source4, "source4 is null");
         Objects.requireNonNull(combiner, "combiner is null");
         return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4 },
-                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
+                Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -583,7 +583,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source5, "source5 is null");
         Objects.requireNonNull(combiner, "combiner is null");
         return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5 },
-                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
+                Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -644,7 +644,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source6, "source6 is null");
         Objects.requireNonNull(combiner, "combiner is null");
         return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6 },
-                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
+                Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -711,7 +711,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source7, "source7 is null");
         Objects.requireNonNull(combiner, "combiner is null");
         return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7 },
-                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
+                Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -783,7 +783,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(combiner, "combiner is null");
         return combineLatestArray(new ObservableSource[] { source1, source2, source3,
                 source4, source5, source6, source7, source8 },
-                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
+                Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -863,7 +863,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
                 source1, source2, source3,
                 source4, source5, source6,
                 source7, source8, source9 },
-                Functions.toFunction(combiner), ObservableCombineLatestConfig.DEFAULT);
+                Functions.toFunction(combiner), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -884,7 +884,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Observable<T> concat(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources) {
-        return concat(sources, ObservableConcatConfig.DELAY_ERROR_BOUNDARY);
+        return concat(sources, StandardBufferedConfig.DELAY_ERRORS_BOUNDARY);
     }
 
     /**
@@ -909,7 +909,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Observable<T> concat(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
-                                                    @NonNull ObservableConcatConfig config) {
+                                                    @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
         return concat(fromIterable(sources), config);
@@ -936,7 +936,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> concat(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        return concat(sources, ObservableConcatConfig.DEFAULT);
+        return concat(sources, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -964,7 +964,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Observable<T> concat(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources,
-                                                    @NonNull ObservableConcatConfig config) {
+                                                    @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new ObservableConcatMap(
@@ -992,7 +992,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SafeVarargs
     public static <@NonNull T> Observable<T> concatArray(
             @NonNull ObservableSource<? extends T>... sources) {
-        return concatArray(ObservableConcatConfig.DELAY_ERROR_BOUNDARY, sources);
+        return concatArray(StandardBufferedConfig.DELAY_ERRORS_BOUNDARY, sources);
     }
 
     /**
@@ -1018,7 +1018,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SafeVarargs
     public static <@NonNull T> Observable<T> concatArray(
-            @NonNull ObservableConcatConfig config,
+            @NonNull StandardBufferedConfig config,
             @NonNull ObservableSource<? extends T>... sources) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
@@ -1055,7 +1055,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SafeVarargs
     @NonNull
     public static <@NonNull T> Observable<T> concatArrayEager(@NonNull ObservableSource<? extends T>... sources) {
-        return concatArrayEager(ObservableConcatEagerConfig.DELAY_ERROR_BOUNDARY, sources);
+        return concatArrayEager(StandardConcurrentBufferedConfig.DELAY_ERRORS_BOUNDARY, sources);
     }
 
     /**
@@ -1082,7 +1082,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     @SafeVarargs
-    public static <@NonNull T> Observable<T> concatArrayEager(@NonNull ObservableConcatEagerConfig config, @NonNull ObservableSource<? extends T>... sources) {
+    public static <@NonNull T> Observable<T> concatArrayEager(@NonNull StandardConcurrentBufferedConfig config, @NonNull ObservableSource<? extends T>... sources) {
         Objects.requireNonNull(config, "config is null");
         return fromArray(sources).concatMapEager((Function)Functions.identity(), config);
     }
@@ -1109,7 +1109,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> concatEager(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources) {
-        return concatEager(sources, ObservableConcatEagerConfig.DELAY_ERROR_BOUNDARY);
+        return concatEager(sources, StandardConcurrentBufferedConfig.DELAY_ERRORS_BOUNDARY);
     }
 
     /**
@@ -1137,7 +1137,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> concatEager(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
-                                                         @NonNull ObservableConcatEagerConfig config) {
+                                                         @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(config, "config is null");
         return fromIterable(sources).concatMapEager((Function)Functions.identity(), config);
     }
@@ -1164,7 +1164,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> concatEager(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        return concatEager(sources, ObservableConcatEagerConfig.DEFAULT);
+        return concatEager(sources, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -1193,7 +1193,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> concatEager(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources,
-                                                         @NonNull ObservableConcatEagerConfig config) {
+                                                         @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(config, "config is null");
         return wrap(sources).concatMapEager((Function) Functions.identity(), config);
     }
@@ -2605,7 +2605,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <@NonNull T> Observable<T> merge(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, @NonNull ObservableMergeConfig config) {
+    public static <@NonNull T> Observable<T> merge(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(config, "config is null");
         return fromIterable(sources).flatMap((Function)Functions.identity(), config);
     }
@@ -2689,7 +2690,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <@NonNull T> Observable<T> merge(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, @NonNull ObservableMergeConfig config) {
+    public static <@NonNull T> Observable<T> merge(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources,
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), config.delayErrors(), config.maxConcurrency(), config.bufferSize()));
@@ -2731,7 +2733,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SafeVarargs
     public static <@NonNull T> Observable<T> mergeArray(@NonNull ObservableSource<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), ObservableMergeConfig.DEFAULT);
+        return fromArray(sources).flatMap((Function)Functions.identity(), StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -2773,7 +2775,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     @SafeVarargs
-    public static <@NonNull T> Observable<T> mergeArray(@NonNull ObservableMergeConfig config, @NonNull ObservableSource<? extends T>... sources) {
+    public static <@NonNull T> Observable<T> mergeArray(@NonNull StandardConcurrentBufferedConfig config, @NonNull ObservableSource<? extends T>... sources) {
         Objects.requireNonNull(config, "config is null");
         return fromArray(sources).flatMap((Function) Functions.identity(), config);
     }
@@ -2981,10 +2983,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <@NonNull T> Observable<T> switchOnNext(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, @NonNull ObservableSwitchConfig config) {
+    public static <@NonNull T> Observable<T> switchOnNext(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources,
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
-        return RxJavaPlugins.onAssembly(new ObservableSwitchMap(sources, Functions.identity(), config.bufferSize(), config.delayError()));
+        return RxJavaPlugins.onAssembly(new ObservableSwitchMap(sources, Functions.identity(), config.bufferSize(), config.delayErrors()));
     }
 
     /**
@@ -3016,7 +3019,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> switchOnNext(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        return switchOnNext(sources, ObservableSwitchConfig.DEFAULT);
+        return switchOnNext(sources, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -3251,7 +3254,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public static <@NonNull T, @NonNull R> Observable<R> zip(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
             @NonNull Function<? super Object[], ? extends R> zipper) {
-        return zip(sources, ObservableZipConfig.DEFAULT, zipper);
+        return zip(sources, StandardBufferedConfig.DEFAULT, zipper);
     }
 
     /**
@@ -3308,13 +3311,13 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T, @NonNull R> Observable<R> zip(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
-            @NonNull ObservableZipConfig config,
+            @NonNull StandardBufferedConfig config,
             @NonNull Function<? super Object[], ? extends R> zipper
     ) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
-        return RxJavaPlugins.onAssembly(new ObservableZip<>(null, sources, zipper, config.bufferSize(), config.delayError()));
+        return RxJavaPlugins.onAssembly(new ObservableZip<>(null, sources, zipper, config.bufferSize(), config.delayErrors()));
     }
 
     /**
@@ -3371,7 +3374,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zip(source1, source2, ObservableZipConfig.DEFAULT, zipper);
+        return zip(source1, source2, StandardBufferedConfig.DEFAULT, zipper);
     }
 
     /**
@@ -3426,7 +3429,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public static <@NonNull T1, @NonNull T2, @NonNull R> Observable<R> zip(
             @NonNull ObservableSource<? extends T1> source1, @NonNull ObservableSource<? extends T2> source2,
-            @NonNull ObservableZipConfig config,
+            @NonNull StandardBufferedConfig config,
             @NonNull BiFunction<? super T1, ? super T2, ? extends R> zipper) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
@@ -3499,7 +3502,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(zipper, "zipper is null");
         return zipArray(new Observable<?>[] {
             (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3 },
-            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
+            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -3571,7 +3574,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
             (Observable<?>) source4
             },
-            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
+            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -3647,7 +3650,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
             (Observable<?>) source4, (Observable<?>) source5
             },
-            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
+            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -3726,7 +3729,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
             (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6
             },
-            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
+            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -3812,7 +3815,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6,
             (Observable<?>) source7
             },
-            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
+            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -3902,7 +3905,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6,
             (Observable<?>) source7, (Observable<?>) source8
             },
-            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
+            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -3996,7 +3999,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6,
             (Observable<?>) source7, (Observable<?>) source8, (Observable<?>) source9
             },
-            ObservableZipConfig.DEFAULT, Functions.toFunction(zipper));
+            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
     }
 
     /**
@@ -4053,7 +4056,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public static <@NonNull T, @NonNull R> Observable<R> zipArray(
             @NonNull ObservableSource<? extends T>[] sources,
-            @NonNull ObservableZipConfig config,
+            @NonNull StandardBufferedConfig config,
             @NonNull Function<? super Object[], ? extends R> zipper
     ) {
         Objects.requireNonNull(sources, "sources is null");
@@ -4062,7 +4065,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         }
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(config, "config is null");
-        return RxJavaPlugins.onAssembly(new ObservableZip<>(sources, null, zipper, config.bufferSize(), config.delayError()));
+        return RxJavaPlugins.onAssembly(new ObservableZip<>(sources, null, zipper, config.bufferSize(), config.delayErrors()));
     }
 
     // ***************************************************************************************************
@@ -5531,7 +5534,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, Scheduler, ObservableConcatMapConfig)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, Scheduler, StandardBufferedConfig)} overload.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5544,13 +5547,13 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @see #concatMap(Function, Scheduler, ObservableConcatMapConfig)
+     * @see #concatMap(Function, Scheduler, StandardBufferedConfig)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return concatMap(mapper, ObservableConcatMapConfig.DEFAULT);
+        return concatMap(mapper, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -5562,7 +5565,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, Scheduler, ObservableConcatMapConfig)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMap(Function, Scheduler, StandardBufferedConfig)} overload.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5577,14 +5580,14 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @see #concatMap(Function, Scheduler, ObservableConcatMapConfig)
+     * @see #concatMap(Function, Scheduler, StandardBufferedConfig)
      * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            @NonNull ObservableConcatMapConfig config) {
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(config, "config is null");
         if (this instanceof ScalarSupplier) {
@@ -5605,7 +5608,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <p>
-     * The difference between {@link #concatMap(Function, ObservableConcatMapConfig)} and this operator is that this operator guarantees the {@code mapper}
+     * The difference between {@link #concatMap(Function, StandardBufferedConfig)} and this operator is that this operator guarantees the {@code mapper}
      * function is executed on the specified scheduler.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -5630,7 +5633,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final <@NonNull R> Observable<R> concatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
             @NonNull Scheduler scheduler,
-            @NonNull ObservableConcatMapConfig config) {
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(config, "config is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -5661,7 +5664,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMapEager(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return concatMapEager(mapper, ObservableConcatEagerConfig.MAX_DEFAULT);
+        return concatMapEager(mapper, StandardConcurrentBufferedConfig.MAX_DEFAULT);
     }
 
     /**
@@ -5690,7 +5693,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMapEager(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            @NonNull ObservableConcatEagerConfig config) {
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new ObservableConcatMapEager<>(this, mapper,
@@ -5717,7 +5720,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Completable concatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
-        return concatMapCompletable(mapper, ObservableConcatMapConfig.DEFAULT);
+        return concatMapCompletable(mapper, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -5742,7 +5745,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Completable concatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper,
-            @NonNull ObservableConcatMapConfig config) {
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new ObservableConcatMapCompletable<>(this, mapper, config.errorMode(), config.bufferSize()));
@@ -5793,14 +5796,14 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *               be subscribed to
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapMaybe(Function, ObservableConcatMapConfig)
+     * @see #concatMapMaybe(Function, StandardBufferedConfig)
      * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
-        return concatMapMaybe(mapper, ObservableConcatMapConfig.DEFAULT);
+        return concatMapMaybe(mapper, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -5827,7 +5830,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper,
-            @NonNull ObservableConcatMapConfig config) {
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new ObservableConcatMapMaybe<>(this, mapper, config.errorMode(), config.bufferSize()));
@@ -5850,14 +5853,14 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *               be subscribed to
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #concatMapSingle(Function, ObservableConcatMapConfig)
+     * @see #concatMapSingle(Function, StandardBufferedConfig)
      * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return concatMapSingle(mapper, ObservableConcatMapConfig.DEFAULT);
+        return concatMapSingle(mapper, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -5884,7 +5887,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> concatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper,
-            @NonNull ObservableConcatMapConfig config) {
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new ObservableConcatMapSingle<>(this, mapper, config.errorMode(), config.bufferSize()));
@@ -7309,7 +7312,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return flatMap(mapper, ObservableMergeConfig.DEFAULT);
+        return flatMap(mapper, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -7339,7 +7342,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            @NonNull ObservableMergeConfig config) {
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(config, "config is null");
         if (this instanceof ScalarSupplier) {
@@ -7384,7 +7387,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             @NonNull Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
             @NonNull Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
             @NonNull Supplier<? extends ObservableSource<? extends R>> onCompleteSupplier) {
-        return flatMap(onNextMapper, onErrorMapper, onCompleteSupplier, ObservableMergeConfig.DEFAULT);
+        return flatMap(onNextMapper, onErrorMapper, onCompleteSupplier, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -7422,7 +7425,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             @NonNull Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
             @NonNull Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
             @NonNull Supplier<? extends ObservableSource<? extends R>> onCompleteSupplier,
-            @NonNull ObservableMergeConfig config) {
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(onNextMapper, "onNextMapper is null");
         Objects.requireNonNull(onErrorMapper, "onErrorMapper is null");
         Objects.requireNonNull(onCompleteSupplier, "onCompleteSupplier is null");
@@ -7458,7 +7461,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final <@NonNull U, @NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends U>> mapper,
             @NonNull BiFunction<? super T, ? super U, ? extends R> combiner) {
-        return flatMap(mapper, combiner, ObservableMergeConfig.DEFAULT);
+        return flatMap(mapper, combiner, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -7493,7 +7496,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final <@NonNull U, @NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends U>> mapper,
             @NonNull BiFunction<? super T, ? super U, ? extends R> combiner,
-            @NonNull ObservableMergeConfig config) {
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(combiner, "combiner is null");
         return flatMap(ObservableInternalHelper.flatMapWithCombiner(mapper, combiner), config);
@@ -7516,7 +7519,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Completable flatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
-        return flatMapCompletable(mapper, ObservableMergeConfig.DEFAULT);
+        return flatMapCompletable(mapper, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -7538,7 +7541,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Completable flatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper,
-            @NonNull ObservableMergeConfig config) {
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new ObservableFlatMapCompletableCompletable<>(this, mapper, config.delayErrors(), config.bufferSize()));
@@ -7604,7 +7607,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             @NonNull BiFunction<? super T, ? super U, ? extends V> combiner) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return flatMap(ObservableInternalHelper.flatMapIntoIterable(mapper), combiner, ObservableMergeConfig.DEFAULT);
+        return flatMap(ObservableInternalHelper.flatMapIntoIterable(mapper), combiner, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -7625,7 +7628,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
-        return flatMapMaybe(mapper, ObservableMergeConfig.DEFAULT);
+        return flatMapMaybe(mapper, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -7649,7 +7652,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper,
-            @NonNull ObservableMergeConfig config) {
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new ObservableFlatMapMaybe<>(this, mapper, config.delayErrors(), config.bufferSize()));
     }
@@ -7672,7 +7675,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return flatMapSingle(mapper, ObservableMergeConfig.DEFAULT);
+        return flatMapSingle(mapper, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -7697,7 +7700,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper,
-            @NonNull ObservableMergeConfig config) {
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new ObservableFlatMapSingle<>(this, mapper, config.delayErrors(), /* config.maxConcurrency(), */ config.bufferSize()));
@@ -7858,7 +7861,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull K> Observable<GroupedObservable<K, T>> groupBy(@NonNull Function<? super T, ? extends K> keySelector) {
-        return groupBy(keySelector, (Function)Functions.identity(), ObservableGroupByConfig.DEFAULT);
+        return groupBy(keySelector, (Function)Functions.identity(), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -7903,7 +7906,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull K> Observable<GroupedObservable<K, T>> groupBy(@NonNull Function<? super T, ? extends K> keySelector,
-            @NonNull ObservableGroupByConfig config) {
+            @NonNull StandardBufferedConfig config) {
         return groupBy(keySelector, (Function)Functions.identity(), config);
     }
 
@@ -7950,7 +7953,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final <@NonNull K, @NonNull V> Observable<GroupedObservable<K, V>> groupBy(@NonNull Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector) {
-        return groupBy(keySelector, valueSelector, ObservableGroupByConfig.DEFAULT);
+        return groupBy(keySelector, valueSelector, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -8000,12 +8003,12 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public final <@NonNull K, @NonNull V> Observable<GroupedObservable<K, V>> groupBy(
             @NonNull Function<? super T, ? extends K> keySelector,
             @NonNull Function<? super T, ? extends V> valueSelector,
-            @NonNull ObservableGroupByConfig config) {
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
         Objects.requireNonNull(config, "config is null");
 
-        return RxJavaPlugins.onAssembly(new ObservableGroupBy<>(this, keySelector, valueSelector, config.bufferSize(), config.delayError()));
+        return RxJavaPlugins.onAssembly(new ObservableGroupBy<>(this, keySelector, valueSelector, config.bufferSize(), config.delayErrors()));
     }
 
     /**
@@ -8534,7 +8537,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * asynchronously with an unbounded buffer with {@link Flowable#bufferSize()} "island size".
      *
      * <p>Note that {@code onError} notifications will cut ahead of {@code onNext} notifications on the emission thread if {@code Scheduler} is truly
-     * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, ObservableObserveOnConfig)} overload.
+     * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, StandardBufferedConfig)} overload.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.v3.png" alt="">
      * <p>
@@ -8556,14 +8559,14 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
-     * @see #observeOn(Scheduler, ObservableObserveOnConfig)
+     * @see #observeOn(Scheduler, StandardBufferedConfig)
      * @see #delay(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Observable<T> observeOn(@NonNull Scheduler scheduler) {
-        return observeOn(scheduler, ObservableObserveOnConfig.DEFAULT);
+        return observeOn(scheduler, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -8599,10 +8602,10 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Observable<T> observeOn(@NonNull Scheduler scheduler,
-            @NonNull ObservableObserveOnConfig config) {
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         Objects.requireNonNull(config, "config is null");
-        return RxJavaPlugins.onAssembly(new ObservableObserveOn<>(this, scheduler, config.delayError(), config.bufferSize()));
+        return RxJavaPlugins.onAssembly(new ObservableObserveOn<>(this, scheduler, config.delayErrors(), config.bufferSize()));
     }
 
     /**
@@ -11332,13 +11335,13 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @see #switchMap(Function, ObservableSwitchConfig)
+     * @see #switchMap(Function, StandardBufferedConfig)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> switchMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return switchMap(mapper, ObservableSwitchConfig.DEFAULT);
+        return switchMap(mapper, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -11370,7 +11373,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> switchMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            @NonNull ObservableSwitchConfig config) {
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(config, "config is null");
         if (this instanceof ScalarSupplier) {
@@ -11381,7 +11384,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             }
             return ObservableScalarXMap.scalarXMap(v, mapper);
         }
-        return RxJavaPlugins.onAssembly(new ObservableSwitchMap<>(this, mapper, config.bufferSize(), config.delayError()));
+        return RxJavaPlugins.onAssembly(new ObservableSwitchMap<>(this, mapper, config.bufferSize(), config.delayErrors()));
     }
 
     /**
@@ -14593,7 +14596,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull U, @NonNull R> Observable<R> zipWith(@NonNull ObservableSource<? extends U> other,
-            @NonNull ObservableZipConfig config,
+            @NonNull StandardBufferedConfig config,
             @NonNull BiFunction<? super T, ? super U, ? extends R> zipper) {
         return zip(this, other, config, zipper);
     }

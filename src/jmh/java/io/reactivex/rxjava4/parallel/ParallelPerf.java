@@ -14,14 +14,14 @@
 package io.reactivex.rxjava4.parallel;
 
 import java.util.Arrays;
+import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.FlatMapConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.flowables.GroupedFlowable;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -67,7 +67,7 @@ public class ParallelPerf implements Function<Integer, Integer> {
         Flowable<Integer> source = Flowable.fromArray(ints);
 
         flatMap = source.flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v).subscribeOn(Schedulers.computation())
-                .map(ParallelPerf.this), new FlatMapConfig(cpu));
+                .map(ParallelPerf.this), new StandardConcurrentBufferedConfig(cpu));
 
         groupBy = source.groupBy(new Function<Integer, Integer>() {
             int i;

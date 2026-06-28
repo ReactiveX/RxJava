@@ -20,7 +20,7 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.SingleMergeConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -78,7 +78,7 @@ public class SingleMergeTest extends RxJavaTest {
         Single.merge(Arrays.asList(
                 Single.just(1),
                 Single.<Integer>error(new TestException()),
-                Single.just(2)), SingleMergeConfig.DELAY_ERRORS
+                Single.just(2)), StandardConcurrentConfig.DELAY_ERRORS
         )
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -89,7 +89,7 @@ public class SingleMergeTest extends RxJavaTest {
         Single.merge(Flowable.just(
                 Single.just(1),
                 Single.<Integer>error(new TestException()),
-                Single.just(2)), SingleMergeConfig.DELAY_ERRORS
+                Single.just(2)), StandardConcurrentConfig.DELAY_ERRORS
         )
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -98,7 +98,7 @@ public class SingleMergeTest extends RxJavaTest {
     @Test
     public void mergeDelayError2() {
         Single.mergeArray(
-                SingleMergeConfig.DELAY_ERRORS,
+                StandardConcurrentConfig.DELAY_ERRORS,
                 Single.just(1),
                 Single.<Integer>error(new TestException())
         )
@@ -109,7 +109,7 @@ public class SingleMergeTest extends RxJavaTest {
     @Test
     public void mergeDelayError2ErrorFirst() {
         Single.mergeArray(
-                SingleMergeConfig.DELAY_ERRORS,
+                StandardConcurrentConfig.DELAY_ERRORS,
                 Single.<Integer>error(new TestException()),
                 Single.just(1)
         )
@@ -120,7 +120,7 @@ public class SingleMergeTest extends RxJavaTest {
     @Test
     public void mergeDelayError3() {
         Single.mergeArray(
-                SingleMergeConfig.DELAY_ERRORS,
+                StandardConcurrentConfig.DELAY_ERRORS,
                 Single.just(1),
                 Single.<Integer>error(new TestException()),
                 Single.just(2)
@@ -132,7 +132,7 @@ public class SingleMergeTest extends RxJavaTest {
     @Test
     public void mergeDelayError4() {
         Single.mergeArray(
-                SingleMergeConfig.DELAY_ERRORS,
+                StandardConcurrentConfig.DELAY_ERRORS,
                 Single.just(1),
                 Single.<Integer>error(new TestException()),
                 Single.just(2),

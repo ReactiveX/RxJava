@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.ObservableConcatMapConfig;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
@@ -45,7 +45,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void simpleLong() {
         Observable.range(1, 1024)
-        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, new ObservableConcatMapConfig(32))
+        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, new StandardBufferedConfig(32))
         .test()
         .assertValueCount(1024)
         .assertNoErrors()
@@ -73,7 +73,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestObserver<Integer> to = ps.concatMapSingle(Functions.justFunction(ss), ObservableConcatMapConfig.DELAY_ERROR_BOUNDARY).test();
+        TestObserver<Integer> to = ps.concatMapSingle(Functions.justFunction(ss), StandardBufferedConfig.DELAY_ERRORS_BOUNDARY).test();
 
         to.assertEmpty();
 
@@ -96,7 +96,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeObservable(
                 (Function<Observable<Object>, Observable<Object>>) f -> f.concatMapSingle(
-                        Functions.justFunction(Single.never()), ObservableConcatMapConfig.DELAY_ERROR)
+                        Functions.justFunction(Single.never()), StandardBufferedConfig.DELAY_ERRORS)
         );
     }
 
@@ -133,7 +133,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
                 }
             }
             .concatMapSingle(
-                    Functions.justFunction(Single.error(new TestException("inner"))), new ObservableConcatMapConfig(1)
+                    Functions.justFunction(Single.error(new TestException("inner"))), new StandardBufferedConfig(1)
             )
             .to(TestHelper.<Object>testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
@@ -179,7 +179,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void delayAllErrors() {
         TestObserverEx<Object> to = Observable.range(1, 5)
-        .concatMapSingle(_ -> Single.error(new TestException()), ObservableConcatMapConfig.DELAY_ERROR)
+        .concatMapSingle(_ -> Single.error(new TestException()), StandardBufferedConfig.DELAY_ERRORS)
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class)
         ;
@@ -232,7 +232,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestObserver<Integer> to = ps.concatMapSingle(Functions.justFunction(ss), ObservableConcatMapConfig.DELAY_ERROR_BOUNDARY).test();
+        TestObserver<Integer> to = ps.concatMapSingle(Functions.justFunction(ss), StandardBufferedConfig.DELAY_ERRORS_BOUNDARY).test();
 
         to.assertEmpty();
 
@@ -291,7 +291,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
 
         TestObserver<Integer> to = Observable
                 .fromArray(ss, Single.just(2), Single.just(3), Single.just(4))
-                .concatMapSingle(Functions.<Single<Integer>>identity(), new ObservableConcatMapConfig(2))
+                .concatMapSingle(Functions.<Single<Integer>>identity(), new StandardBufferedConfig(2))
                 .test();
 
         to.assertEmpty();
@@ -330,13 +330,13 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream ->
-            upstream.concatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), new ObservableConcatMapConfig(ErrorMode.BOUNDARY, 2)));
+            upstream.concatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), new StandardBufferedConfig(ErrorMode.BOUNDARY, 2)));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream ->
-            upstream.concatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), new ObservableConcatMapConfig(ErrorMode.END, 2)));
+            upstream.concatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), new StandardBufferedConfig(ErrorMode.END, 2)));
     }
 
     @Test

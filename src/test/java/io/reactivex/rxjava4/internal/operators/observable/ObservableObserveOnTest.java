@@ -29,7 +29,7 @@ import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.core.config.ObservableObserveOnConfig;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
@@ -399,7 +399,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
     @Test
     public void delayError() {
         Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))
-        .observeOn(Schedulers.computation(), new ObservableObserveOnConfig(true))
+        .observeOn(Schedulers.computation(), new StandardBufferedConfig(true))
         .doOnNext(v -> {
             if (v == 1) {
                 Thread.sleep(100);
@@ -495,7 +495,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
     public void inputAsyncFusedErrorDelayed() {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
-        TestObserver<Integer> to = us.observeOn(Schedulers.single(),new ObservableObserveOnConfig(true))
+        TestObserver<Integer> to = us.observeOn(Schedulers.single(),new StandardBufferedConfig(true))
                 .test();
 
         us.onError(new TestException());
@@ -557,7 +557,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
-        us.observeOn(Schedulers.single(), new ObservableObserveOnConfig(true))
+        us.observeOn(Schedulers.single(), new StandardBufferedConfig(true))
         .subscribe(to);
 
         us.onError(new TestException());

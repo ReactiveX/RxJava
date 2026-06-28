@@ -20,7 +20,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.CompletableConcatConfig;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Action;
 
@@ -35,7 +35,7 @@ public class CompletableConcatDelayErrorTest {
                 Completable.fromAction(action1),
                 Completable.error(new TestException()),
                 Completable.fromAction(action2)
-        ), CompletableConcatConfig.DELAY_ERROR)
+        ), StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class);
 
@@ -53,7 +53,7 @@ public class CompletableConcatDelayErrorTest {
                 Completable.fromAction(action1),
                 Completable.error(new TestException()),
                 Completable.fromAction(action2)
-        ), new CompletableConcatConfig(true))
+        ), StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class);
 
@@ -71,7 +71,7 @@ public class CompletableConcatDelayErrorTest {
                 Completable.fromAction(action1),
                 Completable.error(new TestException()),
                 Completable.fromAction(action2)
-        ), new CompletableConcatConfig(true, 1))
+        ), new StandardBufferedConfig(true, 1))
         .test()
         .assertFailure(TestException.class);
 

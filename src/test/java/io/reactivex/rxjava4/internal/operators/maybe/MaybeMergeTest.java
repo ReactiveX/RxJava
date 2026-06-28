@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.MaybeMergeConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -29,7 +29,7 @@ public class MaybeMergeTest extends RxJavaTest {
     @Test
     public void delayErrorWithMaxConcurrency() {
         Maybe.merge(
-                Flowable.just(Maybe.just(1), Maybe.just(2), Maybe.just(3)), new MaybeMergeConfig(true, 1))
+                Flowable.just(Maybe.just(1), Maybe.just(2), Maybe.just(3)), new StandardConcurrentConfig(true, 1))
         .test()
         .assertResult(1, 2, 3);
     }
@@ -37,7 +37,7 @@ public class MaybeMergeTest extends RxJavaTest {
     @Test
     public void delayErrorWithMaxConcurrencyError() {
         Maybe.merge(
-                Flowable.just(Maybe.just(1), Maybe.<Integer>error(new TestException()), Maybe.just(3)), new MaybeMergeConfig(true, 1))
+                Flowable.just(Maybe.just(1), Maybe.<Integer>error(new TestException()), Maybe.just(3)), new StandardConcurrentConfig(true, 1))
         .test()
         .assertFailure(TestException.class, 1, 3);
     }
@@ -56,7 +56,7 @@ public class MaybeMergeTest extends RxJavaTest {
         for (int i = 0; i < 1000; i++) {
             count.set(0);
             Maybe.merge(
-                    Flowable.fromArray(sources), new MaybeMergeConfig(1))
+                    Flowable.fromArray(sources), new StandardConcurrentConfig(1))
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(0, 0, 0);
@@ -81,7 +81,7 @@ public class MaybeMergeTest extends RxJavaTest {
         for (int i = 0; i < 1000; i++) {
             count.set(0);
             Maybe.merge(
-                    Flowable.fromArray(sources), new MaybeMergeConfig(true, 1))
+                    Flowable.fromArray(sources), new StandardConcurrentConfig(true, 1))
             .to(TestHelper.<Integer>testConsumer())
             .awaitDone(5, TimeUnit.SECONDS)
             .assertFailureAndMessage(TestException.class, "2", 0, 0);
@@ -91,7 +91,7 @@ public class MaybeMergeTest extends RxJavaTest {
     @Test
     public void scalar() {
         Maybe.merge(
-                Flowable.just(Maybe.just(1)), new MaybeMergeConfig(true))
+                Flowable.just(Maybe.just(1)), new StandardConcurrentConfig(true))
         .test()
         .assertResult(1);
     }

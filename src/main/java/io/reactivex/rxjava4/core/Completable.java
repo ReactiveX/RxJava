@@ -190,7 +190,7 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable concatArray(@NonNull CompletableSource... sources) {
-        return concatArray(CompletableConcatConfig.DEFAULT, sources);
+        return concatArray(StandardBufferedConfig.DEFAULT, sources);
     }
 
     /**
@@ -199,7 +199,7 @@ public abstract class Completable implements CompletableSource {
      * <img width="640" height="324" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatArrayDelayError.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code concatArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param sources the sources to concatenate
      * @param config the configuration record for this operator
@@ -210,7 +210,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable concatArray(@NonNull CompletableConcatConfig config, @NonNull CompletableSource... sources) {
+    public static Completable concatArray(@NonNull StandardBufferedConfig config, @NonNull CompletableSource... sources) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
         if (sources.length == 0) {
@@ -219,8 +219,8 @@ public abstract class Completable implements CompletableSource {
         if (sources.length == 1) {
             return wrap(sources[0]);
         }
-        if (config.delayError()) {
-            return Flowable.fromArray(sources).concatMapCompletableDelayError(Functions.identity(), true, config.prefetch());
+        if (config.delayErrors()) {
+            return Flowable.fromArray(sources).concatMapCompletableDelayError(Functions.identity(), true, config.bufferSize());
         }
         return RxJavaPlugins.onAssembly(new CompletableConcatArray(sources));
 
@@ -242,7 +242,7 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable concat(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
-        return concat(sources, CompletableConcatConfig.DEFAULT);
+        return concat(sources, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -265,7 +265,7 @@ public abstract class Completable implements CompletableSource {
     @BackpressureSupport(BackpressureKind.FULL)
     @NonNull
     public static Completable concat(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
-        return concat(sources, CompletableConcatConfig.DEFAULT);
+        return concat(sources, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -291,13 +291,13 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public static Completable concat(@NonNull Publisher<@NonNull ? extends CompletableSource> sources,
-            @NonNull CompletableConcatConfig config) {
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
-        if (config.delayError()) {
-            return Flowable.fromPublisher(sources).concatMapCompletableDelayError(Functions.identity(), true, config.prefetch());
+        if (config.delayErrors()) {
+            return Flowable.fromPublisher(sources).concatMapCompletableDelayError(Functions.identity(), true, config.bufferSize());
         }
-        return RxJavaPlugins.onAssembly(new CompletableConcat(sources, config.prefetch()));
+        return RxJavaPlugins.onAssembly(new CompletableConcat(sources, config.bufferSize()));
     }
 
     /**
@@ -317,11 +317,11 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable concat(@NonNull Iterable<@NonNull ? extends CompletableSource> sources, @NonNull CompletableConcatConfig config) {
+    public static Completable concat(@NonNull Iterable<@NonNull ? extends CompletableSource> sources, @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
-        if (config.delayError()) {
-            return Flowable.fromIterable(sources).concatMapCompletableDelayError(Functions.identity(), true, config.prefetch());
+        if (config.delayErrors()) {
+            return Flowable.fromIterable(sources).concatMapCompletableDelayError(Functions.identity(), true, config.bufferSize());
         }
         return RxJavaPlugins.onAssembly(new CompletableConcatIterable(sources));
     }
@@ -396,7 +396,7 @@ public abstract class Completable implements CompletableSource {
     public static Single<Boolean> sequenceEqual(@NonNull CompletableSource source1, @NonNull CompletableSource source2) { // NOPMD
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
-        return mergeArray(CompletableMergeConfig.DEFAULT, source1, source2).andThen(Single.just(true));
+        return mergeArray(StandardConcurrentConfig.MAX_DEFAULT, source1, source2).andThen(Single.just(true));
     }
 
     /**
@@ -773,7 +773,7 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable mergeArray(@NonNull CompletableSource... sources) {
-        return mergeArray(CompletableMergeConfig.DEFAULT, sources);
+        return mergeArray(StandardConcurrentConfig.MAX_DEFAULT, sources);
     }
 
     /**
@@ -804,7 +804,7 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable merge(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
-        return merge(sources, CompletableMergeConfig.DEFAULT);
+        return merge(sources, StandardConcurrentConfig.MAX_DEFAULT);
     }
 
     /**
@@ -839,7 +839,7 @@ public abstract class Completable implements CompletableSource {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @NonNull
     public static Completable merge(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
-        return merge(sources, new CompletableMergeConfig(false, Integer.MAX_VALUE));
+        return merge(sources, StandardConcurrentConfig.MAX_DEFAULT);
     }
 
     /**
@@ -878,7 +878,7 @@ public abstract class Completable implements CompletableSource {
     @BackpressureSupport(BackpressureKind.FULL)
     @NonNull
     public static Completable merge(@NonNull Publisher<@NonNull ? extends CompletableSource> sources,
-            @NonNull CompletableMergeConfig config) {
+            @NonNull StandardConcurrentConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
         return RxJavaPlugins.onAssembly(new CompletableMerge(sources, config.maxConcurrency(), config.delayErrors()));
@@ -902,7 +902,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable mergeArray(@NonNull CompletableMergeConfig config, @NonNull CompletableSource... sources) {
+    public static Completable mergeArray(@NonNull StandardConcurrentConfig config, @NonNull CompletableSource... sources) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
         if (sources.length == 0) {
@@ -911,11 +911,13 @@ public abstract class Completable implements CompletableSource {
         if (sources.length == 1) {
             return wrap(sources[0]);
         }
-        if (config.delayErrors()) {
-            return RxJavaPlugins.onAssembly(new CompletableMergeArrayDelayError(sources /* TODO , config.maxConcurrency() */));
+        if (config.maxConcurrency() >= sources.length) {
+            if (config.delayErrors()) {
+                return RxJavaPlugins.onAssembly(new CompletableMergeArrayDelayError(sources));
+            }
+            return RxJavaPlugins.onAssembly(new CompletableMergeArray(sources));
         }
-        return RxJavaPlugins.onAssembly(new CompletableMergeArray(sources /* TODO , config.maxConcurrency() */));
-
+        return Flowable.fromArray(sources).flatMapCompletable(Functions.identity(), config.delayErrors(), config.maxConcurrency());
     }
 
     /**
@@ -932,18 +934,22 @@ public abstract class Completable implements CompletableSource {
      * @param config the configuration record for this operator
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @see Completable#merge(Iterable)
      * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable merge(@NonNull Iterable<@NonNull ? extends CompletableSource> sources, @NonNull CompletableMergeConfig config) {
+    public static Completable merge(@NonNull Iterable<@NonNull ? extends CompletableSource> sources, @NonNull StandardConcurrentConfig config) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
-        if (config.delayErrors()) {
-            return RxJavaPlugins.onAssembly(new CompletableMergeDelayErrorIterable(sources /* TODO , config.maxConcurrency() */));
+        if (config.maxConcurrency() == Integer.MAX_VALUE) {
+            if (config.delayErrors()) {
+                return RxJavaPlugins.onAssembly(new CompletableMergeDelayErrorIterable(sources));
+            }
+            return RxJavaPlugins.onAssembly(new CompletableMergeIterable(sources));
         }
-        return RxJavaPlugins.onAssembly(new CompletableMergeIterable(sources /* TODO , config.maxConcurrency() */));
+        return Flowable.fromIterable(sources).flatMapCompletable(Functions.identity(), config.delayErrors(), config.maxConcurrency());
     }
 
     /**

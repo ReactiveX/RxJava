@@ -14,10 +14,11 @@
 package io.reactivex.rxjava4.internal.operators.completable;
 
 import static org.mockito.Mockito.*;
+
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.Completable;
-import io.reactivex.rxjava4.core.config.CompletableConcatConfig;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Action;
 
@@ -28,7 +29,7 @@ public class CompletableConcatArrayDelayErrorTest {
         Action action1 = mock(Action.class);
         Action action2 = mock(Action.class);
 
-        Completable.concatArray(CompletableConcatConfig.DELAY_ERROR,
+        Completable.concatArray(StandardBufferedConfig.DELAY_ERRORS,
                 Completable.fromAction(action1),
                 Completable.error(new TestException()),
                 Completable.fromAction(action2)
