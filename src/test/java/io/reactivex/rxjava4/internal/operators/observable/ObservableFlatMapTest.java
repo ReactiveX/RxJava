@@ -270,7 +270,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Observable<Integer> source = Observable.range(1, 10)
         .flatMap((Function<Integer, Observable<Integer>>) t1 -> composer(Observable.range(t1 * 10, 2), subscriptionCount, m)
-                .subscribeOn(Schedulers.computation()), m);
+                .subscribeOn(Schedulers.computation()), new ObservableMergeConfig(m));
 
         TestObserver<Integer> to = new TestObserver<>();
 
@@ -291,7 +291,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Observable<Integer> source = Observable.range(1, 10)
             .flatMap((Function<Integer, Observable<Integer>>) t1 -> composer(Observable.range(t1 * 10, 2), subscriptionCount, m)
-                    .subscribeOn(Schedulers.computation()), (t1, t2) -> t1 * 1000 + t2, m);
+                    .subscribeOn(Schedulers.computation()), (t1, t2) -> t1 * 1000 + t2, new ObservableMergeConfig(m));
 
         TestObserver<Integer> to = new TestObserver<>();
 
@@ -430,7 +430,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapBiMapper() {
         Observable.just(1)
-        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10), Integer::sum, true)
+        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10),
+                Integer::sum, new ObservableMergeConfig(true))
         .test()
         .assertResult(11);
     }
@@ -438,7 +439,9 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapBiMapperWithError() {
         Observable.just(1)
-        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10).concatWith(Observable.<Integer>error(new TestException())), Integer::sum, true)
+        .flatMap((Function<Integer, ObservableSource<Integer>>) v ->
+            Observable.just(v * 10).concatWith(Observable.<Integer>error(new TestException())), Integer::sum,
+            new ObservableMergeConfig(true))
         .test()
         .assertFailure(TestException.class, 11);
     }
@@ -446,7 +449,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapBiMapperMaxConcurrency() {
         Observable.just(1, 2)
-        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10), Integer::sum, true, 1)
+        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10), Integer::sum,
+                new ObservableMergeConfig(true, 1))
         .test()
         .assertResult(11, 22);
     }
@@ -562,7 +566,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         TestObserverEx<Integer> to = Observable.range(1, 2).hide()
         .flatMap((Function<Integer, ObservableSource<Integer>>) _ -> Observable.range(1, 2).map((Function<Integer, Integer>) _ -> {
             throw new TestException();
-        }), true)
+        }), new ObservableMergeConfig(true))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -695,7 +699,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
         try {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            TestObserver<Integer> to = ps.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1), 1)
+            TestObserver<Integer> to = ps.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1),
+                    new ObservableMergeConfig(1))
             .subscribeWith(new TestObserver<Integer>() /* NFI */ {
                 @Override
                 public void onNext(Integer t) {
@@ -725,7 +730,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
     public void scalarQueueNoOverflowHidden() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = ps.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1).hide(), 1)
+        TestObserver<Integer> to = ps.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1).hide(),
+                new ObservableMergeConfig(1))
         .subscribeWith(new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
@@ -785,7 +791,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
         PublishSubject<Integer> ps4 = PublishSubject.create();
 
         TestObserver<Integer> to = Observable.just(ps1, ps2, ps3, ps4)
-        .flatMap((Function<PublishSubject<Integer>, ObservableSource<Integer>>) v -> v, 2)
+        .flatMap((Function<PublishSubject<Integer>, ObservableSource<Integer>>) v -> v,
+                new ObservableMergeConfig(2))
         .doOnNext(v -> {
             if (v == 1) {
                 // this will make sure the drain loop detects two completed
@@ -818,7 +825,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream ->
-            upstream.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v).hide(), true));
+            upstream.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v).hide(), new ObservableMergeConfig(true)));
     }
 
     @Test
@@ -935,7 +942,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
                 })
                 .compose(TestHelper.observableStripBoundary())
         )
-        .flatMap(v -> v, true)
+        .flatMap(v -> v, new ObservableMergeConfig(true))
         .doOnNext(v -> {
             if (v == 1) {
                 ps.onNext(2);
@@ -965,7 +972,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
                 .compose(TestHelper.observableStripBoundary())
                 , ps
         )
-        .flatMap(v -> v, true)
+        .flatMap(v -> v, new ObservableMergeConfig(true))
         .doOnNext(v -> {
             if (v == 1) {
                 ps.onNext(2);
@@ -996,8 +1003,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
                                 .just(-integer)
                                 .observeOn(Schedulers.computation());
                     },
-                    false,
-                    1
+                    new ObservableMergeConfig(false, 1)
             )
             .ignoreElements()
             .blockingAwait();

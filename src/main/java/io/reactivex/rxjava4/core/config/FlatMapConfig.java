@@ -28,14 +28,14 @@ import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferSize) {
 
     /**
-     * The default config with no error delay and Flowable#bufferSize() as the maximum concurrency setting.
+     * The default configuration with no error delay and Flowable#bufferSize() as the maximum concurrency setting.
      */
-    public static final FlatMapConfig DEFAULT = new FlatMapConfig(false, Flowable.bufferSize());
+    public static final FlatMapConfig DEFAULT = new FlatMapConfig(false);
 
     /**
-     * The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.
+     * The default configuration with error delay and Flowable#bufferSize() as the maximum concurrency setting.
      */
-    public static final FlatMapConfig DELAY_ERRORS = new FlatMapConfig(true, Flowable.bufferSize());
+    public static final FlatMapConfig DELAY_ERRORS = new FlatMapConfig(true);
 
     /**
      * Optionally delay error, {@link Flowable#bufferSize()} sizes

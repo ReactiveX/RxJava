@@ -36,16 +36,21 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
 
     final boolean delayErrors;
 
-    public ObservableFlatMapSingle(ObservableSource<T> source, Function<? super T, ? extends SingleSource<? extends R>> mapper,
-            boolean delayError) {
+    final int bufferSize;
+
+    public ObservableFlatMapSingle(ObservableSource<T> source,
+            Function<? super T, ? extends SingleSource<? extends R>> mapper,
+            boolean delayError,
+            int bufferSize) {
         super(source);
         this.mapper = mapper;
         this.delayErrors = delayError;
+        this.bufferSize = bufferSize;
     }
 
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
-        source.subscribe(new FlatMapSingleObserver<>(observer, mapper, delayErrors));
+        source.subscribe(new FlatMapSingleObserver<>(observer, mapper, delayErrors, bufferSize));
     }
 
     static final class FlatMapSingleObserver<T, R>
@@ -58,6 +63,8 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
         final Observer<? super R> downstream;
 
         final boolean delayErrors;
+
+        final int bufferSize;
 
         final CompositeDisposable set;
 
@@ -74,10 +81,12 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
         volatile boolean cancelled;
 
         FlatMapSingleObserver(Observer<? super R> actual,
-                Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean delayErrors) {
+                Function<? super T, ? extends SingleSource<? extends R>> mapper,
+                boolean delayErrors, int bufferSize) {
             this.downstream = actual;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
+            this.bufferSize = bufferSize;
             this.set = new CompositeDisposable();
             this.errors = new AtomicThrowable();
             this.active = new AtomicInteger(1);
@@ -178,7 +187,7 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
             if (current != null) {
                 return current;
             }
-            current = new SpscLinkedArrayQueue<>(Observable.bufferSize());
+            current = new SpscLinkedArrayQueue<>(bufferSize);
             if (queue.compareAndSet(null, current)) {
                 return current;
             }

@@ -637,6 +637,9 @@ public class CheckParamValidationTest extends RxJavaTest {
         defaultValues.put(ObservableZipConfig.class, ObservableZipConfig.DEFAULT);
         defaultValues.put(ObservableConcatMapConfig.class, ObservableConcatMapConfig.DEFAULT);
 
+        defaultValues.put(ObservableGroupByConfig.class, ObservableGroupByConfig.DEFAULT);
+        defaultValues.put(ObservableObserveOnConfig.class, ObservableObserveOnConfig.DEFAULT);
+
         // TODO insert new config record types here
 
         @SuppressWarnings("rawtypes")

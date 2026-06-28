@@ -2607,7 +2607,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public static <@NonNull T> Observable<T> merge(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, @NonNull ObservableMergeConfig config) {
         Objects.requireNonNull(config, "config is null");
-        return fromIterable(sources).flatMap((Function)Functions.identity(), config.delayErrors(), config.maxConcurrency(), config.bufferSize());
+        return fromIterable(sources).flatMap((Function)Functions.identity(), config);
     }
 
     /**
@@ -2731,7 +2731,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SafeVarargs
     public static <@NonNull T> Observable<T> mergeArray(@NonNull ObservableSource<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), sources.length);
+        return fromArray(sources).flatMap((Function)Functions.identity(), ObservableMergeConfig.DEFAULT);
     }
 
     /**
@@ -2775,7 +2775,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SafeVarargs
     public static <@NonNull T> Observable<T> mergeArray(@NonNull ObservableMergeConfig config, @NonNull ObservableSource<? extends T>... sources) {
         Objects.requireNonNull(config, "config is null");
-        return fromArray(sources).flatMap((Function) Functions.identity(), config.delayErrors(), config.maxConcurrency(), config.bufferSize());
+        return fromArray(sources).flatMap((Function) Functions.identity(), config);
     }
 
     /**
@@ -5576,7 +5576,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the configuration record for this operator
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @see #concatMap(Function, Scheduler, ObservableConcatMapConfig)
      * @since 4.0.0
@@ -7310,36 +7309,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return flatMap(mapper, false);
-    }
-
-    /**
-     * Returns an {@code Observable} that emits items based on applying a function that you supply to each item emitted
-     * by the current {@code Observable}, where that function returns an {@link ObservableSource}, and then merging those returned
-     * {@code ObservableSource}s and emitting the results of this merger.
-     * <p>
-     * <img width="640" height="356" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapDelayError.o.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the value type of the inner {@code ObservableSource}s and the output type
-     * @param mapper
-     *            a function that, when applied to an item emitted by the current {@code Observable}, returns an
-     *            {@code ObservableSource}
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Observable} and all inner {@code ObservableSource}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper, boolean delayErrors) {
-        return flatMap(mapper, delayErrors, Integer.MAX_VALUE);
+        return flatMap(mapper, ObservableMergeConfig.DEFAULT);
     }
 
     /**
@@ -7358,61 +7328,20 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param mapper
      *            a function that, when applied to an item emitted by the current {@code Observable}, returns an
      *            {@code ObservableSource}
-     * @param maxConcurrency
-     *         the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Observable} and all inner {@code ObservableSource}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
-        return flatMap(mapper, delayErrors, maxConcurrency, bufferSize());
-    }
-
-    /**
-     * Returns an {@code Observable} that emits items based on applying a function that you supply to each item emitted
-     * by the current {@code Observable}, where that function returns an {@link ObservableSource}, and then merging those returned
-     * {@code ObservableSource}s and emitting the results of this merger, while limiting the maximum number of concurrent
-     * subscriptions to these {@code ObservableSource}s.
-     * <p>
-     * <img width="640" height="442" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapMaxConcurrency.o.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the value type of the inner {@code ObservableSource}s and the output type
-     * @param mapper
-     *            a function that, when applied to an item emitted by the current {@code Observable}, returns an
-     *            {@code ObservableSource}
-     * @param maxConcurrency
-     *         the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Observable} and all inner {@code ObservableSource}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
-     * @param bufferSize
-     *            the number of elements expected from each inner {@code ObservableSource} to be buffered
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            boolean delayErrors, int maxConcurrency, int bufferSize) {
+            @NonNull ObservableMergeConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        Objects.requireNonNull(config, "config is null");
         if (this instanceof ScalarSupplier) {
             @SuppressWarnings("unchecked")
             T v = ((ScalarSupplier<T>)this).get();
@@ -7421,7 +7350,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             }
             return ObservableScalarXMap.scalarXMap(v, mapper);
         }
-        return RxJavaPlugins.onAssembly(new ObservableFlatMap<>(this, mapper, delayErrors, maxConcurrency, bufferSize));
+        return RxJavaPlugins.onAssembly(new ObservableFlatMap<>(this, mapper, config.delayErrors(), config.maxConcurrency(), config.bufferSize()));
     }
 
     /**
@@ -7455,10 +7384,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             @NonNull Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
             @NonNull Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
             @NonNull Supplier<? extends ObservableSource<? extends R>> onCompleteSupplier) {
-        Objects.requireNonNull(onNextMapper, "onNextMapper is null");
-        Objects.requireNonNull(onErrorMapper, "onErrorMapper is null");
-        Objects.requireNonNull(onCompleteSupplier, "onCompleteSupplier is null");
-        return merge(new ObservableMapNotification<>(this, onNextMapper, onErrorMapper, onCompleteSupplier));
+        return flatMap(onNextMapper, onErrorMapper, onCompleteSupplier, ObservableMergeConfig.DEFAULT);
     }
 
     /**
@@ -7494,7 +7420,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final <@NonNull R> Observable<R> flatMap(
             @NonNull Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
-            @NonNull Function<Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
+            @NonNull Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
             @NonNull Supplier<? extends ObservableSource<? extends R>> onCompleteSupplier,
             @NonNull ObservableMergeConfig config) {
         Objects.requireNonNull(onNextMapper, "onNextMapper is null");
@@ -7502,37 +7428,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(onCompleteSupplier, "onCompleteSupplier is null");
         Objects.requireNonNull(config, "config is null");
         return merge(new ObservableMapNotification<>(this, onNextMapper, onErrorMapper, onCompleteSupplier), config);
-    }
-
-    /**
-     * Returns an {@code Observable} that emits items based on applying a function that you supply to each item emitted
-     * by the current {@code Observable}, where that function returns an {@link ObservableSource}, and then merging those returned
-     * {@code ObservableSource}s and emitting the results of this merger, while limiting the maximum number of concurrent
-     * subscriptions to these {@code ObservableSource}s.
-     * <p>
-     * <img width="640" height="442" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapMaxConcurrency.o.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the value type of the inner {@code ObservableSource}s and the output type
-     * @param mapper
-     *            a function that, when applied to an item emitted by the current {@code Observable}, returns an
-     *            {@code ObservableSource}
-     * @param maxConcurrency
-     *         the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper, int maxConcurrency) {
-        return flatMap(mapper, false, maxConcurrency, bufferSize());
     }
 
     /**
@@ -7563,41 +7458,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final <@NonNull U, @NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends U>> mapper,
             @NonNull BiFunction<? super T, ? super U, ? extends R> combiner) {
-        return flatMap(mapper, combiner, false, bufferSize(), bufferSize());
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the results of a specified function to the pair of values emitted by the
-     * current {@code Observable} and the mapped inner {@link ObservableSource}.
-     * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <U>
-     *            the type of items emitted by the collection {@code ObservableSource}
-     * @param <R>
-     *            the type of items emitted by the resulting {@code Observable}
-     * @param mapper
-     *            a function that returns an {@code ObservableSource} for each item emitted by the current {@code Observable}
-     * @param combiner
-     *            a function that combines one item emitted by each of the source and collection {@code ObservableSource}s and
-     *            returns an item to be emitted by the resulting {@code Observable}
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Observable} and all inner {@code ObservableSource}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} or {@code combiner} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull U, @NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends U>> mapper,
-            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors) {
-        return flatMap(mapper, combiner, delayErrors, bufferSize(), bufferSize());
+        return flatMap(mapper, combiner, ObservableMergeConfig.DEFAULT);
     }
 
     /**
@@ -7620,14 +7481,10 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param combiner
      *            a function that combines one item emitted by each of the source and collection {@code ObservableSource}s and
      *            returns an item to be emitted by the resulting {@code Observable}
-     * @param maxConcurrency
-     *         the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Observable} and all inner {@code ObservableSource}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code combiner} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @since 2.0
      */
@@ -7635,87 +7492,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull U, @NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends U>> mapper,
-            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency) {
-        return flatMap(mapper, combiner, delayErrors, maxConcurrency, bufferSize());
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the results of a specified function to the pair of values emitted by the
-     * current {@code Observable} and the mapped inner {@link ObservableSource}, while limiting the maximum number of concurrent
-     * subscriptions to these {@code ObservableSource}s.
-     * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <U>
-     *            the type of items emitted by the collection {@code ObservableSource}
-     * @param <R>
-     *            the type of items emitted by the resulting {@code Observable}
-     * @param mapper
-     *            a function that returns an {@code ObservableSource} for each item emitted by the current {@code Observable}
-     * @param combiner
-     *            a function that combines one item emitted by each of the source and collection {@code ObservableSource}s and
-     *            returns an item to be emitted by the resulting {@code Observable}
-     * @param maxConcurrency
-     *         the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Observable} and all inner {@code ObservableSource}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
-     * @param bufferSize
-     *            the number of elements expected from the inner {@code ObservableSource} to be buffered
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull U, @NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends U>> mapper,
-            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency, int bufferSize) {
+            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner,
+            @NonNull ObservableMergeConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return flatMap(ObservableInternalHelper.flatMapWithCombiner(mapper, combiner), delayErrors, maxConcurrency, bufferSize);
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the results of a specified function to the pair of values emitted by the
-     * current {@code Observable} and the mapped inner {@link ObservableSource}, while limiting the maximum number of concurrent
-     * subscriptions to these {@code ObservableSource}s.
-     * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <U>
-     *            the type of items emitted by the collection {@code ObservableSource}
-     * @param <R>
-     *            the type of items emitted by the resulting {@code Observable}
-     * @param mapper
-     *            a function that returns an {@code ObservableSource} for each item emitted by the current {@code Observable}
-     * @param combiner
-     *            a function that combines one item emitted by each of the source and collection {@code ObservableSource}s and
-     *            returns an item to be emitted by the resulting {@code Observable}
-     * @param maxConcurrency
-     *         the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} or {@code combiner} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull U, @NonNull R> Observable<R> flatMap(@NonNull Function<? super T, ? extends ObservableSource<? extends U>> mapper,
-            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner, int maxConcurrency) {
-        return flatMap(mapper, combiner, false, maxConcurrency, bufferSize());
+        return flatMap(ObservableInternalHelper.flatMapWithCombiner(mapper, combiner), config);
     }
 
     /**
@@ -7735,7 +7516,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Completable flatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
-        return flatMapCompletable(mapper, false);
+        return flatMapCompletable(mapper, ObservableMergeConfig.DEFAULT);
     }
 
     /**
@@ -7748,17 +7529,19 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code flatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param mapper the function that received each source value and transforms them into {@code CompletableSource}s.
-     * @param delayErrors if {@code true}, errors from the upstream and inner {@code CompletableSource}s are delayed until all of them
-     * terminate.
+     * @param config the configuration record for this operator
      * @return the new {@link Completable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Completable flatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors) {
+    public final Completable flatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper,
+            @NonNull ObservableMergeConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new ObservableFlatMapCompletableCompletable<>(this, mapper, delayErrors));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableFlatMapCompletableCompletable<>(this, mapper, config.delayErrors(), config.bufferSize()));
     }
 
     /**
@@ -7821,7 +7604,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             @NonNull BiFunction<? super T, ? super U, ? extends V> combiner) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return flatMap(ObservableInternalHelper.flatMapIntoIterable(mapper), combiner, false, bufferSize(), bufferSize());
+        return flatMap(ObservableInternalHelper.flatMapIntoIterable(mapper), combiner, ObservableMergeConfig.DEFAULT);
     }
 
     /**
@@ -7842,7 +7625,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
-        return flatMapMaybe(mapper, false);
+        return flatMapMaybe(mapper, ObservableMergeConfig.DEFAULT);
     }
 
     /**
@@ -7857,17 +7640,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * </dl>
      * @param <R> the result value type
      * @param mapper the function that received each source value and transforms them into {@code MaybeSource}s.
-     * @param delayErrors if {@code true}, errors from the upstream and inner {@code MaybeSource}s are delayed until all of them
-     * terminate.
+     * @param config the configuration record for this operator
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> Observable<R> flatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayErrors) {
+    public final <@NonNull R> Observable<R> flatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper,
+            @NonNull ObservableMergeConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new ObservableFlatMapMaybe<>(this, mapper, delayErrors));
+        return RxJavaPlugins.onAssembly(new ObservableFlatMapMaybe<>(this, mapper, config.delayErrors(), config.bufferSize()));
     }
 
     /**
@@ -7888,7 +7672,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return flatMapSingle(mapper, false);
+        return flatMapSingle(mapper, ObservableMergeConfig.DEFAULT);
     }
 
     /**
@@ -7903,17 +7687,20 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * </dl>
      * @param <R> the result value type
      * @param mapper the function that received each source value and transforms them into {@code SingleSource}s.
-     * @param delayErrors if {@code true}, errors from the upstream and inner {@code SingleSource}s are delayed until each of them
      * terminates.
+     * @param config the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> Observable<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean delayErrors) {
+    public final <@NonNull R> Observable<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper,
+            @NonNull ObservableMergeConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new ObservableFlatMapSingle<>(this, mapper, delayErrors));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableFlatMapSingle<>(this, mapper, config.delayErrors(), /* config.maxConcurrency(), */ config.bufferSize()));
     }
 
     /**
@@ -8071,7 +7858,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull K> Observable<GroupedObservable<K, T>> groupBy(@NonNull Function<? super T, ? extends K> keySelector) {
-        return groupBy(keySelector, (Function)Functions.identity(), false, bufferSize());
+        return groupBy(keySelector, (Function)Functions.identity(), ObservableGroupByConfig.DEFAULT);
     }
 
     /**
@@ -8104,19 +7891,20 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            a function that extracts the key for each item
      * @param <K>
      *            the key type
-     * @param delayError
-     *            if {@code true}, the exception from the current {@code Observable} is delayed in each group until that specific group emitted
-     *            the normal values; if {@code false}, the exception bypasses values in the groups and is reported immediately.
+     * @param config
+     *            the configuration record of this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code keySelector} is {@code null}
+     * @throws NullPointerException if {@code keySelector} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
+     * @since 4.0.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull K> Observable<GroupedObservable<K, T>> groupBy(@NonNull Function<? super T, ? extends K> keySelector, boolean delayError) {
-        return groupBy(keySelector, (Function)Functions.identity(), delayError, bufferSize());
+    public final <@NonNull K> Observable<GroupedObservable<K, T>> groupBy(@NonNull Function<? super T, ? extends K> keySelector,
+            @NonNull ObservableGroupByConfig config) {
+        return groupBy(keySelector, (Function)Functions.identity(), config);
     }
 
     /**
@@ -8162,7 +7950,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final <@NonNull K, @NonNull V> Observable<GroupedObservable<K, V>> groupBy(@NonNull Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector) {
-        return groupBy(keySelector, valueSelector, false, bufferSize());
+        return groupBy(keySelector, valueSelector, ObservableGroupByConfig.DEFAULT);
     }
 
     /**
@@ -8195,80 +7983,29 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            a function that extracts the key for each item
      * @param valueSelector
      *            a function that extracts the return element for each item
-     * @param <K>
-     *            the key type
-     * @param <V>
-     *            the element type
-     * @param delayError
-     *            if {@code true}, the exception from the current {@code Observable} is delayed in each group until that specific group emitted
-     *            the normal values; if {@code false}, the exception bypasses values in the groups and is reported immediately.
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code keySelector} or {@code valueSelector} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull K, @NonNull V> Observable<GroupedObservable<K, V>> groupBy(@NonNull Function<? super T, ? extends K> keySelector,
-            @NonNull Function<? super T, ? extends V> valueSelector, boolean delayError) {
-        return groupBy(keySelector, valueSelector, delayError, bufferSize());
-    }
-
-    /**
-     * Groups the items emitted by the current {@code Observable} according to a specified criterion, and emits these
-     * grouped items as {@link GroupedObservable}s.
-     * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
-     * <p>
-     * Each emitted {@code GroupedObservable} allows only a single {@link Observer} to subscribe to it during its
-     * lifetime and if this {@code Observer} calls {@code dispose()} before the
-     * source terminates, the next emission by the source having the same key will trigger a new
-     * {@code GroupedObservable} emission.
-     * <p>
-     * <em>Note:</em> A {@code GroupedObservable} will cache the items it is to emit until such time as it
-     * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
-     * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
-     * discard their buffers by applying an operator like {@link #ignoreElements} to them.
-     * <p>
-     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
-     * so-called group abandonment where a group will only contain one element and the group will be
-     * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
-     *
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param keySelector
-     *            a function that extracts the key for each item
-     * @param valueSelector
-     *            a function that extracts the return element for each item
-     * @param delayError
-     *            if {@code true}, the exception from the current {@code Observable} is delayed in each group until that specific group emitted
-     *            the normal values; if {@code false}, the exception bypasses values in the groups and is reported immediately.
-     * @param bufferSize
-     *            the hint for how many {@code GroupedObservable}s and element in each {@code GroupedObservable} should be buffered
+     * @param config
+     *            the configuration record of the operator
      * @param <K>
      *            the key type
      * @param <V>
      *            the element type
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code keySelector} or {@code valueSelector} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code keySelector} or {@code valueSelector} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull K, @NonNull V> Observable<GroupedObservable<K, V>> groupBy(@NonNull Function<? super T, ? extends K> keySelector,
+    public final <@NonNull K, @NonNull V> Observable<GroupedObservable<K, V>> groupBy(
+            @NonNull Function<? super T, ? extends K> keySelector,
             @NonNull Function<? super T, ? extends V> valueSelector,
-            boolean delayError, int bufferSize) {
+            @NonNull ObservableGroupByConfig config) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        Objects.requireNonNull(config, "config is null");
 
-        return RxJavaPlugins.onAssembly(new ObservableGroupBy<>(this, keySelector, valueSelector, bufferSize, delayError));
+        return RxJavaPlugins.onAssembly(new ObservableGroupBy<>(this, keySelector, valueSelector, config.bufferSize(), config.delayError()));
     }
 
     /**
@@ -8797,7 +8534,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * asynchronously with an unbounded buffer with {@link Flowable#bufferSize()} "island size".
      *
      * <p>Note that {@code onError} notifications will cut ahead of {@code onNext} notifications on the emission thread if {@code Scheduler} is truly
-     * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, boolean)} overload.
+     * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, ObservableObserveOnConfig)} overload.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.v3.png" alt="">
      * <p>
@@ -8819,54 +8556,14 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
-     * @see #observeOn(Scheduler, boolean)
-     * @see #observeOn(Scheduler, boolean, int)
+     * @see #observeOn(Scheduler, ObservableObserveOnConfig)
      * @see #delay(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Observable<T> observeOn(@NonNull Scheduler scheduler) {
-        return observeOn(scheduler, false, bufferSize());
-    }
-
-    /**
-     * Returns an {@code Observable} to perform the current {@code Observable}'s emissions and notifications on a specified {@link Scheduler},
-     * asynchronously with an unbounded buffer with {@link Flowable#bufferSize()} "island size" and optionally delays {@code onError} notifications.
-     * <p>
-     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.v3.png" alt="">
-     * <p>
-     * This operator keeps emitting as many signals as it can on the given {@code Scheduler}'s worker thread,
-     * which may result in a longer than expected occupation of this thread. In other terms,
-     * it does not allow per-signal fairness in case the worker runs on a shared underlying thread.
-     * If such fairness and signal/work interleaving is preferred, use the delay operator with zero time instead.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
-     * </dl>
-     * <p>"Island size" indicates how large chunks the unbounded buffer allocates to store the excess elements waiting to be consumed
-     * on the other side of the asynchronous boundary.
-     *
-     * @param scheduler
-     *            the {@code Scheduler} to notify {@link Observer}s on
-     * @param delayError
-     *            indicates if the {@code onError} notification may not cut ahead of {@code onNext} notification on the other side of the
-     *            scheduling boundary. If {@code true}, a sequence ending in {@code onError} will be replayed in the same order as was received
-     *            from the current {@code Observable}
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code scheduler} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
-     * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
-     * @see #subscribeOn
-     * @see #observeOn(Scheduler)
-     * @see #observeOn(Scheduler, boolean, int)
-     * @see #delay(long, TimeUnit, Scheduler, boolean)
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    @NonNull
-    public final Observable<T> observeOn(@NonNull Scheduler scheduler, boolean delayError) {
-        return observeOn(scheduler, delayError, bufferSize());
+        return observeOn(scheduler, ObservableObserveOnConfig.DEFAULT);
     }
 
     /**
@@ -8888,28 +8585,24 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *
      * @param scheduler
      *            the {@code Scheduler} to notify {@link Observer}s on
-     * @param delayError
-     *            indicates if the {@code onError} notification may not cut ahead of {@code onNext} notification on the other side of the
-     *            scheduling boundary. If {@code true} a sequence ending in {@code onError} will be replayed in the same order as was received
-     *            from upstream
-     * @param bufferSize the size of the buffer.
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code scheduler} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code scheduler} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
      * @see #observeOn(Scheduler)
-     * @see #observeOn(Scheduler, boolean)
      * @see #delay(long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Observable<T> observeOn(@NonNull Scheduler scheduler, boolean delayError, int bufferSize) {
+    public final Observable<T> observeOn(@NonNull Scheduler scheduler,
+            @NonNull ObservableObserveOnConfig config) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableObserveOn<>(this, scheduler, delayError, bufferSize));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableObserveOn<>(this, scheduler, config.delayError(), config.bufferSize()));
     }
 
     /**
