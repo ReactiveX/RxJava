@@ -1105,9 +1105,17 @@ specified boundary <a href="https://docs.oracle.com/en/java/javase/26/docs/api/j
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableConcatMapConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableGroupByConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableObserveOnConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig</a></dt>
 <dd>
@@ -2752,7 +2760,7 @@ current <code>Flowable</code> that are followed by another item within a compute
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>
-<div class="block">The default config with no error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+<div class="block">The default configuration with no error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/GenericConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></dt>
 <dd>
@@ -2786,9 +2794,17 @@ current <code>Flowable</code> that are followed by another item within a compute
 <dd>
 <div class="block">The default configuration with no error delays and bufferSize of 2.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableGroupByConfig</a></dt>
+<dd>
+<div class="block">The default configuration with no error delays and bufferSize of Observable.bufferSize().</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
-<div class="block">The default configuration with no error delays and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+<div class="block">The default configuration with no error delays, MAX_VALUE concurrency and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableObserveOnConfig</a></dt>
+<dd>
+<div class="block">The default configuration with no error delays and bufferSize of Observable.bufferSize().</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig</a></dt>
 <dd>
@@ -3021,9 +3037,17 @@ per-item basis.</div>
 <dd>
 <div class="block">The default configuration with error delays till the end and bufferSize of 2.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableGroupByConfig</a></dt>
+<dd>
+<div class="block">The default configuration with error delays and bufferSize of Observable.bufferSize().</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
-<div class="block">The default configuration with error delays and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+<div class="block">The default configuration with error delays, MAX_VALUE concurrency and bufferSize of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableObserveOnConfig</a></dt>
+<dd>
+<div class="block">The default configuration with error delays and bufferSize of Observable.bufferSize().</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableSwitchConfig.html#DELAY_ERROR" class="member-name-link">DELAY_ERROR</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSwitchConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSwitchConfig</a></dt>
 <dd>
@@ -3059,7 +3083,7 @@ per-item basis.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#DELAY_ERRORS" class="member-name-link">DELAY_ERRORS</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>
-<div class="block">The default config with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
+<div class="block">The default configuration with error delay and Flowable#bufferSize() as the maximum concurrency setting.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/GenericConfig.html#DELAY_ERRORS" class="member-name-link">DELAY_ERRORS</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></dt>
 <dd>
@@ -3088,6 +3112,14 @@ per-item basis.</div>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableCombineLatestConfig</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableCombineLatestConfig.html#param-delayError"><code>delayError</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableGroupByConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#param-delayError"><code>delayError</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableObserveOnConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#param-delayError"><code>delayError</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableSwitchConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSwitchConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSwitchConfig</a></dt>
 <dd>
@@ -3861,7 +3893,15 @@ immediately.</div>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableGroupByConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableObserveOnConfig</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
@@ -4152,27 +4192,7 @@ current <code>Maybe</code> and a specified mapped <a href="io/reactivex/rxjava4/
 by the current <code>Observable</code>, where that function returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then merging those returned
 <code>ObservableSource</code>s and emitting the results of this merger.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">flatMap(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits items based on applying a function that you supply to each item emitted
-by the current <code>Observable</code>, where that function returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then merging those returned
-<code>ObservableSource</code>s and emitting the results of this merger.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">flatMap(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits items based on applying a function that you supply to each item emitted
-by the current <code>Observable</code>, where that function returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then merging those returned
-<code>ObservableSource</code>s and emitting the results of this merger, while limiting the maximum number of concurrent
-subscriptions to these <code>ObservableSource</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,boolean,int,int)" class="member-name-link">flatMap(Function, boolean, int, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits items based on applying a function that you supply to each item emitted
-by the current <code>Observable</code>, where that function returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then merging those returned
-<code>ObservableSource</code>s and emitting the results of this merger, while limiting the maximum number of concurrent
-subscriptions to these <code>ObservableSource</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">flatMap(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableMergeConfig)" class="member-name-link">flatMap(Function, ObservableMergeConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits items based on applying a function that you supply to each item emitted
 by the current <code>Observable</code>, where that function returns an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, and then merging those returned
@@ -4195,24 +4215,7 @@ while limiting the maximum number of concurrent subscriptions to these <code>Obs
 <div class="block">Returns an <code>Observable</code> that emits the results of a specified function to the pair of values emitted by the
 current <code>Observable</code> and the mapped inner <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,boolean)" class="member-name-link">flatMap(Function, BiFunction, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits the results of a specified function to the pair of values emitted by the
-current <code>Observable</code> and the mapped inner <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,boolean,int)" class="member-name-link">flatMap(Function, BiFunction, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits the results of a specified function to the pair of values emitted by the
-current <code>Observable</code> and the mapped inner <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, while limiting the maximum number of concurrent
-subscriptions to these <code>ObservableSource</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,boolean,int,int)" class="member-name-link">flatMap(Function, BiFunction, boolean, int, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits the results of a specified function to the pair of values emitted by the
-current <code>Observable</code> and the mapped inner <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, while limiting the maximum number of concurrent
-subscriptions to these <code>ObservableSource</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,int)" class="member-name-link">flatMap(Function, BiFunction, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction,io.reactivex.rxjava4.core.config.ObservableMergeConfig)" class="member-name-link">flatMap(Function, BiFunction, ObservableMergeConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the results of a specified function to the pair of values emitted by the
 current <code>Observable</code> and the mapped inner <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>, while limiting the maximum number of concurrent
@@ -4324,14 +4327,14 @@ waits until the upstream and all <code>CompletableSource</code>s complete.</div>
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a> that completes based on applying a specified function to the item emitted by the
 current <code>Single</code>, where that function returns a <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMapCompletable(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">flatMapCompletable(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to them and
-waits until the upstream and all <code>CompletableSource</code>s complete, optionally delaying all errors.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapCompletable(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">flatMapCompletable(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps each element of the upstream <code>Flowable</code> into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to them and
+waits until the upstream and all <code>CompletableSource</code>s complete, optionally delaying all errors.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMapCompletable(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableMergeConfig)" class="member-name-link">flatMapCompletable(Function, ObservableMergeConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dd>
+<div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to them and
 waits until the upstream and all <code>CompletableSource</code>s complete, optionally delaying all errors.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
@@ -4416,17 +4419,17 @@ and merges their <code>onSuccess</code> values, in no particular order, into a s
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
 where that function returns a <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMapMaybe(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">flatMapMaybe(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s, subscribes to them
-and merges their <code>onSuccess</code> values, in no particular order, into a single <code>Observable</code> sequence,
-optionally delaying all errors.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapMaybe(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">flatMapMaybe(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps each element of the upstream <code>Flowable</code> into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s, subscribes to at most
 <code>maxConcurrency</code> <code>MaybeSource</code>s at a time and merges their <code>onSuccess</code> values,
 in no particular order, into a single <code>Flowable</code> sequence, optionally delaying all errors.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMapMaybe(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableMergeConfig)" class="member-name-link">flatMapMaybe(Function, ObservableMergeConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dd>
+<div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s, subscribes to them
+and merges their <code>onSuccess</code> values, in no particular order, into a single <code>Observable</code> sequence,
+optionally delaying all errors.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#flatMapObservable(io.reactivex.rxjava4.functions.Function)" class="member-name-link">flatMapObservable(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -4463,17 +4466,17 @@ current <code>Maybe</code>, where that function returns a <a href="io/reactivex/
 <div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s, subscribes to all of them
 and merges their <code>onSuccess</code> values, in no particular order, into a single <code>Observable</code> sequence.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMapSingle(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">flatMapSingle(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s, subscribes to them
-and merges their <code>onSuccess</code> values, in no particular order, into a single <code>Observable</code> sequence,
-optionally delaying all errors.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapSingle(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">flatMapSingle(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps each element of the upstream <code>Flowable</code> into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s, subscribes to at most
 <code>maxConcurrency</code> <code>SingleSource</code>s at a time and merges their <code>onSuccess</code> values,
 in no particular order, into a single <code>Flowable</code> sequence, optionally delaying all errors.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#flatMapSingle(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableMergeConfig)" class="member-name-link">flatMapSingle(Function, ObservableMergeConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dd>
+<div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a>s, subscribes to them
+and merges their <code>onSuccess</code> values, in no particular order, into a single <code>Observable</code> sequence,
+optionally delaying all errors.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#flatMapStream(io.reactivex.rxjava4.functions.Function)" class="member-name-link">flatMapStream(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -5387,7 +5390,7 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables"><code>GroupedFlowable</code></a>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#groupBy(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">groupBy(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableGroupByConfig)" class="member-name-link">groupBy(Function, ObservableGroupByConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Groups the items emitted by the current <code>Observable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.html" title="class in io.reactivex.rxjava4.observables"><code>GroupedObservable</code></a>s.</div>
@@ -5402,25 +5405,20 @@ grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" t
 <div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables"><code>GroupedFlowable</code></a>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">groupBy(Function, Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Groups the items emitted by the current <code>Observable</code> according to a specified criterion, and emits these
-grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.html" title="class in io.reactivex.rxjava4.observables"><code>GroupedObservable</code></a>s.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">groupBy(Function, Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables"><code>GroupedFlowable</code></a>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">groupBy(Function, Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Groups the items emitted by the current <code>Observable</code> according to a specified criterion, and emits these
-grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.html" title="class in io.reactivex.rxjava4.observables"><code>GroupedObservable</code></a>s.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,boolean,int,io.reactivex.rxjava4.functions.Function)" class="member-name-link">groupBy(Function, Function, boolean, int, Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables"><code>GroupedFlowable</code></a>s.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.ObservableGroupByConfig)" class="member-name-link">groupBy(Function, Function, ObservableGroupByConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dd>
+<div class="block">Groups the items emitted by the current <code>Observable</code> according to a specified criterion, and emits these
+grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.html" title="class in io.reactivex.rxjava4.observables"><code>GroupedObservable</code></a>s.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function)" class="member-name-link">groupBy(Function, Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
@@ -5540,7 +5538,15 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableGroupByConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableObserveOnConfig</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
@@ -7050,13 +7056,29 @@ value fluently.</div>
 <div class="block">Abstraction over an RxJava <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> that allows associating
 a resource with it.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">ObservableGroupByConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record for Observable.groupBy() operators.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#%3Cinit%3E(boolean)" class="member-name-link">ObservableGroupByConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableGroupByConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#%3Cinit%3E(boolean,int)" class="member-name-link">ObservableGroupByConfig(boolean, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableGroupByConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#%3Cinit%3E(int)" class="member-name-link">ObservableGroupByConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableGroupByConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
 <dd>
-<div class="block">Configuration record for Observable.merge() operators.</div>
+<div class="block">Configuration record for Observable.merge() and Observable.flatMap operators.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#%3Cinit%3E(boolean)" class="member-name-link">ObservableMergeConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
-<div class="block">Optionally delay error, <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Optionally delay error, <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a> sizes</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#%3Cinit%3E(boolean,int)" class="member-name-link">ObservableMergeConfig(boolean, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
@@ -7068,7 +7090,23 @@ a resource with it.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#%3Cinit%3E(int)" class="member-name-link">ObservableMergeConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
 <dd>
-<div class="block">Optionally set the buffer size, no delay errors.</div>
+<div class="block">Optionally set the maximum concurrency levels, no errors and a buffer size of <a href="io/reactivex/rxjava4/core/Observable.html#bufferSize()"><code>Observable.bufferSize()</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">ObservableObserveOnConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record for Observable.observeOn() operators.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#%3Cinit%3E(boolean)" class="member-name-link">ObservableObserveOnConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableObserveOnConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#%3Cinit%3E(boolean,int)" class="member-name-link">ObservableObserveOnConfig(boolean, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableObserveOnConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#%3Cinit%3E(int)" class="member-name-link">ObservableObserveOnConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableObserveOnConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/ObservableOnSubscribe.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">ObservableOnSubscribe&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -7166,17 +7204,12 @@ asynchronously.</div>
 <div class="block">Signals the items and terminal signals of the current <code>Flowable</code> on the specified <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>,
 asynchronously with a bounded buffer and optionally delays <code>onError</code> notifications.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#observeOn(io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">observeOn(Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> to perform the current <code>Observable</code>'s emissions and notifications on a specified <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>,
-asynchronously with an unbounded buffer with <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> "island size" and optionally delays <code>onError</code> notifications.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#observeOn(io.reactivex.rxjava4.core.Scheduler,boolean,int)" class="member-name-link">observeOn(Scheduler, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Signals the items and terminal signals of the current <code>Flowable</code> on the specified <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>,
 asynchronously with a bounded buffer of configurable size and optionally delays <code>onError</code> notifications.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#observeOn(io.reactivex.rxjava4.core.Scheduler,boolean,int)" class="member-name-link">observeOn(Scheduler, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#observeOn(io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.ObservableObserveOnConfig)" class="member-name-link">observeOn(Scheduler, ObservableObserveOnConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> to perform the current <code>Observable</code>'s emissions and notifications on a specified <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>,
 asynchronously with an unbounded buffer of configurable "island size" and optionally delays <code>onError</code> notifications.</div>
@@ -11854,7 +11887,15 @@ transparently relaying signals between the two async representations of a sequen
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableGroupByConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableGroupByConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableMergeConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableMergeConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableObserveOnConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableObserveOnConfig</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
