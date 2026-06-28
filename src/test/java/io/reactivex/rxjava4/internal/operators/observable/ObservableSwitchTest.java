@@ -399,7 +399,8 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void delayErrors() {
         PublishSubject<ObservableSource<Integer>> source = PublishSubject.create();
 
-        TestObserverEx<Integer> to = source.switchMapDelayError(Functions.<ObservableSource<Integer>>identity())
+        TestObserverEx<Integer> to = source
+                .switchMap(Functions.<ObservableSource<Integer>>identity(), ObservableSwitchConfig.DELAY_ERROR)
                 .to(TestHelper.<Integer>testConsumer());
 
         to.assertNoValues()
@@ -472,13 +473,13 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapDelayErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .switchMapDelayError((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), 16));
+                .switchMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableSwitchConfig(16)));
     }
 
     @Test
     public void switchMapDelayErrorJustSource() {
         Observable.just(0)
-        .switchMapDelayError((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), 16)
+        .switchMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableSwitchConfig(16))
         .test()
         .assertResult(1);
     }
@@ -486,13 +487,13 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .switchMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), 16));
+                .switchMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableSwitchConfig(16)));
     }
 
     @Test
     public void switchMapJustSource() {
         Observable.just(0)
-        .switchMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), 16)
+        .switchMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableSwitchConfig(16))
         .test()
         .assertResult(1);
 
@@ -544,13 +545,13 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void switchMapSingleDelayErrorJustSource() {
         final AtomicBoolean completed = new AtomicBoolean();
         Observable.just(0, 1)
-        .switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) v -> {
+        .switchMapSingle((Function<Integer, SingleSource<Integer>>) v -> {
             if (v == 0) {
                 return Single.error(new RuntimeException());
             } else {
                 return Single.just(1).doOnSuccess(_ -> completed.set(true));
             }
-        })
+        }, true)
         .test()
         .assertValue(1)
         .assertError(RuntimeException.class);
@@ -937,14 +938,14 @@ public class ObservableSwitchTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps
-        .switchMapDelayError(Functions.justFunction(
+        .switchMap(Functions.justFunction(
                 Observable.range(1, 5)
                 .observeOn(ImmediateThinScheduler.INSTANCE)
                 .map((Function<Integer, Integer>) _ -> {
                     throw new TestException();
                 })
                 .compose(TestHelper.<Integer>observableStripBoundary())
-        ))
+        ), ObservableSwitchConfig.DELAY_ERROR)
         .test();
 
         to.assertEmpty();
@@ -1129,7 +1130,7 @@ public class ObservableSwitchTest extends RxJavaTest {
         PublishSubject<Integer> ps1 = PublishSubject.create();
         PublishSubject<Integer> ps2 = PublishSubject.create();
 
-        TestObserver<Integer> to = ps1.switchMapDelayError(_ -> ps2)
+        TestObserver<Integer> to = ps1.switchMap(_ -> ps2, ObservableSwitchConfig.DELAY_ERROR)
         .test();
 
         ps1.onNext(1);

@@ -11332,13 +11332,13 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @see #switchMapDelayError(Function)
+     * @see #switchMap(Function, ObservableSwitchConfig)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Observable<R> switchMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return switchMap(mapper, bufferSize());
+        return switchMap(mapper, ObservableSwitchConfig.DEFAULT);
     }
 
     /**
@@ -11359,20 +11359,20 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param mapper
      *            a function that, when applied to an item emitted by the current {@code Observable}, returns an
      *            {@code ObservableSource}
-     * @param bufferSize
-     *            the number of elements expected from the current active inner {@code ObservableSource} to be buffered
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @see #switchMapDelayError(Function, int)
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> Observable<R> switchMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
+    public final <@NonNull R> Observable<R> switchMap(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper,
+            @NonNull ObservableSwitchConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        Objects.requireNonNull(config, "config is null");
         if (this instanceof ScalarSupplier) {
             @SuppressWarnings("unchecked")
             T v = ((ScalarSupplier<T>)this).get();
@@ -11381,7 +11381,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
             }
             return ObservableScalarXMap.scalarXMap(v, mapper);
         }
-        return RxJavaPlugins.onAssembly(new ObservableSwitchMap<>(this, mapper, bufferSize, false));
+        return RxJavaPlugins.onAssembly(new ObservableSwitchMap<>(this, mapper, config.bufferSize(), config.delayError()));
     }
 
     /**
@@ -11401,7 +11401,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If either the current {@code Observable} or the active {@code CompletableSource} signals an {@code onError},
      *  the resulting {@code Completable} is terminated immediately with that {@link Throwable}.
-     *  Use the {@link #switchMapCompletableDelayError(Function)} to delay such inner failures until
+     *  Use the {@link #switchMapCompletable(Function, boolean)} to delay such inner failures until
      *  every inner {@code CompletableSource}s and the main {@code Observable} terminates in some fashion.
      *  If they fail concurrently, the operator may combine the {@code Throwable}s into a
      *  {@link CompositeException}
@@ -11416,7 +11416,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *               (non blockingly) for its terminal event
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #switchMapCompletableDelayError(Function)
+     * @see #switchMapCompletable(Function, boolean)
      * @since 2.2
      */
     @CheckReturnValue
@@ -11441,7 +11441,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code switchMapCompletableDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code switchMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>The errors of the current {@code Observable} and all the {@code CompletableSource}s, who had the chance
      *  to run to their completion, are delayed until
@@ -11458,17 +11458,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param mapper the function called with each upstream item and should return a
      *               {@code CompletableSource} to be subscribed to and awaited for
      *               (non blockingly) for its terminal event
+     * @param delayError if {@code true}, errors from the outer and inner sources will be delayed
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see #switchMapCompletable(Function)
-     * @since 2.2
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Completable switchMapCompletableDelayError(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
+    public final Completable switchMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper, boolean delayError) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new ObservableSwitchMapCompletable<>(this, mapper, true));
+        return RxJavaPlugins.onAssembly(new ObservableSwitchMapCompletable<>(this, mapper, delayError));
     }
 
     /**
@@ -11498,7 +11499,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *               and get subscribed to.
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see #switchMapMaybeDelayError(Function)
+     * @see #switchMapMaybe(Function, boolean)
      * @since 2.2
      */
     @CheckReturnValue
@@ -11517,24 +11518,25 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <img width="640" height="469" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMapMaybeDelayError.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code switchMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code switchMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.1.11 - experimental
      * @param <R> the output value type
      * @param mapper the function called with the current upstream event and should
      *               return a {@code MaybeSource} to replace the current active inner source
      *               and get subscribed to.
+     * @param delayError if {@code true}, errors from the outer and inner sources will be delayed
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see #switchMapMaybe(Function)
-     * @since 2.2
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> Observable<R> switchMapMaybeDelayError(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+    public final <@NonNull R> Observable<R> switchMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayError) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new ObservableSwitchMapMaybe<>(this, mapper, true));
+        return RxJavaPlugins.onAssembly(new ObservableSwitchMapMaybe<>(this, mapper, delayError));
     }
 
     /**
@@ -11558,7 +11560,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @see #switchMapSingleDelayError(Function)
+     * @see #switchMapSingle(Function, boolean)
      * @since 2.2
      */
     @CheckReturnValue
@@ -11581,102 +11583,26 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMapSingleDelayError.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code switchMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code switchMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.0.8 - experimental
      * @param <R> the element type of the inner {@code SingleSource}s and the output
      * @param mapper
      *            a function that, when applied to an item emitted by the current {@code Observable}, returns a
      *            {@code SingleSource}
+     * @param delayError if {@code true}, errors from the outer and inner sources will be delayed
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @see #switchMapSingle(Function)
-     * @since 2.2
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> Observable<R> switchMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+    public final <@NonNull R> Observable<R> switchMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean delayError) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new ObservableSwitchMapSingle<>(this, mapper, true));
-    }
-
-    /**
-     * Returns a new {@code Observable} by applying a function that you supply to each item emitted by the current
-     * {@code Observable} that returns an {@link ObservableSource}, and then emitting the items emitted by the most recently emitted
-     * of these {@code ObservableSource}s and delays any error until all {@code ObservableSource}s terminate.
-     * <p>
-     * The resulting {@code Observable} completes if both the current {@code Observable} and the last inner {@code ObservableSource}, if any, complete.
-     * If the current {@code Observable} signals an {@code onError}, the termination of the last inner {@code ObservableSource} will emit that error as is
-     * or wrapped into a {@link CompositeException} along with the other possible errors the former inner {@code ObservableSource}s signaled.
-     * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code switchMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the element type of the inner {@code ObservableSource}s and the output
-     * @param mapper
-     *            a function that, when applied to an item emitted by the current {@code Observable}, returns an
-     *            {@code ObservableSource}
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @see #switchMap(Function)
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> switchMapDelayError(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return switchMapDelayError(mapper, bufferSize());
-    }
-
-    /**
-     * Returns a new {@code Observable} by applying a function that you supply to each item emitted by the current
-     * {@code Observable} that returns an {@link ObservableSource}, and then emitting the items emitted by the most recently emitted
-     * of these {@code ObservableSource}s and delays any error until all {@code ObservableSource}s terminate.
-     * <p>
-     * The resulting {@code Observable} completes if both the current {@code Observable} and the last inner {@code ObservableSource}, if any, complete.
-     * If the current {@code Observable} signals an {@code onError}, the termination of the last inner {@code ObservableSource} will emit that error as is
-     * or wrapped into a {@link CompositeException} along with the other possible errors the former inner {@code ObservableSource}s signaled.
-     * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code switchMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the element type of the inner {@code ObservableSource}s and the output
-     * @param mapper
-     *            a function that, when applied to an item emitted by the current {@code Observable}, returns an
-     *            {@code ObservableSource}
-     * @param bufferSize
-     *            the number of elements expected from the current active inner {@code ObservableSource} to be buffered
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @see #switchMap(Function, int)
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Observable<R> switchMapDelayError(@NonNull Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        if (this instanceof ScalarSupplier) {
-            @SuppressWarnings("unchecked")
-            T v = ((ScalarSupplier<T>)this).get();
-            if (v == null) {
-                return empty();
-            }
-            return ObservableScalarXMap.scalarXMap(v, mapper);
-        }
-        return RxJavaPlugins.onAssembly(new ObservableSwitchMap<>(this, mapper, bufferSize, true));
+        return RxJavaPlugins.onAssembly(new ObservableSwitchMapSingle<>(this, mapper, delayError));
     }
 
     /**
