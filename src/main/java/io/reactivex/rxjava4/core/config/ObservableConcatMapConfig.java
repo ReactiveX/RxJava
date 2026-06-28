@@ -14,46 +14,45 @@
 package io.reactivex.rxjava4.core.config;
 
 import io.reactivex.rxjava4.annotations.NonNull;
-import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 import io.reactivex.rxjava4.core.ErrorMode;
 
 /**
- * Configuration record for Observable.concat() operators.
+ * Configuration record for Observable.concatMap() operators.
  * @param errorMode how to handle when errors appear from the inner or outer sources
  * @param bufferSize the expected number of outer sources to buffer while processing an inner source
  * @since 4.0.0
  */
-public record ObservableConcatConfig(@NonNull ErrorMode errorMode, int bufferSize) {
+public record ObservableConcatMapConfig(@NonNull ErrorMode errorMode, int bufferSize) {
 
     /**
-     * The default configuration with no error delays and bufferSize of {@link Observable#bufferSize()}.
+     * The default configuration with no error delays and bufferSize of 2.
      */
-    public static final ObservableConcatConfig DEFAULT = new ObservableConcatConfig(ErrorMode.IMMEDIATE);
+    public static final ObservableConcatMapConfig DEFAULT = new ObservableConcatMapConfig(ErrorMode.IMMEDIATE, 2);
 
     /**
-     * The default configuration with error delays till the end and bufferSize of {@link Observable#bufferSize()}.
+     * The default configuration with error delays till the end and bufferSize of 2.
      */
-    public static final ObservableConcatConfig DELAY_ERROR = new ObservableConcatConfig(ErrorMode.END);
+    public static final ObservableConcatMapConfig DELAY_ERROR = new ObservableConcatMapConfig(ErrorMode.END, 2);
 
     /**
-     * The default configuration with error delays till the boundary and bufferSize of {@link Observable#bufferSize()}.
+     * The default configuration with error delays till the boundary and bufferSize of 2.
      */
-    public static final ObservableConcatConfig DELAY_ERROR_BOUNDARY = new ObservableConcatConfig(ErrorMode.BOUNDARY);
+    public static final ObservableConcatMapConfig DELAY_ERROR_BOUNDARY = new ObservableConcatMapConfig(ErrorMode.BOUNDARY, 2);
 
     /**
      * Constructs a configuration record.
      * @param errorMode how to handle when errors appear from the inner or outer sources
      */
-    public ObservableConcatConfig(@NonNull ErrorMode errorMode) {
-        this(errorMode, Observable.bufferSize());
+    public ObservableConcatMapConfig(@NonNull ErrorMode errorMode) {
+        this(errorMode, 2);
     }
 
     /**
      * Constructs a configuration record.
      * @param bufferSize the expected number of outer sources to buffer while processing an inner source
      */
-    public ObservableConcatConfig(int bufferSize) {
+    public ObservableConcatMapConfig(int bufferSize) {
         this(ErrorMode.IMMEDIATE, bufferSize);
     }
 
@@ -62,7 +61,7 @@ public record ObservableConcatConfig(@NonNull ErrorMode errorMode, int bufferSiz
      * @param errorMode how to handle when errors appear from the inner or outer sources
      * @param bufferSize the expected number of outer sources to buffer while processing an inner source
      */
-    public ObservableConcatConfig {
+    public ObservableConcatMapConfig {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
     }
 }

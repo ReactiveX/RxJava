@@ -21,16 +21,16 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.rxjava4.core.config.ObservableConcatConfig;
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.core.config.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observers.*;
 import io.reactivex.rxjava4.schedulers.*;
@@ -831,7 +831,7 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatMapDelayError() {
         Observable.just(Observable.just(1), Observable.just(2))
-        .concatMapDelayError(Functions.<Observable<Integer>>identity())
+        .concatMap(Functions.<Observable<Integer>>identity(), ObservableConcatMapConfig.DEFAULT)
         .test()
         .assertResult(1, 2);
     }
@@ -839,7 +839,7 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatMapDelayErrorWithError() {
         Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), Observable.just(2))
-        .concatMapDelayError(Functions.<Observable<Integer>>identity())
+        .concatMap(Functions.<Observable<Integer>>identity(), ObservableConcatMapConfig.DELAY_ERROR)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
@@ -865,13 +865,13 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatMapDelayErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .concatMapDelayError((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), true, 16));
+                .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableConcatMapConfig(ErrorMode.END, 16)));
     }
 
     @Test
     public void concatMapDelayErrorJustSource() {
         Observable.just(0)
-        .concatMapDelayError((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), true, 16)
+        .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableConcatMapConfig(ErrorMode.END, 16))
         .test()
         .assertResult(1);
 
@@ -890,13 +890,13 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatMapErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), 16));
+                .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableConcatMapConfig(16)));
     }
 
     @Test
     public void concatMapJustSource() {
         Observable.just(0)
-        .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), 16)
+        .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableConcatMapConfig(16))
         .test()
         .assertResult(1);
 

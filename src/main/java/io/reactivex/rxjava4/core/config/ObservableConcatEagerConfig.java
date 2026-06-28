@@ -29,24 +29,29 @@ public record ObservableConcatEagerConfig(@NonNull ErrorMode errorMode, int maxC
     /**
      * The default configuration with no error delays, maxConcurrency and bufferSize of {@link Observable#bufferSize()}.
      */
-    public static final ObservableConcatEagerConfig DEFAULT = new ObservableConcatEagerConfig(ErrorMode.IMMEDIATE, Observable.bufferSize());
+    public static final ObservableConcatEagerConfig DEFAULT = new ObservableConcatEagerConfig(ErrorMode.IMMEDIATE);
 
     /**
      * The default configuration with error delays, maxConcurrency and bufferSize of {@link Observable#bufferSize()}.
      */
-    public static final ObservableConcatEagerConfig DELAY_ERROR = new ObservableConcatEagerConfig(ErrorMode.END, Observable.bufferSize());
+    public static final ObservableConcatEagerConfig DELAY_ERROR = new ObservableConcatEagerConfig(ErrorMode.END);
 
     /**
      * The default configuration with error delays, maxConcurrency and bufferSize of {@link Observable#bufferSize()}.
      */
-    public static final ObservableConcatEagerConfig DELAY_ERROR_BOUNDARY = new ObservableConcatEagerConfig(ErrorMode.BOUNDARY, Observable.bufferSize());
+    public static final ObservableConcatEagerConfig DELAY_ERROR_BOUNDARY = new ObservableConcatEagerConfig(ErrorMode.BOUNDARY);
 
     /**
-     * Optionally delay error, {@link Flowable#bufferSize()} sizes
+     * The default configuration with no error delays, maxConcurrency of MAX_INT and bufferSize of {@link Observable#bufferSize()}.
+     */
+    public static final ObservableConcatEagerConfig MAX_DEFAULT = new ObservableConcatEagerConfig(ErrorMode.IMMEDIATE, Integer.MAX_VALUE);
+
+    /**
+     * Optionally delay error, {@link Observable#bufferSize()} sizes
      * @param errorMode how to handle when errors appear from the inner or outer sources
      */
     public ObservableConcatEagerConfig(ErrorMode errorMode) {
-        this(errorMode, Flowable.bufferSize(), Flowable.bufferSize());
+        this(errorMode, Observable.bufferSize(), Observable.bufferSize());
     }
 
     /**
@@ -54,7 +59,7 @@ public record ObservableConcatEagerConfig(@NonNull ErrorMode errorMode, int maxC
      * @param maxConcurrency the maximum number of concurrent flows
      */
     public ObservableConcatEagerConfig(int maxConcurrency) {
-        this(ErrorMode.IMMEDIATE, maxConcurrency, Flowable.bufferSize());
+        this(ErrorMode.IMMEDIATE, maxConcurrency, Observable.bufferSize());
     }
 
     /**
