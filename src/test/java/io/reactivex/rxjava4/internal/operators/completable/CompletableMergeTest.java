@@ -17,7 +17,8 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.Flow.Subscriber;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
@@ -25,11 +26,13 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
+import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.internal.util.AtomicThrowable;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
+import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subjects.CompletableSubject;
 import io.reactivex.rxjava4.testsupport.*;
 
@@ -557,5 +560,19 @@ public class CompletableMergeTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.<Completable>checkDoubleOnSubscribeFlowableToCompletable(Completable::merge);
+    }
+
+    @Test
+    public void mergeMaxIntConcurrent() {
+        var ref = new AtomicInteger();
+        Action action = () -> ref.incrementAndGet();
+        var source = Completable.fromAction(action).subscribeOn(Schedulers.computation());
+
+        Completable.mergeArray(new StandardConcurrentConfig(2), source, source, source, source, source, source)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult();
+
+        assertEquals("Action count mismatch", 6, ref.get());
     }
 }

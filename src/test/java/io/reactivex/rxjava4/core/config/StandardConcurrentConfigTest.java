@@ -41,5 +41,20 @@ public class StandardConcurrentConfigTest extends RxJavaTest {
         assertEquals(ErrorMode.IMMEDIATE, new StandardConcurrentConfig(ErrorMode.IMMEDIATE, 5).errorMode(), "errorMode both - IMMEDIATE, 5");
         assertEquals(ErrorMode.BOUNDARY, new StandardConcurrentConfig(ErrorMode.BOUNDARY, 5).errorMode(), "errorMode both - BOUNDARY, 5");
         assertEquals(ErrorMode.END, new StandardConcurrentConfig(ErrorMode.END, 5).errorMode(), "errorMode both - END, 5");
+
+        assertEquals(ErrorMode.IMMEDIATE, new StandardConcurrentConfig(ErrorMode.IMMEDIATE).toBuffered().errorMode(), "errorMode - IMMEDIATE");
+        assertEquals(ErrorMode.BOUNDARY, new StandardConcurrentConfig(ErrorMode.BOUNDARY).toBuffered().errorMode(), "errorMode - BOUNDARY");
+        assertEquals(ErrorMode.END, new StandardConcurrentConfig(ErrorMode.END).toBuffered().errorMode(), "errorMode - END");
+        assertEquals(5, new StandardConcurrentConfig(5).toBuffered().maxConcurrency(), "maxConcurrency - 5");
+        assertEquals(5, new StandardConcurrentConfig(ErrorMode.IMMEDIATE, 5).toBuffered().maxConcurrency(), "maxConcurrency both - IMMEDIATE, 5");
+        assertEquals(5, new StandardConcurrentConfig(ErrorMode.BOUNDARY, 5).toBuffered().maxConcurrency(), "maxConcurrency both - BOUNDARY, 5");
+        assertEquals(5, new StandardConcurrentConfig(ErrorMode.END, 5).toBuffered().maxConcurrency(), "maxConcurrency both - END, 5");
+        assertEquals(ErrorMode.IMMEDIATE, new StandardConcurrentConfig(ErrorMode.IMMEDIATE, 5).toBuffered().errorMode(), "errorMode both - IMMEDIATE, 5");
+        assertEquals(ErrorMode.BOUNDARY, new StandardConcurrentConfig(ErrorMode.BOUNDARY, 5).toBuffered().errorMode(), "errorMode both - BOUNDARY, 5");
+        assertEquals(ErrorMode.END, new StandardConcurrentConfig(ErrorMode.END, 5).toBuffered().errorMode(), "errorMode both - END, 5");
+
+        assertEquals(10, new StandardConcurrentConfig(ErrorMode.IMMEDIATE, 5).toBuffered(10).bufferSize(), "bufferSize both - IMMEDIATE, 5, 10");
+        assertEquals(10, new StandardConcurrentConfig(ErrorMode.BOUNDARY, 5).toBuffered(10).bufferSize(), "bufferSize both - BOUNDARY, 5, 10");
+        assertEquals(10, new StandardConcurrentConfig(ErrorMode.END, 5).toBuffered(10).bufferSize(), "bufferSize both - END, 5, 10");
 }
 }
