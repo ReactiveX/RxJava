@@ -113,12 +113,12 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
         final SingleSubject<Integer> ss1 = SingleSubject.create();
         final SingleSubject<Integer> ss2 = SingleSubject.create();
 
-        TestObserver<Integer> to = ps.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) v -> {
+        TestObserver<Integer> to = ps.switchMapSingle((Function<Integer, SingleSource<Integer>>) v -> {
                     if (v == 1) {
                         return ss1;
                     }
                     return ss2;
-                }).test();
+                }, true).test();
 
         to.assertEmpty();
 
@@ -150,7 +150,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
         final SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestObserver<Integer> to = ps.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) _ -> ss).test();
+        TestObserver<Integer> to = ps.switchMapSingle((Function<Integer, SingleSource<Integer>>) _ -> ss, true).test();
 
         to.assertEmpty();
 
@@ -177,7 +177,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
         final SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestObserver<Integer> to = ps.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) _ -> ss).test();
+        TestObserver<Integer> to = ps.switchMapSingle((Function<Integer, SingleSource<Integer>>) _ -> ss, true).test();
 
         to.assertEmpty();
 
@@ -244,7 +244,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
         final SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestObserver<Integer> to = ps.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) _ -> ss).test();
+        TestObserver<Integer> to = ps.switchMapSingle((Function<Integer, SingleSource<Integer>>) _ -> ss, true).test();
 
         to.assertEmpty();
 
@@ -325,7 +325,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
             final SingleSubject<Integer> ss = SingleSubject.create();
 
-            final TestObserver<Integer> to = ps.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) _ -> ss).test();
+            final TestObserver<Integer> to = ps.switchMapSingle((Function<Integer, SingleSource<Integer>>) _ -> ss, true).test();
 
             Runnable r1 = () -> ps.onNext(1);
 
@@ -350,12 +350,12 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
                 final SingleSubject<Integer> ss = SingleSubject.create();
 
-                final TestObserverEx<Integer> to = ps.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) v -> {
+                final TestObserverEx<Integer> to = ps.switchMapSingle((Function<Integer, SingleSource<Integer>>) v -> {
                     if (v == 1) {
                         return ss;
                     }
                     return Single.never();
-                }).to(TestHelper.<Integer>testConsumer());
+                }, true).to(TestHelper.<Integer>testConsumer());
 
                 ps.onNext(1);
 
@@ -390,12 +390,12 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
                 final SingleSubject<Integer> ss = SingleSubject.create();
 
-                final TestObserver<Integer> to = ps.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) v -> {
+                final TestObserver<Integer> to = ps.switchMapSingle((Function<Integer, SingleSource<Integer>>) v -> {
                     if (v == 1) {
                         return ss;
                     }
                     return Single.never();
-                }).test();
+                }, true).test();
 
                 ps.onNext(1);
 
@@ -424,12 +424,12 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
             final SingleSubject<Integer> ss = SingleSubject.create();
 
-            final TestObserver<Integer> to = ps.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) v -> {
+            final TestObserver<Integer> to = ps.switchMapSingle((Function<Integer, SingleSource<Integer>>) v -> {
                 if (v == 1) {
                         return ss;
                 }
                 return Single.never();
-            }).test();
+            }, true).test();
 
             ps.onNext(1);
 
@@ -523,6 +523,6 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream ->
-            upstream.switchMapSingleDelayError((Function<Integer, Single<Integer>>) v -> Single.just(v).hide()));
+            upstream.switchMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), true));
     }
 }

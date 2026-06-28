@@ -134,12 +134,12 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
         final MaybeSubject<Integer> ms1 = MaybeSubject.create();
         final MaybeSubject<Integer> ms2 = MaybeSubject.create();
 
-        TestObserver<Integer> to = ps.switchMapMaybeDelayError((Function<Integer, MaybeSource<Integer>>) v -> {
+        TestObserver<Integer> to = ps.switchMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> {
                     if (v == 1) {
                         return ms1;
                     }
                     return ms2;
-                }).test();
+                }, true).test();
 
         to.assertEmpty();
 
@@ -171,7 +171,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
 
         final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> to = ps.switchMapMaybeDelayError((Function<Integer, MaybeSource<Integer>>) _ -> ms).test();
+        TestObserver<Integer> to = ps.switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> ms, true).test();
 
         to.assertEmpty();
 
@@ -198,7 +198,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
 
         final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> to = ps.switchMapMaybeDelayError((Function<Integer, MaybeSource<Integer>>) _ -> ms).test();
+        TestObserver<Integer> to = ps.switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> ms, true).test();
 
         to.assertEmpty();
 
@@ -265,7 +265,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
 
         final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> to = ps.switchMapMaybeDelayError((Function<Integer, MaybeSource<Integer>>) _ -> ms).test();
+        TestObserver<Integer> to = ps.switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> ms, true).test();
 
         to.assertEmpty();
 
@@ -347,7 +347,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
 
             final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-            final TestObserver<Integer> to = ps.switchMapMaybeDelayError((Function<Integer, MaybeSource<Integer>>) _ -> ms).test();
+            final TestObserver<Integer> to = ps.switchMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> ms, true).test();
 
             Runnable r1 = () -> ps.onNext(1);
 
@@ -372,12 +372,12 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
 
                 final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-                final TestObserverEx<Integer> to = ps.switchMapMaybeDelayError((Function<Integer, MaybeSource<Integer>>) v -> {
+                final TestObserverEx<Integer> to = ps.switchMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> {
                     if (v == 1) {
                         return ms;
                     }
                     return Maybe.never();
-                }).to(TestHelper.<Integer>testConsumer());
+                }, true).to(TestHelper.<Integer>testConsumer());
 
                 ps.onNext(1);
 
@@ -412,12 +412,12 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
 
                 final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-                final TestObserver<Integer> to = ps.switchMapMaybeDelayError((Function<Integer, MaybeSource<Integer>>) v -> {
+                final TestObserver<Integer> to = ps.switchMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> {
                     if (v == 1) {
                         return ms;
                     }
                     return Maybe.never();
-                }).test();
+                }, true).test();
 
                 ps.onNext(1);
 
@@ -446,12 +446,12 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
 
             final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-            final TestObserver<Integer> to = ps.switchMapMaybeDelayError((Function<Integer, MaybeSource<Integer>>) v -> {
+            final TestObserver<Integer> to = ps.switchMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> {
                 if (v == 1) {
                         return ms;
                 }
                 return Maybe.empty();
-            }).test();
+            }, true).test();
 
             ps.onNext(1);
 
@@ -545,6 +545,6 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream ->
-            upstream.switchMapMaybeDelayError((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide()));
+            upstream.switchMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(), true));
     }
 }

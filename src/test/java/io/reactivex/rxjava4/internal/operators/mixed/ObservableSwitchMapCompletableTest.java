@@ -269,7 +269,7 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
         final CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = ps.switchMapCompletableDelayError(Functions.justFunction(cs)).test();
+        TestObserver<Void> to = ps.switchMapCompletable(Functions.justFunction(cs), true).test();
 
         ps.onNext(1);
 
@@ -289,7 +289,7 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
         final CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = ps.switchMapCompletableDelayError(Functions.justFunction(cs)).test();
+        TestObserver<Void> to = ps.switchMapCompletable(Functions.justFunction(cs), true).test();
 
         ps.onNext(1);
         ps.onComplete();
@@ -306,7 +306,7 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
         final CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = ps.switchMapCompletableDelayError(Functions.justFunction(cs)).test();
+        TestObserver<Void> to = ps.switchMapCompletable(Functions.justFunction(cs), true).test();
 
         ps.onNext(1);
 
@@ -370,6 +370,6 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Completable>) upstream ->
-            upstream.switchMapCompletableDelayError((Function<Integer, Completable>) _ -> Completable.complete().hide()));
+            upstream.switchMapCompletable((Function<Integer, Completable>) _ -> Completable.complete().hide(), true));
     }
 }
