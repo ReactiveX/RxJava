@@ -632,6 +632,9 @@ public class CheckParamValidationTest extends RxJavaTest {
         defaultValues.put(ObservableConcatConfig.class, ObservableConcatConfig.DEFAULT);
         defaultValues.put(ObservableMergeConfig.class, ObservableMergeConfig.DEFAULT);
         defaultValues.put(ObservableConcatEagerConfig.class, ObservableConcatEagerConfig.DEFAULT);
+        defaultValues.put(ObservableSwitchConfig.class, ObservableSwitchConfig.DEFAULT);
+        defaultValues.put(ObservableSequenceEqualConfig.class, ObservableSequenceEqualConfig.DEFAULT);
+        defaultValues.put(ObservableZipConfig.class, ObservableZipConfig.DEFAULT);
 
         // TODO insert new config record types here
 

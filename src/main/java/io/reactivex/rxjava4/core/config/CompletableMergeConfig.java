@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.core.config;
 
-import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 
 /**
@@ -39,7 +39,7 @@ public record CompletableMergeConfig(boolean delayErrors, int maxConcurrency) {
      * @param delayErrors should the error propagation be delayed?
      */
     public CompletableMergeConfig(boolean delayErrors) {
-        this(delayErrors, 2);
+        this(delayErrors, Flowable.bufferSize());
     }
 
     /**

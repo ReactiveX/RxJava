@@ -21,6 +21,7 @@ import org.junit.*;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.RxJavaTest;
+import io.reactivex.rxjava4.core.config.ObservableZipConfig;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.observable.ObservableCovarianceTest.*;
 import io.reactivex.rxjava4.observable.ObservableEventStream.Event;
@@ -102,7 +103,7 @@ public class ObservableZipTests extends RxJavaTest {
     @Test
     public void zipWithDelayError() {
         Observable.just(1)
-        .zipWith(Observable.just(2), Integer::sum, true)
+        .zipWith(Observable.just(2), ObservableZipConfig.DELAY_ERROR, Integer::sum)
         .test()
         .assertResult(3);
     }
@@ -110,7 +111,7 @@ public class ObservableZipTests extends RxJavaTest {
     @Test
     public void zipWithDelayErrorBufferSize() {
         Observable.just(1)
-        .zipWith(Observable.just(2), Integer::sum, true, 16)
+        .zipWith(Observable.just(2), new ObservableZipConfig(true, 16), Integer::sum)
         .test()
         .assertResult(3);
     }

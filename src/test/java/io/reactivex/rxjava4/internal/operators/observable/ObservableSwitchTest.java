@@ -28,6 +28,7 @@ import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.core.config.ObservableSwitchConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
@@ -432,7 +433,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void switchOnNextDelayError() {
         PublishSubject<Observable<Integer>> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = Observable.switchOnNextDelayError(ps).test();
+        TestObserver<Integer> to = Observable.switchOnNext(ps, ObservableSwitchConfig.DELAY_ERROR).test();
 
         ps.onNext(Observable.just(1));
         ps.onNext(Observable.range(2, 4));
@@ -445,7 +446,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void switchOnNextDelayErrorWithError() {
         PublishSubject<Observable<Integer>> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = Observable.switchOnNextDelayError(ps).test();
+        TestObserver<Integer> to = Observable.switchOnNext(ps, ObservableSwitchConfig.DELAY_ERROR).test();
 
         ps.onNext(Observable.just(1));
         ps.onNext(Observable.<Integer>error(new TestException()));
@@ -459,7 +460,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void switchOnNextDelayErrorBufferSize() {
         PublishSubject<Observable<Integer>> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = Observable.switchOnNextDelayError(ps, 2).test();
+        TestObserver<Integer> to = Observable.switchOnNext(ps, new ObservableSwitchConfig(true, 2)).test();
 
         ps.onNext(Observable.just(1));
         ps.onNext(Observable.range(2, 4));
@@ -565,7 +566,7 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     @Test
     public void scalarMapDelayError() {
-        Observable.switchOnNextDelayError(Observable.just(Observable.just(1)))
+        Observable.switchOnNext(Observable.just(Observable.just(1)), ObservableSwitchConfig.DELAY_ERROR)
         .test()
         .assertResult(1);
     }
