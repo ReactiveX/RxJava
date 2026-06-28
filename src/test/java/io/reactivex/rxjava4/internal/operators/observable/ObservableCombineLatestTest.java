@@ -21,13 +21,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.rxjava4.core.config.ObservableCombineLatestConfig;
 import org.junit.Test;
 import org.mockito.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
@@ -700,7 +700,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         Observable.combineLatestArray(new ObservableSource[] {
                 Observable.just(1), Observable.just(2)
-        }, (Function<Object[], Object>) Arrays::toString, ObservableCombineLatestConfig.DELAY_ERROR)
+        }, (Function<Object[], Object>) Arrays::toString, StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertResult("[1, 2]");
     }
@@ -711,7 +711,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         Observable.combineLatestArray(new ObservableSource[] {
                 Observable.just(1), Observable.just(2).concatWith(Observable.<Integer>error(new TestException()))
-        }, (Function<Object[], Object>) Arrays::toString, ObservableCombineLatestConfig.DELAY_ERROR)
+        }, (Function<Object[], Object>) Arrays::toString, StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, "[1, 2]");
     }
@@ -721,7 +721,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         Observable.combineLatest(Arrays.asList(
                 Observable.just(1), Observable.just(2)
-        ), (Function<Object[], Object>) Arrays::toString, ObservableCombineLatestConfig.DELAY_ERROR)
+        ), (Function<Object[], Object>) Arrays::toString, StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertResult("[1, 2]");
     }
@@ -731,7 +731,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         Observable.combineLatest(Arrays.asList(
                 Observable.just(1), Observable.just(2).concatWith(Observable.<Integer>error(new TestException()))
-        ), (Function<Object[], Object>) Arrays::toString, ObservableCombineLatestConfig.DELAY_ERROR)
+        ), (Function<Object[], Object>) Arrays::toString, StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, "[1, 2]");
     }
@@ -740,14 +740,14 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @Test
     public void combineLatestArrayEmpty() {
         assertSame(Observable.empty(), Observable.combineLatestArray(new ObservableSource[0],
-                (Function)Functions.identity(), new ObservableCombineLatestConfig(16)));
+                (Function)Functions.identity(), new StandardBufferedConfig(16)));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void combineLatestDelayErrorEmpty() {
         assertSame(Observable.empty(), Observable.combineLatestArray(new ObservableSource[0],
-                (Function)Functions.identity(), new ObservableCombineLatestConfig(true, 16)));
+                (Function)Functions.identity(), new StandardBufferedConfig(true, 16)));
     }
 
     @Test
@@ -792,7 +792,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         Observable.combineLatestArray(
                 new ObservableSource[] { Observable.error(new TestException()), Observable.just(1) },
                         (Function<Object[], Object>) a -> a,
-                new ObservableCombineLatestConfig(true, 128)
+                new StandardBufferedConfig(true, 128)
         )
         .test()
         .assertFailure(TestException.class);
@@ -804,7 +804,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         Observable.combineLatestArray(
                 new ObservableSource[] { Observable.error(new TestException()).startWithItem(1), Observable.empty() },
                         (Function<Object[], Object>) a -> a,
-                new ObservableCombineLatestConfig(true, 128)
+                new StandardBufferedConfig(true, 128)
         )
         .test()
         .assertFailure(TestException.class);
@@ -885,7 +885,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
                         .doOnSubscribe(_ -> count[0]++)
                     ),
                     (Function<Object[], Object>) _ -> 0,
-                    ObservableCombineLatestConfig.DELAY_ERROR
+                    StandardBufferedConfig.DELAY_ERRORS
                 )
             .test()
             .assertResult();
@@ -922,7 +922,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
                                     .doFinally(() -> System.out.println("errorObservable: doFinally"))
                         ),
                         (Function<Object[], Object>) _ -> 0,
-                        ObservableCombineLatestConfig.DELAY_ERROR
+                        StandardBufferedConfig.DELAY_ERRORS
                     )
                     .doOnEach(integerNotification -> System.out.println("combineLatestDelayError: " + integerNotification))
                     .doFinally(() -> System.out.println("combineLatestDelayError: doFinally"))
@@ -976,7 +976,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
                             .delay(100, TimeUnit.MILLISECONDS)
                 ),
                         (Function<Object[], Object>) a -> (Integer)a[0] + (Integer)a[1],
-                ObservableCombineLatestConfig.DELAY_ERROR
+                StandardBufferedConfig.DELAY_ERRORS
                 )
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1023,7 +1023,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
                 };
 
                 Observable.combineLatest(Arrays.asList(o, Observable.never()), (a) -> a,
-                                ObservableCombineLatestConfig.DELAY_ERROR)
+                                StandardBufferedConfig.DELAY_ERRORS)
                 .subscribe(to);
 
                 ref.get().onSubscribe(Disposable.empty());

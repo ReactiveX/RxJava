@@ -21,7 +21,7 @@ import java.util.concurrent.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.ObservableMergeConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
@@ -80,7 +80,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayErrorObservable() {
         Observable.range(1, 10)
-        .flatMapCompletable(_ -> Completable.complete(), new ObservableMergeConfig(true)).toObservable()
+        .flatMapCompletable(_ -> Completable.complete(), new StandardConcurrentBufferedConfig(true)).toObservable()
         .test()
         .assertResult();
     }
@@ -97,7 +97,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAllObservable() {
         TestObserverEx<Integer> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapCompletable(_ -> Completable.error(new TestException()), new ObservableMergeConfig(true))
+        .flatMapCompletable(_ -> Completable.error(new TestException()), new StandardConcurrentBufferedConfig(true))
         .<Integer>toObservable()
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
@@ -112,7 +112,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayInnerErrorAllObservable() {
         TestObserverEx<Integer> to = Observable.range(1, 10)
-        .flatMapCompletable(_ -> Completable.error(new TestException()), new ObservableMergeConfig(true))
+        .flatMapCompletable(_ -> Completable.error(new TestException()), new StandardConcurrentBufferedConfig(true))
         .<Integer>toObservable()
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
@@ -127,7 +127,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalNonDelayErrorOuterObservable() {
         Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapCompletable(_ -> Completable.complete(), new ObservableMergeConfig(false))
+        .flatMapCompletable(_ -> Completable.complete(), new StandardConcurrentBufferedConfig(false))
         .toObservable()
         .test()
         .assertFailure(TestException.class);
@@ -200,7 +200,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayError() {
         Observable.range(1, 10)
-        .flatMapCompletable(_ -> Completable.complete(), new ObservableMergeConfig(true))
+        .flatMapCompletable(_ -> Completable.complete(), new StandardConcurrentBufferedConfig(true))
         .test()
         .assertResult();
     }
@@ -217,7 +217,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAll() {
         TestObserverEx<Void> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapCompletable(_ -> Completable.error(new TestException()), new ObservableMergeConfig(true))
+        .flatMapCompletable(_ -> Completable.error(new TestException()), new StandardConcurrentBufferedConfig(true))
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -231,7 +231,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayInnerErrorAll() {
         TestObserverEx<Void> to = Observable.range(1, 10)
-        .flatMapCompletable(_ -> Completable.error(new TestException()), new ObservableMergeConfig(true))
+        .flatMapCompletable(_ -> Completable.error(new TestException()), new StandardConcurrentBufferedConfig(true))
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -245,7 +245,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalNonDelayErrorOuter() {
         Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapCompletable(_ -> Completable.complete(), new ObservableMergeConfig(false))
+        .flatMapCompletable(_ -> Completable.complete(), new StandardConcurrentBufferedConfig(false))
         .test()
         .assertFailure(TestException.class);
     }
@@ -359,7 +359,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Completable>) upstream ->
-            upstream.flatMapCompletable((Function<Integer, Completable>) _ -> Completable.complete().hide(), new ObservableMergeConfig(true)));
+            upstream.flatMapCompletable((Function<Integer, Completable>) _ -> Completable.complete().hide(), new StandardConcurrentBufferedConfig(true)));
     }
 
     @Test

@@ -25,7 +25,7 @@ import org.junit.Test;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.FlatMapConfig;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -259,7 +259,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
     public void boundaryOnError() {
         TestSubscriberEx<Object> ts = Flowable.error(new TestException())
         .window(Flowable.never())
-        .flatMap(Functions.<Flowable<Object>>identity(), new FlatMapConfig(true))
+        .flatMap(Functions.<Flowable<Object>>identity(), new StandardConcurrentBufferedConfig(true))
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 

@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.ObservableConcatMapConfig;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -55,7 +55,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void simpleLongPrefetch() {
         Observable.range(1, 1024)
-        .concatMapCompletable(Functions.justFunction(Completable.complete()), new ObservableConcatMapConfig(32))
+        .concatMapCompletable(Functions.justFunction(Completable.complete()), new StandardBufferedConfig(32))
         .test()
         .assertResult();
     }
@@ -81,7 +81,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
         TestObserverEx<Void> to = Observable.range(1, 5)
         .concatMapCompletable(
                 _ -> Completable.error(new TestException()),
-                ObservableConcatMapConfig.DELAY_ERROR
+                StandardBufferedConfig.DELAY_ERRORS
         )
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class)
@@ -164,7 +164,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
         CompletableSubject cs = CompletableSubject.create();
 
         TestObserver<Void> to = ps.concatMapCompletable(
-                Functions.justFunction(cs), ObservableConcatMapConfig.DELAY_ERROR_BOUNDARY)
+                Functions.justFunction(cs), StandardBufferedConfig.DELAY_ERRORS_BOUNDARY)
                 .test();
 
         to.assertEmpty();
@@ -199,7 +199,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
                                 return cs;
                             }
                             return cs2;
-                        }, new ObservableConcatMapConfig(ErrorMode.END, 32)
+                        }, new StandardBufferedConfig(ErrorMode.END, 32)
         )
         .test();
 
@@ -395,14 +395,14 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Completable>) upstream ->
             upstream.concatMapCompletable((Function<Integer, Completable>) _ ->
-            Completable.complete().hide(), new ObservableConcatMapConfig(ErrorMode.BOUNDARY, 2)));
+            Completable.complete().hide(), new StandardBufferedConfig(ErrorMode.BOUNDARY, 2)));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Completable>) upstream ->
             upstream.concatMapCompletable((Function<Integer, Completable>) _ ->
-                Completable.complete().hide(), new ObservableConcatMapConfig(ErrorMode.END, 2)));
+                Completable.complete().hide(), new StandardBufferedConfig(ErrorMode.END, 2)));
     }
 
     @Test

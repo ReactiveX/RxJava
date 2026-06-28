@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import io.reactivex.rxjava4.core.config.FlatMapConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -60,7 +60,8 @@ public class FlowableFlatMapCompletableAsyncPerf implements Action {
                 .flatMapCompletable(Functions.justFunction(Completable.fromAction(this).subscribeOn(Schedulers.computation())), false, maxConcurrency);
 
         flatMap = Flowable.fromArray(array)
-                .flatMap(Functions.justFunction(Completable.fromAction(this).subscribeOn(Schedulers.computation()).toFlowable()), new FlatMapConfig(false, maxConcurrency));
+                .flatMap(Functions.justFunction(Completable.fromAction(this).subscribeOn(Schedulers.computation()).toFlowable()),
+                        new StandardConcurrentBufferedConfig(false, maxConcurrency));
     }
 
 //    @Benchmark

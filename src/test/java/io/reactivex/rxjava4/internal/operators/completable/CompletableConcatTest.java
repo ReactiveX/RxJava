@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.CompletableConcatConfig;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
@@ -45,7 +45,7 @@ public class CompletableConcatTest extends RxJavaTest {
                     s.onNext(Completable.never());
                     s.onNext(Completable.never());
                     s.onComplete();
-                }), new CompletableConcatConfig(1)
+                }), new StandardBufferedConfig(1)
             )
             .test()
             .assertFailure(QueueOverflowException.class);
@@ -59,10 +59,10 @@ public class CompletableConcatTest extends RxJavaTest {
     @Test
     public void invalidPrefetch() {
         try {
-            Completable.concat(Flowable.just(Completable.complete()), new CompletableConcatConfig(-99));
-            fail("Should have thrown IllegalArgumentExceptio");
+            Completable.concat(Flowable.just(Completable.complete()), new StandardBufferedConfig(-99));
+            fail("Should have thrown IllegalArgumentException");
         } catch (IllegalArgumentException ex) {
-            assertEquals("prefetch > 0 required but it was -99", ex.getMessage());
+            assertEquals("bufferSize > 0 required but it was -99", ex.getMessage());
         }
     }
 
@@ -113,14 +113,14 @@ public class CompletableConcatTest extends RxJavaTest {
 
     @Test
     public void unboundedIn() {
-        Completable.concat(Flowable.just(Completable.complete()).hide(), new CompletableConcatConfig(Integer.MAX_VALUE))
+        Completable.concat(Flowable.just(Completable.complete()).hide(), new StandardBufferedConfig(Integer.MAX_VALUE))
         .test()
         .assertResult();
     }
 
     @Test
     public void syncFusedUnboundedIn() {
-        Completable.concat(Flowable.just(Completable.complete()), new CompletableConcatConfig(Integer.MAX_VALUE))
+        Completable.concat(Flowable.just(Completable.complete()), new StandardBufferedConfig(Integer.MAX_VALUE))
         .test()
         .assertResult();
     }
@@ -131,7 +131,7 @@ public class CompletableConcatTest extends RxJavaTest {
         up.onNext(Completable.complete());
         up.onComplete();
 
-        Completable.concat(up, new CompletableConcatConfig(Integer.MAX_VALUE))
+        Completable.concat(up, new StandardBufferedConfig(Integer.MAX_VALUE))
         .test()
         .assertResult();
     }

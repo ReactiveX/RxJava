@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.rxjava4.core.config.ObservableMergeConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import org.junit.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
@@ -270,7 +270,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Observable<Integer> source = Observable.range(1, 10)
         .flatMap((Function<Integer, Observable<Integer>>) t1 -> composer(Observable.range(t1 * 10, 2), subscriptionCount, m)
-                .subscribeOn(Schedulers.computation()), new ObservableMergeConfig(m));
+                .subscribeOn(Schedulers.computation()), new StandardConcurrentBufferedConfig(m));
 
         TestObserver<Integer> to = new TestObserver<>();
 
@@ -291,7 +291,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Observable<Integer> source = Observable.range(1, 10)
             .flatMap((Function<Integer, Observable<Integer>>) t1 -> composer(Observable.range(t1 * 10, 2), subscriptionCount, m)
-                    .subscribeOn(Schedulers.computation()), (t1, t2) -> t1 * 1000 + t2, new ObservableMergeConfig(m));
+                    .subscribeOn(Schedulers.computation()), (t1, t2) -> t1 * 1000 + t2, new StandardConcurrentBufferedConfig(m));
 
         TestObserver<Integer> to = new TestObserver<>();
 
@@ -342,7 +342,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         TestObserverEx<Object> to = new TestObserverEx<>(o);
 
         Function<Throwable, Observable<Integer>> just = just(onError);
-        source.flatMap(just(onNext), just, just0(onComplete), new ObservableMergeConfig(m)).subscribe(to);
+        source.flatMap(just(onNext), just, just0(onComplete), new StandardConcurrentBufferedConfig(m)).subscribe(to);
 
         to.awaitDone(1, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -431,7 +431,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     public void flatMapBiMapper() {
         Observable.just(1)
         .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10),
-                Integer::sum, new ObservableMergeConfig(true))
+                Integer::sum, new StandardConcurrentBufferedConfig(true))
         .test()
         .assertResult(11);
     }
@@ -441,7 +441,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         Observable.just(1)
         .flatMap((Function<Integer, ObservableSource<Integer>>) v ->
             Observable.just(v * 10).concatWith(Observable.<Integer>error(new TestException())), Integer::sum,
-            new ObservableMergeConfig(true))
+            new StandardConcurrentBufferedConfig(true))
         .test()
         .assertFailure(TestException.class, 11);
     }
@@ -450,7 +450,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     public void flatMapBiMapperMaxConcurrency() {
         Observable.just(1, 2)
         .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10), Integer::sum,
-                new ObservableMergeConfig(true, 1))
+                new StandardConcurrentBufferedConfig(true, 1))
         .test()
         .assertResult(11, 22);
     }
@@ -527,7 +527,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
             }
         };
 
-        Observable.merge(ps, new ObservableMergeConfig(2))
+        Observable.merge(ps, new StandardConcurrentBufferedConfig(2))
         .subscribe(to);
 
         ps.onNext(Observable.just(1));
@@ -566,7 +566,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         TestObserverEx<Integer> to = Observable.range(1, 2).hide()
         .flatMap((Function<Integer, ObservableSource<Integer>>) _ -> Observable.range(1, 2).map((Function<Integer, Integer>) _ -> {
             throw new TestException();
-        }), new ObservableMergeConfig(true))
+        }), new StandardConcurrentBufferedConfig(true))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -700,7 +700,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             TestObserver<Integer> to = ps.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1),
-                    new ObservableMergeConfig(1))
+                    new StandardConcurrentBufferedConfig(1))
             .subscribeWith(new TestObserver<Integer>() /* NFI */ {
                 @Override
                 public void onNext(Integer t) {
@@ -731,7 +731,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1).hide(),
-                new ObservableMergeConfig(1))
+                new StandardConcurrentBufferedConfig(1))
         .subscribeWith(new TestObserver<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
@@ -792,7 +792,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
         TestObserver<Integer> to = Observable.just(ps1, ps2, ps3, ps4)
         .flatMap((Function<PublishSubject<Integer>, ObservableSource<Integer>>) v -> v,
-                new ObservableMergeConfig(2))
+                new StandardConcurrentBufferedConfig(2))
         .doOnNext(v -> {
             if (v == 1) {
                 // this will make sure the drain loop detects two completed
@@ -825,7 +825,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream ->
-            upstream.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v).hide(), new ObservableMergeConfig(true)));
+            upstream.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v).hide(), new StandardConcurrentBufferedConfig(true)));
     }
 
     @Test
@@ -942,7 +942,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
                 })
                 .compose(TestHelper.observableStripBoundary())
         )
-        .flatMap(v -> v, new ObservableMergeConfig(true))
+        .flatMap(v -> v, new StandardConcurrentBufferedConfig(true))
         .doOnNext(v -> {
             if (v == 1) {
                 ps.onNext(2);
@@ -972,7 +972,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
                 .compose(TestHelper.observableStripBoundary())
                 , ps
         )
-        .flatMap(v -> v, new ObservableMergeConfig(true))
+        .flatMap(v -> v, new StandardConcurrentBufferedConfig(true))
         .doOnNext(v -> {
             if (v == 1) {
                 ps.onNext(2);
@@ -1003,7 +1003,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
                                 .just(-integer)
                                 .observeOn(Schedulers.computation());
                     },
-                    new ObservableMergeConfig(false, 1)
+                    new StandardConcurrentBufferedConfig(false, 1)
             )
             .ignoreElements()
             .blockingAwait();

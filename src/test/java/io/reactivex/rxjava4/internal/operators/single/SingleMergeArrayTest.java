@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.operators.single;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.SingleMergeConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class SingleMergeArrayTest extends RxJavaTest {
@@ -37,14 +37,14 @@ public class SingleMergeArrayTest extends RxJavaTest {
 
     @Test
     public void normalDelayError() {
-        Single.mergeArray(SingleMergeConfig.DELAY_ERRORS, Single.just(1), Single.just(2), Single.just(3))
+        Single.mergeArray(StandardConcurrentConfig.DELAY_ERRORS, Single.just(1), Single.just(2), Single.just(3))
         .test()
         .assertResult(1, 2, 3);
     }
 
     @Test
     public void errorDelayError() {
-        Single.mergeArray(SingleMergeConfig.DELAY_ERRORS, Single.just(1), Single.error(new TestException()), Single.just(3))
+        Single.mergeArray(StandardConcurrentConfig.DELAY_ERRORS, Single.just(1), Single.error(new TestException()), Single.just(3))
         .test()
         .assertFailure(TestException.class, 1, 3);
     }

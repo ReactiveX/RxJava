@@ -20,7 +20,7 @@ import java.util.List;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.ObservableConcatMapConfig;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Function;
@@ -35,7 +35,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     public void asyncFused() throws Exception {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
-        TestObserver<Void> to = us.concatMapCompletable(completableComplete(), new ObservableConcatMapConfig(2))
+        TestObserver<Void> to = us.concatMapCompletable(completableComplete(), new StandardBufferedConfig(2))
                 .test();
 
         us.onNext(1);
@@ -49,7 +49,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     public void notFused() throws Exception {
         UnicastSubject<Integer> us = UnicastSubject.create();
         TestObserver<Void> to = us.hide()
-                .concatMapCompletable(completableComplete(), new ObservableConcatMapConfig(2))
+                .concatMapCompletable(completableComplete(), new StandardBufferedConfig(2))
                 .test();
 
         us.onNext(1);

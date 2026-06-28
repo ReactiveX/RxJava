@@ -19,14 +19,14 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.*;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.FlatMapConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.flowables.GroupedFlowable;
@@ -770,7 +770,7 @@ public class FlowableRetryTest extends RxJavaTest {
         origin.retry()
         .groupBy(t1 -> t1)
         // Must request as many groups as groupBy produces to avoid MBE
-        .flatMap(t1 -> t1.take(1), new FlatMapConfig(NUM_MSG))
+        .flatMap(t1 -> t1.take(1), new StandardConcurrentBufferedConfig(NUM_MSG))
         .subscribe(new TestSubscriber<>(subscriber));
 
         InOrder inOrder = inOrder(subscriber);

@@ -21,7 +21,7 @@ import java.util.concurrent.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.ObservableMergeConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
@@ -45,7 +45,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalDelayError() {
         Observable.range(1, 10)
-        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, new ObservableMergeConfig(true))
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, new StandardConcurrentBufferedConfig(true))
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
@@ -102,7 +102,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAll() {
         TestObserverEx<Integer> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapSingle((Function<Integer, SingleSource<Integer>>) _ -> Single.error(new TestException()), new ObservableMergeConfig(true))
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) _ -> Single.error(new TestException()), new StandardConcurrentBufferedConfig(true))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -170,7 +170,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
                 return ps.singleOrError();
             }
             return Single.error(new TestException());
-        }, new ObservableMergeConfig(true))
+        }, new StandardConcurrentBufferedConfig(true))
         .test();
 
         ps.onNext(1);
@@ -306,7 +306,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream ->
-            upstream.flatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), new ObservableMergeConfig(true)));
+            upstream.flatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), new StandardConcurrentBufferedConfig(true)));
     }
 
     @Test

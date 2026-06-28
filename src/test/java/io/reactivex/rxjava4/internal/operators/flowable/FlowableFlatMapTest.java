@@ -28,7 +28,7 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.FlatMapConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -277,7 +277,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Flowable<Integer> source = Flowable.range(1, 10)
         .flatMap((Function<Integer, Flowable<Integer>>) t1 -> composer(Flowable.range(t1 * 10, 2), subscriptionCount, m)
-                .subscribeOn(Schedulers.computation()), new FlatMapConfig(m));
+                .subscribeOn(Schedulers.computation()), new StandardConcurrentBufferedConfig(m));
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
@@ -483,7 +483,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 4 * Flowable.bufferSize())
-        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.just(v), new FlatMapConfig(16))
+        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.just(v), new StandardConcurrentBufferedConfig(16))
         .subscribe(ts);
 
         ts.assertValueCount(2 * Flowable.bufferSize());
@@ -503,7 +503,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 4 * Flowable.bufferSize())
-        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.range(v, 2), new FlatMapConfig(16))
+        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.range(v, 2), new StandardConcurrentBufferedConfig(16))
         .subscribe(ts);
 
         ts.assertValueCount(4 * Flowable.bufferSize());
@@ -679,7 +679,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 2).hide()
         .flatMap((Function<Integer, Flowable<Integer>>) _ -> Flowable.range(1, 2).map(_ -> {
             throw new TestException();
-        }), new FlatMapConfig(true))
+        }), new StandardConcurrentBufferedConfig(true))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -821,7 +821,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         PublishProcessor<Integer> pp4 = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = Flowable.just(pp1, pp2, pp3, pp4)
-        .flatMap((Function<PublishProcessor<Integer>, Flowable<Integer>>) v -> v, new FlatMapConfig(2))
+        .flatMap((Function<PublishProcessor<Integer>, Flowable<Integer>>) v -> v, new StandardConcurrentBufferedConfig(2))
         .doOnNext(v -> {
             if (v == 1) {
                 // this will make sure the drain loop detects two completed
@@ -854,7 +854,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-        upstream.flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v).hide(), new FlatMapConfig(true)));
+        upstream.flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v).hide(), new StandardConcurrentBufferedConfig(true)));
     }
 
     @Test
@@ -987,7 +987,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
                 })
                 .compose(TestHelper.flowableStripBoundary())
         )
-        .flatMap(v -> v, new FlatMapConfig(true))
+        .flatMap(v -> v, new StandardConcurrentBufferedConfig(true))
         .doOnNext(v -> {
             if (v == 1) {
                 pp.onNext(2);
@@ -1017,7 +1017,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
                 .compose(TestHelper.flowableStripBoundary())
                 , pp
         )
-        .flatMap(v -> v, new FlatMapConfig(true))
+        .flatMap(v -> v, new StandardConcurrentBufferedConfig(true))
         .doOnNext(v -> {
             if (v == 1) {
                 pp.onNext(2);
@@ -1041,7 +1041,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void allConcurrency() {
         Flowable.just(1)
         .hide()
-        .flatMap(_ -> Flowable.just(2).hide(), new FlatMapConfig(Integer.MAX_VALUE))
+        .flatMap(_ -> Flowable.just(2).hide(), new StandardConcurrentBufferedConfig(Integer.MAX_VALUE))
         .test()
         .assertResult(2);
     }
@@ -1050,7 +1050,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void allConcurrencyScalarInner() {
         Flowable.just(1)
         .hide()
-        .flatMap(_ -> Flowable.just(2), new FlatMapConfig(Integer.MAX_VALUE))
+        .flatMap(_ -> Flowable.just(2), new StandardConcurrentBufferedConfig(Integer.MAX_VALUE))
         .test()
         .assertResult(2);
     }
@@ -1059,7 +1059,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void allConcurrencyScalarInnerEmpty() {
         Flowable.just(1)
         .hide()
-        .flatMap(_ -> Flowable.empty(), new FlatMapConfig(Integer.MAX_VALUE))
+        .flatMap(_ -> Flowable.empty(), new StandardConcurrentBufferedConfig(Integer.MAX_VALUE))
         .test()
         .assertResult();
     }
@@ -1098,7 +1098,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void allConcurrencyBackpressured() {
         Flowable.just(1)
         .hide()
-        .flatMap(_ -> Flowable.just(2), new FlatMapConfig(Integer.MAX_VALUE))
+        .flatMap(_ -> Flowable.just(2), new StandardConcurrentBufferedConfig(Integer.MAX_VALUE))
         .test(0L)
         .assertEmpty()
         .requestMore(1)
@@ -1109,7 +1109,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void someConcurrencyInnerScalarCancel() {
         Flowable.just(1)
         .hide()
-        .flatMap(_ -> Flowable.just(2), new FlatMapConfig(2))
+        .flatMap(_ -> Flowable.just(2), new StandardConcurrentBufferedConfig(2))
         .takeUntil(_ -> true)
         .test()
         .assertResult(2);
@@ -1126,7 +1126,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
                 subscriber.onNext(3);
             }
         }
-        .flatMap(Flowable::just, new FlatMapConfig(1))
+        .flatMap(Flowable::just, new StandardConcurrentBufferedConfig(1))
         .test(0L)
         .assertFailure(QueueOverflowException.class);
     }
@@ -1142,7 +1142,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
                 subscriber.onNext(1);
             }
         }
-        .flatMap(Flowable::just, new FlatMapConfig(1))
+        .flatMap(Flowable::just, new StandardConcurrentBufferedConfig(1))
         .doOnNext(v -> {
             if (v == 1) {
                 ref.get().onNext(2);
@@ -1165,7 +1165,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
                 subscriber.onNext(2);
                 subscriber.onNext(3);
             }
-        }, new FlatMapConfig(false, 1, 1))
+        }, new StandardConcurrentBufferedConfig(false, 1, 1))
         .test(0L)
         .assertFailure(QueueOverflowException.class);
     }
@@ -1174,7 +1174,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void takeFromScalarQueue() {
         Flowable.just(1)
         .hide()
-        .flatMap(_ -> Flowable.just(2), new FlatMapConfig(2))
+        .flatMap(_ -> Flowable.just(2), new StandardConcurrentBufferedConfig(2))
         .takeUntil(_ -> true)
         .test(0L)
         .requestMore(2)
@@ -1186,7 +1186,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         Flowable.just(1)
         .concatWith(Flowable.never())
         .hide()
-        .flatMap(_ -> Flowable.just(2), new FlatMapConfig(2))
+        .flatMap(_ -> Flowable.just(2), new StandardConcurrentBufferedConfig(2))
         .test(0L)
         .requestMore(2)
         .assertValuesOnly(2);
@@ -1232,7 +1232,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
                                 .just(-integer)
                                 .observeOn(Schedulers.computation());
                     },
-                    new FlatMapConfig(false, 1)
+                    new StandardConcurrentBufferedConfig(false, 1)
             )
             .ignoreElements()
             .blockingAwait();

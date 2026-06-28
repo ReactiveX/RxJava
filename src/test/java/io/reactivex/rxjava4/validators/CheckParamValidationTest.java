@@ -615,30 +615,10 @@ public class CheckParamValidationTest extends RxJavaTest {
         VirtualGenerator<Object> vg = _ -> { };
         defaultValues.put(VirtualGenerator.class, vg);
 
-        defaultValues.put(FlatMapConfig.class, FlatMapConfig.DEFAULT);
-        defaultValues.put(GenericConfig.class, GenericConfig.DEFAULT);
-        defaultValues.put(CompletableConcatConfig.class, CompletableConcatConfig.DEFAULT);
-        defaultValues.put(CompletableMergeConfig.class, CompletableMergeConfig.DEFAULT);
-
-        defaultValues.put(SingleConcatConfig.class, SingleConcatConfig.DEFAULT);
-        defaultValues.put(SingleConcatEagerConfig.class, SingleConcatEagerConfig.DEFAULT);
-        defaultValues.put(SingleMergeConfig.class, SingleMergeConfig.DEFAULT);
-
-        defaultValues.put(MaybeConcatConfig.class, MaybeConcatConfig.DEFAULT);
-        defaultValues.put(MaybeConcatEagerConfig.class, MaybeConcatEagerConfig.DEFAULT);
-        defaultValues.put(MaybeMergeConfig.class, MaybeMergeConfig.DEFAULT);
-
-        defaultValues.put(ObservableCombineLatestConfig.class, ObservableCombineLatestConfig.DEFAULT);
-        defaultValues.put(ObservableConcatConfig.class, ObservableConcatConfig.DEFAULT);
-        defaultValues.put(ObservableMergeConfig.class, ObservableMergeConfig.DEFAULT);
-        defaultValues.put(ObservableConcatEagerConfig.class, ObservableConcatEagerConfig.DEFAULT);
-        defaultValues.put(ObservableSwitchConfig.class, ObservableSwitchConfig.DEFAULT);
+        defaultValues.put(StandardBufferedConfig.class, StandardBufferedConfig.DEFAULT);
+        defaultValues.put(StandardConcurrentConfig.class, StandardConcurrentConfig.DEFAULT);
+        defaultValues.put(StandardConcurrentBufferedConfig.class, StandardConcurrentBufferedConfig.DEFAULT);
         defaultValues.put(ObservableSequenceEqualConfig.class, ObservableSequenceEqualConfig.DEFAULT);
-        defaultValues.put(ObservableZipConfig.class, ObservableZipConfig.DEFAULT);
-        defaultValues.put(ObservableConcatMapConfig.class, ObservableConcatMapConfig.DEFAULT);
-
-        defaultValues.put(ObservableGroupByConfig.class, ObservableGroupByConfig.DEFAULT);
-        defaultValues.put(ObservableObserveOnConfig.class, ObservableObserveOnConfig.DEFAULT);
 
         // TODO insert new config record types here
 

@@ -27,7 +27,7 @@ import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
-import io.reactivex.rxjava4.core.config.FlatMapConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -1315,7 +1315,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void flatMapMaxConcurrentJustJust() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.just(1)).flatMap((Function)Functions.identity(), new FlatMapConfig(5)).subscribe(ts);
+        Flowable.just(Flowable.just(1)).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(5)).subscribe(ts);
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -1327,7 +1327,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void flatMapMaxConcurrentJustRange() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.range(1, 5)).flatMap((Function)Functions.identity(), new FlatMapConfig(5)).subscribe(ts);
+        Flowable.just(Flowable.range(1, 5)).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(5)).subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();

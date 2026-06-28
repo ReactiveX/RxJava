@@ -31,7 +31,7 @@ import com.google.common.base.Ticker;
 import com.google.common.cache.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.FlatMapConfig;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.flowables.GroupedFlowable;
 import io.reactivex.rxjava4.functions.*;
@@ -873,7 +873,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                         } else {
                             return l + " is odd.";
                         }
-                    }), new FlatMapConfig(4000)) // a lot of groups are created due to take(2)
+                    }), new StandardConcurrentBufferedConfig(4000)) // a lot of groups are created due to take(2)
             .subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -1790,7 +1790,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                 .range(1, groups)
                 .repeat(iterations / groups)
                 .groupBy(i -> i, i -> i, false, 128, sizeCap(sizeCap, notifyOnExplicitRevoke))
-                .flatMap(gf -> gf.compose(operation), new FlatMapConfig(flatMapConcurrency))
+                .flatMap(gf -> gf.compose(operation), new StandardConcurrentBufferedConfig(flatMapConcurrency))
                 .test();
         test.awaitDone(5, TimeUnit.SECONDS);
         test.assertValueCount(iterations);
@@ -1823,7 +1823,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                 sizeCap(groups * 100, notifyOnExplicitEviction))
         .flatMap(gf -> gf
                 .take(10, TimeUnit.MILLISECONDS)
-                , new FlatMapConfig(flatMapMaxConcurrency))
+                , new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .test();
 
         ts
@@ -1863,7 +1863,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         .groupBy(i -> i)
         .flatMap(gf -> gf
                 .take(10, TimeUnit.MILLISECONDS)
-                , new FlatMapConfig(flatMapMaxConcurrency))
+                , new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .subscribeWith(new TestSubscriberEx<>())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertTerminated(); // MBE is possible if the async group closing is slow
@@ -1899,7 +1899,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                      .observeOn(Schedulers.computation())
                      // .take(10)
                      .take(10, TimeUnit.MILLISECONDS)
-            , new FlatMapConfig(flatMapMaxConcurrency))
+            , new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .subscribeWith(new TestSubscriberEx<>())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertTerminated(); // MBE is possible if the async group closing is slow
@@ -1925,7 +1925,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                      .observeOn(Schedulers.computation())
                      // .take(10)
                      .take(10, TimeUnit.MILLISECONDS)
-            , new FlatMapConfig(flatMapMaxConcurrency))
+            , new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .subscribeWith(new TestSubscriberEx<>())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertTerminated(); // MBE is possible if the async group closing is slow
@@ -1947,7 +1947,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                      .observeOn(Schedulers.computation())
                      // .take(10)
                      .take(10, TimeUnit.MILLISECONDS)
-            , new FlatMapConfig(flatMapMaxConcurrency))
+            , new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertNoErrors()
@@ -1971,7 +1971,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                      .observeOn(Schedulers.computation())
                      // .take(10)
                      .take(10, TimeUnit.MILLISECONDS)
-            , new FlatMapConfig(flatMapMaxConcurrency))
+            , new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertNoErrors()
@@ -1998,7 +1998,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                      .filter(_ -> true)
                      // .take(10)
                      .take(10, TimeUnit.MILLISECONDS)
-            , new FlatMapConfig(flatMapMaxConcurrency))
+            , new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .subscribeWith(new TestSubscriberEx<>())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertTerminated(); // MBE is possible if the async group closing is slow
@@ -2025,7 +2025,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                      .filter(_ -> true)
                      // .take(10)
                      .take(10, TimeUnit.MILLISECONDS)
-            , new FlatMapConfig(flatMapMaxConcurrency))
+            , new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .subscribeWith(new TestSubscriberEx<>())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertTerminated(); // MBE is possible if the async group closing is slow
@@ -2061,7 +2061,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         .range(1, 500_000)
         .map(i -> i % groups)
         .groupBy(i -> i, i -> i, false, groupByBufferSize, ttlCapGuava(Duration.ofMillis(10)))
-        .flatMap(gf -> gf.observeOn(Schedulers.computation()), new FlatMapConfig(flatMapMaxConcurrency))
+        .flatMap(gf -> gf.observeOn(Schedulers.computation()), new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertNoErrors()
@@ -2080,7 +2080,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         .range(1, 500_000)
         .map(i -> i % groups)
         .groupBy(i -> i, i -> i, false, groupByBufferSize, ttlCapGuava(Duration.ofMillis(10)))
-        .flatMap(gf -> gf.observeOn(Schedulers.computation()), new FlatMapConfig(flatMapMaxConcurrency))
+        .flatMap(gf -> gf.observeOn(Schedulers.computation()), new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertNoErrors()

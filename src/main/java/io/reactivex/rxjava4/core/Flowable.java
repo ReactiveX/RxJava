@@ -19,7 +19,7 @@ import java.util.concurrent.Flow.*;
 import java.util.stream.*;
 
 import io.reactivex.rxjava4.annotations.*;
-import io.reactivex.rxjava4.core.config.FlatMapConfig;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.core.docs.FlowableDocBasic;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -3500,7 +3500,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> merge(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency, int bufferSize) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(false, maxConcurrency, bufferSize));
+        return fromIterable(sources).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(false, maxConcurrency, bufferSize));
     }
 
     /**
@@ -3553,7 +3553,7 @@ FlowableDocBasic<T>
     @SafeVarargs
     @NonNull
     public static <@NonNull T> Flowable<T> mergeArray(int maxConcurrency, int bufferSize, @NonNull Publisher<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(false, maxConcurrency, bufferSize));
+        return fromArray(sources).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(false, maxConcurrency, bufferSize));
     }
 
     /**
@@ -3648,7 +3648,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> merge(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(maxConcurrency));
+        return fromIterable(sources).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(maxConcurrency));
     }
 
     /**
@@ -3746,7 +3746,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> merge(@NonNull Publisher<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency) {
-        return fromPublisher(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(maxConcurrency));
+        return fromPublisher(sources).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(maxConcurrency));
     }
 
     /**
@@ -3792,7 +3792,7 @@ FlowableDocBasic<T>
     @SafeVarargs
     @NonNull
     public static <@NonNull T> Flowable<T> mergeArray(@NonNull Publisher<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(sources.length));
+        return fromArray(sources).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(sources.length));
     }
 
     /**
@@ -3841,7 +3841,7 @@ FlowableDocBasic<T>
     public static <@NonNull T> Flowable<T> merge(@NonNull Publisher<? extends T> source1, @NonNull Publisher<? extends T> source2) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
-        return fromArray(source1, source2).flatMap((Function)Functions.identity(), new FlatMapConfig(false, 2));
+        return fromArray(source1, source2).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(false, 2));
     }
 
     /**
@@ -3893,7 +3893,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
-        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), new FlatMapConfig(false, 3));
+        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(false, 3));
     }
 
     /**
@@ -3950,7 +3950,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(source4, "source4 is null");
-        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), new FlatMapConfig(false, 4));
+        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(false, 4));
     }
 
     /**
@@ -3987,7 +3987,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true));
+        return fromIterable(sources).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(true));
     }
 
     /**
@@ -4029,7 +4029,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency, int bufferSize) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true, maxConcurrency, bufferSize));
+        return fromIterable(sources).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(true, maxConcurrency, bufferSize));
     }
 
     /**
@@ -4072,7 +4072,7 @@ FlowableDocBasic<T>
     @SafeVarargs
     @NonNull
     public static <@NonNull T> Flowable<T> mergeArrayDelayError(int maxConcurrency, int bufferSize, @NonNull Publisher<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true, maxConcurrency, bufferSize));
+        return fromArray(sources).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(true, maxConcurrency, bufferSize));
     }
 
     /**
@@ -4112,7 +4112,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true, maxConcurrency));
+        return fromIterable(sources).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(true, maxConcurrency));
     }
 
     /**
@@ -4191,7 +4191,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Publisher<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency) {
-        return fromPublisher(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true, maxConcurrency));
+        return fromPublisher(sources).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(true, maxConcurrency));
     }
 
     /**
@@ -4229,7 +4229,7 @@ FlowableDocBasic<T>
     @SafeVarargs
     @NonNull
     public static <@NonNull T> Flowable<T> mergeArrayDelayError(@NonNull Publisher<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true, sources.length));
+        return fromArray(sources).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(true, sources.length));
     }
 
     /**
@@ -4270,7 +4270,7 @@ FlowableDocBasic<T>
     public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Publisher<? extends T> source1, @NonNull Publisher<? extends T> source2) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
-        return fromArray(source1, source2).flatMap((Function)Functions.identity(), new FlatMapConfig(true, 2));
+        return fromArray(source1, source2).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(true, 2));
     }
 
     /**
@@ -4316,7 +4316,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
-        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), new FlatMapConfig(true, 3));
+        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(true, 3));
     }
 
     /**
@@ -4366,7 +4366,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(source4, "source4 is null");
-        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), new FlatMapConfig(true, 4));
+        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), new StandardConcurrentBufferedConfig(true, 4));
     }
 
     /**
@@ -10266,7 +10266,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper) {
-        return flatMap(mapper, FlatMapConfig.DEFAULT);
+        return flatMap(mapper, StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -10290,7 +10290,7 @@ FlowableDocBasic<T>
      * @param mapper
      *            a function that, when applied to an item emitted by the current {@code Flowable}, returns a
      *            {@code Publisher}
-     * @param config the {@link FlatMapConfig} record to customize behavior
+     * @param config the {@link StandardConcurrentConfig} record to customize behavior
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -10302,7 +10302,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <@NonNull R> Flowable<R> flatMap(
             @NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
-            @NonNull FlatMapConfig config) {
+            @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(config, "config is null");
         if (this instanceof ScalarSupplier) {
@@ -10579,7 +10579,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(combiner, "combiner is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return flatMap(FlowableInternalHelper.flatMapWithCombiner(mapper, combiner), new FlatMapConfig(delayErrors, maxConcurrency, bufferSize));
+        return flatMap(FlowableInternalHelper.flatMapWithCombiner(mapper, combiner), new StandardConcurrentBufferedConfig(delayErrors, maxConcurrency, bufferSize));
     }
 
     /**
@@ -11079,7 +11079,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11137,7 +11137,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11196,7 +11196,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11260,7 +11260,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11325,7 +11325,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11440,7 +11440,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, StandardConcurrentBufferedConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -20749,7 +20749,7 @@ FlowableDocBasic<T>
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @since 3.0.0
-     * @see #flatMap(Function, FlatMapConfig)
+     * @see #flatMap(Function, StandardConcurrentBufferedConfig)
      * @see #flatMapIterable(Function, int)
      * @see #concatMapStream(Function, int)
      */

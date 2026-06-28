@@ -742,7 +742,7 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatArrayDelayError() {
         Observable.concatArray(
-                ObservableConcatConfig.DELAY_ERROR,
+                StandardBufferedConfig.DELAY_ERRORS,
                 Observable.just(1), Observable.just(2),
                 Observable.just(3), Observable.just(4))
         .test()
@@ -752,7 +752,7 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatArrayDelayErrorWithError() {
         Observable.concatArray(
-                ObservableConcatConfig.DELAY_ERROR,
+                StandardBufferedConfig.DELAY_ERRORS,
                 Observable.just(1), Observable.just(2),
                 Observable.just(3).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(4))
@@ -765,7 +765,7 @@ public class ObservableConcatTest extends RxJavaTest {
         Observable.concat(
                 Arrays.asList(Observable.just(1), Observable.just(2),
                 Observable.just(3), Observable.just(4)),
-                ObservableConcatConfig.DELAY_ERROR
+                StandardBufferedConfig.DELAY_ERRORS
             )
         .test()
         .assertResult(1, 2, 3, 4);
@@ -777,7 +777,7 @@ public class ObservableConcatTest extends RxJavaTest {
                 Arrays.asList(Observable.just(1), Observable.just(2),
                 Observable.just(3).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(4)),
-                ObservableConcatConfig.DELAY_ERROR
+                StandardBufferedConfig.DELAY_ERRORS
             )
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4);
@@ -788,7 +788,7 @@ public class ObservableConcatTest extends RxJavaTest {
         Observable.concat(
                 Observable.just(Observable.just(1), Observable.just(2),
                 Observable.just(3), Observable.just(4)),
-                        ObservableConcatConfig.DELAY_ERROR
+                StandardBufferedConfig.DELAY_ERRORS
         )
         .test()
         .assertResult(1, 2, 3, 4);
@@ -800,7 +800,7 @@ public class ObservableConcatTest extends RxJavaTest {
                 Observable.just(Observable.just(1), Observable.just(2),
                 Observable.just(3).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(4)),
-                ObservableConcatConfig.DELAY_ERROR
+                StandardBufferedConfig.DELAY_ERRORS
             )
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4);
@@ -812,7 +812,7 @@ public class ObservableConcatTest extends RxJavaTest {
                 Observable.just(Observable.just(1), Observable.just(2),
                 Observable.just(3).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(4)),
-                new ObservableConcatConfig(ErrorMode.BOUNDARY, 2))
+                new StandardBufferedConfig(ErrorMode.BOUNDARY, 2))
         .test()
         .assertFailure(TestException.class, 1, 2, 3);
     }
@@ -823,7 +823,7 @@ public class ObservableConcatTest extends RxJavaTest {
                 Observable.just(Observable.just(1), Observable.just(2),
                 Observable.just(3).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(4)),
-                new ObservableConcatConfig(ErrorMode.END, 2))
+                new StandardBufferedConfig(ErrorMode.END, 2))
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4);
     }
@@ -831,7 +831,7 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatMapDelayError() {
         Observable.just(Observable.just(1), Observable.just(2))
-        .concatMap(Functions.<Observable<Integer>>identity(), ObservableConcatMapConfig.DEFAULT)
+        .concatMap(Functions.<Observable<Integer>>identity(), StandardBufferedConfig.DEFAULT)
         .test()
         .assertResult(1, 2);
     }
@@ -839,7 +839,7 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatMapDelayErrorWithError() {
         Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), Observable.just(2))
-        .concatMap(Functions.<Observable<Integer>>identity(), ObservableConcatMapConfig.DELAY_ERROR)
+        .concatMap(Functions.<Observable<Integer>>identity(), StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
@@ -854,24 +854,24 @@ public class ObservableConcatTest extends RxJavaTest {
 
     @Test
     public void emptyArray() {
-        assertSame(Observable.empty(), Observable.concatArray(ObservableConcatConfig.DELAY_ERROR));
+        assertSame(Observable.empty(), Observable.concatArray(StandardBufferedConfig.DELAY_ERRORS));
     }
 
     @Test
     public void singleElementArray() {
-        assertSame(Observable.never(), Observable.concatArray(ObservableConcatConfig.DELAY_ERROR, Observable.never()));
+        assertSame(Observable.never(), Observable.concatArray(StandardBufferedConfig.DELAY_ERRORS, Observable.never()));
     }
 
     @Test
     public void concatMapDelayErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableConcatMapConfig(ErrorMode.END, 16)));
+                .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new StandardBufferedConfig(ErrorMode.END, 16)));
     }
 
     @Test
     public void concatMapDelayErrorJustSource() {
         Observable.just(0)
-        .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableConcatMapConfig(ErrorMode.END, 16))
+        .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new StandardBufferedConfig(ErrorMode.END, 16))
         .test()
         .assertResult(1);
 
@@ -890,13 +890,13 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatMapErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableConcatMapConfig(16)));
+                .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new StandardBufferedConfig(16)));
     }
 
     @Test
     public void concatMapJustSource() {
         Observable.just(0)
-        .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new ObservableConcatMapConfig(16))
+        .concatMap((Function<Object, ObservableSource<Integer>>) _ -> Observable.just(1), new StandardBufferedConfig(16))
         .test()
         .assertResult(1);
 
@@ -929,7 +929,7 @@ public class ObservableConcatTest extends RxJavaTest {
             s.onComplete();
         });
 
-        Observable.concatArray(ObservableConcatConfig.DELAY_ERROR, source, source).firstElement()
+        Observable.concatArray(StandardBufferedConfig.DELAY_ERRORS, source, source).firstElement()
         .test()
         .assertResult(1);
 
@@ -963,7 +963,7 @@ public class ObservableConcatTest extends RxJavaTest {
             s.onComplete();
         });
 
-        Observable.concat(Arrays.asList(source, source), ObservableConcatConfig.DELAY_ERROR).firstElement()
+        Observable.concat(Arrays.asList(source, source), StandardBufferedConfig.DELAY_ERRORS).firstElement()
         .test()
         .assertResult(1);
 
@@ -1003,7 +1003,7 @@ public class ObservableConcatTest extends RxJavaTest {
         final Disposable[] disposable = { null };
 
         Observable.concatArray(
-                ObservableConcatConfig.DELAY_ERROR,
+                StandardBufferedConfig.DELAY_ERRORS,
                 Observable.just(1), Observable.just(2))
         .subscribe(new Observer<>() /* NFI */ {
 
@@ -1061,7 +1061,7 @@ public class ObservableConcatTest extends RxJavaTest {
         final Disposable[] disposable = { null };
 
         Observable.concatArray(
-                ObservableConcatConfig.DELAY_ERROR,
+                StandardBufferedConfig.DELAY_ERRORS,
                 Observable.just(1), Observable.<Integer>error(new TestException()))
         .subscribe(new Observer<>() /* NFI */ {
 
