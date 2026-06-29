@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.jdk8;
 
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 

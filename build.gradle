@@ -16,7 +16,8 @@ ext {
     reactiveStreamsVersion = "1.0.4"
     junitVersion = "4.13.2"
     testNgVersion = "7.12.0"
-    mockitoVersion = "4.11.0"
+    mockitoVersion = "5.23.0"
+    mockitoJUnitVersion = "5.23.0"
     jmhLibVersion = "1.37"
     guavaVersion = "33.6.0-jre"
     jupiterVersion = "6.1.1"
@@ -38,8 +39,8 @@ repositories {
 }
 
 dependencies {
-    testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "org.mockito:mockito-junit-jupiter:$mockitoJUnitVersion"
 
     testImplementation "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
     testImplementation "org.testng:testng:$testNgVersion"
@@ -52,7 +53,6 @@ dependencies {
     testImplementation "org.junit.platform:junit-platform-commons:$jupiterLauncherVersion"
     testImplementation "org.junit.platform:junit-platform-launcher:$jupiterLauncherVersion"
 
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$jupiterVersion"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:$jupiterLauncherVersion"  // already have this
 }
 

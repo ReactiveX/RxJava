@@ -17,15 +17,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.rxjava4.functions.Action;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
+import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
@@ -38,7 +38,7 @@ public class FlowableThrottleFirstTest extends RxJavaTest {
     private Scheduler.Worker innerScheduler;
     private Subscriber<String> subscriber;
 
-    @Before
+    @BeforeEach
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();

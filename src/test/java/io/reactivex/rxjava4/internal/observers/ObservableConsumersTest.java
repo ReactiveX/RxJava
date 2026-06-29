@@ -29,12 +29,12 @@
 
 package io.reactivex.rxjava4.internal.observers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
@@ -75,11 +75,11 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         Disposable d = subscribeAutoDispose(processor, composite, this, Functions.ON_ERROR_MISSING, () -> { });
 
-        assertFalse(d.getClass().toString(), ((LambdaConsumerIntrospection)d).hasCustomOnError());
+        assertFalse(((LambdaConsumerIntrospection)d).hasCustomOnError(), d.getClass().toString());
 
         assertTrue(composite.size() > 0);
 
-        assertTrue(events.toString(), events.isEmpty());
+        assertTrue(events.isEmpty(), events.toString());
 
         processor.onNext(1);
 
@@ -101,7 +101,7 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         assertTrue(composite.size() > 0);
 
-        assertTrue(events.toString(), events.isEmpty());
+        assertTrue(events.isEmpty(), events.toString());
 
         processor.onNext(1);
 
@@ -121,11 +121,11 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         Disposable d = subscribeAutoDispose(processor, composite, this, this, this);
 
-        assertTrue(d.getClass().toString(), ((LambdaConsumerIntrospection)d).hasCustomOnError());
+        assertTrue(((LambdaConsumerIntrospection)d).hasCustomOnError(), d.getClass().toString());
 
         assertTrue(composite.size() > 0);
 
-        assertTrue(events.toString(), events.isEmpty());
+        assertTrue(events.isEmpty(), events.toString());
 
         processor.onNext(1);
 
@@ -135,8 +135,8 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         processor.onError(new IOException());
 
-        assertEquals(events.toString(), 1, events.get(0));
-        assertTrue(events.toString(), events.get(1) instanceof IOException);
+        assertEquals(1, events.get(0), events.toString());
+        assertTrue(events.get(1) instanceof IOException, events.toString());
 
         assertEquals(0, composite.size());
     }
@@ -148,7 +148,7 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         assertTrue(composite.size() > 0);
 
-        assertTrue(events.toString(), events.isEmpty());
+        assertTrue(events.isEmpty(), events.toString());
 
         processor.onNext(1);
 
@@ -170,7 +170,7 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         assertTrue(composite.size() > 0);
 
-        assertTrue(events.toString(), events.isEmpty());
+        assertTrue(events.isEmpty(), events.toString());
 
         processor.onNext(1);
 
@@ -180,8 +180,8 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         processor.onError(new IOException());
 
-        assertEquals(events.toString(), 1, events.get(0));
-        assertTrue(events.toString(), events.get(1) instanceof IOException);
+        assertEquals(1, events.get(0), events.toString());
+        assertTrue(events.get(1) instanceof IOException, events.toString());
 
         assertEquals(0, composite.size());
     }
@@ -193,7 +193,7 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         assertTrue(composite.size() > 0);
 
-        assertTrue(events.toString(), events.isEmpty());
+        assertTrue(events.isEmpty(), events.toString());
 
         assertFalse(d.isDisposed());
 
@@ -217,9 +217,9 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
             processor.onNext(1);
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
 
-            assertTrue(events.toString(), events.getFirst() instanceof IOException);
+            assertTrue(events.getFirst() instanceof IOException, events.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -235,7 +235,7 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
             processor.onError(new IllegalArgumentException());
 
-            assertTrue(events.toString(), events.isEmpty());
+            assertTrue(events.isEmpty(), events.toString());
 
             TestHelper.assertError(errors, 0, CompositeException.class);
             List<Throwable> inners = TestHelper.compositeList(errors.getFirst());
@@ -256,7 +256,7 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
             processor.onNext(1);
 
-            assertTrue(events.toString(), events.isEmpty());
+            assertTrue(events.isEmpty(), events.toString());
 
             TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
             assertTrue(errors.getFirst().getCause() instanceof IOException);

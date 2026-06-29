@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 import java.io.Serial;
 import java.util.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
@@ -31,7 +31,7 @@ public class ObservableToMultimapTest extends RxJavaTest {
     Observer<Object> objectObserver;
     SingleObserver<Object> singleObserver;
 
-    @Before
+    @BeforeEach
     public void before() {
         objectObserver = TestHelper.mockObserver();
         singleObserver = TestHelper.mockSingleObserver();

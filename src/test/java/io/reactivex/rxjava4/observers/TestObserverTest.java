@@ -13,17 +13,17 @@
 
 package io.reactivex.rxjava4.observers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
@@ -39,14 +39,14 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class TestObserverTest extends RxJavaTest {
 
-    static void assertThrowsWithMessage(String message, Class<? extends Throwable> clazz, ThrowingRunnable run) {
+    static void assertThrowsWithMessage(String message, Class<? extends Throwable> clazz, Executable run) {
         if (message.startsWith("~")) {
             message = message.substring(1);
         }
         assertEquals(message, assertThrows(clazz, run).getMessage());
     }
 
-    static void assertThrowsWithMessageMatchRegex(String regex, Class<? extends Throwable> clazz, ThrowingRunnable run) {
+    static void assertThrowsWithMessageMatchRegex(String regex, Class<? extends Throwable> clazz, Executable run) {
         assertTrue(assertThrows(clazz, run).getMessage().matches(regex));
     }
 
@@ -530,7 +530,7 @@ public class TestObserverTest extends RxJavaTest {
         try {
             to.awaitDone(5, TimeUnit.SECONDS);
         } catch (RuntimeException allowed) {
-            assertTrue(allowed.toString(), allowed.getCause() instanceof InterruptedException);
+            assertTrue(allowed.getCause() instanceof InterruptedException, allowed.toString());
         }
 
         // FIXME ? catch consumes this flag
@@ -541,7 +541,7 @@ public class TestObserverTest extends RxJavaTest {
         try {
             to.awaitDone(5, TimeUnit.SECONDS);
         } catch (RuntimeException allowed) {
-            assertTrue(allowed.toString(), allowed.getCause() instanceof InterruptedException);
+            assertTrue(allowed.getCause() instanceof InterruptedException, allowed.toString());
         }
 
         // FIXME ? catch consumes this flag
@@ -616,14 +616,14 @@ public class TestObserverTest extends RxJavaTest {
             to.assertValueSequence(Collections.<Integer>emptyList());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError expected) {
-            assertTrue(expected.getMessage(), expected.getMessage().startsWith("More values received than expected (0)"));
+            assertTrue(expected.getMessage().startsWith("More values received than expected (0)"), expected.getMessage());
         }
 
         try {
             to.assertValueSequence(Collections.singletonList(1));
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError expected) {
-            assertTrue(expected.getMessage(), expected.getMessage().startsWith("More values received than expected (1)"));
+            assertTrue(expected.getMessage().startsWith("More values received than expected (1)"), expected.getMessage());
         }
 
         to.assertValueSequence(Arrays.asList(1, 2));
@@ -632,7 +632,7 @@ public class TestObserverTest extends RxJavaTest {
             to.assertValueSequence(Arrays.asList(1, 2, 3));
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError expected) {
-            assertTrue(expected.getMessage(), expected.getMessage().startsWith("Fewer values received than expected (2)"));
+            assertTrue(expected.getMessage().startsWith("Fewer values received than expected (2)"), expected.getMessage());
         }
     }
 
@@ -670,7 +670,7 @@ public class TestObserverTest extends RxJavaTest {
         try {
             to.awaitDone(5, TimeUnit.SECONDS);
         } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+            assertTrue(ex.getCause() instanceof InterruptedException, ex.toString());
         }
     }
 
@@ -1120,7 +1120,7 @@ public class TestObserverTest extends RxJavaTest {
             }
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
-            assertTrue(ex.toString(), ex.toString().contains("testing with item=2"));
+            assertTrue(ex.toString().contains("testing with item=2"), ex.toString());
         }
     }
 
@@ -1204,15 +1204,17 @@ public class TestObserverTest extends RxJavaTest {
         assertTrue(to.timeout);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void awaitCountInterrupted() {
-        try {
-            TestObserver<Integer> to = TestObserver.create();
-            to.onSubscribe(Disposable.empty());
-            Thread.currentThread().interrupt();
-            to.awaitCount(1);
-        } finally {
-            Thread.interrupted();
-        }
+        assertThrows(RuntimeException.class, () -> {
+            try {
+                TestObserver<Integer> to = TestObserver.create();
+                to.onSubscribe(Disposable.empty());
+                Thread.currentThread().interrupt();
+                to.awaitCount(1);
+            } finally {
+                Thread.interrupted();
+            }
+        });
     }
 }

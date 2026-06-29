@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.processors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -88,7 +88,7 @@ public class MulticastProcessorTest extends RxJavaTest {
         assertFalse(mp.hasComplete());
         assertTrue(mp.hasThrowable());
         assertNotNull(mp.getThrowable());
-        assertTrue("" + mp.getThrowable(), mp.getThrowable() instanceof IOException);
+        assertTrue(mp.getThrowable() instanceof IOException, "" + mp.getThrowable());
 
         mp.test().assertFailure(IOException.class);
     }
@@ -412,25 +412,31 @@ public class MulticastProcessorTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void onNextNull() {
-        MulticastProcessor<Integer> mp = MulticastProcessor.create(4, false);
-        mp.start();
-        mp.onNext(null);
+        assertThrows(NullPointerException.class, () -> {
+            MulticastProcessor<Integer> mp = MulticastProcessor.create(4, false);
+            mp.start();
+            mp.onNext(null);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void onOfferNull() {
-        MulticastProcessor<Integer> mp = MulticastProcessor.create(4, false);
-        mp.start();
-        mp.offer(null);
+        assertThrows(NullPointerException.class, () -> {
+            MulticastProcessor<Integer> mp = MulticastProcessor.create(4, false);
+            mp.start();
+            mp.offer(null);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void onErrorNull() {
-        MulticastProcessor<Integer> mp = MulticastProcessor.create(4, false);
-        mp.start();
-        mp.onError(null);
+        assertThrows(NullPointerException.class, () -> {
+            MulticastProcessor<Integer> mp = MulticastProcessor.create(4, false);
+            mp.start();
+            mp.onError(null);
+        });
     }
 
     @Test

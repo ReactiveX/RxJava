@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.operators.observable;
 
 import static org.mockito.Mockito.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.Action;
@@ -28,7 +28,7 @@ public class ObservableFinallyTest extends RxJavaTest {
     private Observer<String> observer;
 
     // mocking has to be unchecked, unfortunately
-    @Before
+    @BeforeEach
     public void before() {
         aAction0 = mock(Action.class);
         observer = TestHelper.mockObserver();

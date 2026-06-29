@@ -13,10 +13,10 @@
 
 package io.reactivex.rxjava4.internal.observers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.operators.SpscArrayQueue;
 import io.reactivex.rxjava4.testsupport.TestHelper;

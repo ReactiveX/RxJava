@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.OnBackpressureBufferConfig;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.observers.TestObserver;
@@ -98,14 +98,18 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         assertEquals(499, ts.values().get(499).intValue());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void fixBackpressureBufferNegativeCapacity() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(-1));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(-1));
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void fixBackpressureBufferZeroCapacity() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(0));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(0));
+        });
     }
 
     @Test
@@ -188,14 +192,18 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         ts.assertNotComplete();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void fixBackpressureBufferNegativeCapacity2() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(-1));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(-1));
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void fixBackpressureBufferZeroCapacity2() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(0));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(0));
+        });
     }
 
     @Test

@@ -13,9 +13,11 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -75,6 +77,6 @@ public class FlowableToSingleTest extends RxJavaTest {
         Single<String> single = Flowable.just("Hello World!").doOnCancel(() -> unsubscribed.set(true)).single("");
         single.toFlowable().subscribe(subscriber);
         subscriber.assertComplete();
-        Assert.assertFalse(unsubscribed.get());
+        assertFalse(unsubscribed.get());
     }
 }

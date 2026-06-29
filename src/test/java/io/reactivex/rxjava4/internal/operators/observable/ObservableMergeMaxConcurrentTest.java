@@ -13,18 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.schedulers.CachedScheduler;
 import io.reactivex.rxjava4.observers.TestObserver;
@@ -35,7 +35,7 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
 
     Observer<String> stringObserver;
 
-    @Before
+    @BeforeEach
     public void before() {
         stringObserver = TestHelper.mockObserver();
     }

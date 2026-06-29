@@ -14,11 +14,11 @@
 package io.reactivex.rxjava4.internal.observers;
 
 import static io.reactivex.rxjava4.internal.util.ExceptionHelper.timeoutMessage;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -102,7 +102,7 @@ public class FutureSingleObserverTest extends RxJavaTest {
             f.get(5, TimeUnit.SECONDS);
             fail("Should have thrown");
         } catch (ExecutionException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+            assertTrue(ex.getCause() instanceof TestException, ex.toString());
         }
     }
 

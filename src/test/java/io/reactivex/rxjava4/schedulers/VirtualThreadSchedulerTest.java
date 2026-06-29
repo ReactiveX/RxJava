@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -81,7 +81,7 @@ public class VirtualThreadSchedulerTest extends AbstractSchedulerConcurrencyTest
         assertTrue(w.isDisposed());
     }
 
-    @Ignore("FIXME DeferredExecutorScheduler doesn't support shutdown yet")
+    @Disabled("FIXME DeferredExecutorScheduler doesn't support shutdown yet")
     @Test
     @SuppressUndeliverable
     public void shutdownRejects() {

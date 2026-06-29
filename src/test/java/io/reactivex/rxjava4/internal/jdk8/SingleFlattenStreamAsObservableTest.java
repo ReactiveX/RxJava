@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -21,15 +21,14 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
-import io.reactivex.rxjava4.operators.QueueDisposable;
-import io.reactivex.rxjava4.operators.QueueFuseable;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.subjects.SingleSubject;
 import io.reactivex.rxjava4.testsupport.*;
 

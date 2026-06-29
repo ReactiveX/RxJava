@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.subjects;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -112,7 +112,7 @@ public class SingleSubjectTest extends RxJavaTest {
         assertFalse(ss.hasValue());
         assertNull(ss.getValue());
         assertTrue(ss.hasThrowable());
-        assertTrue(ss.getThrowable().toString(), ss.getThrowable() instanceof IOException);
+        assertTrue(ss.getThrowable() instanceof IOException, ss.getThrowable().toString());
         assertFalse(ss.hasObservers());
         assertEquals(0, ss.observerCount());
 
@@ -123,7 +123,7 @@ public class SingleSubjectTest extends RxJavaTest {
         assertFalse(ss.hasValue());
         assertNull(ss.getValue());
         assertTrue(ss.hasThrowable());
-        assertTrue(ss.getThrowable().toString(), ss.getThrowable() instanceof IOException);
+        assertTrue(ss.getThrowable() instanceof IOException, ss.getThrowable().toString());
         assertFalse(ss.hasObservers());
         assertEquals(0, ss.observerCount());
     }

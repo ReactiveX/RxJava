@@ -18,9 +18,9 @@ import static org.mockito.Mockito.*;
 
 import java.io.Serial;
 import java.util.*;
+import java.util.concurrent.Flow.Subscriber;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.*;
@@ -31,7 +31,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
 
     SingleObserver<Object> singleObserver;
 
-    @Before
+    @BeforeEach
     public void before() {
         objectSubscriber = TestHelper.mockSubscriber();
         singleObserver = TestHelper.mockSingleObserver();

@@ -13,19 +13,19 @@
 
 package io.reactivex.rxjava4.single;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.operators.single.SingleInternalHelper;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -162,7 +162,7 @@ public class SingleTest extends RxJavaTest {
         ).toFlowable().subscribe(ts);
         if (!ts.await(5, TimeUnit.SECONDS)) {
             ts.cancel();
-            Assert.fail("TestSubscriber timed out.");
+            fail("TestSubscriber timed out.");
         }
         ts.assertValueSequence(List.of("Hello World!"));
     }
@@ -384,9 +384,11 @@ public class SingleTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void doOnEventNullEvent() {
-        Single.just(1).doOnEvent(null);
+        assertThrows(NullPointerException.class, () -> {
+            Single.just(1).doOnEvent(null);
+        });
     }
 
     @Test
@@ -425,17 +427,19 @@ public class SingleTest extends RxJavaTest {
         try {
             Single.error(new TestException()).toFuture().get();
         } catch (ExecutionException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+            assertTrue(ex.getCause() instanceof TestException, ex.toString());
         }
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void toFlowableIterableRemove() {
-        Iterable<? extends Flowable<Integer>> f = SingleInternalHelper.iterableToFlowable(Collections.singletonList(Single.just(1)));
+        assertThrows(UnsupportedOperationException.class, () -> {
+            Iterable<? extends Flowable<Integer>> f = SingleInternalHelper.iterableToFlowable(Collections.singletonList(Single.just(1)));
 
-        Iterator<? extends Flowable<Integer>> iterator = f.iterator();
-        iterator.next();
-        iterator.remove();
+            Iterator<? extends Flowable<Integer>> iterator = f.iterator();
+            iterator.next();
+            iterator.remove();
+        });
     }
 
     @Test
@@ -457,9 +461,11 @@ public class SingleTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void fromObservableNull() {
-        Single.fromObservable(null);
+        assertThrows(NullPointerException.class, () -> {
+            Single.fromObservable(null);
+        });
     }
 
     @Test
@@ -492,14 +498,16 @@ public class SingleTest extends RxJavaTest {
             .assertErrorMessage("some error");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void implementationThrows() {
-        new Single<Integer>() /* NFI */ {
-            @Override
-            protected void subscribeActual(SingleObserver<? super Integer> observer) {
-                throw new NullPointerException();
-            }
-        }.test();
+        assertThrows(NullPointerException.class, () -> {
+            new Single<Integer>() /* NFI */ {
+                @Override
+                protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                    throw new NullPointerException();
+                }
+            }.test();
+        });
     }
 }
 

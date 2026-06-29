@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
@@ -573,6 +573,6 @@ public class CompletableMergeTest extends RxJavaTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
 
-        assertEquals("Action count mismatch", 6, ref.get());
+        assertEquals(6, ref.get(), "Action count mismatch");
     }
 }

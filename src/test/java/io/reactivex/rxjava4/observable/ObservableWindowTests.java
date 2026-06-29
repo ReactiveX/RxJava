@@ -13,18 +13,18 @@
 
 package io.reactivex.rxjava4.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
-import io.reactivex.rxjava4.schedulers.*;
+import io.reactivex.rxjava4.schedulers.TestScheduler;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 
 public class ObservableWindowTests extends RxJavaTest {

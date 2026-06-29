@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.operators.observable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.subjects.PublishSubject;
@@ -25,7 +25,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class ObservableSkipUntilTest extends RxJavaTest {
     Observer<Object> observer;
 
-    @Before
+    @BeforeEach
     public void before() {
         observer = TestHelper.mockObserver();
     }

@@ -14,11 +14,12 @@
 package io.reactivex.rxjava4.internal.operators.completable;
 
 import static org.mockito.Mockito.*;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 

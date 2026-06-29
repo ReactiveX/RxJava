@@ -14,12 +14,12 @@
 package io.reactivex.rxjava4.internal.operators.single;
 
 import static io.reactivex.rxjava4.internal.util.ExceptionHelper.timeoutMessage;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.concurrent.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;

@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Scheduler;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -39,8 +39,7 @@ public class SchedulerToExecutorServiceTest {
         String result = executor.invokeAny(Arrays.asList(task1, task2));
 
         assertNotNull("invokeAny should return a result", result);
-        assertTrue("result should be one of the task results",
-                result.equals("result1") || result.equals("result2"));
+        assertTrue(result.equals("result1") || result.equals("result2"), "result should be one of the task results");
     }
 
     @Test
@@ -54,7 +53,7 @@ public class SchedulerToExecutorServiceTest {
 
         Integer result = executor.invokeAny(Arrays.asList(task));
 
-        assertEquals("invokeAny should return the single task result", Integer.valueOf(42), result);
+        assertEquals(Integer.valueOf(42), result, "invokeAny should return the single task result");
     }
 
     @Test

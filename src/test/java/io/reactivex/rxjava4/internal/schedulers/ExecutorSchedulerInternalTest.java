@@ -13,9 +13,9 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ExecutorSchedulerInternalTest {
 

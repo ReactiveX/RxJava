@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -187,19 +187,21 @@ public class ParallelSchedulerTest implements Runnable {
             Thread.sleep(1000);
 
             int c = calls.get();
-            assertTrue("" + c, c > 6);
+            assertTrue(c > 6, "" + c);
         } finally {
             s.shutdown();
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS)
     public void taskThrowsNonTracking() throws Exception {
         Scheduler s = new ParallelScheduler(2, false, ParallelScheduler.DEFAULT_FACTORY);
         taskThrows(s);
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS)
     public void taskThrowsTracking() throws Exception {
         Scheduler s = new ParallelScheduler(2, true, ParallelScheduler.DEFAULT_FACTORY);
         taskThrows(s);
@@ -382,46 +384,48 @@ public class ParallelSchedulerTest implements Runnable {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void illegalParallelism() {
-        new ParallelScheduler(0, true, ParallelScheduler.DEFAULT_FACTORY);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new ParallelScheduler(0, true, ParallelScheduler.DEFAULT_FACTORY);
+        });
     }
 
     @Test
     public void parallelSchedulerConfig() {
         {
         var psc1 = ParallelSchedulerConfig.DEFAULT;
-        assertEquals("Parallelism", psc1.parallelism(), Runtime.getRuntime().availableProcessors());
-        assertTrue("Tracking", psc1.tracking());
-        assertEquals("threadNamePrefix", psc1.threadNamePrefix(), "RxParallelScheduler");
+        assertEquals(psc1.parallelism(), Runtime.getRuntime().availableProcessors(), "Parallelism");
+        assertTrue(psc1.tracking(), "Tracking");
+        assertEquals(psc1.threadNamePrefix(), "RxParallelScheduler", "threadNamePrefix");
         }
 
         {
         var psc2 = new ParallelSchedulerConfig(1);
-        assertEquals("Parallelism", psc2.parallelism(), 1);
-        assertTrue("Tracking", psc2.tracking());
-        assertEquals("threadNamePrefix", psc2.threadNamePrefix(), "RxParallelScheduler");
+        assertEquals(psc2.parallelism(), 1, "Parallelism");
+        assertTrue(psc2.tracking(), "Tracking");
+        assertEquals(psc2.threadNamePrefix(), "RxParallelScheduler", "threadNamePrefix");
         }
 
         {
         var psc3 = new ParallelSchedulerConfig(1, false);
-        assertEquals("Parallelism", psc3.parallelism(), 1);
-        assertFalse("Tracking", psc3.tracking());
-        assertEquals("threadNamePrefix", psc3.threadNamePrefix(), "RxParallelScheduler");
+        assertEquals(psc3.parallelism(), 1, "Parallelism");
+        assertFalse(psc3.tracking(), "Tracking");
+        assertEquals(psc3.threadNamePrefix(), "RxParallelScheduler", "threadNamePrefix");
         }
 
         {
         var psc4 = new ParallelSchedulerConfig(1, "Test");
-        assertEquals("Parallelism", psc4.parallelism(), 1);
-        assertTrue("Tracking", psc4.tracking());
-        assertEquals("threadNamePrefix", psc4.threadNamePrefix(), "Test");
+        assertEquals(psc4.parallelism(), 1, "Parallelism");
+        assertTrue(psc4.tracking(), "Tracking");
+        assertEquals(psc4.threadNamePrefix(), "Test", "threadNamePrefix");
         }
 
         {
         var psc5 = new ParallelSchedulerConfig(1, false, "Test");
-        assertEquals("Parallelism", psc5.parallelism(), 1);
-        assertFalse("Tracking", psc5.tracking());
-        assertEquals("threadNamePrefix", psc5.threadNamePrefix(), "Test");
+        assertEquals(psc5.parallelism(), 1, "Parallelism");
+        assertFalse(psc5.tracking(), "Tracking");
+        assertEquals(psc5.threadNamePrefix(), "Test", "threadNamePrefix");
         }
     }
 }

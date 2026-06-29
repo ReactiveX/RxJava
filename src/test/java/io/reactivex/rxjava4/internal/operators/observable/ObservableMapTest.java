@@ -13,17 +13,17 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
-import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.operators.QueueFuseable;
@@ -38,7 +38,7 @@ public class ObservableMapTest extends RxJavaTest {
 
     static final BiFunction<String, Integer, String> APPEND_INDEX = (value, index) -> value + index;
 
-    @Before
+    @BeforeEach
     public void before() {
         stringObserver = TestHelper.mockObserver();
         stringObserver2 = TestHelper.mockObserver();
@@ -134,27 +134,31 @@ public class ObservableMapTest extends RxJavaTest {
         verify(stringObserver, times(1)).onError(any(Throwable.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void mapWithIssue417() {
-        Observable.just(1).observeOn(Schedulers.computation())
-                .map((Function<Integer, Integer>) _ -> {
-                    throw new IllegalArgumentException("any error");
-                }).blockingSingle();
+        assertThrows(IllegalArgumentException.class, () -> {
+            Observable.just(1).observeOn(Schedulers.computation())
+            .map((Function<Integer, Integer>) _ -> {
+                throw new IllegalArgumentException("any error");
+            }).blockingSingle();
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void mapWithErrorInFuncAndThreadPoolScheduler() throws InterruptedException {
-        // The error will throw in one of threads in the thread pool.
-        // If map does not handle it, the error will disappear.
-        // so map needs to handle the error by itself.
-        Observable<String> m = Observable.just("one")
-                .observeOn(Schedulers.computation())
-                .map(_ -> {
-                    throw new IllegalArgumentException("any error");
-                });
+        assertThrows(IllegalArgumentException.class, () -> {
+            // The error will throw in one of threads in the thread pool.
+            // If map does not handle it, the error will disappear.
+            // so map needs to handle the error by itself.
+            Observable<String> m = Observable.just("one")
+                    .observeOn(Schedulers.computation())
+                    .map(_ -> {
+                        throw new IllegalArgumentException("any error");
+                    });
 
-        // block for response, expecting exception thrown
-        m.blockingLast();
+            // block for response, expecting exception thrown
+            m.blockingLast();
+        });
     }
 
     /**
@@ -168,18 +172,22 @@ public class ObservableMapTest extends RxJavaTest {
     /**
      * We expect IllegalStateException to pass thru map.
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void errorPassesThruMap2() {
-        Observable.error(new IllegalStateException()).map(i -> i).blockingSingle();
+        assertThrows(IllegalStateException.class, () -> {
+            Observable.error(new IllegalStateException()).map(i -> i).blockingSingle();
+        });
     }
 
     /**
      * We expect an ArithmeticException exception here because last() emits a single value
      * but then we divide by 0.
      */
-    @Test(expected = ArithmeticException.class)
+    @Test
     public void mapWithErrorInFunc() {
-        Observable.range(1, 1).lastElement().map(i -> i / 0).blockingGet();
+        assertThrows(ArithmeticException.class, () -> {
+            Observable.range(1, 1).lastElement().map(i -> i / 0).blockingGet();
+        });
     }
 
     private static Map<String, String> getMap(String prefix) {

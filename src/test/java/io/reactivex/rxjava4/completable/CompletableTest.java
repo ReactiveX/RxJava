@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.completable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -23,7 +23,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.annotations.NonNull;
@@ -116,7 +116,7 @@ public class CompletableTest extends RxJavaTest {
          * @param n the expected number of subscriptions
          */
         public void assertSubscriptions(int n) {
-            Assert.assertEquals(n, get());
+            assertEquals(n, get());
         }
     }
 
@@ -139,7 +139,7 @@ public class CompletableTest extends RxJavaTest {
          * @param n the expected number of subscriptions
          */
         public void assertSubscriptions(int n) {
-            Assert.assertEquals(n, get());
+            assertEquals(n, get());
         }
     }
 
@@ -172,11 +172,13 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(1);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void concatSingleSourceThrows() {
-        Completable c = Completable.concatArray(error.completable);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.concatArray(error.completable);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -188,18 +190,22 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(3);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void concatMultipleOneThrows() {
-        Completable c = Completable.concatArray(normal.completable, error.completable, normal.completable);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.concatArray(normal.completable, error.completable, normal.completable);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void concatMultipleOneIsNull() {
-        Completable c = Completable.concatArray(normal.completable, null);
+        assertThrows(NullPointerException.class, () -> {
+            Completable c = Completable.concatArray(normal.completable, null);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -209,11 +215,13 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void concatIterableIteratorNull() {
-        Completable c = Completable.concat((Iterable<Completable>) () -> null);
+        assertThrows(NullPointerException.class, () -> {
+            Completable c = Completable.concat((Iterable<Completable>) () -> null);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -234,41 +242,51 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(3);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void concatIterableOneThrows() {
-        Completable c = Completable.concat(Collections.singleton(error.completable));
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.concat(Collections.singleton(error.completable));
 
-        c.blockingAwait();
-    }
-
-    @Test(expected = TestException.class)
-    public void concatIterableManyOneThrows() {
-        Completable c = Completable.concat(Arrays.asList(normal.completable, error.completable));
-
-        c.blockingAwait();
-    }
-
-    @Test(expected = TestException.class)
-    public void concatIterableIterableThrows() {
-        Completable c = Completable.concat((Iterable<Completable>) () -> {
-            throw new TestException();
+            c.blockingAwait();
         });
-
-        c.blockingAwait();
     }
 
-    @Test(expected = TestException.class)
+    @Test
+    public void concatIterableManyOneThrows() {
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.concat(Arrays.asList(normal.completable, error.completable));
+
+            c.blockingAwait();
+        });
+    }
+
+    @Test
+    public void concatIterableIterableThrows() {
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.concat((Iterable<Completable>) () -> {
+                throw new TestException();
+            });
+
+            c.blockingAwait();
+        });
+    }
+
+    @Test
     public void concatIterableIteratorHasNextThrows() {
-        Completable c = Completable.concat(new IterableIteratorHasNextThrows());
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.concat(new IterableIteratorHasNextThrows());
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void concatIterableIteratorNextThrows() {
-        Completable c = Completable.concat(new IterableIteratorNextThrows());
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.concat(new IterableIteratorNextThrows());
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -278,11 +296,13 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void concatObservableError() {
-        Completable c = Completable.concat(Flowable.<Completable>error(TestException::new));
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.concat(Flowable.<Completable>error(TestException::new));
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -294,11 +314,13 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(1);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void concatObservableSingleThrows() {
-        Completable c = Completable.concat(Flowable.just(error.completable));
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.concat(Flowable.just(error.completable));
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -310,11 +332,13 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(3);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void concatObservableManyOneThrows() {
-        Completable c = Completable.concat(Flowable.just(normal.completable, error.completable));
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.concat(Flowable.just(normal.completable, error.completable));
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -329,14 +353,16 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(Arrays.asList(5L, 4L, 4L), requested);
+        assertEquals(Arrays.asList(5L, 4L, 4L), requested);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void createOnSubscribeThrowsNPE() {
-        Completable c = Completable.unsafeCreate(_ -> { throw new NullPointerException(); });
+        assertThrows(NullPointerException.class, () -> {
+            Completable c = Completable.unsafeCreate(_ -> { throw new NullPointerException(); });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -349,11 +375,11 @@ public class CompletableTest extends RxJavaTest {
 
             c.blockingAwait();
 
-            Assert.fail("Did not throw exception");
+            fail("Did not throw exception");
         } catch (NullPointerException ex) {
             if (!(ex.getCause() instanceof TestException)) {
                 ex.printStackTrace();
-                Assert.fail("Did not wrap the TestException but it returned: " + ex);
+                fail("Did not wrap the TestException but it returned: " + ex);
             }
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -373,53 +399,67 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(1);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void deferReturnsNull() {
-        Completable c = Completable.defer(() -> null);
+        assertThrows(NullPointerException.class, () -> {
+            Completable c = Completable.defer(() -> null);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void deferFunctionThrows() {
-        Completable c = Completable.defer(() -> { throw new TestException(); });
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.defer(() -> { throw new TestException(); });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void deferErrorSource() {
-        Completable c = Completable.defer(() -> error.completable);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.defer(() -> error.completable);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void errorSupplierNormal() {
-        Completable c = Completable.error(TestException::new);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.error(TestException::new);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void errorSupplierReturnsNull() {
-        Completable c = Completable.error(() -> null);
+        assertThrows(NullPointerException.class, () -> {
+            Completable c = Completable.error(() -> null);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void errorSupplierThrows() {
-        Completable c = Completable.error(() -> { throw new TestException(); });
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.error(() -> { throw new TestException(); });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void errorNormal() {
-        Completable c = Completable.error(new TestException());
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.error(new TestException());
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -430,14 +470,16 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(1, calls.get());
+        assertEquals(1, calls.get());
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void fromCallableThrows() {
-        Completable c = Completable.fromCallable(() -> { throw new TestException(); });
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.fromCallable(() -> { throw new TestException(); });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -456,11 +498,13 @@ public class CompletableTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void fromFlowableError() {
-        Completable c = Completable.fromPublisher(Flowable.error(TestException::new));
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.fromPublisher(Flowable.error(TestException::new));
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -479,11 +523,13 @@ public class CompletableTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void fromObservableError() {
-        Completable c = Completable.fromObservable(Observable.error(TestException::new));
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.fromObservable(Observable.error(TestException::new));
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -494,14 +540,16 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(1, calls.get());
+        assertEquals(1, calls.get());
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void fromActionThrows() {
-        Completable c = Completable.fromAction(() -> { throw new TestException(); });
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.fromAction(() -> { throw new TestException(); });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -511,11 +559,13 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void fromSingleThrows() {
-        Completable c = Completable.fromSingle(Single.error(TestException::new));
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.fromSingle(Single.error(TestException::new));
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -534,11 +584,13 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(1);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeSingleSourceThrows() {
-        Completable c = Completable.mergeArray(error.completable);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.mergeArray(error.completable);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -550,18 +602,22 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(3);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeMultipleOneThrows() {
-        Completable c = Completable.mergeArray(normal.completable, error.completable, normal.completable);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.mergeArray(normal.completable, error.completable, normal.completable);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mergeMultipleOneIsNull() {
-        Completable c = Completable.mergeArray(normal.completable, null);
+        assertThrows(NullPointerException.class, () -> {
+            Completable c = Completable.mergeArray(normal.completable, null);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -571,11 +627,13 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mergeIterableIteratorNull() {
-        Completable c = Completable.merge((Iterable<Completable>) () -> null);
+        assertThrows(NullPointerException.class, () -> {
+            Completable c = Completable.merge((Iterable<Completable>) () -> null);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -596,41 +654,51 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(3);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeIterableOneThrows() {
-        Completable c = Completable.merge(Collections.singleton(error.completable));
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(Collections.singleton(error.completable));
 
-        c.blockingAwait();
-    }
-
-    @Test(expected = TestException.class)
-    public void mergeIterableManyOneThrows() {
-        Completable c = Completable.merge(Arrays.asList(normal.completable, error.completable));
-
-        c.blockingAwait();
-    }
-
-    @Test(expected = TestException.class)
-    public void mergeIterableIterableThrows() {
-        Completable c = Completable.merge((Iterable<Completable>) () -> {
-            throw new TestException();
+            c.blockingAwait();
         });
-
-        c.blockingAwait();
     }
 
-    @Test(expected = TestException.class)
+    @Test
+    public void mergeIterableManyOneThrows() {
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(Arrays.asList(normal.completable, error.completable));
+
+            c.blockingAwait();
+        });
+    }
+
+    @Test
+    public void mergeIterableIterableThrows() {
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge((Iterable<Completable>) () -> {
+                throw new TestException();
+            });
+
+            c.blockingAwait();
+        });
+    }
+
+    @Test
     public void mergeIterableIteratorHasNextThrows() {
-        Completable c = Completable.merge(new IterableIteratorHasNextThrows());
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(new IterableIteratorHasNextThrows());
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeIterableIteratorNextThrows() {
-        Completable c = Completable.merge(new IterableIteratorNextThrows());
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(new IterableIteratorNextThrows());
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -640,11 +708,13 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeObservableError() {
-        Completable c = Completable.merge(Flowable.<Completable>error(TestException::new));
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(Flowable.<Completable>error(TestException::new));
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -656,11 +726,13 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(1);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeObservableSingleThrows() {
-        Completable c = Completable.merge(Flowable.just(error.completable));
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(Flowable.just(error.completable));
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -672,11 +744,13 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(3);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeObservableManyOneThrows() {
-        Completable c = Completable.merge(Flowable.just(normal.completable, error.completable));
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(Flowable.just(normal.completable, error.completable));
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -692,7 +766,7 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
 
         // FIXME this request pattern looks odd because all 10 completions trigger 1 requests
-        Assert.assertEquals(Arrays.asList(5L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), requested);
+        assertEquals(Arrays.asList(5L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), requested);
     }
 
     @Test
@@ -711,11 +785,13 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(1);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeDelayErrorSingleSourceThrows() {
-        Completable c = Completable.mergeArray(StandardConcurrentConfig.MAX_DELAY_ERRORS, error.completable);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.mergeArray(StandardConcurrentConfig.MAX_DELAY_ERRORS, error.completable);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -738,11 +814,13 @@ public class CompletableTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mergeDelayErrorMultipleOneIsNull() {
-        Completable c = Completable.mergeArray(StandardConcurrentConfig.MAX_DELAY_ERRORS, normal.completable, null);
+        assertThrows(NullPointerException.class, () -> {
+            Completable c = Completable.mergeArray(StandardConcurrentConfig.MAX_DELAY_ERRORS, normal.completable, null);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -752,11 +830,13 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mergeDelayErrorIterableIteratorNull() {
-        Completable c = Completable.merge((Iterable<Completable>) () -> null, StandardConcurrentConfig.MAX_DELAY_ERRORS);
+        assertThrows(NullPointerException.class, () -> {
+            Completable c = Completable.merge((Iterable<Completable>) () -> null, StandardConcurrentConfig.MAX_DELAY_ERRORS);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -778,11 +858,13 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(3);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeDelayErrorIterableOneThrows() {
-        Completable c = Completable.merge(Collections.singleton(error.completable), StandardConcurrentConfig.MAX_DELAY_ERRORS);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(Collections.singleton(error.completable), StandardConcurrentConfig.MAX_DELAY_ERRORS);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -797,27 +879,33 @@ public class CompletableTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeDelayErrorIterableIterableThrows() {
-        Completable c = Completable.merge((Iterable<Completable>) () -> {
-            throw new TestException();
-        }, StandardConcurrentConfig.MAX_DELAY_ERRORS);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge((Iterable<Completable>) () -> {
+                throw new TestException();
+            }, StandardConcurrentConfig.MAX_DELAY_ERRORS);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeDelayErrorIterableIteratorHasNextThrows() {
-        Completable c = Completable.merge(new IterableIteratorHasNextThrows(), StandardConcurrentConfig.MAX_DELAY_ERRORS);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(new IterableIteratorHasNextThrows(), StandardConcurrentConfig.MAX_DELAY_ERRORS);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeDelayErrorIterableIteratorNextThrows() {
-        Completable c = Completable.merge(new IterableIteratorNextThrows(), StandardConcurrentConfig.MAX_DELAY_ERRORS);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(new IterableIteratorNextThrows(), StandardConcurrentConfig.MAX_DELAY_ERRORS);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -827,11 +915,13 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeDelayErrorObservableError() {
-        Completable c = Completable.merge(Flowable.<Completable>error(TestException::new), StandardConcurrentConfig.MAX_DELAY_ERRORS);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(Flowable.<Completable>error(TestException::new), StandardConcurrentConfig.MAX_DELAY_ERRORS);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -843,11 +933,13 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(1);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeDelayErrorObservableSingleThrows() {
-        Completable c = Completable.merge(Flowable.just(error.completable), StandardConcurrentConfig.MAX_DELAY_ERRORS);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(Flowable.just(error.completable), StandardConcurrentConfig.MAX_DELAY_ERRORS);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -859,11 +951,13 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(3);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mergeDelayErrorObservableManyOneThrows() {
-        Completable c = Completable.merge(Flowable.just(normal.completable, error.completable), StandardConcurrentConfig.MAX_DELAY_ERRORS);
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.merge(Flowable.just(normal.completable, error.completable), StandardConcurrentConfig.MAX_DELAY_ERRORS);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -879,7 +973,7 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
 
         // FIXME this request pattern looks odd because all 10 completions trigger 1 requests
-        Assert.assertEquals(Arrays.asList(5L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), requested);
+        assertEquals(Arrays.asList(5L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), requested);
     }
 
     @Test
@@ -906,8 +1000,8 @@ public class CompletableTest extends RxJavaTest {
 
         Completable.never().subscribe(new CompletableTracer());
 
-        Assert.assertTrue("onSubscribe not called", onSubscribeCalled.get());
-        Assert.assertEquals("There were calls to onXXX methods", 0, calls.get());
+        assertTrue(onSubscribeCalled.get(), "onSubscribe not called");
+        assertEquals(0, calls.get(), "There were calls to onXXX methods");
     }
 
     @Test
@@ -951,11 +1045,11 @@ public class CompletableTest extends RxJavaTest {
 
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        Assert.assertEquals(0, calls.get());
+        assertEquals(0, calls.get());
 
         scheduler.advanceTimeBy(200, TimeUnit.MILLISECONDS);
 
-        Assert.assertEquals(1, calls.get());
+        assertEquals(1, calls.get());
     }
 
     @Test
@@ -988,7 +1082,7 @@ public class CompletableTest extends RxJavaTest {
 
         Thread.sleep(200);
 
-        Assert.assertEquals(0, calls.get());
+        assertEquals(0, calls.get());
     }
 
     @Test
@@ -1020,9 +1114,9 @@ public class CompletableTest extends RxJavaTest {
             }
         });
 
-        Assert.assertEquals(1, dispose.get());
-        Assert.assertTrue("Not disposed first", disposedFirst.get());
-        Assert.assertNull(error.get());
+        assertEquals(1, dispose.get());
+        assertTrue(disposedFirst.get(), "Not disposed first");
+        assertNull(error.get());
     }
 
     @Test
@@ -1053,9 +1147,9 @@ public class CompletableTest extends RxJavaTest {
             }
         });
 
-        Assert.assertEquals(1, dispose.get());
-        Assert.assertFalse("Disposed first", disposedFirst.get());
-        Assert.assertNull(error.get());
+        assertEquals(1, dispose.get());
+        assertFalse(disposedFirst.get(), "Disposed first");
+        assertNull(error.get());
     }
 
     @Test
@@ -1086,9 +1180,9 @@ public class CompletableTest extends RxJavaTest {
             }
         });
 
-        Assert.assertEquals(1, dispose.get());
-        Assert.assertTrue("Not disposed first", disposedFirst.get());
-        Assert.assertFalse(complete.get());
+        assertEquals(1, dispose.get());
+        assertTrue(disposedFirst.get(), "Not disposed first");
+        assertFalse(complete.get());
     }
 
     @Test
@@ -1119,46 +1213,54 @@ public class CompletableTest extends RxJavaTest {
             }
         });
 
-        Assert.assertEquals(1, dispose.get());
-        Assert.assertFalse("Disposed first", disposedFirst.get());
-        Assert.assertFalse(complete.get());
+        assertEquals(1, dispose.get());
+        assertFalse(disposedFirst.get(), "Disposed first");
+        assertFalse(complete.get());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void usingMapperReturnsNull() {
-        Completable c = Completable.using(
-                () -> 1,
-                (Function<Object, Completable>) _ -> null,
-                _ -> { });
+        assertThrows(NullPointerException.class, () -> {
+            Completable c = Completable.using(
+                    () -> 1,
+                    (Function<Object, Completable>) _ -> null,
+                    _ -> { });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void usingResourceThrows() {
-        Completable c = Completable.using(() -> { throw new TestException(); },
-                (Function<Object, Completable>) _ -> normal.completable,
-                _ -> { });
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.using(() -> { throw new TestException(); },
+                    (Function<Object, Completable>) _ -> normal.completable,
+                    _ -> { });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void usingMapperThrows() {
-        Completable c = Completable.using(() -> 1,
-                (Function<Object, Completable>) _ -> { throw new TestException(); },
-                _ -> { });
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.using(() -> 1,
+                    (Function<Object, Completable>) _ -> { throw new TestException(); },
+                    _ -> { });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void usingDisposerThrows() {
-        Completable c = Completable.using(() -> 1,
-                (Function<Object, Completable>) _ -> normal.completable,
-                _ -> { throw new TestException(); });
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.using(() -> 1,
+                    (Function<Object, Completable>) _ -> normal.completable,
+                    _ -> { throw new TestException(); });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -1177,11 +1279,13 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(2);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void concatWithError() {
-        Completable c = normal.completable.concatWith(error.completable);
+        assertThrows(TestException.class, () -> {
+            Completable c = normal.completable.concatWith(error.completable);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -1210,7 +1314,7 @@ public class CompletableTest extends RxJavaTest {
 
         Thread.sleep(100);
 
-        Assert.assertFalse("Already done", done.get());
+        assertFalse(done.get(), "Already done");
 
         int timeout = 10;
 
@@ -1218,9 +1322,9 @@ public class CompletableTest extends RxJavaTest {
             Thread.sleep(100);
         }
 
-        Assert.assertTrue("Not done", done.get());
+        assertTrue(done.get(), "Not done");
 
-        Assert.assertNull(error.get());
+        assertNull(error.get());
     }
 
     @Test
@@ -1250,12 +1354,12 @@ public class CompletableTest extends RxJavaTest {
 
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        Assert.assertTrue(error.get().toString(), error.get() instanceof TestException);
-        Assert.assertFalse("Already done", done.get());
+        assertTrue(error.get() instanceof TestException, error.get().toString());
+        assertFalse(done.get(), "Already done");
 
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        Assert.assertFalse("Already done", done.get());
+        assertFalse(done.get(), "Already done");
     }
 
     @Test
@@ -1284,13 +1388,13 @@ public class CompletableTest extends RxJavaTest {
 
         Thread.sleep(100);
 
-        Assert.assertFalse("Already done", done.get());
-        Assert.assertNull(error.get());
+        assertFalse(done.get(), "Already done");
+        assertNull(error.get());
 
         Thread.sleep(200);
 
-        Assert.assertFalse("Already done", done.get());
-        Assert.assertTrue(error.get() instanceof TestException);
+        assertFalse(done.get(), "Already done");
+        assertTrue(error.get() instanceof TestException);
     }
 
     @Test
@@ -1301,7 +1405,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(1, calls.get());
+        assertEquals(1, calls.get());
     }
 
     @Test
@@ -1312,19 +1416,21 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait();
-            Assert.fail("Failed to throw TestException");
+            fail("Failed to throw TestException");
         } catch (TestException ex) {
             // expected
         }
 
-        Assert.assertEquals(0, calls.get());
+        assertEquals(0, calls.get());
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void doOnCompleteThrows() {
-        Completable c = normal.completable.doOnComplete(() -> { throw new TestException(); });
+        assertThrows(TestException.class, () -> {
+            Completable c = normal.completable.doOnComplete(() -> { throw new TestException(); });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -1335,7 +1441,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(0, calls.get());
+        assertEquals(0, calls.get());
     }
 
     @Test
@@ -1346,11 +1452,11 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait();
-            Assert.fail("No exception thrown");
+            fail("No exception thrown");
         } catch (TestException ex) {
             // expected
         }
-        Assert.assertEquals(0, calls.get());
+        assertEquals(0, calls.get());
     }
 
     @Test
@@ -1376,7 +1482,7 @@ public class CompletableTest extends RxJavaTest {
             }
         });
 
-        Assert.assertEquals(1, calls.get());
+        assertEquals(1, calls.get());
     }
 
     @Test
@@ -1416,7 +1522,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertNull(error.get());
+        assertNull(error.get());
     }
 
     @Test
@@ -1427,12 +1533,12 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait();
-            Assert.fail("Did not throw exception");
+            fail("Did not throw exception");
         } catch (Throwable e) {
             // expected
         }
 
-        Assert.assertTrue(err.get() instanceof TestException);
+        assertTrue(err.get() instanceof TestException);
     }
 
     @Test
@@ -1445,9 +1551,9 @@ public class CompletableTest extends RxJavaTest {
             c.blockingAwait();
         } catch (CompositeException ex) {
             List<Throwable> a = ex.getExceptions();
-            Assert.assertEquals(2, a.size());
-            Assert.assertTrue(a.get(0) instanceof TestException);
-            Assert.assertTrue(a.get(1) instanceof IllegalStateException);
+            assertEquals(2, a.size());
+            assertTrue(a.get(0) instanceof TestException);
+            assertTrue(a.get(1) instanceof IllegalStateException);
         }
     }
 
@@ -1461,14 +1567,16 @@ public class CompletableTest extends RxJavaTest {
             c.blockingAwait();
         }
 
-        Assert.assertEquals(10, calls.get());
+        assertEquals(10, calls.get());
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void doOnSubscribeThrows() {
-        Completable c = normal.completable.doOnSubscribe(_ -> { throw new TestException(); });
+        assertThrows(TestException.class, () -> {
+            Completable c = normal.completable.doOnSubscribe(_ -> { throw new TestException(); });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -1479,7 +1587,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(1, calls.get());
+        assertEquals(1, calls.get());
     }
 
     @Test
@@ -1490,19 +1598,21 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait();
-            Assert.fail("Did dot throw exception");
+            fail("Did dot throw exception");
         } catch (TestException ex) {
             // expected
         }
 
-        Assert.assertEquals(1, calls.get());
+        assertEquals(1, calls.get());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void liftReturnsNull() {
-        Completable c = normal.completable.lift(_ -> null);
+        assertThrows(NullPointerException.class, () -> {
+            Completable c = normal.completable.lift(_ -> null);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     static final class CompletableOperatorSwap implements CompletableOperator {
@@ -1529,11 +1639,13 @@ public class CompletableTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void liftOnCompleteError() {
-        Completable c = normal.completable.lift(new CompletableOperatorSwap());
+        assertThrows(TestException.class, () -> {
+            Completable c = normal.completable.lift(new CompletableOperatorSwap());
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -1581,8 +1693,8 @@ public class CompletableTest extends RxJavaTest {
 
         cdl.await();
 
-        Assert.assertNull(err.get());
-        Assert.assertTrue(name.get().startsWith("RxComputation"));
+        assertNull(err.get());
+        assertTrue(name.get().startsWith("RxComputation"));
     }
 
     @Test
@@ -1615,8 +1727,8 @@ public class CompletableTest extends RxJavaTest {
 
         cdl.await();
 
-        Assert.assertTrue(err.get() instanceof TestException);
-        Assert.assertTrue(name.get().startsWith("RxComputation"));
+        assertTrue(err.get() instanceof TestException);
+        assertTrue(name.get().startsWith("RxComputation"));
     }
 
     @Test
@@ -1626,11 +1738,13 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void onErrorCompleteFalse() {
-        Completable c = error.completable.onErrorComplete(IllegalStateException.class::isInstance);
+        assertThrows(TestException.class, () -> {
+            Completable c = error.completable.onErrorComplete(IllegalStateException.class::isInstance);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -1639,7 +1753,7 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait();
-            Assert.fail("Did not throw an exception");
+            fail("Did not throw an exception");
         } catch (CompositeException ex) {
             List<Throwable> errors = ex.getExceptions();
             TestHelper.assertError(errors, 0, TestException.class);
@@ -1655,13 +1769,13 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait();
-            Assert.fail("Did not throw an exception");
+            fail("Did not throw an exception");
         } catch (CompositeException ex) {
             List<Throwable> a = ex.getExceptions();
 
-            Assert.assertEquals(2, a.size());
-            Assert.assertTrue(a.get(0) instanceof TestException);
-            Assert.assertTrue(a.get(1) instanceof TestException);
+            assertEquals(2, a.size());
+            assertTrue(a.get(0) instanceof TestException);
+            assertTrue(a.get(1) instanceof TestException);
         }
     }
 
@@ -1672,18 +1786,22 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void onErrorResumeNextError() {
-        Completable c = error.completable.onErrorResumeNext((Function<Throwable, Completable>) _ -> error.completable);
+        assertThrows(TestException.class, () -> {
+            Completable c = error.completable.onErrorResumeNext((Function<Throwable, Completable>) _ -> error.completable);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void repeatError() {
-        Completable c = error.completable.repeat();
+        assertThrows(TestException.class, () -> {
+            Completable c = error.completable.repeat();
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -1697,7 +1815,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(5, calls.get());
+        assertEquals(5, calls.get());
     }
 
     @Test
@@ -1711,7 +1829,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(1, calls.get());
+        assertEquals(1, calls.get());
     }
 
     @Test
@@ -1725,7 +1843,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(0, calls.get());
+        assertEquals(0, calls.get());
     }
 
     @Test
@@ -1740,7 +1858,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(5, calls.get());
+        assertEquals(5, calls.get());
     }
 
     @Test
@@ -1764,18 +1882,22 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void retryBiPredicate5Times() {
-        Completable c = error.completable.retry((n, _) -> n < 5);
+        assertThrows(TestException.class, () -> {
+            Completable c = error.completable.retry((n, _) -> n < 5);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void retryTimes5Error() {
-        Completable c = error.completable.retry(5);
+        assertThrows(TestException.class, () -> {
+            Completable c = error.completable.retry(5);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -1793,16 +1915,20 @@ public class CompletableTest extends RxJavaTest {
         assertEquals(6, calls.get());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void retryNegativeTimes() {
-        normal.completable.retry(-1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            normal.completable.retry(-1);
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void retryPredicateError() {
-        Completable c = error.completable.retry(_ -> false);
+        assertThrows(TestException.class, () -> {
+            Completable c = error.completable.retry(_ -> false);
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -1846,7 +1972,7 @@ public class CompletableTest extends RxJavaTest {
 
         Thread.sleep(150);
 
-        Assert.assertTrue("Not completed", complete.get());
+        assertTrue(complete.get(), "Not completed");
 
         assertTrue(d.isDisposed());
     }
@@ -1867,7 +1993,7 @@ public class CompletableTest extends RxJavaTest {
 
         Thread.sleep(150);
 
-        Assert.assertFalse("Completed", complete.get());
+        assertFalse(complete.get(), "Completed");
     }
 
     @Test
@@ -1876,8 +2002,8 @@ public class CompletableTest extends RxJavaTest {
         final AtomicBoolean complete = new AtomicBoolean();
         normal.completable.subscribe(() -> complete.set(true), err::set);
 
-        Assert.assertNull(err.get());
-        Assert.assertTrue("Not completed", complete.get());
+        assertNull(err.get());
+        assertTrue(complete.get(), "Not completed");
     }
 
     @Test
@@ -1886,8 +2012,8 @@ public class CompletableTest extends RxJavaTest {
         final AtomicBoolean complete = new AtomicBoolean();
         error.completable.subscribe(() -> complete.set(true), err::set);
 
-        Assert.assertTrue(err.get() instanceof TestException);
-        Assert.assertFalse("Not completed", complete.get());
+        assertTrue(err.get() instanceof TestException);
+        assertFalse(complete.get(), "Not completed");
     }
 
     @Test
@@ -1897,7 +2023,7 @@ public class CompletableTest extends RxJavaTest {
             final AtomicReference<Throwable> err = new AtomicReference<>();
             normal.completable.subscribe(() -> { throw new TestException(); }, err::set);
 
-            Assert.assertNull(err.get());
+            assertNull(err.get());
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
@@ -1944,7 +2070,7 @@ public class CompletableTest extends RxJavaTest {
 
         normal.completable.subscribe(() -> run.set(true));
 
-        Assert.assertTrue("Not completed", run.get());
+        assertTrue(run.get(), "Not completed");
     }
 
     @Test
@@ -1955,7 +2081,7 @@ public class CompletableTest extends RxJavaTest {
 
             error.completable.subscribe(() -> run.set(true));
 
-            Assert.assertFalse("Completed", run.get());
+            assertFalse(run.get(), "Completed");
 
             TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
         } finally {
@@ -1996,7 +2122,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertTrue(name.get().startsWith("RxComputation"));
+        assertTrue(name.get().startsWith("RxComputation"));
     }
 
     @Test
@@ -2010,12 +2136,12 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait();
-            Assert.fail("No exception thrown");
+            fail("No exception thrown");
         } catch (TestException ex) {
             // expected
         }
 
-        Assert.assertTrue(name.get().startsWith("RxComputation"));
+        assertTrue(name.get().startsWith("RxComputation"));
     }
 
     @Test
@@ -2071,9 +2197,11 @@ public class CompletableTest extends RxJavaTest {
         normal.completable.toFlowable().blockingForEach(Functions.emptyConsumer());
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void toFlowableError() {
-        error.completable.toFlowable().blockingForEach(Functions.emptyConsumer());
+        assertThrows(TestException.class, () -> {
+            error.completable.toFlowable().blockingForEach(Functions.emptyConsumer());
+        });
     }
 
     @Test
@@ -2081,39 +2209,49 @@ public class CompletableTest extends RxJavaTest {
         normal.completable.toObservable().blockingForEach(Functions.emptyConsumer());
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void toObservableError() {
-        error.completable.toObservable().blockingForEach(Functions.emptyConsumer());
+        assertThrows(TestException.class, () -> {
+            error.completable.toObservable().blockingForEach(Functions.emptyConsumer());
+        });
     }
 
     @Test
     public void toSingleSupplierNormal() {
-        Assert.assertEquals((Object)1, normal.completable.toSingle(() -> 1).blockingGet());
+        assertEquals((Object)1, normal.completable.toSingle(() -> 1).blockingGet());
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void toSingleSupplierError() {
-        error.completable.toSingle(() -> 1).blockingGet();
+        assertThrows(TestException.class, () -> {
+            error.completable.toSingle(() -> 1).blockingGet();
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void toSingleSupplierReturnsNull() {
-        normal.completable.toSingle(() -> null).blockingGet();
+        assertThrows(NullPointerException.class, () -> {
+            normal.completable.toSingle(() -> null).blockingGet();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void toSingleSupplierThrows() {
-        normal.completable.toSingle(() -> { throw new TestException(); }).blockingGet();
+        assertThrows(TestException.class, () -> {
+            normal.completable.toSingle(() -> { throw new TestException(); }).blockingGet();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void toSingleDefaultError() {
-        error.completable.toSingleDefault(1).blockingGet();
+        assertThrows(TestException.class, () -> {
+            error.completable.toSingleDefault(1).blockingGet();
+        });
     }
 
     @Test
     public void toSingleDefaultNormal() {
-        Assert.assertEquals((Integer)1, normal.completable.toSingleDefault(1).blockingGet());
+        assertEquals((Integer)1, normal.completable.toSingleDefault(1).blockingGet());
     }
 
     @Test
@@ -2146,7 +2284,7 @@ public class CompletableTest extends RxJavaTest {
 
         cdl.await();
 
-        Assert.assertTrue(name.get().startsWith("RxComputation"));
+        assertTrue(name.get().startsWith("RxComputation"));
     }
 
     @Test
@@ -2185,15 +2323,15 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(() -> complete.set(true));
 
-        Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
-        Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
+        assertTrue(pp1.hasSubscribers(), "First subject no subscribers");
+        assertTrue(pp2.hasSubscribers(), "Second subject no subscribers");
 
         pp1.onComplete();
 
-        Assert.assertFalse("First subject has subscribers", pp1.hasSubscribers());
-        Assert.assertFalse("Second subject has subscribers", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "First subject has subscribers");
+        assertFalse(pp2.hasSubscribers(), "Second subject has subscribers");
 
-        Assert.assertTrue("Not completed", complete.get());
+        assertTrue(complete.get(), "Not completed");
     }
 
     @Test
@@ -2211,15 +2349,15 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(Functions.EMPTY_ACTION, complete::set);
 
-        Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
-        Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
+        assertTrue(pp1.hasSubscribers(), "First subject no subscribers");
+        assertTrue(pp2.hasSubscribers(), "Second subject no subscribers");
 
         pp1.onError(new TestException());
 
-        Assert.assertFalse("First subject has subscribers", pp1.hasSubscribers());
-        Assert.assertFalse("Second subject has subscribers", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "First subject has subscribers");
+        assertFalse(pp2.hasSubscribers(), "Second subject has subscribers");
 
-        Assert.assertTrue("Not completed", complete.get() instanceof TestException);
+        assertTrue(complete.get() instanceof TestException, "Not completed");
     }
 
     @Test
@@ -2237,15 +2375,15 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(() -> complete.set(true));
 
-        Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
-        Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
+        assertTrue(pp1.hasSubscribers(), "First subject no subscribers");
+        assertTrue(pp2.hasSubscribers(), "Second subject no subscribers");
 
         pp2.onComplete();
 
-        Assert.assertFalse("First subject has subscribers", pp1.hasSubscribers());
-        Assert.assertFalse("Second subject has subscribers", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "First subject has subscribers");
+        assertFalse(pp2.hasSubscribers(), "Second subject has subscribers");
 
-        Assert.assertTrue("Not completed", complete.get());
+        assertTrue(complete.get(), "Not completed");
     }
 
     @Test
@@ -2263,15 +2401,15 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(Functions.EMPTY_ACTION, complete::set);
 
-        Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
-        Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
+        assertTrue(pp1.hasSubscribers(), "First subject no subscribers");
+        assertTrue(pp2.hasSubscribers(), "Second subject no subscribers");
 
         pp2.onError(new TestException());
 
-        Assert.assertFalse("First subject has subscribers", pp1.hasSubscribers());
-        Assert.assertFalse("Second subject has subscribers", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "First subject has subscribers");
+        assertFalse(pp2.hasSubscribers(), "Second subject has subscribers");
 
-        Assert.assertTrue("Not completed", complete.get() instanceof TestException);
+        assertTrue(complete.get() instanceof TestException, "Not completed");
     }
 
     @Test
@@ -2368,15 +2506,15 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(() -> complete.set(true));
 
-        Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
-        Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
+        assertTrue(pp1.hasSubscribers(), "First subject no subscribers");
+        assertTrue(pp2.hasSubscribers(), "Second subject no subscribers");
 
         pp1.onComplete();
 
-        Assert.assertFalse("First subject has subscribers", pp1.hasSubscribers());
-        Assert.assertFalse("Second subject has subscribers", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "First subject has subscribers");
+        assertFalse(pp2.hasSubscribers(), "Second subject has subscribers");
 
-        Assert.assertTrue("Not completed", complete.get());
+        assertTrue(complete.get(), "Not completed");
     }
 
     @Test
@@ -2394,15 +2532,15 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(Functions.EMPTY_ACTION, complete::set);
 
-        Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
-        Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
+        assertTrue(pp1.hasSubscribers(), "First subject no subscribers");
+        assertTrue(pp2.hasSubscribers(), "Second subject no subscribers");
 
         pp1.onError(new TestException());
 
-        Assert.assertFalse("First subject has subscribers", pp1.hasSubscribers());
-        Assert.assertFalse("Second subject has subscribers", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "First subject has subscribers");
+        assertFalse(pp2.hasSubscribers(), "Second subject has subscribers");
 
-        Assert.assertTrue("Not completed", complete.get() instanceof TestException);
+        assertTrue(complete.get() instanceof TestException, "Not completed");
     }
 
     @Test
@@ -2420,15 +2558,15 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(() -> complete.set(true));
 
-        Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
-        Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
+        assertTrue(pp1.hasSubscribers(), "First subject no subscribers");
+        assertTrue(pp2.hasSubscribers(), "Second subject no subscribers");
 
         pp2.onComplete();
 
-        Assert.assertFalse("First subject has subscribers", pp1.hasSubscribers());
-        Assert.assertFalse("Second subject has subscribers", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "First subject has subscribers");
+        assertFalse(pp2.hasSubscribers(), "Second subject has subscribers");
 
-        Assert.assertTrue("Not completed", complete.get());
+        assertTrue(complete.get(), "Not completed");
     }
 
     @Test
@@ -2446,15 +2584,15 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(Functions.EMPTY_ACTION, complete::set);
 
-        Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
-        Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
+        assertTrue(pp1.hasSubscribers(), "First subject no subscribers");
+        assertTrue(pp2.hasSubscribers(), "Second subject no subscribers");
 
         pp2.onError(new TestException());
 
-        Assert.assertFalse("First subject has subscribers", pp1.hasSubscribers());
-        Assert.assertFalse("Second subject has subscribers", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "First subject has subscribers");
+        assertFalse(pp2.hasSubscribers(), "Second subject has subscribers");
 
-        Assert.assertTrue("Not completed", complete.get() instanceof TestException);
+        assertTrue(complete.get() instanceof TestException, "Not completed");
     }
 
     @Test
@@ -2468,7 +2606,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertTrue("Did not start with other", run.get());
+        assertTrue(run.get(), "Did not start with other");
         normal.assertSubscriptions(1);
     }
 
@@ -2478,7 +2616,7 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait();
-            Assert.fail("Did not throw TestException");
+            fail("Did not throw TestException");
         } catch (TestException ex) {
             normal.assertSubscriptions(0);
             error.assertSubscriptions(1);
@@ -2498,7 +2636,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(ts);
 
-        Assert.assertTrue("Did not start with other", run.get());
+        assertTrue(run.get(), "Did not start with other");
         normal.assertSubscriptions(1);
 
         ts.assertValue(1);
@@ -2535,7 +2673,7 @@ public class CompletableTest extends RxJavaTest {
 
         o.subscribe(to);
 
-        Assert.assertTrue("Did not start with other", run.get());
+        assertTrue(run.get(), "Did not start with other");
         normal.assertSubscriptions(1);
 
         to.assertValue(1);
@@ -2583,15 +2721,14 @@ public class CompletableTest extends RxJavaTest {
             Thread.currentThread().getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), error));
         try {
             action.run();
-            assertEquals("Should have received exactly 1 exception", 1, handler.count);
+            assertEquals(1, handler.count, "Should have received exactly 1 exception");
             Throwable caught = handler.caught;
             while (caught != null) {
                 if (caught instanceof TestException) { break; }
                 if (caught == caught.getCause()) { break; }
                 caught = caught.getCause();
             }
-            assertTrue("A TestException should have been delivered to the handler",
-                    caught instanceof TestException);
+            assertTrue( caught instanceof TestException, "A TestException should have been delivered to the handler");
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         } finally {
@@ -2644,8 +2781,8 @@ public class CompletableTest extends RxJavaTest {
 
         assertEquals(2, listEx.size());
 
-        assertTrue(listEx.get(0).toString(), listEx.get(0) instanceof NullPointerException);
-        assertTrue(listEx.get(1).toString(), listEx.get(1) instanceof TestException);
+        assertTrue(listEx.get(0) instanceof NullPointerException, listEx.get(0).toString());
+        assertTrue(listEx.get(1) instanceof TestException, listEx.get(1).toString());
     }
 
     @Test
@@ -2659,7 +2796,7 @@ public class CompletableTest extends RxJavaTest {
 
             stringSubject.onError(new TestException());
 
-            assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+            assertTrue(completableSubscription.isDisposed(), "Not unsubscribed?");
 
             TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
         } finally {
@@ -2676,7 +2813,7 @@ public class CompletableTest extends RxJavaTest {
 
         stringSubject.onComplete();
 
-        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+        assertTrue(completableSubscription.isDisposed(), "Not unsubscribed?");
     }
 
     @Test
@@ -2694,8 +2831,8 @@ public class CompletableTest extends RxJavaTest {
 
         stringSubject.onComplete();
 
-        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
-        assertNotNull("Unsubscribed before the call to onComplete", disposableRef.get());
+        assertTrue(completableSubscription.isDisposed(), "Not unsubscribed?");
+        assertNotNull(disposableRef.get(), "Unsubscribed before the call to onComplete");
     }
 
     @Test
@@ -2709,7 +2846,7 @@ public class CompletableTest extends RxJavaTest {
 
             stringSubject.onError(new TestException());
 
-            assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+            assertTrue(completableSubscription.isDisposed(), "Not unsubscribed?");
 
             TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
         } finally {
@@ -2726,7 +2863,7 @@ public class CompletableTest extends RxJavaTest {
 
         stringSubject.onComplete();
 
-        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+        assertTrue(completableSubscription.isDisposed(), "Not unsubscribed?");
     }
 
     @Test
@@ -2738,7 +2875,7 @@ public class CompletableTest extends RxJavaTest {
 
         stringSubject.onError(new TestException());
 
-        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+        assertTrue(completableSubscription.isDisposed(), "Not unsubscribed?");
     }
 
     @Test
@@ -2786,7 +2923,7 @@ public class CompletableTest extends RxJavaTest {
             .toFlowable().subscribe(ts);
         ts.assertNoValues();
         ts.assertError(e);
-        Assert.assertFalse("Should not have subscribed to single when completable errors", hasRun.get());
+        assertFalse(hasRun.get(), "Should not have subscribed to single when completable errors");
     }
 
     @Test
@@ -2810,7 +2947,7 @@ public class CompletableTest extends RxJavaTest {
 
     private BiFunction<Completable, CompletableObserver, CompletableObserver> onStart;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         onCreate = spy(new Function<Completable, Completable>() /* Mockito */ {
             @Override
@@ -2832,7 +2969,7 @@ public class CompletableTest extends RxJavaTest {
         RxJavaPlugins.setOnCompletableSubscribe(onStart);
     }
 
-    @After
+    @AfterEach
     public void after() {
         RxJavaPlugins.reset();
     }
@@ -2853,7 +2990,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(1, calls.get());
+        assertEquals(1, calls.get());
     }
 
     @Test
@@ -2864,19 +3001,21 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait();
-            Assert.fail("Failed to throw TestException");
+            fail("Failed to throw TestException");
         } catch (TestException ex) {
             // expected
         }
 
-        Assert.assertEquals(0, calls.get());
+        assertEquals(0, calls.get());
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void doOnCompletedThrows() {
-        Completable c = normal.completable.doOnComplete(() -> { throw new TestException(); });
+        assertThrows(TestException.class, () -> {
+            Completable c = normal.completable.doOnComplete(() -> { throw new TestException(); });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test
@@ -2905,8 +3044,8 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertTrue("Not completed", complete.get());
-        Assert.assertTrue("Closure called before onComplete", doneAfter.get());
+        assertTrue(complete.get(), "Not completed");
+        assertTrue(doneAfter.get(), "Closure called before onComplete");
     }
 
     @Test
@@ -2917,12 +3056,12 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait(5, TimeUnit.SECONDS);
-            Assert.fail("Did not throw TestException");
+            fail("Did not throw TestException");
         } catch (TestException ex) {
             // expected
         }
 
-        Assert.assertTrue("Closure not called", doneAfter.get());
+        assertTrue(doneAfter.get(), "Closure not called");
     }
 
     @Test
@@ -2951,7 +3090,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertFalse("Start with other", run.get());
+        assertFalse(run.get(), "Start with other");
         normal.assertSubscriptions(1);
     }
 
@@ -2961,7 +3100,7 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait();
-            Assert.fail("Did not throw TestException");
+            fail("Did not throw TestException");
         } catch (TestException ex) {
             normal.assertSubscriptions(1);
             error.assertSubscriptions(1);
@@ -2981,7 +3120,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(ts);
 
-        Assert.assertFalse("Start with other", run.get());
+        assertFalse(run.get(), "Start with other");
         normal.assertSubscriptions(1);
 
         ts.assertValue(1);
@@ -3049,8 +3188,8 @@ public class CompletableTest extends RxJavaTest {
 
         assertEquals(2, listEx.size());
 
-        assertTrue(listEx.get(0).toString(), listEx.get(0) instanceof TestException);
-        assertTrue(listEx.get(1).toString(), listEx.get(1) instanceof TestException);
+        assertTrue(listEx.get(0) instanceof TestException, listEx.get(0).toString());
+        assertTrue(listEx.get(1) instanceof TestException, listEx.get(1).toString());
     }
 
     @Test
@@ -3081,7 +3220,7 @@ public class CompletableTest extends RxJavaTest {
 
         stringSubject.onComplete();
 
-        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+        assertTrue(completableSubscription.isDisposed(), "Not unsubscribed?");
     }
 
     @Test
@@ -3126,12 +3265,12 @@ public class CompletableTest extends RxJavaTest {
         CompositeException composite = (CompositeException)ts.errors().getFirst();
 
         List<Throwable> errors = composite.getExceptions();
-        Assert.assertEquals(2, errors.size());
+        assertEquals(2, errors.size());
 
-        Assert.assertTrue(errors.get(0).toString(), errors.get(0) instanceof TestException);
-        Assert.assertNull(errors.get(0).toString(), errors.get(0).getMessage());
-        Assert.assertTrue(errors.get(1).toString(), errors.get(1) instanceof TestException);
-        Assert.assertEquals(errors.get(1).toString(), "Forced inner failure", errors.get(1).getMessage());
+        assertTrue(errors.get(0) instanceof TestException, errors.get(0).toString());
+        assertNull(errors.get(0).getMessage(), errors.get(0).toString());
+        assertTrue(errors.get(1) instanceof TestException, errors.get(1).toString());
+        assertEquals("Forced inner failure", errors.get(1).getMessage(), errors.get(1).toString());
     }
 
     @Test
@@ -3149,8 +3288,8 @@ public class CompletableTest extends RxJavaTest {
 
         stringSubject.onComplete();
 
-        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
-        assertNotNull("Unsubscribed before the call to onComplete", disposableRef.get());
+        assertTrue(completableSubscription.isDisposed(), "Not unsubscribed?");
+        assertNotNull(disposableRef.get(), "Unsubscribed before the call to onComplete");
     }
 
     @Test
@@ -3169,8 +3308,8 @@ public class CompletableTest extends RxJavaTest {
 
         stringSubject.onError(new TestException());
 
-        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
-        assertNotNull("Unsubscribed before the call to onError", disposableRef.get());
+        assertTrue(completableSubscription.isDisposed(), "Not unsubscribed?");
+        assertNotNull(disposableRef.get(), "Unsubscribed before the call to onError");
     }
 
     @Test
@@ -3209,7 +3348,7 @@ public class CompletableTest extends RxJavaTest {
 
         ts.assertNoValues();
         ts.assertError(e);
-        Assert.assertFalse("Should not have subscribed to observable when completable errors", hasRun.get());
+        assertFalse(hasRun.get(), "Should not have subscribed to observable when completable errors");
     }
 
     @Test
@@ -3245,11 +3384,11 @@ public class CompletableTest extends RxJavaTest {
 
         try {
             c.blockingAwait();
-            Assert.fail("Failed to throw Exception");
+            fail("Failed to throw Exception");
         } catch (RuntimeException ex) {
             if (!((ex.getCause() instanceof ExecutionException) && (ex.getCause().getCause() instanceof TestException))) {
                 ex.printStackTrace();
-                Assert.fail("Wrong exception received");
+                fail("Wrong exception received");
             }
         } finally {
             exec.shutdown();
@@ -3264,14 +3403,16 @@ public class CompletableTest extends RxJavaTest {
 
         c.blockingAwait();
 
-        Assert.assertEquals(1, calls.get());
+        assertEquals(1, calls.get());
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void fromRunnableThrows() {
-        Completable c = Completable.fromRunnable(() -> { throw new TestException(); });
+        assertThrows(TestException.class, () -> {
+            Completable c = Completable.fromRunnable(() -> { throw new TestException(); });
 
-        c.blockingAwait();
+            c.blockingAwait();
+        });
     }
 
     @Test

@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.schedulers;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -126,6 +126,6 @@ public class SchedulerLifecycleTest extends RxJavaTest {
         // cached threads may get dropped between the two checks
         rxThreadsAfter.removeAll(rxThreadsBefore);
 
-        Assert.assertTrue("Some new threads appeared: " + rxThreadsAfter, rxThreadsAfter.isEmpty());
+        assertTrue("Some new threads appeared: " + rxThreadsAfter, rxThreadsAfter.isEmpty());
     }
 }

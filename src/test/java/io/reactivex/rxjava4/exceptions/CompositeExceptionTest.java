@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.exceptions;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 
@@ -286,12 +286,12 @@ public class CompositeExceptionTest extends RxJavaTest {
 
         String overview = composite.getCause().getMessage();
 
-        assertTrue(overview, overview.contains("Multiple exceptions (3)"));
-        assertTrue(overview, overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex1"));
-        assertTrue(overview, overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex2"));
-        assertTrue(overview, overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex3"));
-        assertTrue(overview, overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex4"));
-        assertTrue(overview, overview.contains("at io.reactivex.rxjava4.exceptions.CompositeExceptionTest.exceptionOverview"));
+        assertTrue(overview.contains("Multiple exceptions (3)"), overview);
+        assertTrue(overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex1"), overview);
+        assertTrue(overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex2"), overview);
+        assertTrue(overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex3"), overview);
+        assertTrue(overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex4"), overview);
+        assertTrue(overview.contains("at io.reactivex.rxjava4.exceptions.CompositeExceptionTest.exceptionOverview"), overview);
     }
 
     @Test
@@ -303,11 +303,11 @@ public class CompositeExceptionTest extends RxJavaTest {
 
         String overview = composite.getCause().getMessage();
 
-        assertTrue(overview, overview.contains("Multiple exceptions (2)"));
-        assertTrue(overview, overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex1"));
-        assertTrue(overview, overview.contains("io.reactivex.rxjava4.exceptions.CompositeException.ExceptionOverview: example"));
+        assertTrue(overview.contains("Multiple exceptions (2)"), overview);
+        assertTrue(overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex1"), overview);
+        assertTrue( overview.contains("io.reactivex.rxjava4.exceptions.CompositeException.ExceptionOverview: example"), overview);
 
-        assertEquals(overview, 2, overview.split("at\\s").length);
+        assertEquals(2, overview.split("at\\s").length, overview);
     }
 
     @Test
@@ -322,12 +322,12 @@ public class CompositeExceptionTest extends RxJavaTest {
         String overview = composite.getCause().getMessage();
         System.err.println(overview);
 
-        assertTrue(overview, overview.contains("Multiple exceptions (2)"));
-        assertTrue(overview, overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex0"));
-        assertTrue(overview, overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex1"));
-        assertTrue(overview, overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex2"));
-        assertTrue(overview, overview.contains("(cause not expanded again) io.reactivex.rxjava4.exceptions.TestException: ex0"));
-        assertEquals(overview, 5, overview.split("at\\s").length);
+        assertTrue(overview.contains("Multiple exceptions (2)"), overview);
+        assertTrue(overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex0"), overview);
+        assertTrue(overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex1"), overview);
+        assertTrue(overview.contains("io.reactivex.rxjava4.exceptions.TestException: ex2"), overview);
+        assertTrue(overview.contains("(cause not expanded again) io.reactivex.rxjava4.exceptions.TestException: ex0"), overview);
+        assertEquals(5, overview.split("at\\s").length, overview);
     }
 
     @Test
@@ -349,9 +349,9 @@ public class CompositeExceptionTest extends RxJavaTest {
         String overview = composite2.getCause().getMessage();
         System.err.println(overview);
 
-        assertTrue(overview, overview.contains("        Multiple exceptions (2)"));
-        assertTrue(overview, overview.contains("        |-- io.reactivex.rxjava4.exceptions.TestException: ex1"));
-        assertTrue(overview, overview.contains("        |-- io.reactivex.rxjava4.exceptions.TestException: ex2"));
+        assertTrue(overview.contains("        Multiple exceptions (2)"), overview);
+        assertTrue(overview.contains("        |-- io.reactivex.rxjava4.exceptions.TestException: ex1"), overview);
+        assertTrue(overview.contains("        |-- io.reactivex.rxjava4.exceptions.TestException: ex2"), overview);
     }
 
     @Test

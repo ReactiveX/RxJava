@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
@@ -38,7 +38,7 @@ public class ObservableTimeIntervalTest extends RxJavaTest {
     private PublishSubject<Integer> subject;
     private Observable<Timed<Integer>> observable;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         observer = TestHelper.mockObserver();
         testScheduler = new TestScheduler();

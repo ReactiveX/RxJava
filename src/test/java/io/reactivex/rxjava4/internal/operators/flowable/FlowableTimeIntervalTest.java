@@ -15,11 +15,11 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -38,7 +38,7 @@ public class FlowableTimeIntervalTest extends RxJavaTest {
     private PublishProcessor<Integer> processor;
     private Flowable<Timed<Integer>> flowable;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         subscriber = TestHelper.mockSubscriber();
         testScheduler = new TestScheduler();

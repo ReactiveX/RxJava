@@ -13,17 +13,17 @@
 
 package io.reactivex.rxjava4.processors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -410,10 +410,10 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
                     System.out.println(o.get());
                     System.out.println(rs.hasSubscribers());
                     rs.onComplete();
-                    Assert.fail("Timeout @ " + i);
+                    fail("Timeout @ " + i);
                     break;
                 } else {
-                    Assert.assertEquals(1, o.get());
+                    assertEquals(1, o.get());
                     worker.schedule(rs::onComplete);
                 }
             }

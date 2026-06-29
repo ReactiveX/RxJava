@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -145,16 +145,20 @@ public class MaybeZipIterableTest extends RxJavaTest {
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void zipIterableOneIsNull() {
-        Maybe.zip(Arrays.asList(null, Maybe.just(1)), (Function<Object[], Object>) _ -> 1)
-        .blockingGet();
+        assertThrows(NullPointerException.class, () -> {
+            Maybe.zip(Arrays.asList(null, Maybe.just(1)), (Function<Object[], Object>) _ -> 1)
+            .blockingGet();
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void zipIterableTwoIsNull() {
-        Maybe.zip(Arrays.asList(Maybe.just(1), null), (Function<Object[], Object>) _ -> 1)
-        .blockingGet();
+        assertThrows(NullPointerException.class, () -> {
+            Maybe.zip(Arrays.asList(Maybe.just(1), null), (Function<Object[], Object>) _ -> 1)
+            .blockingGet();
+        });
     }
 
     @Test

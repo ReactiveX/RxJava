@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
@@ -46,7 +46,7 @@ public class ObservableZipTest extends RxJavaTest {
     Observer<String> observer;
     InOrder inOrder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         concat2Strings = (t1, t2) -> t1 + "-" + t2;
 
@@ -836,7 +836,7 @@ public class ObservableZipTest extends RxJavaTest {
         Collection<Observable<Object>> observables = Collections.emptyList();
 
         Observable<Object> o = Observable.zip(observables, args -> {
-            Assert.assertEquals("No argument should have been passed", 0, args.length);
+            assertEquals(0, args.length, "No argument should have been passed");
             return invoked;
         });
 
@@ -850,18 +850,19 @@ public class ObservableZipTest extends RxJavaTest {
      * Expect NoSuchElementException instead of blocking forever as zip should emit onComplete and no onNext
      * and last() expects at least a single response.
      */
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void startEmptyListBlocking() {
+        assertThrows(NoSuchElementException.class, () -> {
+            final Object invoked = new Object();
+            Collection<Observable<Object>> observables = Collections.emptyList();
 
-        final Object invoked = new Object();
-        Collection<Observable<Object>> observables = Collections.emptyList();
+            Observable<Object> o = Observable.zip(observables, args -> {
+                assertEquals(0, args.length, "No argument should have been passed");
+                return invoked;
+            });
 
-        Observable<Object> o = Observable.zip(observables, args -> {
-            Assert.assertEquals("No argument should have been passed", 0, args.length);
-            return invoked;
+            o.blockingLast();
         });
-
-        o.blockingLast();
     }
 
     @Test
@@ -967,7 +968,7 @@ public class ObservableZipTest extends RxJavaTest {
         while (System.currentTimeMillis() - startTime < 9000 && i++ < 100000) {
             int value = Observable.zip(src, src, (t1, t2) -> t1 + t2 * 10).blockingSingle(0);
 
-            Assert.assertEquals(11, value);
+            assertEquals(11, value);
         }
     }
 
@@ -1137,8 +1138,8 @@ public class ObservableZipTest extends RxJavaTest {
 
             List<Object> list = to.values().getFirst();
 
-            assertTrue(list.toString(), list.contains("RxSi"));
-            assertTrue(list.toString(), list.contains("RxCo"));
+            assertTrue(list.contains("RxSi"), list.toString());
+            assertTrue(list.contains("RxCo"), list.toString());
         }
     }
 

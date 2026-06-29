@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.*;
 
@@ -49,9 +49,9 @@ final class SchedulerTestHelper {
             if (handler.count != 0) {
                 handler.caught.printStackTrace();
             }
-            assertEquals("Handler should not have received anything: " + handler.caught, 0, handler.count);
-            assertEquals("Observer should have received an error", 1, observer.errorCount);
-            assertEquals("Observer should not have received a next value", 0, observer.nextCount);
+            assertEquals(0, handler.count, "Handler should not have received anything: " + handler.caught);
+            assertEquals(1, observer.errorCount, "Observer should have received an error");
+            assertEquals(0, observer.nextCount, "Observer should not have received a next value");
 
             Throwable cause = observer.error;
             while (cause != null) {
@@ -59,7 +59,7 @@ final class SchedulerTestHelper {
                 if (cause == cause.getCause()) { break; }
                 cause = cause.getCause();
             }
-            assertEquals("Our error should have been delivered to the observer", error, cause);
+            assertEquals(error, cause, "Our error should have been delivered to the observer");
         } finally {
             Thread.setDefaultUncaughtExceptionHandler(originalHandler);
         }

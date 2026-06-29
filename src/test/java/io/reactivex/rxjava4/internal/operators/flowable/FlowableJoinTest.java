@@ -17,10 +17,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.concurrent.Flow.Subscriber;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -41,7 +41,7 @@ public class FlowableJoinTest extends RxJavaTest {
         return _ -> flowable;
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         MockitoAnnotations.openMocks(this);
     }

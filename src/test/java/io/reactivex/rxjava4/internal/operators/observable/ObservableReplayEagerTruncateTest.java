@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.annotations.NonNull;
@@ -666,7 +666,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         List<Integer> values = new ArrayList<>();
         buf.collect(values);
 
-        Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5), values);
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), values);
 
         buf.removeSome(2);
         buf.removeFirst();
@@ -674,13 +674,13 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
 
         values.clear();
         buf.collect(values);
-        Assert.assertTrue(values.isEmpty());
+        assertTrue(values.isEmpty());
 
         buf.addLast(new Node(5));
         buf.addLast(new Node(6));
         buf.collect(values);
 
-        Assert.assertEquals(Arrays.asList(5, 6), values);
+        assertEquals(Arrays.asList(5, 6), values);
 
     }
 
@@ -695,32 +695,32 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         buf.next(2);
         test.advanceTimeBy(1, TimeUnit.SECONDS);
         buf.collect(values);
-        Assert.assertEquals(List.of(2), values);
+        assertEquals(List.of(2), values);
 
         buf.next(3);
         buf.next(4);
         values.clear();
         buf.collect(values);
-        Assert.assertEquals(Arrays.asList(3, 4), values);
+        assertEquals(Arrays.asList(3, 4), values);
 
         test.advanceTimeBy(2, TimeUnit.SECONDS);
         buf.next(5);
 
         values.clear();
         buf.collect(values);
-        Assert.assertEquals(List.of(5), values);
-        Assert.assertFalse(buf.hasCompleted());
+        assertEquals(List.of(5), values);
+        assertFalse(buf.hasCompleted());
 
         test.advanceTimeBy(2, TimeUnit.SECONDS);
         buf.complete();
 
         values.clear();
         buf.collect(values);
-        Assert.assertTrue(values.isEmpty());
+        assertTrue(values.isEmpty());
 
-        Assert.assertEquals(1, buf.size);
-        Assert.assertTrue(buf.hasCompleted());
-        Assert.assertFalse(buf.hasError());
+        assertEquals(1, buf.size);
+        assertTrue(buf.hasCompleted());
+        assertFalse(buf.hasError());
     }
 
     @Test
@@ -728,8 +728,8 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         TestScheduler test = new TestScheduler();
         SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<>(2, 2000, TimeUnit.MILLISECONDS, test, false);
 
-        Assert.assertFalse(buf.hasCompleted());
-        Assert.assertFalse(buf.hasError());
+        assertFalse(buf.hasCompleted());
+        assertFalse(buf.hasError());
 
         List<Integer> values = new ArrayList<>();
 
@@ -738,33 +738,33 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         buf.next(2);
         test.advanceTimeBy(1, TimeUnit.SECONDS);
         buf.collect(values);
-        Assert.assertEquals(List.of(2), values);
+        assertEquals(List.of(2), values);
 
         buf.next(3);
         buf.next(4);
         values.clear();
         buf.collect(values);
-        Assert.assertEquals(Arrays.asList(3, 4), values);
+        assertEquals(Arrays.asList(3, 4), values);
 
         test.advanceTimeBy(2, TimeUnit.SECONDS);
         buf.next(5);
 
         values.clear();
         buf.collect(values);
-        Assert.assertEquals(List.of(5), values);
-        Assert.assertFalse(buf.hasCompleted());
-        Assert.assertFalse(buf.hasError());
+        assertEquals(List.of(5), values);
+        assertFalse(buf.hasCompleted());
+        assertFalse(buf.hasError());
 
         test.advanceTimeBy(2, TimeUnit.SECONDS);
         buf.error(new TestException());
 
         values.clear();
         buf.collect(values);
-        Assert.assertTrue(values.isEmpty());
+        assertTrue(values.isEmpty());
 
-        Assert.assertEquals(1, buf.size);
-        Assert.assertFalse(buf.hasCompleted());
-        Assert.assertTrue(buf.hasError());
+        assertEquals(1, buf.size);
+        assertFalse(buf.hasCompleted());
+        assertTrue(buf.hasError());
     }
 
     @Test
@@ -775,30 +775,30 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         buf.next(1);
         buf.next(2);
         buf.collect(values);
-        Assert.assertEquals(Arrays.asList(1, 2), values);
+        assertEquals(Arrays.asList(1, 2), values);
 
         buf.next(3);
         buf.next(4);
         values.clear();
         buf.collect(values);
-        Assert.assertEquals(Arrays.asList(3, 4), values);
+        assertEquals(Arrays.asList(3, 4), values);
 
         buf.next(5);
 
         values.clear();
         buf.collect(values);
-        Assert.assertEquals(Arrays.asList(4, 5), values);
-        Assert.assertFalse(buf.hasCompleted());
+        assertEquals(Arrays.asList(4, 5), values);
+        assertFalse(buf.hasCompleted());
 
         buf.complete();
 
         values.clear();
         buf.collect(values);
-        Assert.assertEquals(Arrays.asList(4, 5), values);
+        assertEquals(Arrays.asList(4, 5), values);
 
-        Assert.assertEquals(3, buf.size);
-        Assert.assertTrue(buf.hasCompleted());
-        Assert.assertFalse(buf.hasError());
+        assertEquals(3, buf.size);
+        assertTrue(buf.hasCompleted());
+        assertFalse(buf.hasError());
     }
 
     @Test
@@ -837,14 +837,14 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
 
         // subscribe once
         o.subscribe(v -> {
-            Assert.assertEquals("one", v);
+            assertEquals("one", v);
             System.out.println("v: " + v);
             latch.countDown();
         });
 
         // subscribe again
         o.subscribe(v -> {
-            Assert.assertEquals("one", v);
+            assertEquals("one", v);
             System.out.println("v: " + v);
             latch.countDown();
         });
@@ -972,14 +972,14 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
 
         to.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         to.assertNotComplete();
-        Assert.assertEquals(1, to.errors().size());
+        assertEquals(1, to.errors().size());
 
         TestObserverEx<Integer> to2 = new TestObserverEx<>();
         source.subscribe(to2);
 
         to2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         to2.assertNotComplete();
-        Assert.assertEquals(1, to2.errors().size());
+        assertEquals(1, to2.errors().size());
     }
 
     @Test
@@ -1533,7 +1533,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after.get() / 1024.0 / 1024.0);
 
         if (initial + 100 * 1024 * 1024 < after.get()) {
-            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+            fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after.get() / 1024.0 / 1024.0);
         }
     }
@@ -1576,7 +1576,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
 
         if (initial + 100 * 1024 * 1024 < after) {
-            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+            fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after / 1024.0 / 1024.0);
         }
     }
@@ -1623,7 +1623,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
 
         if (initial + 100 * 1024 * 1024 < after) {
-            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+            fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after / 1024.0 / 1024.0);
         }
     }
@@ -1670,7 +1670,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
 
         if (initial + 100 * 1024 * 1024 < after) {
-            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+            fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after / 1024.0 / 1024.0);
         }
     }
@@ -1711,7 +1711,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
 
         if (initial + 100 * 1024 * 1024 < after) {
-            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+            fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after / 1024.0 / 1024.0);
         }
     }
@@ -1756,7 +1756,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
 
         if (initial + 100 * 1024 * 1024 < after) {
-            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+            fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after / 1024.0 / 1024.0);
         }
     }
@@ -1801,7 +1801,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
 
         if (initial + 100 * 1024 * 1024 < after) {
-            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+            fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after / 1024.0 / 1024.0);
         }
     }

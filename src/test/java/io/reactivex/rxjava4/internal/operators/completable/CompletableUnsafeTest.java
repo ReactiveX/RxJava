@@ -13,22 +13,24 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class CompletableUnsafeTest extends RxJavaTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void unsafeCreateRejectsCompletable() {
-        Completable.unsafeCreate(Completable.complete());
+        assertThrows(IllegalArgumentException.class, () -> {
+            Completable.unsafeCreate(Completable.complete());
+        });
     }
 
     @Test
@@ -47,11 +49,13 @@ public class CompletableUnsafeTest extends RxJavaTest {
         .assertResult();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void unsafeCreateThrowsNPE() {
-        Completable.unsafeCreate(_ -> {
-            throw new NullPointerException();
-        }).test();
+        assertThrows(NullPointerException.class, () -> {
+            Completable.unsafeCreate(_ -> {
+                throw new NullPointerException();
+            }).test();
+        });
     }
 
     @Test

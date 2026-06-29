@@ -13,11 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.lang.ref.WeakReference;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -48,7 +50,7 @@ public class FlowableDetachTest extends RxJavaTest {
         System.gc();
         Thread.sleep(200);
 
-        Assert.assertNull("Object retained!", wr.get());
+        assertNull("Object retained!", wr.get());
 
     }
 
@@ -108,7 +110,7 @@ public class FlowableDetachTest extends RxJavaTest {
         System.gc();
         Thread.sleep(200);
 
-        Assert.assertNull("Object retained!", wr.get());
+        assertNull("Object retained!", wr.get());
     }
 
     @Test
@@ -127,7 +129,7 @@ public class FlowableDetachTest extends RxJavaTest {
         System.gc();
         Thread.sleep(200);
 
-        Assert.assertNull("Object retained!", wr.get());
+        assertNull("Object retained!", wr.get());
 
     }
 

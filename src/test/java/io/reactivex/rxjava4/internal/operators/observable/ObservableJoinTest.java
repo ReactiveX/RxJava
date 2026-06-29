@@ -18,11 +18,11 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -40,7 +40,7 @@ public class ObservableJoinTest extends RxJavaTest {
         return _ -> observable;
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         MockitoAnnotations.openMocks(this);
     }

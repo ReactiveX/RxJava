@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.disposables;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -39,13 +39,13 @@ public class DisposableTest extends RxJavaTest {
 
         Disposable d = Disposable.fromRunnable(run);
 
-        assertTrue(d.toString(), d.toString().contains("RunnableDisposable(disposed=false, "));
+        assertTrue(d.toString().contains("RunnableDisposable(disposed=false, "), d.toString());
 
         d.dispose();
-        assertTrue(d.toString(), d.toString().contains("RunnableDisposable(disposed=true, "));
+        assertTrue(d.toString().contains("RunnableDisposable(disposed=true, "), d.toString());
 
         d.dispose();
-        assertTrue(d.toString(), d.toString().contains("RunnableDisposable(disposed=true, "));
+        assertTrue(d.toString().contains("RunnableDisposable(disposed=true, "), d.toString());
 
         verify(run, times(1)).run();
     }
@@ -70,13 +70,13 @@ public class DisposableTest extends RxJavaTest {
 
         Disposable d = Disposable.fromAction(action);
 
-        assertTrue(d.toString(), d.toString().contains("ActionDisposable(disposed=false, "));
+        assertTrue(d.toString().contains("ActionDisposable(disposed=false, "), d.toString());
 
         d.dispose();
-        assertTrue(d.toString(), d.toString().contains("ActionDisposable(disposed=true, "));
+        assertTrue(d.toString().contains("ActionDisposable(disposed=true, "), d.toString());
 
         d.dispose();
-        assertTrue(d.toString(), d.toString().contains("ActionDisposable(disposed=true, "));
+        assertTrue(d.toString().contains("ActionDisposable(disposed=true, "), d.toString());
 
         verify(action, times(1)).run();
     }
@@ -126,9 +126,11 @@ public class DisposableTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void fromSubscriptionNull() {
-        Disposable.fromSubscription(null);
+        assertThrows(NullPointerException.class, () -> {
+            Disposable.fromSubscription(null);
+        });
     }
 
     @Test
@@ -173,19 +175,19 @@ public class DisposableTest extends RxJavaTest {
 
         assertFalse(d.isDisposed());
         assertEquals(0, counter.get());
-        assertTrue(d.toString(), d.toString().contains("AutoCloseableDisposable(disposed=false, "));
+        assertTrue(d.toString().contains("AutoCloseableDisposable(disposed=false, "), d.toString());
 
         d.dispose();
 
         assertTrue(d.isDisposed());
         assertEquals(1, counter.get());
-        assertTrue(d.toString(), d.toString().contains("AutoCloseableDisposable(disposed=true, "));
+        assertTrue(d.toString().contains("AutoCloseableDisposable(disposed=true, "), d.toString());
 
         d.dispose();
 
         assertTrue(d.isDisposed());
         assertEquals(1, counter.get());
-        assertTrue(d.toString(), d.toString().contains("AutoCloseableDisposable(disposed=true, "));
+        assertTrue(d.toString().contains("AutoCloseableDisposable(disposed=true, "), d.toString());
     }
 
     @Test
@@ -246,6 +248,6 @@ public class DisposableTest extends RxJavaTest {
             assertNotNull(a);
         }
 
-        assertTrue("d is not disposed", d.isDisposed());
+        assertTrue(d.isDisposed(), "d is not disposed");
     }
 }

@@ -13,17 +13,17 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.observers.DefaultObserver;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -31,7 +31,7 @@ public class ObservableSerializeTest extends RxJavaTest {
 
     Observer<String> observer;
 
-    @Before
+    @BeforeEach
     public void before() {
         observer = TestHelper.mockObserver();
     }

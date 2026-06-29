@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.parallel;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -98,7 +98,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
 
             assertFalse(errors.isEmpty());
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
             }
         } finally {
             RxJavaPlugins.reset();

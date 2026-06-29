@@ -13,18 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.disposables.Disposable;
+import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.observers.DefaultObserver;
 import io.reactivex.rxjava4.testsupport.*;
 

@@ -13,10 +13,12 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -43,11 +45,11 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertNoValues();
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         other.onNext(1);
 
-        Assert.assertEquals("No subscription", 1, subscribed.get());
+        assertEquals(1, subscribed.get(), "No subscription");
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -71,12 +73,12 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertNoValues();
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         other.onNext(1);
         other.onNext(2);
 
-        Assert.assertEquals("No subscription", 1, subscribed.get());
+        assertEquals(1, subscribed.get(), "No subscription");
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -100,11 +102,11 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertNoValues();
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         other.onComplete();
 
-        Assert.assertEquals("No subscription", 1, subscribed.get());
+        assertEquals(1, subscribed.get(), "No subscription");
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -128,11 +130,11 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertNoValues();
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         other.onComplete();
 
-        Assert.assertEquals("No subscription", 1, subscribed.get());
+        assertEquals(1, subscribed.get(), "No subscription");
 
         ts.assertNoValues();
         ts.assertNotComplete();
@@ -156,11 +158,11 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertNoValues();
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         other.onError(new TestException());
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         ts.assertNoValues();
         ts.assertNotComplete();
@@ -185,13 +187,13 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertNoValues();
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         other.onNext(1);
 
-        Assert.assertEquals("No subscription", 1, subscribed.get());
+        assertEquals(1, subscribed.get(), "No subscription");
 
-        Assert.assertFalse("Not unsubscribed from other", other.hasSubscribers());
+        assertFalse(other.hasSubscribers(), "Not unsubscribed from other");
 
         ts.assertNotComplete();
         ts.assertNoErrors();
@@ -222,13 +224,13 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
 
         source.delaySubscription(other).subscribe(ts);
 
-        Assert.assertFalse("source subscribed?", source.hasSubscribers());
-        Assert.assertTrue("other not subscribed?", other.hasSubscribers());
+        assertFalse(source.hasSubscribers(), "source subscribed?");
+        assertTrue(other.hasSubscribers(), "other not subscribed?");
 
         ts.cancel();
 
-        Assert.assertFalse("source subscribed?", source.hasSubscribers());
-        Assert.assertFalse("other still subscribed?", other.hasSubscribers());
+        assertFalse(source.hasSubscribers(), "source subscribed?");
+        assertFalse(other.hasSubscribers(), "other still subscribed?");
     }
 
     @Test
@@ -240,18 +242,18 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
 
         source.delaySubscription(other).subscribe(ts);
 
-        Assert.assertFalse("source subscribed?", source.hasSubscribers());
-        Assert.assertTrue("other not subscribed?", other.hasSubscribers());
+        assertFalse(source.hasSubscribers(), "source subscribed?");
+        assertTrue(other.hasSubscribers(), "other not subscribed?");
 
         other.onComplete();
 
-        Assert.assertTrue("source not subscribed?", source.hasSubscribers());
-        Assert.assertFalse("other still subscribed?", other.hasSubscribers());
+        assertTrue(source.hasSubscribers(), "source not subscribed?");
+        assertFalse(other.hasSubscribers(), "other still subscribed?");
 
         ts.cancel();
 
-        Assert.assertFalse("source subscribed?", source.hasSubscribers());
-        Assert.assertFalse("other still subscribed?", other.hasSubscribers());
+        assertFalse(source.hasSubscribers(), "source subscribed?");
+        assertFalse(other.hasSubscribers(), "other still subscribed?");
     }
 
     @Test
@@ -269,7 +271,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         interrupt.onNext(9000);
         delayUntil.onNext(1);
 
-        Assert.assertFalse(subscribed.get());
+        assertFalse(subscribed.get());
     }
 
     @Test

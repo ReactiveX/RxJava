@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -21,13 +21,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -208,8 +208,8 @@ public class ObservableRetryTest extends RxJavaTest {
                     attempt.zipWith(Observable.just(1), (BiFunction<Throwable, Integer, Void>) (_, _) -> null))
                 .blockingFirst();
 
-        assertEquals("Observer did not receive the expected output", 1, first);
-        assertEquals("Subscribe was not called once", 1, inc.get());
+        assertEquals(1, first, "Observer did not receive the expected output");
+        assertEquals(1, inc.get(), "Subscribe was not called once");
     }
 
     @Test
@@ -547,8 +547,8 @@ public class ObservableRetryTest extends RxJavaTest {
         inOrder.verify(observer, times(1)).onError(any(Throwable.class));
         inOrder.verify(observer, never()).onComplete();
 
-        assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
-        assertEquals("Only 1 active subscription", 1, so.maxActive.get());
+        assertEquals(6, so.efforts.get(), "Start 6 threads, retry 5 then fail on 6");
+        assertEquals(1, so.maxActive.get(), "Only 1 active subscription");
     }
 
     @Test
@@ -571,7 +571,7 @@ public class ObservableRetryTest extends RxJavaTest {
         inOrder.verify(observer, times(1)).onError(any(Throwable.class));
         inOrder.verify(observer, never()).onComplete();
 
-        assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
+        assertEquals(6, so.efforts.get(), "Start 6 threads, retry 5 then fail on 6");
     }
 
     @Test

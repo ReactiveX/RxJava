@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -269,22 +269,28 @@ public class FlowableBlockingTest extends RxJavaTest {
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, ex), list);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void blockingForEachThrows() {
-        Flowable.just(1)
-        .blockingForEach(_ -> {
-            throw new TestException();
+        assertThrows(TestException.class, () -> {
+            Flowable.just(1)
+            .blockingForEach(_ -> {
+                throw new TestException();
+            });
         });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void blockingFirstEmpty() {
-        Flowable.empty().blockingFirst();
+        assertThrows(NoSuchElementException.class, () -> {
+            Flowable.empty().blockingFirst();
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void blockingLastEmpty() {
-        Flowable.empty().blockingLast();
+        assertThrows(NoSuchElementException.class, () -> {
+            Flowable.empty().blockingLast();
+        });
     }
 
     @Test
@@ -326,14 +332,16 @@ public class FlowableBlockingTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void firstOnError() {
-        Flowable<Integer> source = Flowable.fromPublisher(s -> {
-            s.onSubscribe(new BooleanSubscription());
-            s.onError(new TestException());
-        });
+        assertThrows(TestException.class, () -> {
+            Flowable<Integer> source = Flowable.fromPublisher(s -> {
+                s.onSubscribe(new BooleanSubscription());
+                s.onError(new TestException());
+            });
 
-        source.blockingFirst();
+            source.blockingFirst();
+        });
     }
 
     @Test
@@ -352,9 +360,11 @@ public class FlowableBlockingTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void blockingSingleEmpty() {
-        Flowable.empty().blockingSingle();
+        assertThrows(NoSuchElementException.class, () -> {
+            Flowable.empty().blockingSingle();
+        });
     }
 
     @Test

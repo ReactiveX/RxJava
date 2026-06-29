@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -33,7 +33,7 @@ public class ObservableReduceTest extends RxJavaTest {
     Observer<Object> observer;
     SingleObserver<Object> singleObserver;
 
-    @Before
+    @BeforeEach
     public void before() {
         observer = TestHelper.mockObserver();
         singleObserver = TestHelper.mockSingleObserver();

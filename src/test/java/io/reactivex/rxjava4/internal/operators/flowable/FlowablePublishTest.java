@@ -13,20 +13,20 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.flowables.ConnectableFlowable;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.rxjava4.internal.operators.flowable.FlowablePublish.*;
@@ -1389,13 +1389,15 @@ public class FlowablePublishTest extends RxJavaTest {
         ts.assertValuesOnly(1);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void connectDisposeCrash() {
-        ConnectableFlowable<Object> cf = Flowable.never().publish();
+        assertThrows(TestException.class, () -> {
+            ConnectableFlowable<Object> cf = Flowable.never().publish();
 
-        cf.connect();
+            cf.connect();
 
-        cf.connect(_ ->  { throw new TestException(); });
+            cf.connect(_ ->  { throw new TestException(); });
+        });
     }
 
     @Test

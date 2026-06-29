@@ -14,12 +14,12 @@
 package io.reactivex.rxjava4.internal.subscribers;
 
 import static io.reactivex.rxjava4.internal.util.ExceptionHelper.timeoutMessage;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -32,7 +32,7 @@ public class FutureSubscriberTest extends RxJavaTest {
 
     FutureSubscriber<Integer> fs;
 
-    @Before
+    @BeforeEach
     public void before() {
         fs = new FutureSubscriber<>();
     }
@@ -84,7 +84,7 @@ public class FutureSubscriberTest extends RxJavaTest {
             try {
                 fs.get(5, TimeUnit.MILLISECONDS);
             } catch (ExecutionException ex) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
                 assertEquals("One", ex.getCause().getMessage());
             }
 
@@ -193,7 +193,7 @@ public class FutureSubscriberTest extends RxJavaTest {
         try {
             fs.get(5, TimeUnit.MILLISECONDS);
         } catch (ExecutionException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+            assertTrue(ex.getCause() instanceof TestException, ex.toString());
             assertEquals("One", ex.getCause().getMessage());
         }
     }
@@ -207,7 +207,7 @@ public class FutureSubscriberTest extends RxJavaTest {
         try {
             assertNull(fs.get(5, TimeUnit.MILLISECONDS));
         } catch (ExecutionException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof NoSuchElementException);
+            assertTrue(ex.getCause() instanceof NoSuchElementException, ex.toString());
         }
     }
 

@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -215,9 +215,11 @@ public class FlowableCreateTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4, 5);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void unsafeWithFlowable() {
-        Flowable.unsafeCreate(Flowable.just(1));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable.unsafeCreate(Flowable.just(1));
+        });
     }
 
     @Test
@@ -802,7 +804,7 @@ public class FlowableCreateTest extends RxJavaTest {
             .assertNoErrors();
 
             int c = ts.values().size();
-            assertTrue("" + c, c >= 100);
+            assertTrue(c >= 100, "" + c);
         }
     }
 
@@ -831,7 +833,7 @@ public class FlowableCreateTest extends RxJavaTest {
                 .test()
                 .assertResult();
 
-                assertTrue(errors.toString(), errors.isEmpty());
+                assertTrue(errors.isEmpty(), errors.toString());
             } finally {
                 RxJavaPlugins.reset();
             }
@@ -855,7 +857,7 @@ public class FlowableCreateTest extends RxJavaTest {
 
                 assertFalse(response[0]);
 
-                assertTrue(strategy + ": " + errors.toString(), errors.isEmpty());
+                assertTrue(errors.isEmpty(), strategy + ": " + errors.toString());
             } finally {
                 RxJavaPlugins.reset();
             }
@@ -880,7 +882,7 @@ public class FlowableCreateTest extends RxJavaTest {
 
                 assertFalse(response[0]);
 
-                assertTrue(strategy + ": " + errors.toString(), errors.isEmpty());
+                assertTrue(errors.isEmpty(), strategy + ": " + errors.toString());
             } finally {
                 RxJavaPlugins.reset();
             }

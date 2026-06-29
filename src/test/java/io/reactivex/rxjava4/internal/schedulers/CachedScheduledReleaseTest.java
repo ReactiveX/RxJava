@@ -13,13 +13,12 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
-import io.reactivex.rxjava4.core.Completable;
-import io.reactivex.rxjava4.core.Flowable;
-import io.reactivex.rxjava4.core.RxJavaTest;
-import io.reactivex.rxjava4.schedulers.Schedulers;
-import org.junit.Test;
-
 import java.util.concurrent.TimeUnit;
+
+import org.junit.jupiter.api.Test;
+
+import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.schedulers.Schedulers;
 
 public class CachedScheduledReleaseTest extends RxJavaTest {
 

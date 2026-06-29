@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
+import java.util.concurrent.Flow.Subscription;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 

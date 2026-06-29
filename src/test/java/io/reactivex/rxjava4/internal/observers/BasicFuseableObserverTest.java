@@ -13,67 +13,73 @@
 
 package io.reactivex.rxjava4.internal.observers;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.core.RxJavaTest;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.testsupport.TestObserverEx;
 
 public class BasicFuseableObserverTest extends RxJavaTest {
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void offer() {
-        TestObserverEx<Integer> to = new TestObserverEx<>();
+        assertThrows(UnsupportedOperationException.class, () -> {
+            TestObserverEx<Integer> to = new TestObserverEx<>();
 
-        var o = new BasicFuseableObserver<Integer, Integer>(to) /* NFI */ {
-            @Nullable
-            @Override
-            public Integer poll() throws Exception {
-                return null;
-            }
+            var o = new BasicFuseableObserver<Integer, Integer>(to) /* NFI */ {
+                @Nullable
+                @Override
+                public Integer poll() throws Exception {
+                    return null;
+                }
 
-            @Override
-            public int requestFusion(int mode) {
-                return 0;
-            }
+                @Override
+                public int requestFusion(int mode) {
+                    return 0;
+                }
 
-            @Override
-            public void onNext(Integer value) {
-            }
+                @Override
+                public void onNext(Integer value) {
+                }
 
-            @Override
-            protected boolean beforeDownstream() {
-                return false;
-            }
-        };
-        o.onSubscribe(Disposable.disposed());
+                @Override
+                protected boolean beforeDownstream() {
+                    return false;
+                }
+            };
+            o.onSubscribe(Disposable.disposed());
 
-        to.assertNotSubscribed();
+            to.assertNotSubscribed();
 
-        o.offer(1);
+            o.offer(1);
+        });
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void offer2() {
-        var o = new BasicFuseableObserver<Integer, Integer>(new TestObserver<>()) {
-            @Nullable
-            @Override
-            public Integer poll() throws Exception {
-                return null;
-            }
+        assertThrows(UnsupportedOperationException.class, () -> {
+            var o = new BasicFuseableObserver<Integer, Integer>(new TestObserver<>()) {
+                @Nullable
+                @Override
+                public Integer poll() throws Exception {
+                    return null;
+                }
 
-            @Override
-            public int requestFusion(int mode) {
-                return 0;
-            }
+                @Override
+                public int requestFusion(int mode) {
+                    return 0;
+                }
 
-            @Override
-            public void onNext(Integer value) {
-            }
-        };
+                @Override
+                public void onNext(Integer value) {
+                }
+            };
 
-        o.offer(1, 2);
+            o.offer(1, 2);
+        });
     }
 }

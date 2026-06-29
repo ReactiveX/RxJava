@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -50,7 +50,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
     BiFunction<Integer, Flowable<Integer>, Flowable<Integer>> add2 = (leftValue, rightValues) ->
     rightValues.map(rightValue -> add.apply(leftValue, rightValue));
 
-    @Before
+    @BeforeEach
     public void before() {
         MockitoAnnotations.openMocks(this);
     }

@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -23,7 +23,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
@@ -48,7 +48,7 @@ public class FlowableZipTest extends RxJavaTest {
     Subscriber<String> subscriber;
     InOrder inOrder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         concat2Strings = (t1, t2) -> t1 + "-" + t2;
 
@@ -837,7 +837,7 @@ public class FlowableZipTest extends RxJavaTest {
         Collection<Flowable<Object>> observables = Collections.emptyList();
 
         Flowable<Object> f = Flowable.zip(observables, args -> {
-            Assert.assertEquals("No argument should have been passed", 0, args.length);
+            assertEquals(0, args.length, "No argument should have been passed");
             return invoked;
         });
 
@@ -851,18 +851,19 @@ public class FlowableZipTest extends RxJavaTest {
      * Expect NoSuchElementException instead of blocking forever as zip should emit onComplete and no onNext
      * and last() expects at least a single response.
      */
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void startEmptyListBlocking() {
+        assertThrows(NoSuchElementException.class, () -> {
+            final Object invoked = new Object();
+            Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        final Object invoked = new Object();
-        Collection<Flowable<Object>> observables = Collections.emptyList();
+            Flowable<Object> f = Flowable.zip(observables, args -> {
+                assertEquals(0, args.length, "No argument should have been passed");
+                return invoked;
+            });
 
-        Flowable<Object> f = Flowable.zip(observables, args -> {
-            Assert.assertEquals("No argument should have been passed", 0, args.length);
-            return invoked;
+            f.blockingLast();
         });
-
-        f.blockingLast();
     }
 
     @Test
@@ -1057,7 +1058,7 @@ public class FlowableZipTest extends RxJavaTest {
         while (System.currentTimeMillis() - startTime < 9000 && i++ < 100000) {
             int value = Flowable.zip(src, src, (t1, t2) -> t1 + t2 * 10).blockingSingle(0);
 
-            Assert.assertEquals(11, value);
+            assertEquals(11, value);
         }
     }
     /**
@@ -1105,7 +1106,7 @@ public class FlowableZipTest extends RxJavaTest {
                     m.invoke(null, params0);
                     fail("Should have thrown @ " + m);
                 } catch (InvocationTargetException ex) {
-                    assertTrue(ex.toString(), ex.getCause() instanceof NullPointerException);
+                    assertTrue(ex.getCause() instanceof NullPointerException, ex.toString());
 
                     if (j < i) {
                         assertEquals("source" + (j + 1) + " is null", ex.getCause().getMessage());
@@ -1454,8 +1455,8 @@ public class FlowableZipTest extends RxJavaTest {
 
             List<Object> list = ts.values().getFirst();
 
-            assertTrue(list.toString(), list.contains("RxSi"));
-            assertTrue(list.toString(), list.contains("RxCo"));
+            assertTrue(list.contains("RxSi"), list.toString());
+            assertTrue(list.contains("RxCo"), list.toString());
         }
     }
 

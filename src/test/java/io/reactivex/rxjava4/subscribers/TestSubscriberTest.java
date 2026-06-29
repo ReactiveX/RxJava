@@ -13,18 +13,18 @@
 
 package io.reactivex.rxjava4.subscribers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -152,22 +152,28 @@ public class TestSubscriberTest extends RxJavaTest {
         assertTrue(unsub.get());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullDelegate1() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>(null);
-        ts.onComplete();
+        assertThrows(NullPointerException.class, () -> {
+            TestSubscriber<Integer> ts = new TestSubscriber<>(null);
+            ts.onComplete();
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullDelegate2() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>(null);
-        ts.onComplete();
+        assertThrows(NullPointerException.class, () -> {
+            TestSubscriber<Integer> ts = new TestSubscriber<>(null);
+            ts.onComplete();
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullDelegate3() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>(null, 0L);
-        ts.onComplete();
+        assertThrows(NullPointerException.class, () -> {
+            TestSubscriber<Integer> ts = new TestSubscriber<>(null, 0L);
+            ts.onComplete();
+        });
     }
 
     @Test
@@ -517,7 +523,7 @@ public class TestSubscriberTest extends RxJavaTest {
             try {
                 ts.awaitDone(5, TimeUnit.SECONDS);
             } catch (RuntimeException allowed) {
-                assertTrue(allowed.toString(), allowed.getCause() instanceof InterruptedException);
+                assertTrue(allowed.getCause() instanceof InterruptedException, allowed.toString());
             }
             ts.dispose();
             if (!ts.isCancelled()) {
@@ -1028,7 +1034,7 @@ public class TestSubscriberTest extends RxJavaTest {
         try {
             ts.awaitDone(5, TimeUnit.SECONDS);
         } catch (RuntimeException allowed) {
-            assertTrue(allowed.toString(), allowed.getCause() instanceof InterruptedException);
+            assertTrue(allowed.getCause() instanceof InterruptedException, allowed.toString());
         }
 
         // FIXME ? catch consumes this flag
@@ -1039,7 +1045,7 @@ public class TestSubscriberTest extends RxJavaTest {
         try {
             ts.awaitDone(5, TimeUnit.SECONDS);
         } catch (RuntimeException allowed) {
-            assertTrue(allowed.toString(), allowed.getCause() instanceof InterruptedException);
+            assertTrue(allowed.getCause() instanceof InterruptedException, allowed.toString());
         }
 
         // FIXME ? catch consumes this flag
@@ -1196,7 +1202,7 @@ public class TestSubscriberTest extends RxJavaTest {
         try {
             ts.awaitDone(5, TimeUnit.SECONDS);
         } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+            assertTrue(ex.getCause() instanceof InterruptedException, ex.toString());
         }
     }
 
@@ -1350,7 +1356,7 @@ public class TestSubscriberTest extends RxJavaTest {
         ts.assertValue(o -> o == 1);
     }
 
-    static void assertThrowsWithMessage(String message, Class<? extends Throwable> clazz, ThrowingRunnable run) {
+    static void assertThrowsWithMessage(String message, Class<? extends Throwable> clazz, Executable run) {
         assertEquals(message, assertThrows(clazz, run).getMessage());
     }
 
@@ -1478,7 +1484,7 @@ public class TestSubscriberTest extends RxJavaTest {
             }
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
-            assertTrue(ex.toString(), ex.toString().contains("testing with item=2"));
+            assertTrue(ex.toString().contains("testing with item=2"), ex.toString());
         }
     }
 
@@ -1494,7 +1500,7 @@ public class TestSubscriberTest extends RxJavaTest {
             ts.assertResult(1);
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
-            assertTrue(ex.toString(), ex.toString().contains("timeout!"));
+            assertTrue(ex.toString().contains("timeout!"), ex.toString());
         }
     }
 
@@ -1508,7 +1514,7 @@ public class TestSubscriberTest extends RxJavaTest {
 
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
-            assertTrue(ex.toString(), ex.toString().contains("timeout!"));
+            assertTrue(ex.toString().contains("timeout!"), ex.toString());
         }
     }
 
@@ -1522,7 +1528,7 @@ public class TestSubscriberTest extends RxJavaTest {
             ts.assertResult(1);
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
-            assertTrue(ex.toString(), ex.toString().contains("timeout!"));
+            assertTrue(ex.toString().contains("timeout!"), ex.toString());
         }
     }
 
@@ -1535,7 +1541,7 @@ public class TestSubscriberTest extends RxJavaTest {
             ts.assertResult(1);
             throw new RuntimeException("Should have thrown!");
         } catch (Throwable ex) {
-            assertTrue(ex.toString(), ex.toString().contains("disposed!"));
+            assertTrue(ex.toString().contains("disposed!"), ex.toString());
         }
     }
 
@@ -1649,11 +1655,11 @@ public class TestSubscriberTest extends RxJavaTest {
         var ts = new TestSubscriber<>();
         var d = ts.asDisposable();
 
-        assertFalse("d is disposed", d.isDisposed());
+        assertFalse(d.isDisposed(), "d is disposed");
 
         d.dispose();
 
-        assertTrue("d is disposed", d.isDisposed());
+        assertTrue(d.isDisposed(), "d is disposed");
     }
 
     static final class TestSubscriberImpl<T> extends TestSubscriber<T> {
@@ -1670,15 +1676,17 @@ public class TestSubscriberTest extends RxJavaTest {
         assertTrue(ts.isTimeout());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void awaitCountInterrupted() {
-        try {
-            TestSubscriber<Integer> ts = TestSubscriber.create();
-            ts.onSubscribe(new BooleanSubscription());
-            Thread.currentThread().interrupt();
-            ts.awaitCount(1);
-        } finally {
-            Thread.interrupted();
-        }
+        assertThrows(RuntimeException.class, () -> {
+            try {
+                TestSubscriber<Integer> ts = TestSubscriber.create();
+                ts.onSubscribe(new BooleanSubscription());
+                Thread.currentThread().interrupt();
+                ts.awaitCount(1);
+            } finally {
+                Thread.interrupted();
+            }
+        });
     }
 }

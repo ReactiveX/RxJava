@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -42,18 +42,20 @@ public class BlockingFlowableToFutureTest {
         assertEquals("three", f.get().get(2));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void exceptionWithMoreThanOneElement() throws Throwable {
-        Flowable<String> obs = Flowable.just("one", "two");
-        Future<String> f = obs.toFuture();
-        try {
-            // we expect an exception since there are more than 1 element
-            f.get();
-            fail("Should have thrown!");
-        }
-        catch (ExecutionException e) {
-            throw e.getCause();
-        }
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            Flowable<String> obs = Flowable.just("one", "two");
+            Future<String> f = obs.toFuture();
+            try {
+                // we expect an exception since there are more than 1 element
+                f.get();
+                fail("Should have thrown!");
+            }
+            catch (ExecutionException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test
@@ -73,8 +75,11 @@ public class BlockingFlowableToFutureTest {
         }
     }
 
-    @Test(expected = CancellationException.class)
+    @Test
     public void getAfterCancel() throws Exception {
+        assertThrows(CancellationException.class, () -> {
+            // code that is expected to throw Exception (or subclass)
+        });
         Flowable<String> obs = Flowable.never();
         Future<String> f = obs.toFuture();
         boolean cancelled = f.cancel(true);
@@ -82,24 +87,28 @@ public class BlockingFlowableToFutureTest {
         f.get();                // Future.get() docs require this to throw
     }
 
-    @Test(expected = CancellationException.class)
+    @Test
     public void getWithTimeoutAfterCancel() throws Exception {
-        Flowable<String> obs = Flowable.never();
-        Future<String> f = obs.toFuture();
-        boolean cancelled = f.cancel(true);
-        assertTrue(cancelled);  // because OperationNeverComplete never does
-        f.get(Long.MAX_VALUE, TimeUnit.NANOSECONDS);    // Future.get() docs require this to throw
+        assertThrows(CancellationException.class, () -> {
+            Flowable<String> obs = Flowable.never();
+            Future<String> f = obs.toFuture();
+            boolean cancelled = f.cancel(true);
+            assertTrue(cancelled);  // because OperationNeverComplete never does
+            f.get(Long.MAX_VALUE, TimeUnit.NANOSECONDS);    // Future.get() docs require this to throw
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void getWithEmptyFlowable() throws Throwable {
-        Flowable<String> obs = Flowable.empty();
-        Future<String> f = obs.toFuture();
-        try {
-            f.get();
-        }
-        catch (ExecutionException e) {
-            throw e.getCause();
-        }
+        assertThrows(NoSuchElementException.class, () -> {
+            Flowable<String> obs = Flowable.empty();
+            Future<String> f = obs.toFuture();
+            try {
+                f.get();
+            }
+            catch (ExecutionException e) {
+                throw e.getCause();
+            }
+        });
     }
 }

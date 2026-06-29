@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.RxJavaTest;
@@ -78,8 +78,8 @@ public class ObservableDoOnUnsubscribeTest extends RxJavaTest {
 
         upperLatch.await();
         lowerLatch.await();
-        assertEquals(String.format("There should exactly %d un-subscription events for upper stream", subCount), subCount, upperCount.get());
-        assertEquals(String.format("There should exactly %d un-subscription events for lower stream", subCount), subCount, lowerCount.get());
+        assertEquals(subCount, upperCount.get(), String.format("There should exactly %d un-subscription events for upper stream", subCount));
+        assertEquals(subCount, lowerCount.get(), String.format("There should exactly %d un-subscription events for lower stream", subCount));
     }
 
     @Test
@@ -132,8 +132,8 @@ public class ObservableDoOnUnsubscribeTest extends RxJavaTest {
 
         upperLatch.await();
         lowerLatch.await();
-        assertEquals("There should exactly 1 un-subscription events for upper stream", 1, upperCount.get());
-        assertEquals("There should exactly 1 un-subscription events for lower stream", 1, lowerCount.get());
+        assertEquals(1, upperCount.get(), "There should exactly 1 un-subscription events for upper stream");
+        assertEquals(1, lowerCount.get(), "There should exactly 1 un-subscription events for lower stream");
     }
 
     @Test

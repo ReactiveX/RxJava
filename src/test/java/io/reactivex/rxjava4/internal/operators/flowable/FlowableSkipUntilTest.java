@@ -16,8 +16,9 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import java.util.concurrent.Flow.Subscriber;
+
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.Function;
@@ -27,7 +28,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class FlowableSkipUntilTest extends RxJavaTest {
     Subscriber<Object> subscriber;
 
-    @Before
+    @BeforeEach
     public void before() {
         subscriber = TestHelper.mockSubscriber();
     }

@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -21,15 +21,15 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -66,12 +66,14 @@ public class ObservableTakeTest extends RxJavaTest {
         verify(observer, times(1)).onComplete();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void takeWithError() {
-        Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1)
-        .map((Function<Integer, Integer>) _ -> {
-            throw new IllegalArgumentException("some error");
-        }).blockingSingle();
+        assertThrows(IllegalArgumentException.class, () -> {
+            Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1)
+            .map((Function<Integer, Integer>) _ -> {
+                throw new IllegalArgumentException("some error");
+            }).blockingSingle();
+        });
     }
 
     @Test

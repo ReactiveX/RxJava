@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.core;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Flow.Publisher;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
@@ -30,9 +30,6 @@ import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class XFlatMapTest extends RxJavaTest {
-
-    @Rule
-    public Retry retry = new Retry(5, 1000, true);
 
     static final int SLEEP_AFTER_CANCEL = 500;
 
@@ -89,7 +86,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             ts.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -117,7 +114,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             ts.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -145,7 +142,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             ts.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -173,7 +170,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -202,7 +199,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             ts.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -230,7 +227,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -258,7 +255,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -286,7 +283,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -314,7 +311,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -343,7 +340,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -371,7 +368,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -399,7 +396,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -427,7 +424,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -456,7 +453,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -484,7 +481,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             ts.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -512,7 +509,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -540,7 +537,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -574,7 +571,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -608,7 +605,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -637,7 +634,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -665,7 +662,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -693,7 +690,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -721,7 +718,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             ts.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -749,7 +746,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -787,7 +784,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -825,7 +822,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -863,7 +860,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -891,7 +888,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -919,7 +916,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -948,7 +945,7 @@ public class XFlatMapTest extends RxJavaTest {
 
             to.assertEmpty();
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }

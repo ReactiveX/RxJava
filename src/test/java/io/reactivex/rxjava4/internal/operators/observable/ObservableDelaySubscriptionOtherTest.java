@@ -13,10 +13,12 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -43,11 +45,11 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertNoValues();
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         other.onNext(1);
 
-        Assert.assertEquals("No subscription", 1, subscribed.get());
+        assertEquals(1, subscribed.get(), "No subscription");
 
         to.assertValue(1);
         to.assertNoErrors();
@@ -71,12 +73,12 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertNoValues();
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         other.onNext(1);
         other.onNext(2);
 
-        Assert.assertEquals("No subscription", 1, subscribed.get());
+        assertEquals(1, subscribed.get(), "No subscription");
 
         to.assertValue(1);
         to.assertNoErrors();
@@ -100,11 +102,11 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertNoValues();
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         other.onComplete();
 
-        Assert.assertEquals("No subscription", 1, subscribed.get());
+        assertEquals(1, subscribed.get(), "No subscription");
 
         to.assertValue(1);
         to.assertNoErrors();
@@ -128,11 +130,11 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertNoValues();
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         other.onComplete();
 
-        Assert.assertEquals("No subscription", 1, subscribed.get());
+        assertEquals(1, subscribed.get(), "No subscription");
 
         to.assertNoValues();
         to.assertNotComplete();
@@ -156,11 +158,11 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertNoValues();
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         other.onError(new TestException());
 
-        Assert.assertEquals("Premature subscription", 0, subscribed.get());
+        assertEquals(0, subscribed.get(), "Premature subscription");
 
         to.assertNoValues();
         to.assertNotComplete();

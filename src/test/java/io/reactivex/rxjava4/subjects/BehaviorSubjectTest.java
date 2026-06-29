@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.subjects;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.*;
@@ -410,10 +410,10 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
                     System.out.println(o.get());
                     System.out.println(rs.hasObservers());
                     rs.onComplete();
-                    Assert.fail("Timeout @ " + i);
+                    fail("Timeout @ " + i);
                     break;
                 } else {
-                    Assert.assertEquals(1, o.get());
+                    assertEquals(1, o.get());
                     worker.schedule(rs::onComplete);
                 }
             }

@@ -13,38 +13,44 @@
 
 package io.reactivex.rxjava4.flowable;
 
-import org.junit.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 
 public class FlowableNotificationTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void onNextIntegerNotificationDoesNotEqualNullNotification() {
-        final Notification<Integer> integerNotification = Notification.createOnNext(1);
-        final Notification<Integer> nullNotification = Notification.createOnNext(null);
-        Assert.assertNotEquals(integerNotification, nullNotification);
+        assertThrows(NullPointerException.class, () -> {
+            final Notification<Integer> integerNotification = Notification.createOnNext(1);
+            final Notification<Integer> nullNotification = Notification.createOnNext(null);
+            assertNotEquals(integerNotification, nullNotification);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void onNextNullNotificationDoesNotEqualIntegerNotification() {
-        final Notification<Integer> integerNotification = Notification.createOnNext(1);
-        final Notification<Integer> nullNotification = Notification.createOnNext(null);
-        Assert.assertNotEquals(nullNotification, integerNotification);
+        assertThrows(NullPointerException.class, () -> {
+            final Notification<Integer> integerNotification = Notification.createOnNext(1);
+            final Notification<Integer> nullNotification = Notification.createOnNext(null);
+            assertNotEquals(nullNotification, integerNotification);
+        });
     }
 
     @Test
     public void onNextIntegerNotificationsWhenEqual() {
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> integerNotification2 = Notification.createOnNext(1);
-        Assert.assertEquals(integerNotification, integerNotification2);
+        assertEquals(integerNotification, integerNotification2);
     }
 
     @Test
     public void onNextIntegerNotificationsWhenNotEqual() {
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> integerNotification2 = Notification.createOnNext(2);
-        Assert.assertNotEquals(integerNotification, integerNotification2);
+        assertNotEquals(integerNotification, integerNotification2);
     }
 
     @Test
@@ -52,13 +58,13 @@ public class FlowableNotificationTest extends RxJavaTest {
         final Exception exception = new Exception();
         final Notification<Integer> onErrorNotification = Notification.createOnError(exception);
         final Notification<Integer> onErrorNotification2 = Notification.createOnError(exception);
-        Assert.assertEquals(onErrorNotification, onErrorNotification2);
+        assertEquals(onErrorNotification, onErrorNotification2);
     }
 
     @Test
     public void onErrorIntegerNotificationWhenNotEqual() {
         final Notification<Integer> onErrorNotification = Notification.createOnError(new Exception());
         final Notification<Integer> onErrorNotification2 = Notification.createOnError(new Exception());
-        Assert.assertNotEquals(onErrorNotification, onErrorNotification2);
+        assertNotEquals(onErrorNotification, onErrorNotification2);
     }
 }

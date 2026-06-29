@@ -13,19 +13,20 @@
 
 package io.reactivex.rxjava4.observable;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Action;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.exceptions.TestException;
+import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.schedulers.TestScheduler;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
-
-import static org.mockito.Mockito.*;
 
 public class ObservableThrottleLastTests extends RxJavaTest {
 

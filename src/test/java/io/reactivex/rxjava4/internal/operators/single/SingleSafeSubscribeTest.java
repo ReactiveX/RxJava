@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.annotations.NonNull;
@@ -44,7 +44,7 @@ public class SingleSafeSubscribeTest {
             order.verify(consumer).onSuccess(1);
             order.verifyNoMoreInteractions();
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -62,7 +62,7 @@ public class SingleSafeSubscribeTest {
             order.verify(consumer).onError(any(TestException.class));
             order.verifyNoMoreInteractions();
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 

@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Predicate;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.subjects.*;
@@ -201,7 +201,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
         to.assertValue(1);
 
         // 2.0.2 - not anymore
-//        Assert.assertTrue("Not cancelled!", ts.isCancelled());
+//        assertTrue("Not cancelled!", ts.isCancelled());
     }
 
     @Test

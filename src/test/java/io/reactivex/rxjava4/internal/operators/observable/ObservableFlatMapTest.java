@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -22,13 +22,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
@@ -254,12 +254,12 @@ public class ObservableFlatMapTest extends RxJavaTest {
         return source.doOnSubscribe(_ -> {
                 int n = subscriptionCount.getAndIncrement();
                 if (n >= m) {
-                    Assert.fail("Too many subscriptions! " + (n + 1));
+                    fail("Too many subscriptions! " + (n + 1));
                 }
         }).doOnComplete(() -> {
                 int n = subscriptionCount.decrementAndGet();
                 if (n < 0) {
-                    Assert.fail("Too many unsubscriptions! " + (n - 1));
+                    fail("Too many unsubscriptions! " + (n - 1));
                 }
         });
     }
@@ -281,8 +281,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
         Set<Integer> expected = new HashSet<>(Arrays.asList(
                 10, 11, 20, 21, 30, 31, 40, 41, 50, 51, 60, 61, 70, 71, 80, 81, 90, 91, 100, 101
         ));
-        Assert.assertEquals(expected.size(), to.values().size());
-        Assert.assertTrue(expected.containsAll(to.values()));
+        assertEquals(expected.size(), to.values().size());
+        assertTrue(expected.containsAll(to.values()));
     }
 
     @Test
@@ -303,9 +303,9 @@ public class ObservableFlatMapTest extends RxJavaTest {
                 1010, 1011, 2020, 2021, 3030, 3031, 4040, 4041, 5050, 5051,
                 6060, 6061, 7070, 7071, 8080, 8081, 9090, 9091, 10100, 10101
         ));
-        Assert.assertEquals(expected.size(), to.values().size());
+        assertEquals(expected.size(), to.values().size());
         System.out.println("--> testFlatMapSelectorMaxConcurrent: " + to.values());
-        Assert.assertTrue(expected.containsAll(to.values()));
+        assertTrue(expected.containsAll(to.values()));
     }
 
     @Test
@@ -590,8 +590,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
             List<Object> list = to.values();
 
-            assertTrue(list.toString(), list.contains("RxSi"));
-            assertTrue(list.toString(), list.contains("RxCo"));
+            assertTrue(list.contains("RxSi"), list.toString());
+            assertTrue(list.contains("RxCo"), list.toString());
         }
     }
 
@@ -610,7 +610,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
                 TestHelper.race(r1, r2);
 
-                assertTrue(errors.toString(), errors.isEmpty());
+                assertTrue(errors.isEmpty(), errors.toString());
             } finally {
                 RxJavaPlugins.reset();
             }
@@ -641,7 +641,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
                     TestHelper.race(r1, r2);
 
-                    assertTrue(errors.toString(), errors.isEmpty());
+                    assertTrue(errors.isEmpty(), errors.toString());
                 } finally {
                     RxJavaPlugins.reset();
                 }
@@ -838,11 +838,11 @@ public class ObservableFlatMapTest extends RxJavaTest {
         .test();
 
         ps1.onNext(1);
-        assertTrue("No subscribers?", ps2.hasObservers());
+        assertTrue(ps2.hasObservers(), "No subscribers?");
 
         ps1.onError(new TestException());
 
-        assertFalse("Has subscribers?", ps2.hasObservers());
+        assertFalse(ps2.hasObservers(), "Has subscribers?");
     }
 
     @Test
@@ -855,11 +855,11 @@ public class ObservableFlatMapTest extends RxJavaTest {
         .test();
 
         ps1.onNext(1);
-        assertTrue("No subscribers?", ps2.hasObservers());
+        assertTrue(ps2.hasObservers(), "No subscribers?");
 
         ps2.onError(new TestException());
 
-        assertFalse("Has subscribers?", ps1.hasObservers());
+        assertFalse(ps1.hasObservers(), "Has subscribers?");
     }
 
     @Test
@@ -987,7 +987,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         to.assertFailure(TestException.class, 1, 2);
     }
 
-    @Test(timeout = 5000)
+    @Test @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS)
     public void mixedScalarAsync() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             Observable

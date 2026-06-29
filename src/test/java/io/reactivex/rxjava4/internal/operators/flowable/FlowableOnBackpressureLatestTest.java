@@ -13,10 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.inOrder;
+
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
@@ -25,8 +28,6 @@ import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.*;
-
-import static org.mockito.Mockito.inOrder;
 
 public class FlowableOnBackpressureLatestTest extends RxJavaTest {
     @Test
@@ -195,10 +196,10 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
         ts.assertTerminated();
         int n = ts.values().size();
         System.out.println("testAsynchronousDrop -> " + n);
-        Assert.assertTrue("All events received?", n < m);
+        assertTrue("All events received?", n < m);
         int previous = 0;
         for (Integer current : ts.values()) {
-            Assert.assertTrue("The sequence must be increasing [current value=" + previous +
+            assertTrue("The sequence must be increasing [current value=" + previous +
                     ", previous value=" + current + "]", previous <= current);
             previous = current;
         }

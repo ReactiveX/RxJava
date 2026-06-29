@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -37,7 +37,7 @@ public class FlowableLiftTest extends RxJavaTest {
             .test();
             fail("Should have thrown");
         } catch (NullPointerException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+            assertTrue(ex.getCause() instanceof TestException, ex.toString());
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();

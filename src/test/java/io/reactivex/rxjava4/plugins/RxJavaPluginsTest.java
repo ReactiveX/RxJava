@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.plugins;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
 import java.lang.reflect.*;
@@ -22,7 +22,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
@@ -113,9 +113,9 @@ public class RxJavaPluginsTest extends RxJavaTest {
                     Object after = getter.invoke(null);
 
                     if (paramType.isPrimitive()) {
-                        assertEquals(m.toString(), before, after);
+                        assertEquals(before, after, m.toString());
                     } else {
-                        assertSame(m.toString(), before, after);
+                        assertSame(before, after, m.toString());
                     }
                 }
             }
@@ -1111,17 +1111,17 @@ public class RxJavaPluginsTest extends RxJavaTest {
     }
 
     static void assertTestException(List<Throwable> list, int index, String message) {
-        assertTrue(list.get(index).toString(), list.get(index) instanceof TestException);
+        assertTrue(list.get(index) instanceof TestException, list.get(index).toString());
         assertEquals(message, list.get(index).getMessage());
     }
 
     static void assertUndeliverableTestException(List<Throwable> list, int index, String message) {
-        assertTrue(list.get(index).toString(), list.get(index).getCause() instanceof TestException);
-        assertEquals(message, list.get(index).getCause().getMessage());
+        assertTrue(list.get(index).getCause() instanceof TestException, list.get(index).toString());
+        assertEquals(list.get(index).getCause().getMessage(), message);
     }
 
     static void assertNPE(List<Throwable> list, int index) {
-        assertTrue(list.get(index).toString(), list.get(index) instanceof NullPointerException);
+        assertTrue(list.get(index) instanceof NullPointerException, list.get(index).toString());
     }
 
     @SuppressWarnings("rawtypes")

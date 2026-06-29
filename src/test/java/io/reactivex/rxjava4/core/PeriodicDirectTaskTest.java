@@ -13,12 +13,11 @@
 
 package io.reactivex.rxjava4.core;
 
-import static org.junit.Assert.fail;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Scheduler.PeriodicDirectTask;
 import io.reactivex.rxjava4.exceptions.TestException;

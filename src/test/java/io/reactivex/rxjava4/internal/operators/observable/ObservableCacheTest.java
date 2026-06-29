@@ -13,26 +13,22 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
+import java.lang.management.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.*;
 
-import io.reactivex.rxjava4.observables.ConnectableObservable;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Action;
+import io.reactivex.rxjava4.observables.ConnectableObservable;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subjects.PublishSubject;
@@ -43,14 +39,14 @@ public class ObservableCacheTest extends RxJavaTest {
     public void coldReplayNoBackpressure() {
         ObservableCache<Integer> source = new ObservableCache<>(Observable.range(0, 1000), 16);
 
-        assertFalse("Source is connected!", source.isConnected());
+        assertFalse(source.isConnected(), "Source is connected!");
 
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
         source.subscribe(to);
 
-        assertTrue("Source is not connected!", source.isConnected());
-        assertFalse("Subscribers retained!", source.hasObservers());
+        assertTrue(source.isConnected(), "Source is not connected!");
+        assertFalse(source.hasObservers(), "Subscribers retained!");
 
         to.assertNoErrors();
         to.assertTerminated();
@@ -80,14 +76,14 @@ public class ObservableCacheTest extends RxJavaTest {
 
         // subscribe once
         o.subscribe(v -> {
-                Assert.assertEquals("one", v);
+                assertEquals("one", v);
                 System.out.println("v: " + v);
                 latch.countDown();
         });
 
         // subscribe again
         o.subscribe(v -> {
-                Assert.assertEquals("one", v);
+                assertEquals("one", v);
                 System.out.println("v: " + v);
                 latch.countDown();
         });

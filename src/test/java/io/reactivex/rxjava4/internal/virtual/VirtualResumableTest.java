@@ -15,10 +15,10 @@ package io.reactivex.rxjava4.internal.virtual;
 
 import static org.testng.Assert.*;
 
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 public class VirtualResumableTest {
 
@@ -60,7 +60,7 @@ public class VirtualResumableTest {
         assertEquals(1, stateEx++);
     }
 
-    @Test(timeout = 30000)
+    @Test @Timeout(value = 30000, unit = TimeUnit.MILLISECONDS)
     public void pingPong() throws Exception {
         try (var scope = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().factory())) {
 

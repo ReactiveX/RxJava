@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -22,7 +22,7 @@ import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
@@ -44,7 +44,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     private Scheduler.Worker innerScheduler;
     private Subscriber<String> subscriber;
 
-    @Before
+    @BeforeEach
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
@@ -451,7 +451,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         ts.assertTerminated();
         ts.assertNoErrors();
 
-        Assert.assertEquals(250, ts.values().size());
+        assertEquals(250, ts.values().size());
     }
 
     @Test

@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.SampleConfig;
@@ -39,7 +39,7 @@ public class FlowableSampleTest extends RxJavaTest {
     private Subscriber<Long> subscriber;
     private Subscriber<Object> subscriber2;
 
-    @Before
+    @BeforeEach
     // due to mocking
     public void before() {
         scheduler = new TestScheduler();

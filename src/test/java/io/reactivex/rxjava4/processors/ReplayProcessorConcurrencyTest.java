@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.processors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -332,10 +332,10 @@ public class ReplayProcessorConcurrencyTest extends RxJavaTest {
                     System.out.println(o.get());
                     System.out.println(rs.hasSubscribers());
                     rs.onComplete();
-                    Assert.fail("Timeout @ " + i);
+                    fail("Timeout @ " + i);
                     break;
                 } else {
-                    Assert.assertEquals(1, o.get());
+                    assertEquals(1, o.get());
                     worker.schedule(rs::onComplete);
 
                 }
@@ -374,13 +374,13 @@ public class ReplayProcessorConcurrencyTest extends RxJavaTest {
             boolean hasAny = rs.hasValue();
             Object[] values = rs.getValues();
             if (size < lastSize) {
-                Assert.fail("Size decreased! " + lastSize + " -> " + size);
+                fail("Size decreased! " + lastSize + " -> " + size);
             }
             if ((size > 0) && !hasAny) {
-                Assert.fail("hasAnyValue reports emptyness but size doesn't");
+                fail("hasAnyValue reports emptyness but size doesn't");
             }
             if (size > values.length) {
-                Assert.fail("Got fewer values than size! " + size + " -> " + values.length);
+                fail("Got fewer values than size! " + size + " -> " + values.length);
             }
             lastSize = size;
         }

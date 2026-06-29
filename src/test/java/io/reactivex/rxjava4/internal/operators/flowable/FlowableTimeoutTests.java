@@ -14,23 +14,23 @@
 package io.reactivex.rxjava4.internal.operators.flowable;
 
 import static io.reactivex.rxjava4.internal.util.ExceptionHelper.timeoutMessage;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
-import io.reactivex.rxjava4.schedulers.*;
+import io.reactivex.rxjava4.schedulers.TestScheduler;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.*;
 
@@ -41,7 +41,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
     private static final long TIMEOUT = 3;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         underlyingSubject = PublishProcessor.create();
@@ -483,7 +483,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
                 int c = ts.values().size();
                 if (c == 1) {
                     int v = ts.values().getFirst();
-                    assertTrue("" + v, v == 1 || v == 2);
+                    assertTrue(v == 1 || v == 2, "" + v);
                 } else {
                     ts.assertResult(1, 2);
                 }

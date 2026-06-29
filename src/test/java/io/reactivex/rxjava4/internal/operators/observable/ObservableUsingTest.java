@@ -13,18 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -138,14 +138,18 @@ public class ObservableUsingTest extends RxJavaTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void usingWithResourceFactoryError() {
-        performTestUsingWithResourceFactoryError(false);
+        assertThrows(TestException.class, () -> {
+            performTestUsingWithResourceFactoryError(false);
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void usingWithResourceFactoryErrorDisposeEagerly() {
-        performTestUsingWithResourceFactoryError(true);
+        assertThrows(TestException.class, () -> {
+            performTestUsingWithResourceFactoryError(true);
+        });
     }
 
     private void performTestUsingWithResourceFactoryError(boolean disposeEagerly) {

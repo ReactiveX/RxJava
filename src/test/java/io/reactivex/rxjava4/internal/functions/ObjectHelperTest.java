@@ -13,9 +13,9 @@
 
 package io.reactivex.rxjava4.internal.functions;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -37,13 +37,17 @@ public class ObjectHelperTest extends RxJavaTest {
         assertEquals(1L, ObjectHelper.verifyPositive(1L, "param"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void verifyPositiveIntFail() throws Exception {
-        assertEquals(-1, ObjectHelper.verifyPositive(-1, "param"));
+        assertThrows(IllegalArgumentException.class, () -> {
+            assertEquals(-1, ObjectHelper.verifyPositive(-1, "param"));
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void verifyPositiveLongFail() throws Exception {
-        assertEquals(-1L, ObjectHelper.verifyPositive(-1L, "param"));
+        assertThrows(IllegalArgumentException.class, () -> {
+            assertEquals(-1L, ObjectHelper.verifyPositive(-1L, "param"));
+        });
     }
 }

@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.observers.*;
@@ -75,9 +75,11 @@ public class ObservableRangeLongTest extends RxJavaTest {
         Observable.rangeLong(1L, Long.MAX_VALUE);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rangeWithOverflow4() {
-        Observable.rangeLong(2L, Long.MAX_VALUE);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Observable.rangeLong(2L, Long.MAX_VALUE);
+        });
     }
 
     @Test

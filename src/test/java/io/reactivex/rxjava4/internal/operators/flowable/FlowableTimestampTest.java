@@ -16,11 +16,11 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -31,7 +31,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class FlowableTimestampTest extends RxJavaTest {
     Subscriber<Object> subscriber;
 
-    @Before
+    @BeforeEach
     public void before() {
         subscriber = TestHelper.mockSubscriber();
     }

@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -34,14 +34,18 @@ public class ImmediateThinSchedulerTest extends RxJavaTest {
         assertEquals(1, count[0]);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void scheduleDirectTimed() {
-        ImmediateThinScheduler.INSTANCE.scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.SECONDS);
+        assertThrows(UnsupportedOperationException.class, () -> {
+            ImmediateThinScheduler.INSTANCE.scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.SECONDS);
+        });
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void scheduleDirectPeriodic() {
-        ImmediateThinScheduler.INSTANCE.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 1, 1, TimeUnit.SECONDS);
+        assertThrows(UnsupportedOperationException.class, () -> {
+            ImmediateThinScheduler.INSTANCE.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 1, 1, TimeUnit.SECONDS);
+        });
     }
 
     @Test
@@ -57,13 +61,17 @@ public class ImmediateThinSchedulerTest extends RxJavaTest {
         assertEquals(1, count[0]);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void scheduleTimed() {
-        ImmediateThinScheduler.INSTANCE.createWorker().schedule(Functions.EMPTY_RUNNABLE, 1, TimeUnit.SECONDS);
+        assertThrows(UnsupportedOperationException.class, () -> {
+            ImmediateThinScheduler.INSTANCE.createWorker().schedule(Functions.EMPTY_RUNNABLE, 1, TimeUnit.SECONDS);
+        });
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void schedulePeriodic() {
-        ImmediateThinScheduler.INSTANCE.createWorker().schedulePeriodically(Functions.EMPTY_RUNNABLE, 1, 1, TimeUnit.SECONDS);
+        assertThrows(UnsupportedOperationException.class, () -> {
+            ImmediateThinScheduler.INSTANCE.createWorker().schedulePeriodically(Functions.EMPTY_RUNNABLE, 1, 1, TimeUnit.SECONDS);
+        });
     }
 }

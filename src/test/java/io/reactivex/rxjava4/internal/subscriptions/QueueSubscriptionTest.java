@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.internal.subscriptions;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import java.io.Serial;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.testsupport.TestHelper;
-
-import java.io.Serial;
 
 public class QueueSubscriptionTest extends RxJavaTest {
     static final class EmptyQS extends BasicQueueSubscription<Integer> {

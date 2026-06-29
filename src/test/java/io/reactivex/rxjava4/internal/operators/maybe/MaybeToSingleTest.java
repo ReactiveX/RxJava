@@ -13,9 +13,9 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamMaybeSource;
@@ -29,7 +29,7 @@ public class MaybeToSingleTest extends RxJavaTest {
         Maybe<Integer> m = Maybe.just(1);
         Single<Integer> s = m.toSingle();
 
-        assertTrue(s.getClass().toString(), s instanceof HasUpstreamMaybeSource);
+        assertTrue(s instanceof HasUpstreamMaybeSource, s.getClass().toString());
 
         assertSame(m, (((HasUpstreamMaybeSource<?>)s).source()));
     }

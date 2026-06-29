@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.Function;
@@ -27,18 +27,20 @@ import io.reactivex.rxjava4.testsupport.*;
 
 public class ObservableSkipTest extends RxJavaTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void skipNegativeElements() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            Observable<String> skip = Observable.just("one", "two", "three").skip(-99);
 
-        Observable<String> skip = Observable.just("one", "two", "three").skip(-99);
+            Observer<String> observer = TestHelper.mockObserver();
+            skip.subscribe(observer);
+            verify(observer, times(1)).onNext("one");
+            verify(observer, times(1)).onNext("two");
+            verify(observer, times(1)).onNext("three");
+            verify(observer, never()).onError(any(Throwable.class));
+            verify(observer, times(1)).onComplete();
+        });
 
-        Observer<String> observer = TestHelper.mockObserver();
-        skip.subscribe(observer);
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
     }
 
     @Test

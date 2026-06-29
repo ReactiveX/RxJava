@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -44,13 +44,13 @@ public class BlockingFlowableLatestTest extends RxJavaTest {
         for (int i = 0; i < 9; i++) {
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            Assert.assertTrue(it.hasNext());
+            assertTrue(it.hasNext());
 
-            Assert.assertEquals(Long.valueOf(i), it.next());
+            assertEquals(Long.valueOf(i), it.next());
         }
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        Assert.assertFalse(it.hasNext());
+        assertFalse(it.hasNext());
     }
 
     @Test
@@ -69,75 +69,84 @@ public class BlockingFlowableLatestTest extends RxJavaTest {
             for (int i = 0; i < 9; i++) {
                 scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-                Assert.assertTrue(it.hasNext());
+                assertTrue(it.hasNext());
 
-                Assert.assertEquals(Long.valueOf(i), it.next());
+                assertEquals(Long.valueOf(i), it.next());
             }
 
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-            Assert.assertFalse(it.hasNext());
+            assertFalse(it.hasNext());
         }
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void empty() {
-        Flowable<Long> source = Flowable.<Long> empty();
+        assertThrows(NoSuchElementException.class, () -> {
+            Flowable<Long> source = Flowable.<Long> empty();
 
-        Iterable<Long> iter = source.blockingLatest();
+            Iterable<Long> iter = source.blockingLatest();
 
-        Iterator<Long> it = iter.iterator();
+            Iterator<Long> it = iter.iterator();
 
-        Assert.assertFalse(it.hasNext());
+            assertFalse(it.hasNext());
 
-        it.next();
+            it.next();
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void simpleJustNext() {
-        TestScheduler scheduler = new TestScheduler();
+        assertThrows(NoSuchElementException.class, () -> {
+            TestScheduler scheduler = new TestScheduler();
 
-        Flowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
+            Flowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
 
-        Iterable<Long> iter = source.blockingLatest();
+            Iterable<Long> iter = source.blockingLatest();
 
-        Iterator<Long> it = iter.iterator();
+            Iterator<Long> it = iter.iterator();
 
-        // only 9 because take(10) will immediately call onComplete when receiving the 10th item
-        // which onComplete will overwrite the previous value
-        for (int i = 0; i < 10; i++) {
+            // only 9 because take(10) will immediately call onComplete when receiving the 10th item
+            // which onComplete will overwrite the previous value
+            for (int i = 0; i < 10; i++) {
+                scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+                assertEquals(Long.valueOf(i), it.next());
+            }
+        });
+
+    }
+
+    @Test
+    public void hasNextThrows() {
+        assertThrows(RuntimeException.class, () -> {
+            TestScheduler scheduler = new TestScheduler();
+
+            Flowable<Long> source = Flowable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler);
+
+            Iterable<Long> iter = source.blockingLatest();
+
+            Iterator<Long> it = iter.iterator();
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            Assert.assertEquals(Long.valueOf(i), it.next());
-        }
+            it.hasNext();
+        });
     }
 
-    @Test(expected = RuntimeException.class)
-    public void hasNextThrows() {
-        TestScheduler scheduler = new TestScheduler();
-
-        Flowable<Long> source = Flowable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler);
-
-        Iterable<Long> iter = source.blockingLatest();
-
-        Iterator<Long> it = iter.iterator();
-
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-
-        it.hasNext();
-    }
-
-    @Test(expected = RuntimeException.class)
+    @Test
     public void nextThrows() {
-        TestScheduler scheduler = new TestScheduler();
+        assertThrows(RuntimeException.class, () -> {
+            TestScheduler scheduler = new TestScheduler();
 
-        Flowable<Long> source = Flowable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler);
+            Flowable<Long> source = Flowable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler);
 
-        Iterable<Long> iter = source.blockingLatest();
-        Iterator<Long> it = iter.iterator();
+            Iterable<Long> iter = source.blockingLatest();
+            Iterator<Long> it = iter.iterator();
 
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        it.next();
+            it.next();
+        });
     }
 
     @Test
@@ -150,28 +159,30 @@ public class BlockingFlowableLatestTest extends RxJavaTest {
 
         source.onNext(1);
 
-        Assert.assertEquals(Integer.valueOf(1), it.next());
+        assertEquals(Integer.valueOf(1), it.next());
 
         source.onNext(2);
         source.onNext(3);
 
-        Assert.assertEquals(Integer.valueOf(3), it.next());
+        assertEquals(Integer.valueOf(3), it.next());
 
         source.onNext(4);
         source.onNext(5);
         source.onNext(6);
 
-        Assert.assertEquals(Integer.valueOf(6), it.next());
+        assertEquals(Integer.valueOf(6), it.next());
 
         source.onNext(7);
         source.onComplete();
 
-        Assert.assertFalse(it.hasNext());
+        assertFalse(it.hasNext());
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void remove() {
-        Flowable.never().blockingLatest().iterator().remove();
+        assertThrows(UnsupportedOperationException.class, () -> {
+            Flowable.never().blockingLatest().iterator().remove();
+        });
     }
 
     @Test
@@ -183,19 +194,23 @@ public class BlockingFlowableLatestTest extends RxJavaTest {
         try {
             it.hasNext();
         } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+            assertTrue(ex.getCause() instanceof InterruptedException, ex.toString());
         }
         Thread.interrupted();
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void empty2() {
-        Flowable.empty().blockingLatest().iterator().next();
+        assertThrows(NoSuchElementException.class, () -> {
+            Flowable.empty().blockingLatest().iterator().next();
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void error() {
-        Flowable.error(new TestException()).blockingLatest().iterator().next();
+        assertThrows(TestException.class, () -> {
+            Flowable.error(new TestException()).blockingLatest().iterator().next();
+        });
     }
 
     @Test

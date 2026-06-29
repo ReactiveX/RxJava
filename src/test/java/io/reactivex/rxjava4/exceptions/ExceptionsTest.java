@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.exceptions;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -44,7 +44,7 @@ public class ExceptionsTest extends RxJavaTest {
         });
 
         TestHelper.assertError(errors, 0, RuntimeException.class);
-        assertTrue(errors.getFirst().toString(), errors.getFirst().getMessage().contains("hello"));
+        assertTrue(errors.getFirst().getMessage().contains("hello"), errors.getFirst().toString());
         RxJavaPlugins.reset();
     }
 
@@ -107,30 +107,32 @@ public class ExceptionsTest extends RxJavaTest {
         assertTrue(depth.get() >= MAX_STACK_DEPTH);
     }
 
-    @Test(expected = StackOverflowError.class)
+    @Test
     public void stackOverflowErrorIsThrown() {
-        Observable.just(1).subscribe(new Observer<>() /* NFI */ {
+        assertThrows(StackOverflowError.class, () -> {
+            Observable.just(1).subscribe(new Observer<>() /* NFI */ {
 
-            @Override
-            public void onSubscribe(Disposable d) {
+                @Override
+                public void onSubscribe(Disposable d) {
 
-            }
+                }
 
-            @Override
-            public void onComplete() {
+                @Override
+                public void onComplete() {
 
-            }
+                }
 
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-            }
+                @Override
+                public void onError(Throwable e) {
+                    e.printStackTrace();
+                }
 
-            @Override
-            public void onNext(Integer t) {
-                throw new StackOverflowError();
-            }
+                @Override
+                public void onNext(Integer t) {
+                    throw new StackOverflowError();
+                }
 
+            });
         });
     }
 
@@ -168,22 +170,22 @@ public class ExceptionsTest extends RxJavaTest {
     public void errorNotImplementedNull1() {
         OnErrorNotImplementedException ex = new OnErrorNotImplementedException(null);
 
-        assertTrue("" + ex.getCause(), ex.getCause() instanceof NullPointerException);
+        assertTrue(ex.getCause() instanceof NullPointerException, "" + ex.getCause());
     }
 
     @Test
     public void errorNotImplementedNull2() {
         OnErrorNotImplementedException ex = new OnErrorNotImplementedException("Message", null);
 
-        assertTrue("" + ex.getCause(), ex.getCause() instanceof NullPointerException);
+        assertTrue(ex.getCause() instanceof NullPointerException, "" + ex.getCause());
     }
 
     @Test
     public void errorNotImplementedWithCause() {
         OnErrorNotImplementedException ex = new OnErrorNotImplementedException("Message", new TestException("Forced failure"));
 
-        assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
+        assertTrue(ex.getCause() instanceof TestException, "" + ex.getCause());
 
-        assertEquals("" + ex.getCause(), "Forced failure", ex.getCause().getMessage());
+        assertEquals("Forced failure", ex.getCause().getMessage(), "" + ex.getCause());
     }
 }

@@ -17,10 +17,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.NoSuchElementException;
+import java.util.concurrent.Flow.Subscriber;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.Predicate;
@@ -36,7 +36,7 @@ public class FlowableFirstTest extends RxJavaTest {
 
     private static final Predicate<String> IS_D = "d"::equals;
 
-    @Before
+    @BeforeEach
     public void before() {
         w = TestHelper.mockSubscriber();
         wo = TestHelper.mockSingleObserver();

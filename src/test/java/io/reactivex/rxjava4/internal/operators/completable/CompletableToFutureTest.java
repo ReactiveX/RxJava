@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -44,7 +44,7 @@ public class CompletableToFutureTest extends RxJavaTest {
 
             fail("Should have thrown!");
         } catch (ExecutionException ex) {
-            assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
+            assertTrue(ex.getCause() instanceof TestException, "" + ex.getCause());
         }
     }
 

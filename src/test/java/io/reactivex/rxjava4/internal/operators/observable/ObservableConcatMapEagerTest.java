@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
@@ -128,7 +128,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         main.onError(new TestException("Forced failure"));
 
-        assertFalse("inner has subscribers?", inner.hasObservers());
+        assertFalse(inner.hasObservers(), "inner has subscribers?");
 
         inner.onNext(3);
         inner.onComplete();
@@ -153,7 +153,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     Function<Integer, Observable<Integer>> toRange = t -> Observable.range(t, 2);
 
-    @Before
+    @BeforeEach
     public void before() {
         to = new TestObserver<>();
     }
@@ -183,7 +183,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         Observable.concatArrayEager(source, source).subscribe(to);
 
-        Assert.assertEquals(2, count.get());
+        assertEquals(2, count.get());
 
         to.assertValueCount(count.get());
         to.assertNoErrors();
@@ -197,7 +197,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         Observable.concatArrayEager(source, source, source).subscribe(to);
 
-        Assert.assertEquals(3, count.get());
+        assertEquals(3, count.get());
 
         to.assertValueCount(count.get());
         to.assertNoErrors();
@@ -211,7 +211,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         Observable.concatArrayEager(source, source, source, source).subscribe(to);
 
-        Assert.assertEquals(4, count.get());
+        assertEquals(4, count.get());
 
         to.assertValueCount(count.get());
         to.assertNoErrors();
@@ -225,7 +225,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         Observable.concatArrayEager(source, source, source, source, source).subscribe(to);
 
-        Assert.assertEquals(5, count.get());
+        assertEquals(5, count.get());
 
         to.assertValueCount(count.get());
         to.assertNoErrors();
@@ -239,7 +239,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         Observable.concatArrayEager(source, source, source, source, source, source).subscribe(to);
 
-        Assert.assertEquals(6, count.get());
+        assertEquals(6, count.get());
 
         to.assertValueCount(count.get());
         to.assertNoErrors();
@@ -253,7 +253,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         Observable.concatArrayEager(source, source, source, source, source, source, source).subscribe(to);
 
-        Assert.assertEquals(7, count.get());
+        assertEquals(7, count.get());
 
         to.assertValueCount(count.get());
         to.assertNoErrors();
@@ -267,7 +267,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         Observable.concatArrayEager(source, source, source, source, source, source, source, source).subscribe(to);
 
-        Assert.assertEquals(8, count.get());
+        assertEquals(8, count.get());
 
         to.assertValueCount(count.get());
         to.assertNoErrors();
@@ -281,7 +281,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         Observable.concatArrayEager(source, source, source, source, source, source, source, source, source).subscribe(to);
 
-        Assert.assertEquals(9, count.get());
+        assertEquals(9, count.get());
 
         to.assertValueCount(count.get());
         to.assertNoErrors();
@@ -333,14 +333,20 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertError(TestException.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void invalidMaxConcurrent() {
-        assertNotNull(Observable.just(1).concatMapEager(toJust, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 0, Observable.bufferSize())));
+        assertThrows(IllegalArgumentException.class, () -> {
+            assertNotNull(Observable.just(1)
+                    .concatMapEager(toJust, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 0, Observable.bufferSize())));
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void invalidCapacityHint() {
-        assertNotNull(Observable.just(1).concatMapEager(toJust, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, Observable.bufferSize(), 0)));
+        assertThrows(IllegalArgumentException.class, () -> {
+            assertNotNull(Observable.just(1)
+                    .concatMapEager(toJust, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, Observable.bufferSize(), 0)));
+        });
     }
 
     @Test

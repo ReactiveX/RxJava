@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -22,7 +22,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -210,8 +210,8 @@ public class FlowableRetryTest extends RxJavaTest {
                 .retryWhen(attempt -> attempt.zipWith(Flowable.just(1), (_, _) -> 0))
                 .blockingFirst();
 
-        assertEquals("Observer did not receive the expected output", 1, first);
-        assertEquals("Subscribe was not called once", 1, inc.get());
+        assertEquals(1, first, "Observer did not receive the expected output");
+        assertEquals(1, inc.get(), "Subscribe was not called once");
     }
 
     @Test
@@ -608,8 +608,8 @@ public class FlowableRetryTest extends RxJavaTest {
         inOrder.verify(subscriber, times(1)).onError(any(Throwable.class));
         inOrder.verify(subscriber, never()).onComplete();
 
-        assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
-        assertEquals("Only 1 active subscription", 1, so.maxActive.get());
+        assertEquals(6, so.efforts.get(), "Start 6 threads, retry 5 then fail on 6");
+        assertEquals(1, so.maxActive.get(), "Only 1 active subscription");
     }
 
     @Test
@@ -632,7 +632,7 @@ public class FlowableRetryTest extends RxJavaTest {
         inOrder.verify(subscriber, times(1)).onError(any(Throwable.class));
         inOrder.verify(subscriber, never()).onComplete();
 
-        assertEquals("Start 6 threads, retry 5 then fail on 6", 6, sf.efforts.get());
+        assertEquals(6, sf.efforts.get(), "Start 6 threads, retry 5 then fail on 6");
     }
 
     @Test

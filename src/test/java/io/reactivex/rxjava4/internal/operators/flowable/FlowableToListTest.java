@@ -13,15 +13,16 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.Subscriber;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -86,7 +87,7 @@ public class FlowableToListTest extends RxJavaTest {
     public void listWithBlockingFirstFlowable() {
         Flowable<String> f = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         List<String> actual = f.toList().toFlowable().blockingFirst();
-        Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
+        assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
 
     @Test
@@ -168,7 +169,7 @@ public class FlowableToListTest extends RxJavaTest {
     public void listWithBlockingFirst() {
         Flowable<String> f = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         List<String> actual = f.toList().blockingGet();
-        Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
+        assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
 
     static void await(CyclicBarrier cb) {

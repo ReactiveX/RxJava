@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -126,10 +126,12 @@ public class SingleZipArrayTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void zipArrayOneIsNull() {
-        Single.zipArray((Function<Object[], Object>) _ -> 1, Single.just(1), null)
-        .blockingGet();
+        assertThrows(NullPointerException.class, () -> {
+            Single.zipArray((Function<Object[], Object>) _ -> 1, Single.just(1), null)
+            .blockingGet();
+        });
     }
 
     @SuppressWarnings("unchecked")

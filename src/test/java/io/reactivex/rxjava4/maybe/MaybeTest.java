@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.maybe;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.lang.management.*;
@@ -22,7 +22,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
@@ -754,7 +754,7 @@ public class MaybeTest extends RxJavaTest {
 
             fail("Should have thrown!");
         } catch (NullPointerException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof IllegalArgumentException);
+            assertTrue(ex.getCause() instanceof IllegalArgumentException, ex.toString());
             assertEquals("Forced failure", ex.getCause().getMessage());
         }
     }
@@ -1234,9 +1234,11 @@ public class MaybeTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void unsafeCreateWithMaybe() {
-        Maybe.unsafeCreate(Maybe.just(1));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Maybe.unsafeCreate(Maybe.just(1));
+        });
     }
 
     @Test
@@ -1875,7 +1877,7 @@ public class MaybeTest extends RxJavaTest {
 
             TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
             Throwable c = errors.getFirst().getCause();
-            assertTrue("" + c, c instanceof TestException);
+            assertTrue(c instanceof TestException, "" + c);
         } finally {
             RxJavaPlugins.reset();
         }

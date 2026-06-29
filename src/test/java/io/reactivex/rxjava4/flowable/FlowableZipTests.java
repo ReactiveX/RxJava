@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.Flow.Publisher;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
@@ -73,20 +73,22 @@ public class FlowableZipTests extends RxJavaTest {
      *
      * We now expect an NoSuchElementException since last() requires at least one value and nothing will be emitted.
      */
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void nonBlockingObservable() {
+        assertThrows(NoSuchElementException.class, () -> {
+            final Object invoked = new Object();
 
-        final Object invoked = new Object();
+            Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        Collection<Flowable<Object>> observables = Collections.emptyList();
+            Flowable<Object> result = Flowable.zip(observables, args -> {
+                System.out.println("received: " + args);
+                assertEquals(0, args.length, "No argument should have been passed");
+                return invoked;
+            });
 
-        Flowable<Object> result = Flowable.zip(observables, args -> {
-            System.out.println("received: " + args);
-            assertEquals("No argument should have been passed", 0, args.length);
-            return invoked;
+            assertSame(invoked, result.blockingLast());
         });
 
-        assertSame(invoked, result.blockingLast());
     }
 
     BiFunction<Media, Rating, ExtendedResult> combine = (_, _) -> new ExtendedResult();

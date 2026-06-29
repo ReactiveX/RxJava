@@ -15,9 +15,10 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 
 import static org.mockito.Mockito.*;
 
-import org.junit.*;
+import java.util.concurrent.Flow.Subscriber;
+
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.BiFunction;
@@ -39,7 +40,7 @@ public class FlowableZipCompletionTest extends RxJavaTest {
     Subscriber<String> subscriber;
     InOrder inOrder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         concat2Strings = (t1, t2) -> t1 + "-" + t2;
 

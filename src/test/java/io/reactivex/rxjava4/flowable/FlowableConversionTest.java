@@ -13,13 +13,14 @@
 
 package io.reactivex.rxjava4.flowable;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.*;
@@ -223,6 +224,6 @@ public class FlowableConversionTest extends RxJavaTest {
                 System.out.println(x + " item: " + i);
             }
         }
-        Assert.assertNull(thrown.get());
+        assertNull(thrown.get());
     }
 }

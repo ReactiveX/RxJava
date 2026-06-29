@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.util;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -43,8 +43,10 @@ public class ExceptionHelperTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = InternalError.class)
+    @Test
     public void throwIfThrowable() throws Exception {
-        ExceptionHelper.<Exception>throwIfThrowable(new InternalError());
+        assertThrows(InternalError.class, () -> {
+            ExceptionHelper.<Exception>throwIfThrowable(new InternalError());
+        });
     }
 }

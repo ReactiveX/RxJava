@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -39,7 +39,7 @@ public class SharedSchedulerTest implements Runnable {
         calls++;
     }
 
-    @Test(timeout = 5000)
+    @Test @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS)
     public void normal() {
         var scheduler = Schedulers.cached().share();
         try {
@@ -57,7 +57,7 @@ public class SharedSchedulerTest implements Runnable {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS)
     public void delay() {
         var scheduler = Schedulers.cached().share();
         try {
@@ -198,7 +198,7 @@ public class SharedSchedulerTest implements Runnable {
         assertTrue(d.isDisposed());
     }
 
-    @Test(timeout = 5000)
+    @Test @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS)
     public void futureDisposeRace() throws Exception {
         var scheduler = Schedulers.computation().share();
         try {

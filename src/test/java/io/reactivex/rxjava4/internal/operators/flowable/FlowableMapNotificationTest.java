@@ -13,10 +13,9 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import java.util.concurrent.Flow.*;
 
-import java.util.concurrent.Flow.Publisher;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;

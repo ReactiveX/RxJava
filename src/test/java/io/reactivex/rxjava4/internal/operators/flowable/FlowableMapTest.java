@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Flow.Subscriber;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -29,8 +29,7 @@ import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
-import io.reactivex.rxjava4.operators.ConditionalSubscriber;
-import io.reactivex.rxjava4.operators.QueueFuseable;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.*;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -44,7 +43,7 @@ public class FlowableMapTest extends RxJavaTest {
 
     static final BiFunction<String, Integer, String> APPEND_INDEX = (value, index) -> value + index;
 
-    @Before
+    @BeforeEach
     public void before() {
         stringSubscriber = TestHelper.mockSubscriber();
         stringSubscriber2 = TestHelper.mockSubscriber();
@@ -145,27 +144,31 @@ public class FlowableMapTest extends RxJavaTest {
         TestHelper.assertError(errors, 0, TestException.class, "Forced Failure");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void mapWithIssue417() {
-        Flowable.just(1).observeOn(Schedulers.computation())
-                .map(_ -> {
-                    throw new IllegalArgumentException("any error");
-                }).blockingSingle();
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable.just(1).observeOn(Schedulers.computation())
+            .map(_ -> {
+                throw new IllegalArgumentException("any error");
+            }).blockingSingle();
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void mapWithErrorInFuncAndThreadPoolScheduler() throws InterruptedException {
-        // The error will throw in one of threads in the thread pool.
-        // If map does not handle it, the error will disappear.
-        // so map needs to handle the error by itself.
-        Flowable<String> m = Flowable.just("one")
-                .observeOn(Schedulers.computation())
-                .map(_ -> {
-                    throw new IllegalArgumentException("any error");
-                });
+        assertThrows(IllegalArgumentException.class, () -> {
+            // The error will throw in one of threads in the thread pool.
+            // If map does not handle it, the error will disappear.
+            // so map needs to handle the error by itself.
+            Flowable<String> m = Flowable.just("one")
+                    .observeOn(Schedulers.computation())
+                    .map(_ -> {
+                        throw new IllegalArgumentException("any error");
+                    });
 
-        // block for response, expecting exception thrown
-        m.blockingLast();
+            // block for response, expecting exception thrown
+            m.blockingLast();
+        });
     }
 
     /**
@@ -179,18 +182,22 @@ public class FlowableMapTest extends RxJavaTest {
     /**
      * We expect IllegalStateException to pass thru map.
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void errorPassesThruMap2() {
-        Flowable.error(new IllegalStateException()).map(i -> i).blockingSingle();
+        assertThrows(IllegalStateException.class, () -> {
+            Flowable.error(new IllegalStateException()).map(i -> i).blockingSingle();
+        });
     }
 
     /**
      * We expect an ArithmeticException exception here because last() emits a single value
      * but then we divide by 0.
      */
-    @Test(expected = ArithmeticException.class)
+    @Test
     public void mapWithErrorInFunc() {
-        Flowable.range(1, 1).lastElement().map(i -> i / 0).blockingGet();
+        assertThrows(ArithmeticException.class, () -> {
+            Flowable.range(1, 1).lastElement().map(i -> i / 0).blockingGet();
+        });
     }
 
     private static Map<String, String> getMap(String prefix) {
@@ -211,11 +218,11 @@ public class FlowableMapTest extends RxJavaTest {
             throw new TestException();
         }).subscribe(ts);
 
-        Assert.assertTrue("Not subscribed?", pp.hasSubscribers());
+        assertTrue(pp.hasSubscribers(), "Not subscribed?");
 
         pp.onNext(1);
 
-        Assert.assertFalse("Subscribed?", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Subscribed?");
 
         ts.assertError(TestException.class);
     }

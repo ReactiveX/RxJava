@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -45,7 +45,7 @@ public class SingleDoOnTest extends RxJavaTest {
         Single.error(new TestException()).doOnError(e -> event[0] = e)
         .test();
 
-        assertTrue(event[0].toString(), event[0] instanceof TestException);
+        assertTrue(event[0] instanceof TestException, event[0].toString());
     }
 
     @Test

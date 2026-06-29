@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.subjects;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -71,7 +71,7 @@ public class CompletableSubjectTest extends RxJavaTest {
 
         assertFalse(cs.hasComplete());
         assertTrue(cs.hasThrowable());
-        assertTrue(cs.getThrowable().toString(), cs.getThrowable() instanceof IOException);
+        assertTrue(cs.getThrowable() instanceof IOException, cs.getThrowable().toString());
         assertFalse(cs.hasObservers());
         assertEquals(0, cs.observerCount());
 
@@ -81,7 +81,7 @@ public class CompletableSubjectTest extends RxJavaTest {
 
         assertFalse(cs.hasComplete());
         assertTrue(cs.hasThrowable());
-        assertTrue(cs.getThrowable().toString(), cs.getThrowable() instanceof IOException);
+        assertTrue(cs.getThrowable() instanceof IOException, cs.getThrowable().toString());
         assertFalse(cs.hasObservers());
         assertEquals(0, cs.observerCount());
     }

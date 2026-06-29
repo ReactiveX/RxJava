@@ -13,19 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.*;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -46,7 +45,7 @@ public class FlowableBufferTest extends RxJavaTest {
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
 
-    @Before
+    @BeforeEach
     public void before() {
         subscriber = TestHelper.mockSubscriber();
         scheduler = new TestScheduler();
@@ -1573,7 +1572,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 items += o.size();
             }
 
-            assertEquals("Round: " + i, 5, items);
+            assertEquals(5, items, "Round: " + i);
         }
     }
 

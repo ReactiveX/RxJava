@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -24,7 +24,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.common.base.Ticker;
@@ -140,7 +140,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         assertEquals(3, groupCounter.get());
         assertEquals(6, eventCounter.get());
         assertNotNull(error.get());
-        assertTrue("" + error.get(), error.get() instanceof TestException);
+        assertTrue(error.get() instanceof TestException, "" + error.get());
         assertEquals(error.get().getMessage(), "forced failure");
     }
 
@@ -1008,15 +1008,17 @@ public class FlowableGroupByTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = MissingBackpressureException.class)
+    @Test
     public void backpressureObserveOnOuterMissingBackpressure() {
-        for (int j = 0; j < 1000; j++) {
-            Flowable.merge(
-                    Flowable.range(0, 500)
-                    .groupBy(i -> i % (Flowable.bufferSize() + 2))
-                    .observeOn(Schedulers.computation())
-            ).blockingLast();
-        }
+        assertThrows(MissingBackpressureException.class, () -> {
+            for (int j = 0; j < 1000; j++) {
+                Flowable.merge(
+                        Flowable.range(0, 500)
+                        .groupBy(i -> i % (Flowable.bufferSize() + 2))
+                        .observeOn(Schedulers.computation())
+                ).blockingLast();
+            }
+        });
     }
 
     /**
@@ -1572,7 +1574,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
 
-            assertFalse("Round " + i, pp.hasSubscribers());
+            assertFalse(pp.hasSubscribers(), "Round " + i);
         }
     }
 
@@ -1669,7 +1671,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
         ts.assertFailure(MissingBackpressureException.class);
 
-        assertTrue("" + ts.errors().getFirst().getCause(), ts.errors().getFirst().getCause() instanceof TestException);
+        assertTrue(ts.errors().getFirst().getCause() instanceof TestException, "" + ts.errors().getFirst().getCause());
     }
 
     @Test

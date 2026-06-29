@@ -13,20 +13,21 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.operators.QueueFuseable;
@@ -48,7 +49,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
         return s.toUpperCase();
     };
 
-    @Before
+    @BeforeEach
     public void before() {
         w = TestHelper.mockSubscriber();
         w2 = TestHelper.mockSubscriber();
@@ -158,7 +159,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
         .doOnError(_ -> errorOccurred.set(true))
         .distinctUntilChanged(THROWS_NON_FATAL)
         .subscribe(w);
-        Assert.assertFalse(errorOccurred.get());
+        assertFalse(errorOccurred.get());
     }
 
     @Test

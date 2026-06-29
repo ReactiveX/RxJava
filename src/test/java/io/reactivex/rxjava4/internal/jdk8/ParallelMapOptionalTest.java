@@ -13,17 +13,17 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.functions.Functions;
-import io.reactivex.rxjava4.parallel.*;
+import io.reactivex.rxjava4.parallel.ParallelInvalid;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -68,7 +68,7 @@ public class ParallelMapOptionalTest extends RxJavaTest {
 
             assertFalse(errors.isEmpty());
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
             }
         } finally {
             RxJavaPlugins.reset();
@@ -88,7 +88,7 @@ public class ParallelMapOptionalTest extends RxJavaTest {
 
             assertFalse(errors.isEmpty());
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
             }
         } finally {
             RxJavaPlugins.reset();

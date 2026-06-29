@@ -13,10 +13,11 @@
 
 package io.reactivex.rxjava4.validators;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
-import org.junit.Test;
 
 public class CheckParameterNamesInClassesTest extends RxJavaTest {
 

@@ -16,10 +16,10 @@ package io.reactivex.rxjava4.internal.virtual;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.core.config.StandardBufferedConfig;

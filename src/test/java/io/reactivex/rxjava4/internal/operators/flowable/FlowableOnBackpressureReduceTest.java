@@ -13,20 +13,20 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import io.reactivex.rxjava4.core.Flowable;
-import io.reactivex.rxjava4.core.RxJavaTest;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.jupiter.api.Test;
+
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.BiFunction;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
-import io.reactivex.rxjava4.testsupport.TestHelper;
-import io.reactivex.rxjava4.testsupport.TestSubscriberEx;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
+import io.reactivex.rxjava4.testsupport.*;
 
 public class FlowableOnBackpressureReduceTest extends RxJavaTest {
 
@@ -156,14 +156,14 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
     private <T> void assertValuesDropped(TestSubscriberEx<T> ts, int totalValues) {
         int n = ts.values().size();
         System.out.println("testAsynchronousDrop -> " + n);
-        Assert.assertTrue("All events received?", n < totalValues);
+        assertTrue(n < totalValues, "All events received?");
     }
 
     private void assertIncreasingSequence(TestSubscriberEx<Integer> ts) {
         int previous = 0;
         for (Integer current : ts.values()) {
-            Assert.assertTrue("The sequence must be increasing [current value=" + previous +
-                    ", previous value=" + current + "]", previous <= current);
+            assertTrue(previous <= current, "The sequence must be increasing [current value=" + previous +
+                    ", previous value=" + current + "]");
             previous = current;
         }
     }
@@ -206,7 +206,7 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
             sum += i;
         }
         //sum = (A1 + An) * n / 2 = 100_001 * 50_000 = 50_000_00000 + 50_000 = 50_000_50_000
-        Assert.assertEquals("Wrong sum: " + sum, 5000050000L, sum);
+        assertEquals(5000050000L, sum, "Wrong sum: " + sum);
     }
 
     @Test

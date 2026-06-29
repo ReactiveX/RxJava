@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.core.RxJavaTest;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.subjects.PublishSubject;
@@ -57,9 +57,11 @@ public class ObservableElementAtTest extends RxJavaTest {
                 .intValue());
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void elementAtWithMinusIndex() {
-        Observable.fromArray(1, 2).elementAt(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            Observable.fromArray(1, 2).elementAt(-1);
+        });
     }
 
     @Test
@@ -77,15 +79,19 @@ public class ObservableElementAtTest extends RxJavaTest {
         assertEquals(0, Observable.fromArray(1, 2).elementAt(2, 0).blockingGet().intValue());
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void elementAtOrDefaultWithMinusIndex() {
-        Observable.fromArray(1, 2).elementAt(-1, 0);
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            Observable.fromArray(1, 2).elementAt(-1, 0);
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void elementAtOrErrorNegativeIndex() {
-        Observable.empty()
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            Observable.empty()
             .elementAtOrError(-1);
+        });
     }
 
     @Test

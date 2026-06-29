@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.RxJavaTest;
@@ -80,7 +80,7 @@ public class ObservableForEachTest extends RxJavaTest {
 
             TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
             Throwable c = errors.getFirst().getCause();
-            assertTrue("" + c, c instanceof TestException);
+            assertTrue(c instanceof TestException, "" + c);
         } finally {
             RxJavaPlugins.reset();
         }

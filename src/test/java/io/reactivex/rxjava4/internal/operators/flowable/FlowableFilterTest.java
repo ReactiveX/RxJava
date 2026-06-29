@@ -13,24 +13,24 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Flow.Subscriber;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
-import io.reactivex.rxjava4.operators.ConditionalSubscriber;
-import io.reactivex.rxjava4.operators.QueueFuseable;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.*;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -147,11 +147,11 @@ public class FlowableFilterTest extends RxJavaTest {
             throw new TestException();
         }).subscribe(ts);
 
-        Assert.assertTrue("Not subscribed?", pp.hasSubscribers());
+        assertTrue("Not subscribed?", pp.hasSubscribers());
 
         pp.onNext(1);
 
-        Assert.assertFalse("Subscribed?", pp.hasSubscribers());
+        assertFalse("Subscribed?", pp.hasSubscribers());
 
         ts.assertError(TestException.class);
     }

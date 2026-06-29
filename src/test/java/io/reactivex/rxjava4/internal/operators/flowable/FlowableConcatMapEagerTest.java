@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
@@ -189,7 +189,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
         main.onError(new TestException("Forced failure"));
 
-        assertFalse("inner has subscribers?", inner.hasSubscribers());
+        assertFalse(inner.hasSubscribers(), "inner has subscribers?");
 
         inner.onNext(3);
         inner.onComplete();
@@ -215,7 +215,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     Function<Integer, Flowable<Integer>> toRange = t -> Flowable.range(t, 2);
 
-    @Before
+    @BeforeEach
     public void before() {
         ts = new TestSubscriber<>();
         tsBp = new TestSubscriber<>(0L);
@@ -246,7 +246,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
         Flowable.concatArrayEager(source, source).subscribe(tsBp);
 
-        Assert.assertEquals(2, count.get());
+        assertEquals(2, count.get());
         tsBp.assertNoErrors();
         tsBp.assertNotComplete();
         tsBp.assertNoValues();
@@ -265,7 +265,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
         Flowable.concatArrayEager(source, source, source).subscribe(tsBp);
 
-        Assert.assertEquals(3, count.get());
+        assertEquals(3, count.get());
         tsBp.assertNoErrors();
         tsBp.assertNotComplete();
         tsBp.assertNoValues();
@@ -284,7 +284,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
         Flowable.concatArrayEager(source, source, source, source).subscribe(tsBp);
 
-        Assert.assertEquals(4, count.get());
+        assertEquals(4, count.get());
         tsBp.assertNoErrors();
         tsBp.assertNotComplete();
         tsBp.assertNoValues();
@@ -303,7 +303,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
         Flowable.concatArrayEager(source, source, source, source, source).subscribe(tsBp);
 
-        Assert.assertEquals(5, count.get());
+        assertEquals(5, count.get());
         tsBp.assertNoErrors();
         tsBp.assertNotComplete();
         tsBp.assertNoValues();
@@ -322,7 +322,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
         Flowable.concatArrayEager(source, source, source, source, source, source).subscribe(tsBp);
 
-        Assert.assertEquals(6, count.get());
+        assertEquals(6, count.get());
         tsBp.assertNoErrors();
         tsBp.assertNotComplete();
         tsBp.assertNoValues();
@@ -341,7 +341,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
         Flowable.concatArrayEager(source, source, source, source, source, source, source).subscribe(tsBp);
 
-        Assert.assertEquals(7, count.get());
+        assertEquals(7, count.get());
         tsBp.assertNoErrors();
         tsBp.assertNotComplete();
         tsBp.assertNoValues();
@@ -360,7 +360,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
         Flowable.concatArrayEager(source, source, source, source, source, source, source, source).subscribe(tsBp);
 
-        Assert.assertEquals(8, count.get());
+        assertEquals(8, count.get());
         tsBp.assertNoErrors();
         tsBp.assertNotComplete();
         tsBp.assertNoValues();
@@ -379,7 +379,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
         Flowable.concatArrayEager(source, source, source, source, source, source, source, source, source).subscribe(tsBp);
 
-        Assert.assertEquals(9, count.get());
+        assertEquals(9, count.get());
         tsBp.assertNoErrors();
         tsBp.assertNotComplete();
         tsBp.assertNoValues();
@@ -429,14 +429,20 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         ts.assertError(TestException.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void invalidMaxConcurrent() {
-        Flowable.just(1).concatMapEager(toJust, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 0, Flowable.bufferSize()));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable.just(1)
+            .concatMapEager(toJust, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 0, Flowable.bufferSize()));
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void invalidCapacityHint() {
-        Flowable.just(1).concatMapEager(toJust, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, Flowable.bufferSize(), 0));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable.just(1)
+            .concatMapEager(toJust, new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, Flowable.bufferSize(), 0));
+        });
     }
 
     @Test
@@ -503,7 +509,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertNoValues();
         ts.assertNotComplete();
-        Assert.assertEquals(Flowable.bufferSize(), count.get());
+        assertEquals(Flowable.bufferSize(), count.get());
     }
 
     @Test
@@ -517,12 +523,12 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         ts.assertValueCount(100);
         ts.assertComplete();
 
-        Assert.assertEquals(5, (long) requests.get(0));
-        Assert.assertEquals(1, (long) requests.get(1));
-        Assert.assertEquals(1, (long) requests.get(2));
-        Assert.assertEquals(1, (long) requests.get(3));
-        Assert.assertEquals(1, (long) requests.get(4));
-        Assert.assertEquals(1, (long) requests.get(5));
+        assertEquals(5, (long) requests.get(0));
+        assertEquals(1, (long) requests.get(1));
+        assertEquals(1, (long) requests.get(2));
+        assertEquals(1, (long) requests.get(3));
+        assertEquals(1, (long) requests.get(4));
+        assertEquals(1, (long) requests.get(5));
     }
 
     @Test

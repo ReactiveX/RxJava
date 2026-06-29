@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.observable;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.RxJavaTest;
@@ -78,20 +78,21 @@ public class ObservableZipTests extends RxJavaTest {
      *
      * We now expect an NoSuchElementException since last() requires at least one value and nothing will be emitted.
      */
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void nonBlockingObservable() {
+        assertThrows(NoSuchElementException.class, () -> {
+            final Object invoked = new Object();
 
-        final Object invoked = new Object();
+            Collection<Observable<Object>> observables = Collections.emptyList();
 
-        Collection<Observable<Object>> observables = Collections.emptyList();
+            Observable<Object> result = Observable.zip(observables, args -> {
+                System.out.println("received: " + args);
+                assertEquals(0, args.length, "No argument should have been passed");
+                return invoked;
+            });
 
-        Observable<Object> result = Observable.zip(observables, args -> {
-            System.out.println("received: " + args);
-            Assert.assertEquals("No argument should have been passed", 0, args.length);
-            return invoked;
+            assertSame(invoked, result.blockingLast());
         });
-
-        assertSame(invoked, result.blockingLast());
     }
 
     BiFunction<Media, Rating, ExtendedResult> combine = (_, _) -> new ExtendedResult();

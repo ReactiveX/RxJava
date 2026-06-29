@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayDeque;
+import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
@@ -62,7 +62,7 @@ public class BlockingSubscriberTest extends RxJavaTest {
             bf.blockingGet();
             fail("Should have thrown!");
         } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+            assertTrue(ex.getCause() instanceof InterruptedException, ex.toString());
         }
     }
 
@@ -78,7 +78,7 @@ public class BlockingSubscriberTest extends RxJavaTest {
             bf.blockingGet();
             fail("Should have thrown!");
         } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+            assertTrue(ex.getCause() instanceof InterruptedException, ex.toString());
         }
     }
 

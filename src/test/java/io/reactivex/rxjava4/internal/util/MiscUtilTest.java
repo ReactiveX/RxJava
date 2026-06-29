@@ -13,14 +13,13 @@
 
 package io.reactivex.rxjava4.internal.util;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-import io.reactivex.rxjava4.core.ErrorMode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.RxJavaTest;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.BiPredicate;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 

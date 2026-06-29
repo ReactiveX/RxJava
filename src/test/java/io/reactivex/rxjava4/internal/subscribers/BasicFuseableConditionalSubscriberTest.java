@@ -13,19 +13,19 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import java.util.concurrent.Flow.Subscription;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.*;
-import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.internal.subscriptions.*;
-import io.reactivex.rxjava4.operators.ConditionalSubscriber;
-import io.reactivex.rxjava4.operators.QueueFuseable;
-import io.reactivex.rxjava4.testsupport.*;
+import io.reactivex.rxjava4.operators.*;
+import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
 

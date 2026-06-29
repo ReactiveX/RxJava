@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.maybe;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -118,8 +118,10 @@ public class MaybeCreateTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void unsafeCreate() {
-        Maybe.unsafeCreate(Maybe.just(1));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Maybe.unsafeCreate(Maybe.just(1));
+        });
     }
 }

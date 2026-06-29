@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.concurrent.Flow.*;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -228,7 +228,7 @@ public class FlowableTakeWhileTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertValue(1);
 
-        Assert.assertFalse("Unsubscribed!", ts.isCancelled());
+        assertFalse("Unsubscribed!", ts.isCancelled());
     }
 
     @Test

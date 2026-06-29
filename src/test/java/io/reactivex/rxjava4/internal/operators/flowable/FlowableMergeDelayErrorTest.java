@@ -13,8 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -22,7 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
@@ -36,7 +35,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     Subscriber<String> stringSubscriber;
 
-    @Before
+    @BeforeEach
     public void before() {
         stringSubscriber = TestHelper.mockSubscriber();
     }
@@ -536,14 +535,14 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
         Flowable.merge(Arrays.asList(pp1, pp2), new StandardConcurrentBufferedConfig(ErrorMode.END, 1)).subscribe(ts);
 
-        assertTrue("ps1 has no subscribers?!", pp1.hasSubscribers());
-        assertFalse("ps2 has subscribers?!", pp2.hasSubscribers());
+        assertTrue(pp1.hasSubscribers(), "ps1 has no subscribers?!");
+        assertFalse(pp2.hasSubscribers(), "ps2 has subscribers?!");
 
         pp1.onNext(1);
         pp1.onComplete();
 
-        assertFalse("ps1 has subscribers?!", pp1.hasSubscribers());
-        assertTrue("ps2 has no subscribers?!", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "ps1 has subscribers?!");
+        assertTrue(pp2.hasSubscribers(), "ps2 has no subscribers?!");
 
         pp2.onNext(2);
         pp2.onComplete();
@@ -563,14 +562,14 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         Flowable.merge(Arrays.asList(pp1, pp2), new StandardConcurrentBufferedConfig(ErrorMode.END, 1))
         .subscribe(ts);
 
-        assertTrue("ps1 has no subscribers?!", pp1.hasSubscribers());
-        assertFalse("ps2 has subscribers?!", pp2.hasSubscribers());
+        assertTrue(pp1.hasSubscribers(), "ps1 has no subscribers?!");
+        assertFalse(pp2.hasSubscribers(), "ps2 has subscribers?!");
 
         pp1.onNext(1);
         pp1.onError(new TestException());
 
-        assertFalse("ps1 has subscribers?!", pp1.hasSubscribers());
-        assertTrue("ps2 has no subscribers?!", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "ps1 has subscribers?!");
+        assertTrue(pp2.hasSubscribers(), "ps2 has no subscribers?!");
 
         pp2.onNext(2);
         pp2.onError(new TestException());

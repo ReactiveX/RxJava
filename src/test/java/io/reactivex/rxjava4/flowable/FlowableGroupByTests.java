@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.flowable;
 
 import java.util.concurrent.Flow.Publisher;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardBufferedConfig;

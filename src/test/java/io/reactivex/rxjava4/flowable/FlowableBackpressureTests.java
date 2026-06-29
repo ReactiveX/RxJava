@@ -13,21 +13,19 @@
 
 package io.reactivex.rxjava4.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
-import org.junit.rules.TestName;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.QueueOverflowException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava4.internal.util.BackpressureHelper;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -72,10 +70,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         }
     }
 
-    @Rule
-    public TestName testName = new TestName();
-
-    @After
+    @AfterEach
     public void doAfterTest() {
         // FIXME LATER
 //        TestObstructionDetection.checkObstruction();
@@ -156,8 +151,8 @@ public class FlowableBackpressureTests extends RxJavaTest {
         // TODO is it possible to make this deterministic rather than one possibly starving the other?
         // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algorithms generally take a performance hit
         int max = Flowable.bufferSize() * 7;
-        assertTrue("" + c1.get() + " >= " + max, c1.get() < max);
-        assertTrue("" + c2.get() + " >= " + max, c2.get() < max);
+        assertTrue(c1.get() < max, "" + c1.get() + " >= " + max);
+        assertTrue(c2.get() < max, "" + c2.get() + " >= " + max);
     }
 
     @Test
@@ -271,8 +266,8 @@ public class FlowableBackpressureTests extends RxJavaTest {
         System.out.println("testZipAsync => Received: " + ts.values().size() + "  Emitted: " + c1.get() + " / " + c2.get());
         assertEquals(num, ts.values().size());
         int max = Flowable.bufferSize() * 5;
-        assertTrue("" + c1.get() + " >= " + max, c1.get() < max);
-        assertTrue("" + c2.get() + " >= " + max, c2.get() < max);
+        assertTrue(c1.get() < max, "" + c1.get() + " >= " + max);
+        assertTrue(c2.get() < max, "" + c2.get() + " >= " + max);
     }
 
     @Test
@@ -451,7 +446,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
 
         // FIXME it is possible slow is not slow enough or the main gets delayed and thus more than one source value is emitted.
         int vc = ts.values().size();
-        assertTrue("10 < " + vc, vc <= 10);
+        assertTrue(vc <= 10, "10 < " + vc);
 
         ts.assertError(QueueOverflowException.class);
     }
@@ -493,7 +488,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
     }
 
     @Test
-    public void onBackpressureDropWithAction() {
+    public void onBackpressureDropWithAction(TestInfo testInfo) {
         for (int i = 0; i < 100; i++) {
             final AtomicInteger emitCount = new AtomicInteger();
             final AtomicInteger dropCount = new AtomicInteger();
@@ -513,7 +508,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
 
             List<Integer> onNextEvents = ts.values();
             Integer lastEvent = onNextEvents.get(num - 1);
-            System.out.println(testName.getMethodName() + " => Received: " + onNextEvents.size() + " Passed: "
+            System.out.println(testInfo.getDisplayName() + " => Received: " + onNextEvents.size() + " Passed: "
             + passCount.get() + " Dropped: " + dropCount.get() + "  Emitted: " + emitCount.get() + " Last value: " + lastEvent);
             assertEquals(num, onNextEvents.size());
             // in reality, num < passCount

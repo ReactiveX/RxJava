@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
 import java.util.concurrent.Flow.Publisher;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.flowables.GroupedFlowable;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.testsupport.TestSubscriberEx;
 
 /**
