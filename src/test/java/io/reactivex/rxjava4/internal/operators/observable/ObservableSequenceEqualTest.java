@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.ObservableSequenceEqualConfig;
+import io.reactivex.rxjava4.core.config.SequenceEqualConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.subjects.PublishSubject;
@@ -107,7 +107,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withEqualityErrorObservable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one"), Observable.just("one"),
-                new ObservableSequenceEqualConfig<>((_, _) -> {
+                new SequenceEqualConfig<>((_, _) -> {
                     throw new TestException();
                 })).toObservable();
         verifyError(o);
@@ -143,7 +143,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void prefetchObservable() {
-        Observable.sequenceEqual(Observable.range(1, 20), Observable.range(1, 20), new ObservableSequenceEqualConfig<>(2))
+        Observable.sequenceEqual(Observable.range(1, 20), Observable.range(1, 20), new SequenceEqualConfig<>(2))
         .toObservable()
         .test()
         .assertResult(true);
@@ -233,7 +233,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withEqualityError() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one"), Observable.just("one"),
-                new ObservableSequenceEqualConfig<>((_, _) -> {
+                new SequenceEqualConfig<>((_, _) -> {
                     throw new TestException();
                 }));
         verifyError(o);
@@ -252,7 +252,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void prefetch() {
-        Observable.sequenceEqual(Observable.range(1, 20), Observable.range(1, 20), new ObservableSequenceEqualConfig<>(2))
+        Observable.sequenceEqual(Observable.range(1, 20), Observable.range(1, 20), new SequenceEqualConfig<>(2))
         .test()
         .assertResult(true);
     }
@@ -344,7 +344,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
         PublishSubject<Integer> ps1 = PublishSubject.create();
         PublishSubject<Integer> ps2 = PublishSubject.create();
 
-        TestObserver<Boolean> to = Observable.sequenceEqual(ps1, ps2, new ObservableSequenceEqualConfig<>((a, b) -> {
+        TestObserver<Boolean> to = Observable.sequenceEqual(ps1, ps2, new SequenceEqualConfig<>((a, b) -> {
             ps1.onNext(1);
             ps1.onComplete();
 
@@ -366,7 +366,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
         PublishSubject<Integer> ps1 = PublishSubject.create();
         PublishSubject<Integer> ps2 = PublishSubject.create();
 
-        TestObserver<Boolean> to = Observable.sequenceEqual(ps1, ps2, new ObservableSequenceEqualConfig<>((a, b) -> {
+        TestObserver<Boolean> to = Observable.sequenceEqual(ps1, ps2, new SequenceEqualConfig<>((a, b) -> {
             ps1.onNext(1);
             ps1.onComplete();
 

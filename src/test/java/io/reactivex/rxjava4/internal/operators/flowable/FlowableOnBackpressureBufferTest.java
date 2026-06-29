@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.OnBackpressureBufferConfig;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -99,12 +100,12 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void fixBackpressureBufferNegativeCapacity() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(-1);
+        Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(-1));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void fixBackpressureBufferZeroCapacity() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(0);
+        Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(0));
     }
 
     @Test
@@ -134,7 +135,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
         ts.request(100);
         infinite.subscribeOn(Schedulers.computation())
-        .onBackpressureBuffer(500, backpressureCallback::countDown)
+        .onBackpressureBuffer(new OnBackpressureBufferConfig<>(500, _ -> backpressureCallback.countDown()))
         /*.take(1000)*/
         .subscribe(ts);
         l1.await();
@@ -159,7 +160,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         }
     });
 
-    private static final Action THROWS_NON_FATAL = () -> {
+    private static final Consumer<Object> THROWS_NON_FATAL = _ -> {
         throw new RuntimeException();
     };
 
@@ -170,7 +171,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         infinite
         .subscribeOn(Schedulers.computation())
         .doOnError(_ -> errorOccurred.set(true))
-        .onBackpressureBuffer(1, THROWS_NON_FATAL)
+        .onBackpressureBuffer(new OnBackpressureBufferConfig<>(1, THROWS_NON_FATAL))
         .subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         assertFalse(errorOccurred.get());
@@ -180,7 +181,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     public void maxSize() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
-        Flowable.range(1, 10).onBackpressureBuffer(1).subscribe(ts);
+        Flowable.range(1, 10).onBackpressureBuffer(new OnBackpressureBufferConfig<>(1)).subscribe(ts);
 
         ts.assertNoValues();
         ts.assertError(MissingBackpressureException.class);
@@ -189,19 +190,19 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void fixBackpressureBufferNegativeCapacity2() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(-1);
+        Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(-1));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void fixBackpressureBufferZeroCapacity2() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(0);
+        Flowable.empty().onBackpressureBuffer(new OnBackpressureBufferConfig<>(0));
     }
 
     @Test
     public void noDelayError() {
 
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .onBackpressureBuffer(false)
+        .onBackpressureBuffer(new OnBackpressureBufferConfig<>(false))
         .test(0L)
         .assertFailure(TestException.class);
     }
@@ -209,7 +210,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     @Test
     public void delayError() {
         TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .onBackpressureBuffer(true)
+        .onBackpressureBuffer(new OnBackpressureBufferConfig<>(true))
         .test(0L)
         .assertEmpty();
 
@@ -221,7 +222,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     @Test
     public void delayErrorBuffer() {
         TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .onBackpressureBuffer(16, true)
+        .onBackpressureBuffer(new OnBackpressureBufferConfig<>(16, true))
         .test(0L)
         .assertEmpty();
 
@@ -275,7 +276,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     @Test
     public void emptyDelayError() {
         Flowable.empty()
-        .onBackpressureBuffer(true)
+        .onBackpressureBuffer(new OnBackpressureBufferConfig<>(true))
         .test()
         .assertResult();
     }
@@ -297,7 +298,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
             try {
                 final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-                TestObserver<Integer> to = pp.onBackpressureBuffer(4, false, true)
+                TestObserver<Integer> to = pp.onBackpressureBuffer(new OnBackpressureBufferConfig<>(4, false, true))
                 .observeOn(Schedulers.cached())
                 .map(Functions.<Integer>identity())
                 .observeOn(Schedulers.single())
@@ -340,7 +341,8 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         @SuppressWarnings("unchecked")
         Consumer<Integer> onDropped = mock(Consumer.class);
 
-        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(1, false, false, () -> { }, onDropped)
+        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(
+                    new OnBackpressureBufferConfig<>(1, false, false, onDropped))
                 .test(0L);
 
         ts.assertEmpty();
@@ -363,7 +365,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
         Consumer<Integer> onDropped = _ -> { throw new TestException(); };
 
-        TestSubscriberEx<Integer> ts = pp.onBackpressureBuffer(1, false, false, () -> { }, onDropped)
+        TestSubscriberEx<Integer> ts = pp.onBackpressureBuffer(new OnBackpressureBufferConfig<>(1, false, false, onDropped))
         .subscribeWith(new TestSubscriberEx<>(0L));
 
         ts.assertEmpty();

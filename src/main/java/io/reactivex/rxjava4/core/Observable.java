@@ -1077,14 +1077,13 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @since 4.0.0
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     @SafeVarargs
     public static <@NonNull T> Observable<T> concatArrayEager(@NonNull StandardConcurrentBufferedConfig config, @NonNull ObservableSource<? extends T>... sources) {
         Objects.requireNonNull(config, "config is null");
-        return fromArray(sources).concatMapEager((Function)Functions.identity(), config);
+        return fromArray(sources).concatMapEager(Functions.identity(), config);
     }
 
     /**
@@ -1132,14 +1131,13 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
      * @since 4.0.0
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> concatEager(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
                                                          @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(config, "config is null");
-        return fromIterable(sources).concatMapEager((Function)Functions.identity(), config);
+        return fromIterable(sources).concatMapEager(Functions.identity(), config);
     }
 
     /**
@@ -2559,12 +2557,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> merge(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources) {
-        return fromIterable(sources).flatMap((Function)Functions.identity());
+        return fromIterable(sources).flatMap(Functions.identity());
     }
 
     /**
@@ -2601,14 +2598,13 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @since 4.0.0
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Observable<T> merge(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
             @NonNull StandardConcurrentBufferedConfig config) {
         Objects.requireNonNull(config, "config is null");
-        return fromIterable(sources).flatMap((Function)Functions.identity(), config);
+        return fromIterable(sources).flatMap(Functions.identity(), config);
     }
 
     /**
@@ -2727,13 +2723,12 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     @SafeVarargs
     public static <@NonNull T> Observable<T> mergeArray(@NonNull ObservableSource<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), StandardConcurrentBufferedConfig.DEFAULT);
+        return fromArray(sources).flatMap(Functions.identity(), StandardConcurrentBufferedConfig.DEFAULT);
     }
 
     /**
@@ -2912,7 +2907,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Single<Boolean> sequenceEqual(@NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2) {
-        return sequenceEqual(source1, source2, ObservableSequenceEqualConfig.DEFAULT);
+        return sequenceEqual(source1, source2, SequenceEqualConfig.DEFAULT);
     }
 
     /**
@@ -2944,7 +2939,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public static <@NonNull T> Single<Boolean> sequenceEqual(
             @NonNull ObservableSource<? extends T> source1, @NonNull ObservableSource<? extends T> source2,
-            @NonNull ObservableSequenceEqualConfig<? super T> config) {
+            @NonNull SequenceEqualConfig<? super T> config) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(config, "config is null");
@@ -3254,7 +3249,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public static <@NonNull T, @NonNull R> Observable<R> zip(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
             @NonNull Function<? super Object[], ? extends R> zipper) {
-        return zip(sources, StandardBufferedConfig.DEFAULT, zipper);
+        return zip(sources, zipper, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -3311,8 +3306,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T, @NonNull R> Observable<R> zip(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources,
-            @NonNull StandardBufferedConfig config,
-            @NonNull Function<? super Object[], ? extends R> zipper
+            @NonNull Function<? super Object[], ? extends R> zipper,
+            @NonNull StandardBufferedConfig config
     ) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
@@ -3435,9 +3430,9 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(config, "config is null");
-        return zipArray(new Observable<?>[] {
-                (Observable<?>) source1, (Observable<?>) source2 },
-                config, Functions.toFunction(zipper));
+        return zipArray(new ObservableSource<?>[] {
+                source1, source2 },
+                Functions.toFunction(zipper), config);
     }
 
     /**
@@ -3500,9 +3495,9 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(new Observable<?>[] {
-            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3 },
-            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
+        return zipArray(new ObservableSource<?>[] {
+            source1, source2, source3 },
+            Functions.toFunction(zipper), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -3570,11 +3565,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(source4, "source4 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(new Observable<?>[] {
-            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
-            (Observable<?>) source4
+        return zipArray(new ObservableSource<?>[] {
+            source1, source2, source3,
+            source4
             },
-            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
+            Functions.toFunction(zipper), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -3646,11 +3641,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source4, "source4 is null");
         Objects.requireNonNull(source5, "source5 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(new Observable<?>[] {
-            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
-            (Observable<?>) source4, (Observable<?>) source5
+        return zipArray(new ObservableSource<?>[] {
+            source1, source2, source3,
+            source4, source5
             },
-            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
+            Functions.toFunction(zipper), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -3725,11 +3720,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source5, "source5 is null");
         Objects.requireNonNull(source6, "source6 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(new Observable<?>[] {
-            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
-            (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6
+        return zipArray(new ObservableSource<?>[] {
+            source1, source2, source3,
+            source4, source5, source6
             },
-            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
+            Functions.toFunction(zipper), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -3810,12 +3805,12 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source6, "source6 is null");
         Objects.requireNonNull(source7, "source7 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(new Observable<?>[] {
-            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
-            (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6,
-            (Observable<?>) source7
+        return zipArray(new ObservableSource<?>[] {
+            source1, source2, source3,
+            source4, source5, source6,
+            source7
             },
-            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
+            Functions.toFunction(zipper), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -3900,12 +3895,12 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source7, "source7 is null");
         Objects.requireNonNull(source8, "source8 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(new Observable<?>[] {
-            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
-            (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6,
-            (Observable<?>) source7, (Observable<?>) source8
+        return zipArray(new ObservableSource<?>[] {
+            source1, source2, source3,
+            source4, source5, source6,
+            source7, source8
             },
-            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
+            Functions.toFunction(zipper), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -3994,12 +3989,12 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(source8, "source8 is null");
         Objects.requireNonNull(source9, "source9 is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return zipArray(new Observable<?>[] {
-            (Observable<?>) source1, (Observable<?>) source2, (Observable<?>) source3,
-            (Observable<?>) source4, (Observable<?>) source5, (Observable<?>) source6,
-            (Observable<?>) source7, (Observable<?>) source8, (Observable<?>) source9
+        return zipArray(new ObservableSource<?>[] {
+            source1, source2, source3,
+            source4, source5, source6,
+            source7, source8, source9
             },
-            StandardBufferedConfig.DEFAULT, Functions.toFunction(zipper));
+            Functions.toFunction(zipper), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -4050,14 +4045,15 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources} or {@code zipper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T, @NonNull R> Observable<R> zipArray(
             @NonNull ObservableSource<? extends T>[] sources,
-            @NonNull StandardBufferedConfig config,
-            @NonNull Function<? super Object[], ? extends R> zipper
+            @NonNull Function<? super Object[], ? extends R> zipper,
+            @NonNull StandardBufferedConfig config
     ) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
@@ -6187,7 +6183,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    @Experimental
     public final Observable<T> debounce(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<? super T> onDropped) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -6267,7 +6262,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
-     * @see #delay(long, TimeUnit, boolean)
      * @see #delay(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
@@ -6275,35 +6269,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final Observable<T> delay(long time, @NonNull TimeUnit unit) {
         return delay(time, unit, Schedulers.computation(), false);
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the items emitted by the current {@code Observable} shifted forward in time by a
-     * specified delay. If {@code delayError} is {@code true}, error notifications will also be delayed.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param time
-     *            the delay to shift the source by
-     * @param unit
-     *            the {@link TimeUnit} in which {@code period} is defined
-     * @param delayError
-     *            if {@code true}, the upstream exception is signaled with the given delay, after all preceding normal elements,
-     *            if {@code false}, the upstream exception is signaled immediately
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
-     * @see #delay(long, TimeUnit, Scheduler, boolean)
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    @NonNull
-    public final Observable<T> delay(long time, @NonNull TimeUnit unit, boolean delayError) {
-        return delay(time, unit, Schedulers.computation(), delayError);
     }
 
     /**
@@ -7489,7 +7454,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} or {@code combiner} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -7856,12 +7821,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @throws NullPointerException if {@code keySelector} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull K> Observable<GroupedObservable<K, T>> groupBy(@NonNull Function<? super T, ? extends K> keySelector) {
-        return groupBy(keySelector, (Function)Functions.identity(), StandardBufferedConfig.DEFAULT);
+        return groupBy(keySelector, Functions.identity(), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -7901,13 +7865,12 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
      * @since 4.0.0
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull K> Observable<GroupedObservable<K, T>> groupBy(@NonNull Function<? super T, ? extends K> keySelector,
             @NonNull StandardBufferedConfig config) {
-        return groupBy(keySelector, (Function)Functions.identity(), config);
+        return groupBy(keySelector, Functions.identity(), config);
     }
 
     /**
@@ -8597,6 +8560,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see #subscribeOn
      * @see #observeOn(Scheduler)
      * @see #delay(long, TimeUnit, Scheduler, boolean)
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -10068,38 +10032,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
 
     /**
      * Returns an {@code Observable} that emits the most recently emitted item (if any) emitted by the current {@code Observable}
-     * within periodic time intervals and optionally emit the very last upstream item when the upstream completes.
-     * <p>
-     * <img width="640" height="277" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.emitlast.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code sample} operates by default on the {@code computation} {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * <p>History: 2.0.5 - experimental
-     * @param period
-     *            the sampling rate
-     * @param unit
-     *            the {@link TimeUnit} in which {@code period} is defined
-     * @param emitLast
-     *            if {@code true} and the upstream completes while there is still an unsampled item available,
-     *            that item is emitted to downstream before completion
-     *            if {@code false}, an unsampled last item is ignored.
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
-     * @see #throttleLast(long, TimeUnit)
-     * @since 2.1
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    @NonNull
-    public final Observable<T> sample(long period, @NonNull TimeUnit unit, boolean emitLast) {
-        return sample(period, unit, Schedulers.computation(), emitLast);
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the most recently emitted item (if any) emitted by the current {@code Observable}
      * within periodic time intervals, where the intervals are defined on a particular {@link Scheduler}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.v3.png" alt="">
@@ -10130,43 +10062,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
 
     /**
      * Returns an {@code Observable} that emits the most recently emitted item (if any) emitted by the current {@code Observable}
-     * within periodic time intervals, where the intervals are defined on a particular {@link Scheduler}
-     *  and optionally emit the very last upstream item when the upstream completes.
-     * <p>
-     * <img width="640" height="277" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.emitlast.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
-     * </dl>
-     *
-     * <p>History: 2.0.5 - experimental
-     * @param period
-     *            the sampling rate
-     * @param unit
-     *            the {@link TimeUnit} in which {@code period} is defined
-     * @param scheduler
-     *            the {@code Scheduler} to use when sampling
-     * @param emitLast
-     *            if {@code true} and the upstream completes while there is still an unsampled item available,
-     *            that item is emitted to downstream before completion
-     *            if {@code false}, an unsampled last item is ignored.
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
-     * @see #throttleLast(long, TimeUnit, Scheduler)
-     * @since 2.1
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    @NonNull
-    public final Observable<T> sample(long period, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast) {
-        Objects.requireNonNull(unit, "unit is null");
-        Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<>(this, period, unit, scheduler, emitLast, null));
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the most recently emitted item (if any) emitted by the current {@code Observable}
      * within periodic time intervals, where the intervals are defined on a particular {@link Scheduler}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.v3.png" alt="">
@@ -10181,27 +10076,23 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the {@link TimeUnit} in which {@code period} is defined
      * @param scheduler
      *            the {@code Scheduler} to use when sampling
-     * @param emitLast
-     *            if {@code true} and the upstream completes while there is still an unsampled item available,
-     *            that item is emitted to downstream before completion
-     *            if {@code false}, an unsampled last item is ignored.
-     * @param onDropped
-     *          called with the current entry when it has been replaced by a new one
+     * @param config
+     *            the configuration record for the operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null} or {@code onDropped} is {@code null}
+     * @throws NullPointerException if {@code unit} or {@code scheduler} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
      * @see #throttleLast(long, TimeUnit, Scheduler)
-     * @since 3.1.6 - Experimental
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    @Experimental
-    public final Observable<T> sample(long period, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast, @NonNull Consumer<? super T> onDropped) {
+    public final Observable<T> sample(long period, @NonNull TimeUnit unit, @NonNull Scheduler scheduler,
+            @NonNull SampleConfig<? super T> config) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        Objects.requireNonNull(onDropped, "onDropped is null");
-        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<>(this, period, unit, scheduler, emitLast, onDropped));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<>(this, period, unit, scheduler, config.emitLast(), config.onDropped()));
     }
 
     /**
@@ -10635,38 +10526,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     @NonNull
     public final Observable<T> skipLast(long time, @NonNull TimeUnit unit) {
-        return skipLast(time, unit, Schedulers.trampoline(), false, bufferSize());
-    }
-
-    /**
-     * Returns an {@code Observable} that drops items emitted by the current {@code Observable} during a specified time window
-     * before the source completes.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.t.v3.png" alt="">
-     * <p>
-     * Note: this action will cache the latest items arriving in the specified time window.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code skipLast} does not operate on any particular scheduler but uses the current time
-     *  from the {@code computation} {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param time
-     *            the length of the time window
-     * @param unit
-     *            the time unit of {@code time}
-     * @param delayError
-     *            if {@code true}, an exception signaled by the current {@code Observable} is delayed until the regular elements are consumed
-     *            by the downstream; if {@code false}, an exception is immediately signaled and all regular elements dropped
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/skiplast.html">ReactiveX operators documentation: SkipLast</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
-    @NonNull
-    public final Observable<T> skipLast(long time, @NonNull TimeUnit unit, boolean delayError) {
-        return skipLast(time, unit, Schedulers.trampoline(), delayError, bufferSize());
+        return skipLast(time, unit, Schedulers.trampoline(), StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -10695,39 +10555,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Observable<T> skipLast(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return skipLast(time, unit, scheduler, false, bufferSize());
-    }
-
-    /**
-     * Returns an {@code Observable} that drops items emitted by the current {@code Observable} during a specified time window
-     * (defined on a specified scheduler) before the source completes.
-     * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.v3.png" alt="">
-     * <p>
-     * Note: this action will cache the latest items arriving in the specified time window.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@link Scheduler} this operator will use to track the current time</dd>
-     * </dl>
-     *
-     * @param time
-     *            the length of the time window
-     * @param unit
-     *            the time unit of {@code time}
-     * @param scheduler
-     *            the scheduler used as the time source
-     * @param delayError
-     *            if {@code true}, an exception signaled by the current {@code Observable} is delayed until the regular elements are consumed
-     *            by the downstream; if {@code false}, an exception is immediately signaled and all regular elements dropped
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/skiplast.html">ReactiveX operators documentation: SkipLast</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    @NonNull
-    public final Observable<T> skipLast(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError) {
-        return skipLast(time, unit, scheduler, delayError, bufferSize());
+        return skipLast(time, unit, scheduler, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -10748,26 +10576,24 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the time unit of {@code time}
      * @param scheduler
      *            the scheduler used as the time source
-     * @param delayError
-     *            if {@code true}, an exception signaled by the current {@code Observable} is delayed until the regular elements are consumed
-     *            by the downstream; if {@code false}, an exception is immediately signaled and all regular elements dropped
-     * @param bufferSize
-     *            the hint about how many elements to expect to be skipped
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code unit} or {@code scheduler} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/skiplast.html">ReactiveX operators documentation: SkipLast</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Observable<T> skipLast(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError, int bufferSize) {
+    public final Observable<T> skipLast(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler,
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        Objects.requireNonNull(config, "config is null");
         // the internal buffer holds pairs of (timestamp, value) so double the default buffer size
-        int s = bufferSize << 1;
-        return RxJavaPlugins.onAssembly(new ObservableSkipLastTimed<>(this, time, unit, scheduler, s, delayError));
+        int s = config.bufferSize() << 1;
+        return RxJavaPlugins.onAssembly(new ObservableSkipLastTimed<>(this, time, unit, scheduler, s, config.delayErrors()));
     }
 
     /**
@@ -11760,7 +11586,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     @NonNull
     public final Observable<T> takeLast(long count, long time, @NonNull TimeUnit unit) {
-        return takeLast(count, time, unit, Schedulers.trampoline(), false, bufferSize());
+        return takeLast(count, time, unit, Schedulers.trampoline());
     }
 
     /**
@@ -11792,7 +11618,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Observable<T> takeLast(long count, long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return takeLast(count, time, unit, scheduler, false, bufferSize());
+        return takeLast(count, time, unit, scheduler, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -11814,28 +11640,27 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the time unit of {@code time}
      * @param scheduler
      *            the {@code Scheduler} that provides the timestamps for the observed items
-     * @param delayError
-     *            if {@code true}, an exception signaled by the current {@code Observable} is delayed until the regular elements are consumed
-     *            by the downstream; if {@code false}, an exception is immediately signaled and all regular elements dropped
-     * @param bufferSize
-     *            the hint about how many elements to expect to be last
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @throws NullPointerException if {@code unit} or {@code scheduler} or {@code config} is {@code null}
      * @throws IllegalArgumentException
-     *             if {@code count} is negative or {@code bufferSize} is non-positive
+     *            if {@code count} is negative
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Observable<T> takeLast(long count, long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError, int bufferSize) {
+    public final Observable<T> takeLast(long count, long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler,
+            @NonNull StandardBufferedConfig config) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        Objects.requireNonNull(config, "config is null");
         if (count < 0) {
             throw new IllegalArgumentException("count >= 0 required but it was " + count);
         }
-        return RxJavaPlugins.onAssembly(new ObservableTakeLastTimed<>(this, count, time, unit, scheduler, bufferSize, delayError));
+        return RxJavaPlugins.onAssembly(new ObservableTakeLastTimed<>(this, count, time, unit, scheduler, config.bufferSize(), config.delayErrors()));
     }
 
     /**
@@ -11861,37 +11686,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     @NonNull
     public final Observable<T> takeLast(long time, @NonNull TimeUnit unit) {
-        return takeLast(time, unit, Schedulers.trampoline(), false, bufferSize());
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the items from the current {@code Observable} that were emitted in a specified
-     * window of time before the current {@code Observable} completed.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.t.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code takeLast} does not operate on any particular scheduler but uses the current time
-     *  from the {@code trampoline} {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param time
-     *            the length of the time window
-     * @param unit
-     *            the time unit of {@code time}
-     * @param delayError
-     *            if {@code true}, an exception signaled by the current {@code Observable} is delayed until the regular elements are consumed
-     *            by the downstream; if {@code false}, an exception is immediately signaled and all regular elements dropped
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} is {@code null}
-     * @throws IllegalArgumentException if {@code count} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
-    @NonNull
-    public final Observable<T> takeLast(long time, @NonNull TimeUnit unit, boolean delayError) {
-        return takeLast(time, unit, Schedulers.trampoline(), delayError, bufferSize());
+        return takeLast(time, unit, Schedulers.trampoline());
     }
 
     /**
@@ -11919,7 +11714,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Observable<T> takeLast(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return takeLast(time, unit, scheduler, false, bufferSize());
+        return takeLast(time, unit, scheduler, StandardBufferedConfig.DEFAULT);
     }
 
     /**
@@ -11939,52 +11734,19 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the time unit of {@code time}
      * @param scheduler
      *            the {@code Scheduler} that provides the timestamps for the observed items
-     * @param delayError
-     *            if {@code true}, an exception signaled by the current {@code Observable} is delayed until the regular elements are consumed
-     *            by the downstream; if {@code false}, an exception is immediately signaled and all regular elements dropped
+     * @param config
+     *            the configuration record for this operator
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Observable<T> takeLast(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError) {
-        return takeLast(time, unit, scheduler, delayError, bufferSize());
-    }
-
-    /**
-     * Returns an {@code Observable} that emits the items from the current {@code Observable} that were emitted in a specified
-     * window of time before the current {@code Observable} completed, where the timing information is provided by a specified
-     * {@link Scheduler}.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
-     * </dl>
-     *
-     * @param time
-     *            the length of the time window
-     * @param unit
-     *            the time unit of {@code time}
-     * @param scheduler
-     *            the {@code Scheduler} that provides the timestamps for the observed items
-     * @param delayError
-     *            if {@code true}, an exception signaled by the current {@code Observable} is delayed until the regular elements are consumed
-     *            by the downstream; if {@code false}, an exception is immediately signaled and all regular elements dropped
-     * @param bufferSize
-     *            the hint about how many elements to expect to be last
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
-     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    @NonNull
-    public final Observable<T> takeLast(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError, int bufferSize) {
-        return takeLast(Long.MAX_VALUE, time, unit, scheduler, delayError, bufferSize);
+    public final Observable<T> takeLast(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler,
+            @NonNull StandardBufferedConfig config) {
+        return takeLast(Long.MAX_VALUE, time, unit, scheduler, config);
     }
 
     /**
@@ -12161,7 +11923,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    @Experimental
     public final Observable<T> throttleFirst(long skipDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<? super T> onDropped) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -12231,9 +11992,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    @Experimental
     public final Observable<T> throttleLast(long intervalDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<? super T> onDropped) {
-        return sample(intervalDuration, unit, scheduler, false, onDropped);
+        return sample(intervalDuration, unit, scheduler, new SampleConfig<>(false, onDropped));
     }
 
     /**
@@ -12276,7 +12036,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="326" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLatest.png" alt="">
      * <p>
-     * Unlike the option with {@link #throttleLatest(long, TimeUnit, boolean)}, the very last item being held back
+     * Unlike the option with {@link #throttleLatest(long, TimeUnit, Scheduler, SampleConfig)}, the very last item being held back
      * (if any) is not emitted when the upstream completes.
      * <p>
      * If no items were emitted from the upstream during this timeout phase, the next
@@ -12291,7 +12051,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param unit    the time unit
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code unit} is {@code null}
-     * @see #throttleLatest(long, TimeUnit, boolean)
      * @see #throttleLatest(long, TimeUnit, Scheduler)
      * @since 2.2
      */
@@ -12299,40 +12058,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
     public final Observable<T> throttleLatest(long timeout, @NonNull TimeUnit unit) {
-        return throttleLatest(timeout, unit, Schedulers.computation(), false);
-    }
-
-    /**
-     * Throttles items from the current {@code Observable} by first emitting the next
-     * item from upstream, then periodically emitting the latest item (if any) when
-     * the specified timeout elapses between them.
-     * <p>
-     * <img width="640" height="326" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLatest.e.png" alt="">
-     * <p>
-     * If no items were emitted from the upstream during this timeout phase, the next
-     * upstream item is emitted immediately and the timeout window starts from then.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code throttleLatest} operates by default on the {@code computation} {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.14 - experimental
-     * @param timeout the time to wait after an item emission towards the downstream
-     *                before trying to emit the latest item from upstream again
-     * @param unit    the time unit
-     * @param emitLast If {@code true}, the very last item from the upstream will be emitted
-     *                 immediately when the upstream completes, regardless if there is
-     *                 a timeout window active or not. If {@code false}, the very last
-     *                 upstream item is ignored and the flow terminates.
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} is {@code null}
-     * @see #throttleLatest(long, TimeUnit, Scheduler, boolean)
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    @NonNull
-    public final Observable<T> throttleLatest(long timeout, @NonNull TimeUnit unit, boolean emitLast) {
-        return throttleLatest(timeout, unit, Schedulers.computation(), emitLast);
+        return throttleLatest(timeout, unit, Schedulers.computation(), SampleConfig.DEFAULT);
     }
 
     /**
@@ -12342,7 +12068,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="326" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLatest.s.png" alt="">
      * <p>
-     * Unlike the option with {@link #throttleLatest(long, TimeUnit, Scheduler, boolean)}, the very last item being held back
+     * Unlike the option with {@link #throttleLatest(long, TimeUnit, Scheduler, SampleConfig)}, the very last item being held back
      * (if any) is not emitted when the upstream completes.
      * <p>
      * If no items were emitted from the upstream during this timeout phase, the next
@@ -12359,50 +12085,14 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *                  emission will be performed
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
-     * @see #throttleLatest(long, TimeUnit, Scheduler, boolean)
+     * @see #throttleLatest(long, TimeUnit, Scheduler, SampleConfig)
      * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Observable<T> throttleLatest(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return throttleLatest(timeout, unit, scheduler, false);
-    }
-
-    /**
-     * Throttles items from the current {@code Observable} by first emitting the next
-     * item from upstream, then periodically emitting the latest item (if any) when
-     * the specified timeout elapses between them.
-     * <p>
-     * <img width="640" height="326" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLatest.se.png" alt="">
-     * <p>
-     * If no items were emitted from the upstream during this timeout phase, the next
-     * upstream item is emitted immediately and the timeout window starts from then.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
-     * </dl>
-     * <p>History: 2.1.14 - experimental
-     * @param timeout the time to wait after an item emission towards the downstream
-     *                before trying to emit the latest item from upstream again
-     * @param unit    the time unit
-     * @param scheduler the {@code Scheduler} where the timed wait and latest item
-     *                  emission will be performed
-     * @param emitLast If {@code true}, the very last item from the upstream will be emitted
-     *                 immediately when the upstream completes, regardless if there is
-     *                 a timeout window active or not. If {@code false}, the very last
-     *                 upstream item is ignored and the flow terminates.
-     * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    @NonNull
-    public final Observable<T> throttleLatest(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast) {
-        Objects.requireNonNull(unit, "unit is null");
-        Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new ObservableThrottleLatest<>(this, timeout, unit, scheduler, emitLast, null));
+        return throttleLatest(timeout, unit, scheduler, SampleConfig.DEFAULT);
     }
 
     /**
@@ -12431,26 +12121,21 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param unit    the time unit
      * @param scheduler the {@code Scheduler} where the timed wait and latest item
      *                  emission will be performed
-     * @param emitLast If {@code true}, the very last item from the upstream will be emitted
-     *                 immediately when the upstream completes, regardless if there is
-     *                 a timeout window active or not. If {@code false}, the very last
-     *                 upstream item is ignored and the flow terminates.
-     * @param onDropped called when an item is replaced by a newer item that doesn't get delivered
-     *                 to the downstream, including the very last item if {@code emitLast} is {@code false}
-     *                 and the current undelivered item when the sequence gets disposed.
+     * @param config
+     *                  the configuration record for this operator
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code onDropped} is {@code null}
-     * @since 3.1.6 - Experimental
+     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    @Experimental
-    public final Observable<T> throttleLatest(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast, @NonNull Consumer<? super T> onDropped) {
+    public final Observable<T> throttleLatest(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler,
+            @NonNull SampleConfig<? super T> config) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        Objects.requireNonNull(onDropped, "onDropped is null");
-        return RxJavaPlugins.onAssembly(new ObservableThrottleLatest<>(this, timeout, unit, scheduler, emitLast, onDropped));
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new ObservableThrottleLatest<>(this, timeout, unit, scheduler, config.emitLast(), config.onDropped()));
     }
 
     /**
@@ -12554,7 +12239,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    @Experimental
     public final Observable<T> throttleWithTimeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<? super T> onDropped) {
         return debounce(timeout, unit, scheduler, onDropped);
     }

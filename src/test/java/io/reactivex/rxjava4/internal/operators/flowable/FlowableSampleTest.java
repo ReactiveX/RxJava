@@ -24,6 +24,7 @@ import org.mockito.InOrder;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.SampleConfig;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
@@ -304,7 +305,7 @@ public class FlowableSampleTest extends RxJavaTest {
     @Test
     public void emitLastTimed() {
         Flowable.just(1)
-        .sample(1, TimeUnit.DAYS, true)
+        .sample(1, TimeUnit.DAYS, Schedulers.computation(), SampleConfig.EMIT_LAST)
         .test()
         .assertResult(1);
     }
@@ -312,7 +313,7 @@ public class FlowableSampleTest extends RxJavaTest {
     @Test
     public void emitLastTimedEmpty() {
         Flowable.empty()
-        .sample(1, TimeUnit.DAYS, true)
+        .sample(1, TimeUnit.DAYS, Schedulers.computation(), SampleConfig.EMIT_LAST)
         .test()
         .assertResult();
     }
@@ -320,7 +321,7 @@ public class FlowableSampleTest extends RxJavaTest {
     @Test
     public void emitLastTimedCustomScheduler() {
         Flowable.just(1)
-        .sample(1, TimeUnit.DAYS, Schedulers.single(), true)
+        .sample(1, TimeUnit.DAYS, Schedulers.single(), SampleConfig.EMIT_LAST)
         .test()
         .assertResult(1);
     }
@@ -332,7 +333,7 @@ public class FlowableSampleTest extends RxJavaTest {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestSubscriber<Integer> ts = pp.sample(1, TimeUnit.SECONDS, scheduler, true)
+            TestSubscriber<Integer> ts = pp.sample(1, TimeUnit.SECONDS, scheduler, SampleConfig.EMIT_LAST)
             .test();
 
             pp.onNext(1);

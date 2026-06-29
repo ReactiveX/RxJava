@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
 public class VirtualCreateTest {
@@ -95,7 +96,7 @@ public class VirtualCreateTest {
                 e.emit(i);
             }
         }, exec)
-        .observeOn(Schedulers.single(), false, 2)
+        .observeOn(Schedulers.single(), new StandardBufferedConfig(false, 2))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(10000));
@@ -106,7 +107,7 @@ public class VirtualCreateTest {
         withVirtual(exec -> Flowable.<Integer>virtualCreate(_ -> {
             throw new IOException();
         }, exec)
-        .observeOn(Schedulers.single(), false, 2)
+        .observeOn(Schedulers.single(), new StandardBufferedConfig(false, 2))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertError(IOException.class));

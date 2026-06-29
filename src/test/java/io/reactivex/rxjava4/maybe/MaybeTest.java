@@ -2177,7 +2177,8 @@ public class MaybeTest extends RxJavaTest {
         .assertResult()
         ;
 
-        Maybe.fromFuture(Flowable.error(new TestException()).delay(200, TimeUnit.MILLISECONDS, true).toFuture())
+        Maybe.fromFuture(Flowable.error(new TestException())
+        .delay(200, TimeUnit.MILLISECONDS, Schedulers.computation(), true).toFuture())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class)

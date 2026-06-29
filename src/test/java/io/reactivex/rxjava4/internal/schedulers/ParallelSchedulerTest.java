@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
-import io.reactivex.rxjava4.core.config.ParallelSchedulerConfig;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.schedulers.ParallelScheduler.TrackingParallelWorker.TrackedAction;
@@ -46,7 +46,7 @@ public class ParallelSchedulerTest implements Runnable {
         try {
             for (int i = 0; i < 100; i++) {
                 Flowable.range(1, 10).hide()
-                .observeOn(s, false, 4)
+                .observeOn(s, new StandardBufferedConfig(false, 4))
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)
                 .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -63,7 +63,7 @@ public class ParallelSchedulerTest implements Runnable {
         try {
             for (int i = 0; i < 100; i++) {
                 Flowable.range(1, 10).hide()
-                .observeOn(s, false, 4)
+                .observeOn(s, new StandardBufferedConfig(false, 4))
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)
                 .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -97,7 +97,7 @@ public class ParallelSchedulerTest implements Runnable {
         try {
             for (int i = 0; i < 100; i++) {
                 Flowable.range(1, 10).hide()
-                .observeOn(s, false, 4)
+                .observeOn(s, new StandardBufferedConfig(false, 4))
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)
                 .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);

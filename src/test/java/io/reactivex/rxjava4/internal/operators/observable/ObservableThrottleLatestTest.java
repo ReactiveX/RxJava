@@ -20,11 +20,12 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.SampleConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.observers.TestObserver;
-import io.reactivex.rxjava4.schedulers.TestScheduler;
+import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.testsupport.*;
 
@@ -49,7 +50,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
     @Test
     public void rangeEmitLatest() {
         Observable.range(1, 5)
-        .throttleLatest(1, TimeUnit.MINUTES, true)
+        .throttleLatest(1, TimeUnit.MINUTES, Schedulers.computation(), new SampleConfig<>(true))
         .test()
         .assertResult(1, 5);
     }
@@ -131,7 +132,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
         TestScheduler sch = new TestScheduler();
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, true).test();
+        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(true)).test();
 
         ps.onNext(1);
 
@@ -228,7 +229,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 
-        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .test();
 
         to.assertEmpty();
@@ -271,7 +272,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 
-        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .test();
 
         to.assertEmpty();
@@ -309,7 +310,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 
-        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, true, drops::onNext)
+        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(true, drops::onNext))
         .test();
 
         to.assertEmpty();
@@ -351,11 +352,11 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps
         .doOnDispose(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> {
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, d -> {
             if (d == 2) {
                 throw new TestException("forced");
             }
-        })
+        }))
         .test();
 
         to.assertEmpty();
@@ -390,7 +391,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestObserverEx<Integer> to = ps
         .doOnDispose(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> { throw new TestException("forced " + d); })
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, d -> { throw new TestException("forced " + d); }))
         .subscribeWith(new TestObserverEx<>());
 
         to.assertEmpty();
@@ -427,7 +428,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestObserverEx<Integer> to = ps
         .doOnDispose(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, true, d -> { throw new TestException("forced " + d); })
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(true, d -> { throw new TestException("forced " + d); }))
         .subscribeWith(new TestObserverEx<>());
 
         to.assertEmpty();
@@ -459,7 +460,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 
-        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .test();
 
         to.assertEmpty();
@@ -486,7 +487,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 
-        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        TestObserver<Integer> to = ps.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .test();
 
         to.assertEmpty();
@@ -517,7 +518,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestObserverEx<Integer> to = ps
         .doOnDispose(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> { throw new TestException("forced " + d); })
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, d -> { throw new TestException("forced " + d); }))
         .subscribeWith(new TestObserverEx<>());
 
         to.assertEmpty();
@@ -554,7 +555,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestObserverEx<Integer> to = ps
         .doOnDispose(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .subscribeWith(new TestObserverEx<>());
 
         to.assertEmpty();
@@ -592,7 +593,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestObserverEx<Integer> to = ps
         .doOnDispose(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .subscribeWith(new TestObserverEx<>());
 
         to.assertEmpty();
@@ -624,7 +625,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
             TestObserverEx<Integer> to = ps
             .doOnDispose(whenDisposed)
-            .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> { throw new TestException("forced " + d); })
+            .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, d -> { throw new TestException("forced " + d); }))
             .subscribeWith(new TestObserverEx<>());
 
             to.assertEmpty();

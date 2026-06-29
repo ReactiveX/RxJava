@@ -139,7 +139,6 @@ public class CheckParamValidationTest extends RxJavaTest {
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Boolean.TYPE));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
 
@@ -151,10 +150,6 @@ public class CheckParamValidationTest extends RxJavaTest {
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "debounce", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "debounce", Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "debounce", Long.TYPE, TimeUnit.class, Scheduler.class, Consumer.class));
-
-        // null Action allowed
-        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "onBackpressureBuffer", Long.TYPE, Action.class, BackpressureOverflowStrategy.class));
-        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "onBackpressureBuffer", Long.TYPE, Action.class, BackpressureOverflowStrategy.class, Consumer.class));
 
         // zero repeat is allowed
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "repeat", Long.TYPE));
@@ -191,24 +186,20 @@ public class CheckParamValidationTest extends RxJavaTest {
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Boolean.TYPE));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Consumer.class));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class, SampleConfig.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Boolean.TYPE));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Scheduler.class, StandardBufferedConfig.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "takeLast",
-                Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
+                Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, StandardBufferedConfig.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
+        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, StandardBufferedConfig.class));
 
         // take last 0 is allowed
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Integer.TYPE));
@@ -218,10 +209,8 @@ public class CheckParamValidationTest extends RxJavaTest {
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class, Boolean.TYPE));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class, Scheduler.class, StandardBufferedConfig.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleFirst", Long.TYPE, TimeUnit.class));
@@ -236,9 +225,7 @@ public class CheckParamValidationTest extends RxJavaTest {
         // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Boolean.TYPE));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Consumer.class));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class, SampleConfig.class));
 
         // negative buffer time is considered as zero buffer time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "window", Long.TYPE, TimeUnit.class));
@@ -298,7 +285,6 @@ public class CheckParamValidationTest extends RxJavaTest {
         // negative time is considered as zero time
         addOverride(new ParamOverride(Maybe.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Maybe.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Maybe.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Boolean.TYPE));
         addOverride(new ParamOverride(Maybe.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
 
         // zero repeat is allowed
@@ -329,7 +315,6 @@ public class CheckParamValidationTest extends RxJavaTest {
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Single.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Single.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Boolean.TYPE));
         addOverride(new ParamOverride(Single.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Single.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
 
@@ -394,7 +379,6 @@ public class CheckParamValidationTest extends RxJavaTest {
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Boolean.TYPE));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
 
@@ -442,24 +426,20 @@ public class CheckParamValidationTest extends RxJavaTest {
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Boolean.TYPE));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Consumer.class));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class, SampleConfig.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Boolean.TYPE));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Scheduler.class, StandardBufferedConfig.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "takeLast",
-                Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
+                Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, StandardBufferedConfig.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
+        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, StandardBufferedConfig.class));
 
         // take last 0 is allowed
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Integer.TYPE));
@@ -469,10 +449,8 @@ public class CheckParamValidationTest extends RxJavaTest {
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class, Boolean.TYPE));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "skipLast", Long.TYPE, TimeUnit.class, Scheduler.class, StandardBufferedConfig.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleFirst", Long.TYPE, TimeUnit.class));
@@ -487,9 +465,7 @@ public class CheckParamValidationTest extends RxJavaTest {
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Boolean.TYPE));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Consumer.class));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class, SampleConfig.class));
 
         // negative buffer time is considered as zero buffer time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "window", Long.TYPE, TimeUnit.class));
@@ -618,7 +594,9 @@ public class CheckParamValidationTest extends RxJavaTest {
         defaultValues.put(StandardBufferedConfig.class, StandardBufferedConfig.DEFAULT);
         defaultValues.put(StandardConcurrentConfig.class, StandardConcurrentConfig.DEFAULT);
         defaultValues.put(StandardConcurrentBufferedConfig.class, StandardConcurrentBufferedConfig.DEFAULT);
-        defaultValues.put(ObservableSequenceEqualConfig.class, ObservableSequenceEqualConfig.DEFAULT);
+        defaultValues.put(SequenceEqualConfig.class, SequenceEqualConfig.DEFAULT);
+        defaultValues.put(SampleConfig.class, SampleConfig.DEFAULT);
+        defaultValues.put(OnBackpressureBufferConfig.class, OnBackpressureBufferConfig.DEFAULT);
 
         // TODO insert new config record types here
 
@@ -1170,7 +1148,9 @@ public class CheckParamValidationTest extends RxJavaTest {
                 try {
                     clazz.getMethod(name, arguments);
                 } catch (Exception ex) {
-                    throw new AssertionError(ex);
+                    throw new AssertionError(
+                            clazz  + "." + name + "(" + Arrays.toString(arguments) + ")",
+                            ex);
                 }
             }
 

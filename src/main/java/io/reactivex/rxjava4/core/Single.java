@@ -465,7 +465,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @param config the configuration record for this operator
      * @return the new {@link Flowable} instance with the specified concatenation behavior
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
-     * @since 3.0.0
+     * @since 4.0.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
@@ -2233,36 +2233,13 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @return the new {@code Single} instance
      * @since 2.0
      * @throws NullPointerException if {@code unit} is {@code null}
-     * @see #delay(long, TimeUnit, boolean)
+     * @see #delay(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
     public final Single<T> delay(long time, @NonNull TimeUnit unit) {
         return delay(time, unit, Schedulers.computation(), false);
-    }
-
-    /**
-     * Delays the emission of the success or error signal from the current {@code Single} by the specified amount.
-     * <p>
-     * <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.e.v3.png" alt="">
-     * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.5 - experimental
-     * @param time the amount of time the success or error signal should be delayed for
-     * @param unit the time unit
-     * @param delayError if {@code true}, both success and error signals are delayed. if {@code false}, only success signals are delayed.
-     * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code unit} is {@code null}
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    @NonNull
-    public final Single<T> delay(long time, @NonNull TimeUnit unit, boolean delayError) {
-        return delay(time, unit, Schedulers.computation(), delayError);
     }
 
     /**

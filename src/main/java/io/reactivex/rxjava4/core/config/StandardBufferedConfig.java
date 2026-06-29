@@ -16,9 +16,8 @@ package io.reactivex.rxjava4.core.config;
 import java.util.Objects;
 
 import io.reactivex.rxjava4.annotations.NonNull;
-import io.reactivex.rxjava4.core.Observable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
-import io.reactivex.rxjava4.core.ErrorMode;
 
 /**
  * Configuration record for operators which have three error handling modes and a buffer size or prefetch like parameter.
@@ -59,15 +58,15 @@ public record StandardBufferedConfig(@NonNull ErrorMode errorMode, int bufferSiz
     public static final StandardBufferedConfig MIN_DELAY_ERRORS_BOUNDARY = new StandardBufferedConfig(ErrorMode.BOUNDARY, 2);
 
     /**
-     * Constructs a configuration record.
+     * Sets the error mode to the provided value and the bufferSize to {@link Flowable#bufferSize()}
      * @param errorMode how to handle when errors appear from the inner or outer sources
      */
     public StandardBufferedConfig(@NonNull ErrorMode errorMode) {
-        this(errorMode, Observable.bufferSize());
+        this(errorMode, Flowable.bufferSize());
     }
 
     /**
-     * Constructs a configuration record with convenience for the basic no-delay/delay error management.
+     * Sets the error mode to IMMEDIATE (false) or END (true) and the bufferSize to {@link Flowable#bufferSize()}.
      * @param delayErrors if true, ErrorMode.END is used, ErrorMode.IMMEDIATE otherwise
      */
     public StandardBufferedConfig(boolean delayErrors) {
@@ -75,7 +74,7 @@ public record StandardBufferedConfig(@NonNull ErrorMode errorMode, int bufferSiz
     }
 
     /**
-     * Constructs a configuration record.
+     * Sets the error mode to IMMEDIATE and the bufferSize to the provided value.
      * @param bufferSize the expected number of outer sources to buffer while processing an inner source
      */
     public StandardBufferedConfig(int bufferSize) {
@@ -83,7 +82,7 @@ public record StandardBufferedConfig(@NonNull ErrorMode errorMode, int bufferSiz
     }
 
     /**
-     * Constructs a configuration record.
+     * Sets the error mode to IMMEDIATE (false) or END (true) and the bufferSize to the provided value.
      * @param delayErrors if true, ErrorMode.END is used, ErrorMode.IMMEDIATE otherwise
      * @param bufferSize the expected number of outer sources to buffer while processing an inner source
      */
@@ -92,7 +91,7 @@ public record StandardBufferedConfig(@NonNull ErrorMode errorMode, int bufferSiz
     }
 
     /**
-     * Constructs a configuration record.
+     * Sets the error mode and the bufferSize to the provided values.
      * @param errorMode how to handle when errors appear from the inner or outer sources
      * @param bufferSize the expected number of outer sources to buffer while processing an inner source
      */

@@ -66,7 +66,8 @@ public record StandardConcurrentBufferedConfig(@NonNull ErrorMode errorMode, int
             new StandardConcurrentBufferedConfig(ErrorMode.BOUNDARY, Integer.MAX_VALUE, Flowable.bufferSize());
 
     /**
-     * Optionally delay error, {@link Flowable#bufferSize()} sizes
+     * Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+     * and bufferSize to {@link Flowable#bufferSize()}.
      * @param delayErrors should the error be delayed?
      */
     public StandardConcurrentBufferedConfig(boolean delayErrors) {
@@ -74,7 +75,8 @@ public record StandardConcurrentBufferedConfig(@NonNull ErrorMode errorMode, int
     }
 
     /**
-     * Optionally delay error, {@link Flowable#bufferSize()} sizes
+     * Sets the error mode to provided value, the maxConcurrency
+     * and bufferSize to {@link Flowable#bufferSize()}.
      * @param errorMode how to handle when errors appear from the inner or outer sources
      */
     public StandardConcurrentBufferedConfig(ErrorMode errorMode) {
@@ -82,7 +84,8 @@ public record StandardConcurrentBufferedConfig(@NonNull ErrorMode errorMode, int
     }
 
     /**
-     * Optionally set the buffer size, no delay errors.
+     * Sets the error mode to IMMEDIATE, the maxConcurrency to the provided value
+     * and bufferSize to {@link Flowable#bufferSize()}.
      * @param maxConcurrency the maximum number of concurrent flows
      */
     public StandardConcurrentBufferedConfig(int maxConcurrency) {
@@ -90,7 +93,8 @@ public record StandardConcurrentBufferedConfig(@NonNull ErrorMode errorMode, int
     }
 
     /**
-     * Optionally delays errors and sets the buffer size too.
+     * Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+     * to the provided value and bufferSize to {@link Flowable#bufferSize()}.
      * @param delayErrors should the errors be delayed?
      * @param maxConcurrency the maximum number of concurrent flows
      */
@@ -99,7 +103,8 @@ public record StandardConcurrentBufferedConfig(@NonNull ErrorMode errorMode, int
     }
 
     /**
-     * Optionally delay error, {@link Flowable#bufferSize()} sizes
+     * Sets the error mode to provided value, the maxConcurrency to the provided value
+     * and bufferSize to {@link Flowable#bufferSize()}.
      * @param errorMode how to handle when errors appear from the inner or outer sources
      * @param maxConcurrency the maximum number of concurrent flows
      */
@@ -108,10 +113,11 @@ public record StandardConcurrentBufferedConfig(@NonNull ErrorMode errorMode, int
     }
 
     /**
-     * Optionally delay error, {@link Flowable#bufferSize()} sizes
+     * Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+     * to the provided value and bufferSize to the provided value too.
      * @param delayErrors should the error be delayed?
      * @param maxConcurrency the maximum number of concurrent flows
-     * @param bufferSize what would be the buffer size
+     * @param bufferSize the expected number of items to buffer or prefetch from the various sources
      */
     public StandardConcurrentBufferedConfig(boolean delayErrors, int maxConcurrency, int bufferSize) {
         this(delayErrors ? ErrorMode.END : ErrorMode.IMMEDIATE, maxConcurrency, bufferSize);
@@ -121,7 +127,7 @@ public record StandardConcurrentBufferedConfig(@NonNull ErrorMode errorMode, int
      * Fully customize the configuration.
      * @param errorMode how to handle when errors appear from the inner or outer sources
      * @param maxConcurrency the maximum number of concurrent flows?
-     * @param bufferSize what would be the buffer size
+     * @param bufferSize the expected number of items to buffer or prefetch from the various sources
      */
     public StandardConcurrentBufferedConfig {
         Objects.requireNonNull(errorMode, "errorMode is null");

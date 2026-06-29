@@ -14,7 +14,6 @@
 package io.reactivex.rxjava4.internal.operators.flowable;
 
 import static io.reactivex.rxjava4.core.BackpressureOverflowStrategy.*;
-import static io.reactivex.rxjava4.internal.functions.Functions.EMPTY_ACTION;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -27,7 +26,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
-import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.subscribers.*;
@@ -39,9 +37,9 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     public void backpressureWithBufferDropOldest() throws InterruptedException {
         int bufferSize = 3;
         final AtomicInteger droppedCount = new AtomicInteger(0);
-        Action incrementOnDrop = droppedCount::incrementAndGet;
         TestSubscriber<Long> ts = createTestSubscriber();
-        Flowable.fromPublisher(send500ValuesAndComplete.onBackpressureBuffer(bufferSize, incrementOnDrop, DROP_OLDEST))
+        Flowable.fromPublisher(send500ValuesAndComplete.onBackpressureBuffer(bufferSize, DROP_OLDEST,
+                _ -> droppedCount.getAndIncrement()))
                 .subscribe(ts);
         // we request 10 but only 3 should come from the buffer
         ts.request(10);
@@ -80,9 +78,9 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     public void backpressureWithBufferDropLatest() throws InterruptedException {
         int bufferSize = 3;
         final AtomicInteger droppedCount = new AtomicInteger(0);
-        Action incrementOnDrop = droppedCount::incrementAndGet;
         TestSubscriber<Long> ts = createTestSubscriber();
-        Flowable.fromPublisher(send500ValuesAndComplete.onBackpressureBuffer(bufferSize, incrementOnDrop, DROP_LATEST))
+        Flowable.fromPublisher(send500ValuesAndComplete.onBackpressureBuffer(bufferSize, DROP_LATEST,
+                _ -> droppedCount.getAndIncrement()))
                 .subscribe(ts);
         // we request 10 but only 3 should come from the buffer
         ts.request(10);
@@ -109,25 +107,25 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void backpressureBufferNegativeCapacity() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(-1, EMPTY_ACTION , DROP_OLDEST);
+        Flowable.empty().onBackpressureBuffer(-1, DROP_OLDEST);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void backpressureBufferZeroCapacity() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(0, EMPTY_ACTION , DROP_OLDEST);
+        Flowable.empty().onBackpressureBuffer(0, DROP_OLDEST);
     }
 
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.just(1)
-                .onBackpressureBuffer(16, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR));
+                .onBackpressureBuffer(16, BackpressureOverflowStrategy.ERROR));
     }
 
     @Test
     public void error() {
         Flowable
         .error(new TestException())
-        .onBackpressureBuffer(16, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR)
+        .onBackpressureBuffer(16, BackpressureOverflowStrategy.ERROR)
         .test()
         .assertFailure(TestException.class);
     }
@@ -135,41 +133,31 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     @Test
     public void overflowError() {
         Flowable.range(1, 20)
-        .onBackpressureBuffer(8, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR)
+        .onBackpressureBuffer(8, BackpressureOverflowStrategy.ERROR)
         .test(0L)
         .assertFailure(MissingBackpressureException.class);
     }
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(f -> f.onBackpressureBuffer(8, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR), false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable(f -> f.onBackpressureBuffer(8, BackpressureOverflowStrategy.ERROR), false, 1, 1, 1);
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.onBackpressureBuffer(8, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR));
-    }
-
-    @Test
-    public void overflowCrashes() {
-        Flowable.range(1, 20)
-        .onBackpressureBuffer(8, () -> {
-            throw new TestException();
-        }, BackpressureOverflowStrategy.DROP_OLDEST)
-        .test(0L)
-        .assertFailure(TestException.class);
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.onBackpressureBuffer(8, BackpressureOverflowStrategy.ERROR));
     }
 
     @Test
     public void badRequest() {
         TestHelper.assertBadRequestReported(Flowable.just(1)
-                .onBackpressureBuffer(16, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR));
+                .onBackpressureBuffer(16, BackpressureOverflowStrategy.ERROR));
     }
 
     @Test
     public void empty() {
         Flowable.empty()
-        .onBackpressureBuffer(16, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR)
+        .onBackpressureBuffer(16, BackpressureOverflowStrategy.ERROR)
         .test(0L)
         .assertResult();
     }
@@ -177,24 +165,16 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     @Test
     public void justTake() {
         Flowable.just(1)
-        .onBackpressureBuffer(16, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR)
+        .onBackpressureBuffer(16, BackpressureOverflowStrategy.ERROR)
         .take(1)
         .test()
         .assertResult(1);
     }
 
     @Test
-    public void overflowNullAction() {
-        Flowable.range(1, 5)
-        .onBackpressureBuffer(1, null, BackpressureOverflowStrategy.DROP_OLDEST)
-        .test(0L)
-        .assertEmpty();
-    }
-
-    @Test
     public void cancelOnDrain() {
         Flowable.range(1, 5)
-        .onBackpressureBuffer(10, null, BackpressureOverflowStrategy.DROP_OLDEST)
+        .onBackpressureBuffer(10, BackpressureOverflowStrategy.DROP_OLDEST)
         .takeUntil(_ -> true)
         .test(0L)
         .assertEmpty()
@@ -209,7 +189,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
         @SuppressWarnings("unchecked")
         Consumer<Integer> onDropped = mock(Consumer.class);
 
-        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(1, null, BackpressureOverflowStrategy.DROP_OLDEST, onDropped)
+        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(1, BackpressureOverflowStrategy.DROP_OLDEST, onDropped)
         .test(0L);
 
         ts.assertEmpty();
@@ -233,7 +213,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
         @SuppressWarnings("unchecked")
         Consumer<Integer> onDropped = mock(Consumer.class);
 
-        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(2, null, BackpressureOverflowStrategy.DROP_LATEST, onDropped)
+        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(2, BackpressureOverflowStrategy.DROP_LATEST, onDropped)
         .test(0L);
 
         ts.assertEmpty();
@@ -259,7 +239,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
         @SuppressWarnings("unchecked")
         Consumer<Integer> onDropped = mock(Consumer.class);
 
-        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(1, null, BackpressureOverflowStrategy.ERROR, onDropped)
+        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(1, BackpressureOverflowStrategy.ERROR, onDropped)
         .test(0L);
 
         ts.assertEmpty();
@@ -282,7 +262,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
 
         Consumer<Integer> onDropped = _ -> { throw new TestException(); };
 
-        TestSubscriberEx<Integer> ts = pp.onBackpressureBuffer(1, null, BackpressureOverflowStrategy.DROP_OLDEST, onDropped)
+        TestSubscriberEx<Integer> ts = pp.onBackpressureBuffer(1, BackpressureOverflowStrategy.DROP_OLDEST, onDropped)
         .subscribeWith(new TestSubscriberEx<>(0L));
 
         ts.assertEmpty();

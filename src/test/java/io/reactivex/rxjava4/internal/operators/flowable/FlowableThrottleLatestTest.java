@@ -18,12 +18,14 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.SampleConfig;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.subscriptions.EmptySubscription;
 import io.reactivex.rxjava4.processors.PublishProcessor;
-import io.reactivex.rxjava4.schedulers.TestScheduler;
+import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.*;
 
@@ -48,7 +50,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
     @Test
     public void rangeEmitLatest() {
         Flowable.range(1, 5)
-        .throttleLatest(1, TimeUnit.MINUTES, true)
+        .throttleLatest(1, TimeUnit.MINUTES, Schedulers.computation(), new SampleConfig<>(true))
         .test()
         .assertResult(1, 5);
     }
@@ -130,7 +132,8 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
         TestScheduler sch = new TestScheduler();
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, true).test();
+        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(true))
+                .test();
 
         pp.onNext(1);
 
@@ -198,7 +201,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
         TestSubscriber<Integer> ts = Flowable.just(1, 2)
         .concatWith(Flowable.<Integer>never())
         .doOnCancel(onCancel)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, true)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(true))
         .test(1);
 
         sch.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -217,7 +220,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp
         .doOnCancel(onCancel)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, true)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(true))
         .test(1);
 
         pp.onNext(1);
@@ -283,7 +286,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
         TestSubscriber<Object> drops = new TestSubscriber<>();
         drops.onSubscribe(EmptySubscription.INSTANCE);
 
-        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .test();
 
         ts.assertEmpty();
@@ -326,7 +329,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
         TestSubscriber<Object> drops = new TestSubscriber<>();
         drops.onSubscribe(EmptySubscription.INSTANCE);
 
-        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .test();
 
         ts.assertEmpty();
@@ -364,7 +367,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
         TestSubscriber<Object> drops = new TestSubscriber<>();
         drops.onSubscribe(EmptySubscription.INSTANCE);
 
-        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, true, drops::onNext)
+        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(true, drops::onNext))
         .test();
 
         ts.assertEmpty();
@@ -406,11 +409,11 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp
         .doOnCancel(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> {
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, d -> {
             if (d == 2) {
                 throw new TestException("forced");
             }
-        })
+        }))
         .test();
 
         ts.assertEmpty();
@@ -445,7 +448,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
         TestSubscriberEx<Integer> ts = pp
         .doOnCancel(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> { throw new TestException("forced " + d); })
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, d -> { throw new TestException("forced " + d); }))
         .subscribeWith(new TestSubscriberEx<>());
 
         ts.assertEmpty();
@@ -482,7 +485,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
         TestSubscriberEx<Integer> ts = pp
         .doOnCancel(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, true, d -> { throw new TestException("forced " + d); })
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(true, d -> { throw new TestException("forced " + d); }))
         .subscribeWith(new TestSubscriberEx<>());
 
         ts.assertEmpty();
@@ -514,7 +517,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
         TestSubscriber<Object> drops = new TestSubscriber<>();
         drops.onSubscribe(EmptySubscription.INSTANCE);
 
-        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .test();
 
         ts.assertEmpty();
@@ -541,7 +544,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
         TestSubscriber<Object> drops = new TestSubscriber<>();
         drops.onSubscribe(EmptySubscription.INSTANCE);
 
-        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .test();
 
         ts.assertEmpty();
@@ -572,7 +575,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
         TestSubscriberEx<Integer> ts = pp
         .doOnCancel(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> { throw new TestException("forced " + d); })
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, d -> { throw new TestException("forced " + d); }))
         .subscribeWith(new TestSubscriberEx<>());
 
         ts.assertEmpty();
@@ -609,7 +612,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
         TestSubscriberEx<Integer> ts = pp
         .doOnCancel(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .subscribeWith(new TestSubscriberEx<>());
 
         ts.assertEmpty();
@@ -647,7 +650,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
         TestSubscriberEx<Integer> ts = pp
         .doOnCancel(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .subscribeWith(new TestSubscriberEx<>());
 
         ts.assertEmpty();
@@ -679,7 +682,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
             TestSubscriberEx<Integer> ts = pp
             .doOnCancel(whenDisposed)
-            .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> { throw new TestException("forced " + d); })
+            .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, d -> { throw new TestException("forced " + d); }))
             .subscribeWith(new TestSubscriberEx<>());
 
             ts.assertEmpty();
@@ -719,7 +722,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp
         .doOnCancel(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, drops::onNext))
         .test(0L);
 
         ts.assertEmpty();
@@ -748,7 +751,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
         TestSubscriberEx<Integer> ts = pp
         .doOnCancel(whenDisposed)
-        .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> { throw new TestException("forced " + d); })
+        .throttleLatest(1, TimeUnit.SECONDS, sch, new SampleConfig<>(false, d -> { throw new TestException("forced " + d); }))
         .subscribeWith(new TestSubscriberEx<>(0L));
 
         ts.assertEmpty();

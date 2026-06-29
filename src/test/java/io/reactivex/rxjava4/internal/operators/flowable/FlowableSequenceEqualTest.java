@@ -17,13 +17,14 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.SequenceEqualConfig;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.observers.TestObserver;
@@ -114,9 +115,9 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void withEqualityErrorFlowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.just("one"), Flowable.just("one"),
-                (_, _) -> {
+                new SequenceEqualConfig<>((_, _) -> {
                     throw new TestException();
-                }).toFlowable();
+                })).toFlowable();
         verifyError(flowable);
     }
 
@@ -199,9 +200,9 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void withEqualityError() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.just("one"), Flowable.just("one"),
-                (_, _) -> {
+                new SequenceEqualConfig<>((_, _) -> {
                     throw new TestException();
-                });
+                }));
         verifyError(single);
     }
 
@@ -247,7 +248,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     @Test
     public void prefetch() {
 
-        Flowable.sequenceEqual(Flowable.range(1, 20), Flowable.range(1, 20), 2)
+        Flowable.sequenceEqual(Flowable.range(1, 20), Flowable.range(1, 20), new SequenceEqualConfig<>(2))
         .test()
         .assertResult(true);
     }
@@ -313,7 +314,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void prefetchFlowable() {
-        Flowable.sequenceEqual(Flowable.range(1, 20), Flowable.range(1, 20), 2)
+        Flowable.sequenceEqual(Flowable.range(1, 20), Flowable.range(1, 20), new SequenceEqualConfig<>(2))
         .toFlowable()
         .test()
         .assertResult(true);
@@ -384,7 +385,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
                             s.onNext(i);
                         }
                     }
-                }, 8)
+                }, new SequenceEqualConfig<>(8))
         .toFlowable()
         .test()
         .assertFailure(MissingBackpressureException.class);
@@ -401,7 +402,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
                             s.onError(new TestException("First"));
                             s.onError(new TestException("Second"));
                         }
-                    }, 8)
+                    }, new SequenceEqualConfig<>(8))
             .toFlowable()
             .to(TestHelper.<Boolean>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
@@ -473,7 +474,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
                             s.onNext(i);
                         }
                     }
-                }, 8)
+                }, new SequenceEqualConfig<>(8))
         .test()
         .assertFailure(MissingBackpressureException.class);
     }
@@ -489,7 +490,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
                             s.onError(new TestException("First"));
                             s.onError(new TestException("Second"));
                         }
-                    }, 8)
+                    }, new SequenceEqualConfig<>(8))
             .to(TestHelper.<Boolean>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 

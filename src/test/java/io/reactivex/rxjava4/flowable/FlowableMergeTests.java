@@ -65,7 +65,7 @@ public class FlowableMergeTests extends RxJavaTest {
         Flowable<Movie> f1 = Flowable.just(new HorrorMovie(), new Movie());
         Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 
-        List<Media> values = Flowable.merge(f1, f2).toList().blockingGet();
+        List<Media> values = Flowable.mergeArray(f1, f2).toList().blockingGet();
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);
@@ -83,7 +83,7 @@ public class FlowableMergeTests extends RxJavaTest {
 
         Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 
-        List<Media> values = Flowable.merge(f1, f2).toList().blockingGet();
+        List<Media> values = Flowable.mergeArray(f1, f2).toList().blockingGet();
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);

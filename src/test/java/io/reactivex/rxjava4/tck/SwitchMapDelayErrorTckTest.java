@@ -13,10 +13,12 @@
 
 package io.reactivex.rxjava4.tck;
 
-import static java.util.concurrent.Flow.*;
+import java.util.concurrent.Flow.Publisher;
+
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.internal.functions.Functions;
 
 @Test
@@ -25,8 +27,8 @@ public class SwitchMapDelayErrorTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createFlowPublisher(long elements) {
         return
-            Flowable.just(1).switchMapDelayError(Functions.justFunction(
-                    Flowable.fromIterable(iterate(elements)))
+            Flowable.just(1).switchMap(Functions.justFunction(
+                    Flowable.fromIterable(iterate(elements))), StandardBufferedConfig.DELAY_ERRORS
             )
         ;
     }

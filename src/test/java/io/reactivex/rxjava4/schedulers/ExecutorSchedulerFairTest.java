@@ -23,8 +23,9 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.schedulers.RxThreadFactory;
@@ -375,9 +376,9 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = pp
-            .publish((Function<Flowable<Integer>, Flowable<Integer>>) v -> Flowable.merge(
-                    v.filter(w -> w % 2 == 0).observeOn(sch, false, 1).hide(),
-                    v.filter(w -> w % 2 != 0).observeOn(sch, false, 1).hide()
+            .publish((Function<Flowable<Integer>, Flowable<Integer>>) v -> Flowable.mergeArray(
+                    v.filter(w -> w % 2 == 0).observeOn(sch, new StandardBufferedConfig(false, 1)).hide(),
+                    v.filter(w -> w % 2 != 0).observeOn(sch, new StandardBufferedConfig(false, 1)).hide()
             ))
             .test();
 
@@ -403,7 +404,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = pp
-            .publish((Function<Flowable<Integer>, Flowable<Integer>>) v -> Flowable.merge(
+            .publish((Function<Flowable<Integer>, Flowable<Integer>>) v -> Flowable.mergeArray(
                     v.filter(w -> w % 2 == 0).delay(0, TimeUnit.SECONDS, sch).hide(),
                     v.filter(w -> w % 2 != 0).delay(0, TimeUnit.SECONDS, sch).hide()
             ))

@@ -220,7 +220,8 @@ public abstract class Completable implements CompletableSource {
             return wrap(sources[0]);
         }
         if (config.delayErrors()) {
-            return Flowable.fromArray(sources).concatMapCompletableDelayError(Functions.identity(), true, config.bufferSize());
+            return Flowable.fromArray(sources)
+                    .concatMapCompletable(Functions.identity(), config);
         }
         return RxJavaPlugins.onAssembly(new CompletableConcatArray(sources));
 
@@ -283,7 +284,6 @@ public abstract class Completable implements CompletableSource {
      * @param config the operatar configuration record
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @since 4.0.0
      */
     @CheckReturnValue
@@ -295,7 +295,8 @@ public abstract class Completable implements CompletableSource {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
         if (config.delayErrors()) {
-            return Flowable.fromPublisher(sources).concatMapCompletableDelayError(Functions.identity(), true, config.bufferSize());
+            return Flowable.fromPublisher(sources)
+                    .concatMapCompletable(Functions.identity(), config);
         }
         return RxJavaPlugins.onAssembly(new CompletableConcat(sources, config.bufferSize()));
     }
@@ -321,7 +322,8 @@ public abstract class Completable implements CompletableSource {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(config, "config is null");
         if (config.delayErrors()) {
-            return Flowable.fromIterable(sources).concatMapCompletableDelayError(Functions.identity(), true, config.bufferSize());
+            return Flowable.fromIterable(sources)
+                    .concatMapCompletable(Functions.identity(), config);
         }
         return RxJavaPlugins.onAssembly(new CompletableConcatIterable(sources));
     }
@@ -870,7 +872,6 @@ public abstract class Completable implements CompletableSource {
      * @param config the configuration record for this operator
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is less than 1
      * @since 4.0.0
      */
     @CheckReturnValue
@@ -898,6 +899,7 @@ public abstract class Completable implements CompletableSource {
      * @param config the configuration record for this operator
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @NonNull

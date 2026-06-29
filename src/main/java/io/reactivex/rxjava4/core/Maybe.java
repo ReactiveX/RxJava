@@ -234,7 +234,6 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
      * @param sources the {@code Publisher} of {@code MaybeSource} instances
      * @param config the configuration record for this operator
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
-     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @return the new {@code Flowable} instance
      * @since 4.0.0
      */
@@ -521,7 +520,6 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
      * @param config the configuration record for this operator
      * @return the new {@code Flowable} instance with the specified concatenation behavior
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
      * @since 4.0.0
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1135,7 +1133,6 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
      * @param config the configuration record for this operator
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code sources} or {@code config} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
      * @since 4.0.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2684,32 +2681,6 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @NonNull
     public final Maybe<T> delay(long time, @NonNull TimeUnit unit) {
         return delay(time, unit, Schedulers.computation(), false);
-    }
-
-    /**
-     * Returns a {@code Maybe} that signals the events emitted by the current {@code Maybe} shifted forward in time by a
-     * specified delay.
-     * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.delay.tb.png" alt="">
-     * <dl>
-     *   <dt><b>Scheduler:</b></dt>
-     *   <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param time the delay to shift the source by
-     * @param unit the {@link TimeUnit} in which {@code time} is defined
-     * @param delayError if {@code true}, both success and error signals are delayed. if {@code false}, only success signals are delayed.
-     * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code unit} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
-     * @see #delay(long, TimeUnit, Scheduler, boolean)
-     * @since 3.0.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    @NonNull
-    public final Maybe<T> delay(long time, @NonNull TimeUnit unit, boolean delayError) {
-        return delay(time, unit, Schedulers.computation(), delayError);
     }
 
     /**

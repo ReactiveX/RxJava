@@ -14,16 +14,18 @@
 package io.reactivex.rxjava4.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 
 import org.junit.*;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.processors.PublishProcessor;
@@ -45,7 +47,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six"));
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
 
-        Flowable<String> m = Flowable.mergeDelayError(f1, f2);
+        Flowable<String> m = Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS, f1, f2);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
@@ -69,7 +71,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null));
         final Flowable<String> f4 = Flowable.unsafeCreate(new TestErrorFlowable("nine"));
 
-        Flowable<String> m = Flowable.mergeDelayError(f1, f2, f3, f4);
+        Flowable<String> m = Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS, f1, f2, f3, f4);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, times(1)).onError(any(CompositeException.class));
@@ -94,7 +96,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null));
         final Flowable<String> f4 = Flowable.unsafeCreate(new TestErrorFlowable("nine"));
 
-        Flowable<String> m = Flowable.mergeDelayError(f1, f2, f3, f4);
+        Flowable<String> m = Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS, f1, f2, f3, f4);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
@@ -117,7 +119,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight"));
         final Flowable<String> f4 = Flowable.unsafeCreate(new TestErrorFlowable("nine", null));
 
-        Flowable<String> m = Flowable.mergeDelayError(f1, f2, f3, f4);
+        Flowable<String> m = Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS, f1, f2, f3, f4);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
@@ -141,7 +143,10 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         // throw the error at the very end so no onComplete will be called after it
         final TestAsyncErrorFlowable f4 = new TestAsyncErrorFlowable("nine", null);
 
-        Flowable<String> m = Flowable.mergeDelayError(Flowable.unsafeCreate(f1), Flowable.unsafeCreate(f2), Flowable.unsafeCreate(f3), Flowable.unsafeCreate(f4));
+        Flowable<String> m = Flowable.mergeArray(
+                StandardConcurrentBufferedConfig.DELAY_ERRORS,
+                Flowable.unsafeCreate(f1), Flowable.unsafeCreate(f2),
+                Flowable.unsafeCreate(f3), Flowable.unsafeCreate(f4));
         m.subscribe(stringSubscriber);
 
         try {
@@ -172,7 +177,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six"));
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", null));
 
-        Flowable<String> m = Flowable.mergeDelayError(f1, f2);
+        Flowable<String> m = Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS, f1, f2);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, times(1)).onError(any(Throwable.class));
@@ -193,7 +198,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six"));
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", null));
 
-        Flowable<String> m = Flowable.mergeDelayError(f1, f2);
+        Flowable<String> m = Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS, f1, f2);
         CaptureObserver w = new CaptureObserver();
         m.subscribe(w);
 
@@ -230,7 +235,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
             subscriber.onNext(f2);
             subscriber.onComplete();
         });
-        Flowable<String> m = Flowable.mergeDelayError(flowableOfFlowables);
+        Flowable<String> m = Flowable.merge(flowableOfFlowables, StandardConcurrentBufferedConfig.DELAY_ERRORS);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, never()).onError(any(Throwable.class));
@@ -243,7 +248,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
-        Flowable<String> m = Flowable.mergeDelayError(f1, f2);
+        Flowable<String> m = Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS, f1, f2);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, never()).onError(any(Throwable.class));
@@ -259,7 +264,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         listOfFlowables.add(f1);
         listOfFlowables.add(f2);
 
-        Flowable<String> m = Flowable.mergeDelayError(Flowable.fromIterable(listOfFlowables));
+        Flowable<String> m = Flowable.merge(Flowable.fromIterable(listOfFlowables), StandardConcurrentBufferedConfig.DELAY_ERRORS);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, never()).onError(any(Throwable.class));
@@ -272,7 +277,8 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final TestASynchronousFlowable f1 = new TestASynchronousFlowable();
         final TestASynchronousFlowable f2 = new TestASynchronousFlowable();
 
-        Flowable<String> m = Flowable.mergeDelayError(Flowable.unsafeCreate(f1), Flowable.unsafeCreate(f2));
+        Flowable<String> m = Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS,
+                Flowable.unsafeCreate(f1), Flowable.unsafeCreate(f2));
         m.subscribe(stringSubscriber);
 
         try {
@@ -292,7 +298,8 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<Flowable<String>> f1 = Flowable.error(new RuntimeException("unit test"));
 
         final CountDownLatch latch = new CountDownLatch(1);
-        Flowable.mergeDelayError(f1).subscribe(new DefaultSubscriber<>() /* NFI */ {
+        Flowable.merge(f1, StandardConcurrentBufferedConfig.DELAY_ERRORS)
+        .subscribe(new DefaultSubscriber<>() /* NFI */ {
             @Override
             public void onComplete() {
                 fail("Expected onError path");
@@ -427,9 +434,10 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
     @Test
     public void errorInParentFlowable() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
-        Flowable.mergeDelayError(
+        Flowable.merge(
                 Flowable.just(Flowable.just(1), Flowable.just(2))
-                        .startWithItem(Flowable.<Integer> error(new RuntimeException()))
+                        .startWithItem(Flowable.<Integer> error(new RuntimeException())),
+                        StandardConcurrentBufferedConfig.DELAY_ERRORS
                 ).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertTerminated();
@@ -453,7 +461,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
             stringSubscriber = TestHelper.mockSubscriber();
 
             TestSubscriberEx<String> ts = new TestSubscriberEx<>(stringSubscriber);
-            Flowable<String> m = Flowable.mergeDelayError(parentFlowable);
+            Flowable<String> m = Flowable.merge(parentFlowable, StandardConcurrentBufferedConfig.DELAY_ERRORS);
             m.subscribe(ts);
             System.out.println("testErrorInParentFlowableDelayed | " + i);
             ts.awaitDone(2000, TimeUnit.MILLISECONDS);
@@ -487,10 +495,10 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
     @Test
     public void delayErrorMaxConcurrent() {
         final List<Long> requests = new ArrayList<>();
-        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(
+        Flowable<Integer> source = Flowable.merge(Flowable.just(
                 Flowable.just(1).hide(),
                 Flowable.<Integer>error(new TestException()))
-                .doOnRequest(requests::add), 1);
+                .doOnRequest(requests::add), new StandardConcurrentBufferedConfig(ErrorMode.END, 1));
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
@@ -511,7 +519,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         listOfFlowables.add(f1);
         listOfFlowables.add(f2);
 
-        Flowable<String> m = Flowable.mergeDelayError(listOfFlowables);
+        Flowable<String> m = Flowable.merge(listOfFlowables, StandardConcurrentBufferedConfig.DELAY_ERRORS);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, never()).onError(any(Throwable.class));
@@ -526,7 +534,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        Flowable.mergeDelayError(Arrays.asList(pp1, pp2), 1).subscribe(ts);
+        Flowable.merge(Arrays.asList(pp1, pp2), new StandardConcurrentBufferedConfig(ErrorMode.END, 1)).subscribe(ts);
 
         assertTrue("ps1 has no subscribers?!", pp1.hasSubscribers());
         assertFalse("ps2 has subscribers?!", pp2.hasSubscribers());
@@ -552,7 +560,8 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        Flowable.mergeDelayError(Arrays.asList(pp1, pp2), 1).subscribe(ts);
+        Flowable.merge(Arrays.asList(pp1, pp2), new StandardConcurrentBufferedConfig(ErrorMode.END, 1))
+        .subscribe(ts);
 
         assertTrue("ps1 has no subscribers?!", pp1.hasSubscribers());
         assertFalse("ps2 has subscribers?!", pp2.hasSubscribers());
@@ -591,7 +600,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
                 expected[j] = 1;
             }
 
-            Flowable.mergeArrayDelayError(sources)
+            Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS, sources)
             .test()
             .assertResult(expected);
         }
@@ -599,77 +608,82 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void mergeArrayDelayError() {
-        Flowable.mergeArrayDelayError(Flowable.just(1), Flowable.just(2))
+        Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS, Flowable.just(1), Flowable.just(2))
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void mergeIterableDelayErrorWithError() {
-        Flowable.mergeDelayError(
+        Flowable.merge(
                 Arrays.asList(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
-                Flowable.just(2)))
+                Flowable.just(2)), StandardConcurrentBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void mergeDelayError() {
-        Flowable.mergeDelayError(
+        Flowable.merge(
                 Flowable.just(Flowable.just(1),
-                Flowable.just(2)))
+                Flowable.just(2)),
+                StandardConcurrentBufferedConfig.DELAY_ERRORS
+            )
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void mergeDelayErrorWithError() {
-        Flowable.mergeDelayError(
+        Flowable.merge(
                 Flowable.just(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
-                Flowable.just(2)))
+                Flowable.just(2)),
+                StandardConcurrentBufferedConfig.DELAY_ERRORS
+        )
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void mergeDelayErrorMaxConcurrency() {
-        Flowable.mergeDelayError(
+        Flowable.merge(
                 Flowable.just(Flowable.just(1),
-                Flowable.just(2)), 1)
+                Flowable.just(2)), new StandardConcurrentBufferedConfig(ErrorMode.END, 1))
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void mergeDelayErrorWithErrorMaxConcurrency() {
-        Flowable.mergeDelayError(
+        Flowable.merge(
                 Flowable.just(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
-                Flowable.just(2)), 1)
+                Flowable.just(2)), new StandardConcurrentBufferedConfig(ErrorMode.END, 1))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void mergeIterableDelayErrorMaxConcurrency() {
-        Flowable.mergeDelayError(
+        Flowable.merge(
                 Arrays.asList(Flowable.just(1),
-                Flowable.just(2)), 1)
+                Flowable.just(2)), new StandardConcurrentBufferedConfig(ErrorMode.END, 1))
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void mergeIterableDelayErrorWithErrorMaxConcurrency() {
-        Flowable.mergeDelayError(
+        Flowable.merge(
                 Arrays.asList(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
-                Flowable.just(2)), 1)
+                Flowable.just(2)), new StandardConcurrentBufferedConfig(ErrorMode.END, 1))
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
 
     @Test
     public void mergeDelayError3() {
-        Flowable.mergeDelayError(
+        Flowable.mergeArray(
+                StandardConcurrentBufferedConfig.DELAY_ERRORS,
                 Flowable.just(1),
                 Flowable.just(2),
                 Flowable.just(3)
@@ -680,7 +694,8 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void mergeDelayError3WithError() {
-        Flowable.mergeDelayError(
+        Flowable.mergeArray(
+                StandardConcurrentBufferedConfig.DELAY_ERRORS,
                 Flowable.just(1),
                 Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException())),
                 Flowable.just(3)
@@ -691,7 +706,8 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void mergeIterableDelayError() {
-        Flowable.mergeDelayError(Arrays.asList(Flowable.just(1), Flowable.just(2)))
+        Flowable.merge(Arrays.asList(Flowable.just(1), Flowable.just(2)),
+                StandardConcurrentBufferedConfig.DELAY_ERRORS)
         .test()
         .assertResult(1, 2);
     }

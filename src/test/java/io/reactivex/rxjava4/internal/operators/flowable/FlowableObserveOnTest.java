@@ -19,25 +19,24 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.operators.flowable.FlowableObserveOn.BaseObserveOnSubscriber;
 import io.reactivex.rxjava4.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.observers.TestObserver;
-import io.reactivex.rxjava4.operators.QueueFuseable;
-import io.reactivex.rxjava4.operators.QueueSubscription;
-import io.reactivex.rxjava4.operators.SimpleQueue;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.*;
 import io.reactivex.rxjava4.schedulers.*;
@@ -707,7 +706,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
-        source.observeOn(s, true).subscribe(ts);
+        source.observeOn(s, new StandardBufferedConfig(true)).subscribe(ts);
 
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -741,7 +740,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        source.observeOn(Schedulers.computation(), true).subscribe(ts);
+        source.observeOn(Schedulers.computation(), new StandardBufferedConfig(true))
+        .subscribe(ts);
 
         ts.awaitDone(2, TimeUnit.SECONDS);
         ts.assertValues(1, 2, 3);
@@ -782,7 +782,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         Flowable.range(1, 100)
         .doOnRequest(requests::add)
-        .observeOn(test, false, 16).subscribe(ts);
+        .observeOn(test, new StandardBufferedConfig(false, 16))
+        .subscribe(ts);
 
         test.advanceTimeBy(1, TimeUnit.SECONDS);
         ts.request(20);
@@ -806,7 +807,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         for (int i = 1; i <= 1024; i = i * 2) {
             TestSubscriber<Integer> ts = TestSubscriber.create();
 
-            Flowable.range(1, 1000 * 1000).observeOn(Schedulers.computation(), false, i)
+            Flowable.range(1, 1000 * 1000).observeOn(Schedulers.computation(), new StandardBufferedConfig(false, i))
             .subscribe(ts);
 
             ts.awaitDone(5, TimeUnit.SECONDS);
@@ -847,7 +848,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     @Test
     public void delayError() {
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
-        .observeOn(Schedulers.computation(), true)
+        .observeOn(Schedulers.computation(), new StandardBufferedConfig(true))
         .doOnNext(v -> {
             if (v == 1) {
                 Thread.sleep(100);
@@ -1083,7 +1084,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void inputAsyncFusedErrorDelayed() {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        TestSubscriber<Integer> ts = up.observeOn(Schedulers.single(), true).test();
+        TestSubscriber<Integer> ts = up.observeOn(Schedulers.single(), new StandardBufferedConfig(true))
+                .test();
 
         up.onError(new TestException());
 
@@ -1144,7 +1146,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        up.observeOn(Schedulers.single(), true)
+        up.observeOn(Schedulers.single(), new StandardBufferedConfig(true))
         .subscribe(ts);
 
         up.onError(new TestException());

@@ -20,13 +20,14 @@ import static org.mockito.Mockito.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -1180,7 +1181,8 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
 
-        TestSubscriberEx<Object> ts = Flowable.zip(source1, source2, (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true)
+        TestSubscriberEx<Object> ts = Flowable.zip(source1, source2,
+                (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, new StandardBufferedConfig(true))
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class, "11", "22");
 
@@ -1198,7 +1200,8 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
 
-        TestSubscriberEx<Object> ts = Flowable.zip(source1, source2, (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true, 1)
+        TestSubscriberEx<Object> ts = Flowable.zip(source1, source2,
+                (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, new StandardBufferedConfig(true, 1))
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class, "11", "22");
 
@@ -1212,7 +1215,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void zip2Prefetch() {
         Flowable.zip(Flowable.range(1, 9),
                 Flowable.range(21, 9),
-                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, false, 2
+                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, new StandardBufferedConfig(false, 2)
         )
         .takeLast(1)
         .test()
@@ -1221,7 +1224,9 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void zipArrayEmpty() {
-        assertSame(Flowable.empty(), Flowable.zipArray(Functions.<Object[]>identity(), false, 16));
+        assertSame(Flowable.empty(), Flowable.zipArray(
+                new Publisher<?>[0],
+                Functions.<Object[]>identity(), new StandardBufferedConfig(false, 16)));
     }
 
     @Test
@@ -1374,7 +1379,7 @@ public class FlowableZipTest extends RxJavaTest {
         PublishProcessor<Object> pp1 = PublishProcessor.create();
         PublishProcessor<Object> pp2 = PublishProcessor.create();
 
-        TestSubscriberEx<Object> ts = Flowable.zip(pp1, pp2, (a, _) -> a, true)
+        TestSubscriberEx<Object> ts = Flowable.zip(pp1, pp2, (a, _) -> a, new StandardBufferedConfig(true))
         .to(TestHelper.<Object>testConsumer());
 
         pp1.onError(new TestException("First"));
@@ -1412,7 +1417,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void fusedInputThrowsDelayError() {
         Flowable.zip(Flowable.just(1).map(_ -> {
             throw new TestException();
-        }), Flowable.just(2), Integer::sum, true)
+        }), Flowable.just(2), Integer::sum, new StandardBufferedConfig(true))
         .test()
         .assertFailure(TestException.class);
     }
@@ -1430,7 +1435,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void fusedInputThrowsDelayErrorBackpressured() {
         Flowable.zip(Flowable.just(1).map(_ -> {
             throw new TestException();
-        }), Flowable.just(2), Integer::sum, true)
+        }), Flowable.just(2), Integer::sum, new StandardBufferedConfig(true))
         .test(0L)
         .assertFailure(TestException.class);
     }
@@ -1563,7 +1568,7 @@ public class FlowableZipTest extends RxJavaTest {
                 Flowable.just(1)
                 .<Integer>map(_ -> { throw new TestException(); })
                 .compose(TestHelper.flowableStripBoundary()),
-                        Integer::sum, true
+                        Integer::sum, new StandardBufferedConfig(true)
         )
         .test()
         .assertFailure(TestException.class);
@@ -1576,7 +1581,7 @@ public class FlowableZipTest extends RxJavaTest {
                 Flowable.just(1)
                 .<Integer>map(_ -> { throw new TestException(); })
                 .compose(TestHelper.flowableStripBoundary()),
-                        Integer::sum, true
+                        Integer::sum, new StandardBufferedConfig(true)
         )
         .test(0L)
         .assertFailure(TestException.class);

@@ -83,7 +83,7 @@ public class OperatorMergePerf {
     public void mergeTwoAsyncStreamsOfN(final InputThousand input) throws InterruptedException {
         PerfSubscriber o = input.newLatchedObserver();
         Flowable<Integer> ob = Flowable.range(0, input.size).subscribeOn(Schedulers.computation());
-        Flowable.merge(ob, ob).subscribe(o);
+        Flowable.mergeArray(ob, ob).subscribe(o);
         if (input.size == 1) {
             while (o.latch.getCount() != 0) { }
         } else {
