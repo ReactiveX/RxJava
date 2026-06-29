@@ -10011,7 +10011,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * downstream to consume the items at its own place.
      * If {@code unbounded} is {@code true}, the resulting {@code Flowable} will signal a
      * {@link MissingBackpressureException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
-     * items, canceling the flow and calling the {@code onOverflow} action.
+     * items, canceling the flow and calling the {@code onDropped} action.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.v3.png" alt="">
      * <dl>
@@ -10044,13 +10044,13 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * The resulting {@code Flowable} will behave as determined by {@code overflowStrategy} if the buffer capacity is exceeded:
      * <ul>
      *     <li>{@link BackpressureOverflowStrategy#ERROR} (default) will call {@code onError} dropping all undelivered items,
-     *     canceling the source, and notifying the producer with {@code onOverflow}. </li>
+     *     canceling the source, and notifying the producer with {@code onDropped}. </li>
      *     <li>{@link BackpressureOverflowStrategy#DROP_LATEST} will drop any new items emitted by the producer while
-     *     the buffer is full, without generating any {@code onError}.  Each drop will, however, invoke {@code onOverflow}
+     *     the buffer is full, without generating any {@code onError}.  Each drop will, however, invoke {@code onDropped}
      *     to signal the overflow to the producer.</li>
      *     <li>{@link BackpressureOverflowStrategy#DROP_OLDEST} will drop the oldest items in the buffer in order to make
      *     room for newly emitted ones. Overflow will not generate an {@code onError}, but each drop will invoke
-     *     {@code onOverflow} to signal the overflow to the producer.</li>
+     *     {@code onDropped} to signal the overflow to the producer.</li>
      * </ul>
      *
      * <p>
@@ -10066,7 +10066,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @param capacity number of slots available in the buffer.
      * @param overflowStrategy how should the resulting {@code Flowable} react to buffer overflows, {@code null} is not allowed.
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code onOverflow} or {@code overflowStrategy} is {@code null}
+     * @throws NullPointerException if {@code overflowStrategy} is {@code null}
      * @throws IllegalArgumentException if {@code capacity} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @since 4.0.0
@@ -10087,13 +10087,13 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * The resulting {@code Flowable} will behave as determined by {@code overflowStrategy} if the buffer capacity is exceeded:
      * <ul>
      *     <li>{@link BackpressureOverflowStrategy#ERROR} (default) will call {@code onError} dropping all undelivered items,
-     *     canceling the source, and notifying the producer with {@code onOverflow}. </li>
+     *     canceling the source, and notifying the producer with {@code onDropped}. </li>
      *     <li>{@link BackpressureOverflowStrategy#DROP_LATEST} will drop any new items emitted by the producer while
-     *     the buffer is full, without generating any {@code onError}.  Each drop will, however, invoke {@code onOverflow}
+     *     the buffer is full, without generating any {@code onError}.  Each drop will, however, invoke {@code onDropped}
      *     to signal the overflow to the producer.</li>
      *     <li>{@link BackpressureOverflowStrategy#DROP_OLDEST} will drop the oldest items in the buffer in order to make
      *     room for newly emitted ones. Overflow will not generate an {@code onError}, but each drop will invoke
-     *     {@code onOverflow} to signal the overflow to the producer.</li>
+     *     {@code onDropped} to signal the overflow to the producer.</li>
      * </ul>
      *
      * <p>
@@ -10110,7 +10110,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @param overflowStrategy how should the resulting {@code Flowable} react to buffer overflows, {@code null} is not allowed.
      * @param onDropped the {@link Consumer} to be called with the item that could not be buffered due to capacity constraints.
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code onOverflow}, {@code overflowStrategy} or {@code onDropped} is {@code null}
+     * @throws NullPointerException if {@code overflowStrategy} or {@code onDropped} is {@code null}
      * @throws IllegalArgumentException if {@code capacity} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @since 4.0.0
