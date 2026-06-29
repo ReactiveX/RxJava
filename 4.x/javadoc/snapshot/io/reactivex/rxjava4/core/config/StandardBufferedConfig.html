@@ -176,25 +176,25 @@ initTheme();
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(boolean)" class="member-name-link">StandardBufferedConfig</a><wbr>(boolean&nbsp;delayErrors)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Constructs a configuration record with convenience for the basic no-delay/delay error management.</div>
+<div class="block">Sets the error mode to IMMEDIATE (false) or END (true) and the bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(boolean,int)" class="member-name-link">StandardBufferedConfig</a><wbr>(boolean&nbsp;delayErrors,
  int&nbsp;bufferSize)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode to IMMEDIATE (false) or END (true) and the bufferSize to the provided value.</div>
 </div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">StandardBufferedConfig</a><wbr>(int&nbsp;bufferSize)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode to IMMEDIATE and the bufferSize to the provided value.</div>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode)" class="member-name-link">StandardBufferedConfig</a><wbr>(<a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&nbsp;errorMode)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode to the provided value and the bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a></div>
 </div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode,int)" class="member-name-link">StandardBufferedConfig</a><wbr>(<a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&nbsp;errorMode,
  int&nbsp;bufferSize)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode and the bufferSize to the provided values.</div>
 </div>
 </div>
 </section>
@@ -325,7 +325,7 @@ initTheme();
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StandardBufferedConfig</span><wbr><span class="parameters">(<a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&nbsp;errorMode)</span></div>
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode to the provided value and the bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>errorMode</code> - how to handle when errors appear from the inner or outer sources</dd>
@@ -338,7 +338,7 @@ initTheme();
 <h3>StandardBufferedConfig</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StandardBufferedConfig</span><wbr><span class="parameters">(boolean&nbsp;delayErrors)</span></div>
-<div class="block">Constructs a configuration record with convenience for the basic no-delay/delay error management.</div>
+<div class="block">Sets the error mode to IMMEDIATE (false) or END (true) and the bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>delayErrors</code> - if true, ErrorMode.END is used, ErrorMode.IMMEDIATE otherwise</dd>
@@ -351,7 +351,7 @@ initTheme();
 <h3>StandardBufferedConfig</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StandardBufferedConfig</span><wbr><span class="parameters">(int&nbsp;bufferSize)</span></div>
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode to IMMEDIATE and the bufferSize to the provided value.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>bufferSize</code> - the expected number of outer sources to buffer while processing an inner source</dd>
@@ -365,7 +365,7 @@ initTheme();
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StandardBufferedConfig</span><wbr><span class="parameters">(boolean&nbsp;delayErrors,
  int&nbsp;bufferSize)</span></div>
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode to IMMEDIATE (false) or END (true) and the bufferSize to the provided value.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>delayErrors</code> - if true, ErrorMode.END is used, ErrorMode.IMMEDIATE otherwise</dd>
@@ -381,7 +381,7 @@ initTheme();
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StandardBufferedConfig</span><wbr><span class="parameters">(<a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&nbsp;errorMode,
  int&nbsp;bufferSize)</span></div>
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode and the bufferSize to the provided values.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>errorMode</code> - how to handle when errors appear from the inner or outer sources</dd>

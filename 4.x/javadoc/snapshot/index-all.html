@@ -1081,9 +1081,9 @@ specified boundary <a href="https://docs.oracle.com/en/java/javase/26/docs/api/j
 <dd>
 <div class="block">Buffers <em>all</em> <code>onNext</code> values until the downstream consumes it.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">SequenceEqualConfig</a></dt>
 <dd>
-<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/SequenceEqualConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></dt>
 <dd>
@@ -1183,6 +1183,10 @@ that can throw.</div>
 <dt><a href="io/reactivex/rxjava4/core/VirtualEmitter.html#canceller()" class="member-name-link">canceller()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter</a></dt>
 <dd>
 <div class="block">Returns a disposable container to relay cancellation notifications while awaiting the run.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#capacity()" class="member-name-link">capacity()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#param-capacity"><code>capacity</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#cast(java.lang.Class)" class="member-name-link">cast(Class)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -1790,7 +1794,7 @@ runs a limited number of the inner sources at once.</div>
 <dd>
 <div class="block">Concatenates a sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s eagerly into a single stream of values.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatEager(java.lang.Iterable,int,int)" class="member-name-link">concatEager(Iterable, int, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatEager(java.lang.Iterable,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">concatEager(Iterable, StandardConcurrentBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Concatenates a sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s eagerly into a single stream of values and
 runs a limited number of inner sequences at once.</div>
@@ -1817,32 +1821,10 @@ runs a limited number of those inner <code>SingleSource</code>s at once.</div>
 <dd>
 <div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <code>Publisher</code>s eagerly into a single stream of values.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatEager(java.util.concurrent.Flow.Publisher,int,int)" class="member-name-link">concatEager(Flow.Publisher, int, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatEager(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">concatEager(Flow.Publisher, StandardConcurrentBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <code>Publisher</code>s eagerly into a single stream of values and
 runs a limited number of inner sequences at once.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatEagerDelayError(java.lang.Iterable)" class="member-name-link">concatEagerDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Concatenates a sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s eagerly into a single stream of values,
-delaying errors until all the inner sequences terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatEagerDelayError(java.lang.Iterable,int,int)" class="member-name-link">concatEagerDelayError(Iterable, int, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Concatenates a sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s eagerly into a single stream of values,
-delaying errors until all the inner sequences terminate and runs a limited number
-of inner sequences at once.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatEagerDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">concatEagerDelayError(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <code>Publisher</code>s eagerly into a single stream of values,
-delaying errors until all the inner and the outer sequences terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatEagerDelayError(java.util.concurrent.Flow.Publisher,int,int)" class="member-name-link">concatEagerDelayError(Flow.Publisher, int, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Concatenates a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequence of <code>Publisher</code>s eagerly into a single stream of values,
-delaying errors until all the inner and outer sequences terminate and runs a limited number of inner
-sequences at once.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#concatMap(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMap(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -1920,7 +1902,7 @@ order and waits until the upstream and all <code>CompletableSource</code>s compl
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a> that completes based on applying a specified function to the item emitted by the
 current <code>Single</code>, where that function returns a <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapCompletable(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">concatMapCompletable(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapCompletable(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">concatMapCompletable(Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s and subscribes to them one after the
 other completes.</div>
@@ -1929,24 +1911,6 @@ other completes.</div>
 <dd>
 <div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s, subscribes to them one at a time in
 order and waits until the upstream and all <code>CompletableSource</code>s complete.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapCompletableDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">concatMapCompletableDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s and subscribes to them one after the
-other terminates, delaying all errors till both this <code>Flowable</code> and all
-inner <code>CompletableSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapCompletableDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapCompletableDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s and subscribes to them one after the
-other terminates, optionally delaying all errors till both this <code>Flowable</code> and all
-inner <code>CompletableSource</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#concatMapCompletableDelayError(io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">concatMapCompletableDelayError(Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Maps the upstream items into <a href="io/reactivex/rxjava4/core/CompletableSource.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableSource</code></a>s and subscribes to them one after the
-other terminates, optionally delaying all errors till both this <code>Flowable</code> and all
-inner <code>CompletableSource</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#concatMapDelayError(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">concatMapDelayError(Function, boolean)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -2541,14 +2505,22 @@ denoted by an item emission or completion from a generated inner <a href="io/rea
 <div class="block">Returns a <code>Flowable</code> that mirrors the current <code>Flowable</code>, except that it drops items emitted by the
 current <code>Flowable</code> that are followed by another item within a computed debounce duration.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
 <dd>
-<div class="block">The default configuration with bufferSize of Observable.bufferSize() and a default Objects.equals predicate.</div>
+<div class="block">The default settings with no error delay, unbounded, no onOverflow or onDropped activity.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
 <dd>
 <div class="block">Default configuration: Available CPU parallelism, tracking on, normal thread priority
 <code>RxParallelScheduler</code> naming and no custom <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link"><code>ThreadFactory</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SampleConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SampleConfig.html" title="class in io.reactivex.rxjava4.core.config">SampleConfig</a></dt>
+<dd>
+<div class="block">Default configuration with no emit last and an empty onDropped consumer.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">SequenceEqualConfig</a></dt>
+<dd>
+<div class="block">The default configuration with bufferSize of Observable.bufferSize() and a default Objects.equals predicate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></dt>
 <dd>
@@ -2645,25 +2617,6 @@ specified delay.</div>
 <dd>
 <div class="block">Delays the emission of the success signal from the current <code>Single</code> by the specified amount.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#delay(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">delay(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the items emitted by the current <code>Flowable</code> shifted forward in time by a
-specified delay.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Maybe.html#delay(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">delay(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
-<dd>
-<div class="block">Returns a <code>Maybe</code> that signals the events emitted by the current <code>Maybe</code> shifted forward in time by a
-specified delay.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#delay(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">delay(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits the items emitted by the current <code>Observable</code> shifted forward in time by a
-specified delay.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Single.html#delay(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">delay(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
-<dd>
-<div class="block">Delays the emission of the success or error signal from the current <code>Single</code> by the specified amount.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#delay(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">delay(long, TimeUnit, Scheduler)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a <code>Completable</code> which delays the emission of the completion event by the given time while
@@ -2759,6 +2712,10 @@ per-item basis.</div>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentConfig.html#DELAY_ERRORS_BOUNDARY" class="member-name-link">DELAY_ERRORS_BOUNDARY</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardConcurrentConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentConfig</a></dt>
 <dd>
 <div class="block">The default configuration with error delay at the boundary and Flowable#bufferSize() as the maximum concurrency and buffer size setting.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#param-delayError"><code>delayError</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html#delayErrors()" class="member-name-link">delayErrors()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></dt>
 <dd>
@@ -3428,6 +3385,14 @@ or signals a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.ba
 <dd>
 <div class="block">Signal the next item</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SampleConfig.html#EMIT_LAST" class="member-name-link">EMIT_LAST</a> - Static variable in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SampleConfig.html" title="class in io.reactivex.rxjava4.core.config">SampleConfig</a></dt>
+<dd>
+<div class="block">Default configuration with emit last setting and an empty onDropped consumer.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SampleConfig.html#emitLast()" class="member-name-link">emitLast()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SampleConfig.html" title="class in io.reactivex.rxjava4.core.config">SampleConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/SampleConfig.html#param-emitLast"><code>emitLast</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Emitter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">Emitter&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
 <div class="block">Base interface for emitting signals in a push-fashion in various generator-like source
@@ -3460,11 +3425,19 @@ immediately.</div>
 <dd>
 <div class="block">Report the error after all sources terminated.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SampleConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SampleConfig.html" title="class in io.reactivex.rxjava4.core.config">SampleConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">SequenceEqualConfig</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
@@ -4865,7 +4838,7 @@ grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" t
 <div class="block">Groups the items emitted by the current <code>Observable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.html" title="class in io.reactivex.rxjava4.observables"><code>GroupedObservable</code></a>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#groupBy(io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">groupBy(Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">groupBy(Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables"><code>GroupedFlowable</code></a>s.</div>
@@ -4880,17 +4853,7 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables"><code>GroupedFlowable</code></a>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,boolean)" class="member-name-link">groupBy(Function, Function, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
-grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables"><code>GroupedFlowable</code></a>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">groupBy(Function, Function, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
-grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables"><code>GroupedFlowable</code></a>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,boolean,int,io.reactivex.rxjava4.functions.Function)" class="member-name-link">groupBy(Function, Function, boolean, int, Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">groupBy(Function, Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables"><code>GroupedFlowable</code></a>s.</div>
@@ -4899,6 +4862,11 @@ grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" t
 <dd>
 <div class="block">Groups the items emitted by the current <code>Observable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.html" title="class in io.reactivex.rxjava4.observables"><code>GroupedObservable</code></a>s.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">groupBy(Function, Function, Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
+grouped items as <a href="io/reactivex/rxjava4/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava4.flowables"><code>GroupedFlowable</code></a>s.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function)" class="member-name-link">groupBy(Function, Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
@@ -4974,11 +4942,19 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <dd>
 <div class="block">Returns <code>true</code> or <code>false</code> if a custom <code>onError</code> consumer has been provided.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SampleConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SampleConfig.html" title="class in io.reactivex.rxjava4.core.config">SampleConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">SequenceEqualConfig</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
@@ -5494,9 +5470,9 @@ or a successful <a href="io/reactivex/rxjava4/core/SingleEmitter.html#tryOnError
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/operators/SpscLinkedArrayQueue.html#isEmpty()" class="member-name-link">isEmpty()</a> - Method in class io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava4.operators">SpscLinkedArrayQueue</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#isEqual()" class="member-name-link">isEqual()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html#isEqual()" class="member-name-link">isEqual()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">SequenceEqualConfig</a></dt>
 <dd>
-<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#param-isEqual"><code>isEqual</code></a> record component.</div>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/SequenceEqualConfig.html#param-isEqual"><code>isEqual</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#isFailOnNonBlockingScheduler()" class="member-name-link">isFailOnNonBlockingScheduler()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
@@ -5983,27 +5959,10 @@ running all <code>SingleSource</code>s at once and delaying any error(s) until a
 <dd>
 <div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, without any transformation.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#merge(java.lang.Iterable,int)" class="member-name-link">merge(Iterable, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#merge(java.lang.Iterable,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">merge(Iterable, StandardConcurrentBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, without any transformation, while limiting the
 number of concurrent subscriptions to these <code>Publisher</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#merge(java.lang.Iterable,int,int)" class="member-name-link">merge(Iterable, int, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, without any transformation, while limiting the
-number of concurrent subscriptions to these <code>Publisher</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#merge(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher)" class="member-name-link">merge(Flow.Publisher, Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens two <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into a single <code>Publisher</code>, without any transformation.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#merge(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher)" class="member-name-link">merge(Flow.Publisher, Flow.Publisher, Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens three <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into a single <code>Publisher</code>, without any transformation.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#merge(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher)" class="member-name-link">merge(Flow.Publisher, Flow.Publisher, Flow.Publisher, Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens four <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into a single <code>Publisher</code>, without any transformation.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#merge(java.util.concurrent.Flow.Publisher)" class="member-name-link">merge(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -6040,16 +5999,11 @@ running all <code>SingleSource</code>s at once and delaying any error(s) until a
 <div class="block">Flattens a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> that emits <code>Publisher</code>s into a single <code>Publisher</code> that emits the items emitted by
 thos <code>Publisher</code>s , without any transformation.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#merge(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">merge(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#merge(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig)" class="member-name-link">merge(Flow.Publisher, StandardConcurrentBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Flattens a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> that emits <code>Publisher</code>s into a single <code>Publisher</code> that emits the items emitted by
 those <code>Publisher</code>s, without any transformation, while limiting the maximum number of concurrent
 subscriptions to these <code>Publisher</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeArray(int,int,java.util.concurrent.Flow.Publisher...)" class="member-name-link">mergeArray(int, int, Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, without any transformation, while limiting the
-number of concurrent subscriptions to these <code>Publisher</code>s.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#mergeArray(io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">mergeArray(CompletableSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -6064,6 +6018,11 @@ completes only when all source <a href="io/reactivex/rxjava4/core/CompletableSou
 <dd>
 <div class="block">Flattens an array of <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, without any transformation, while limiting the
 number of concurrent subscriptions to these <code>ObservableSource</code>s.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeArray(io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig,java.util.concurrent.Flow.Publisher...)" class="member-name-link">mergeArray(StandardConcurrentBufferedConfig, Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Flattens an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, without any transformation, while limiting the
+number of concurrent subscriptions to these <code>Publisher</code>s.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#mergeArray(io.reactivex.rxjava4.core.config.StandardConcurrentConfig,io.reactivex.rxjava4.core.CompletableSource...)" class="member-name-link">mergeArray(StandardConcurrentConfig, CompletableSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -6096,67 +6055,6 @@ running all <code>SingleSource</code>s at once.</div>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeArray(java.util.concurrent.Flow.Publisher...)" class="member-name-link">mergeArray(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Flattens an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, without any transformation.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeArrayDelayError(int,int,java.util.concurrent.Flow.Publisher...)" class="member-name-link">mergeArrayDelayError(int, int, Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
-successfully emitted items from each of the source <code>Publisher</code>s without being interrupted by an error
-notification from one of them, while limiting the number of concurrent subscriptions to these <code>Publisher</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeArrayDelayError(java.util.concurrent.Flow.Publisher...)" class="member-name-link">mergeArrayDelayError(Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens an array of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Flowable</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
-successfully emitted items from each of the source <code>Publisher</code>s without being interrupted by an error
-notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeDelayError(java.lang.Iterable)" class="member-name-link">mergeDelayError(Iterable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
-successfully emitted items from each of the source <code>Publisher</code>s without being interrupted by an error
-notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeDelayError(java.lang.Iterable,int)" class="member-name-link">mergeDelayError(Iterable, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
-successfully emitted items from each of the source <code>Publisher</code>s without being interrupted by an error
-notification from one of them, while limiting the number of concurrent subscriptions to these <code>Publisher</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeDelayError(java.lang.Iterable,int,int)" class="member-name-link">mergeDelayError(Iterable, int, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
-successfully emitted items from each of the source <code>Publisher</code>s without being interrupted by an error
-notification from one of them, while limiting the number of concurrent subscriptions to these <code>Publisher</code>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeDelayError(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher)" class="member-name-link">mergeDelayError(Flow.Publisher, Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens two <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
-successfully emitted items from each of the source <code>Publisher</code>s without being interrupted by an error
-notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeDelayError(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher)" class="member-name-link">mergeDelayError(Flow.Publisher, Flow.Publisher, Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens three <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
-successfully emitted items from all of the source <code>Publisher</code>s without being interrupted by an error
-notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeDelayError(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher)" class="member-name-link">mergeDelayError(Flow.Publisher, Flow.Publisher, Flow.Publisher, Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens four <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to receive all
-successfully emitted items from all of the source <code>Publisher</code>s without being interrupted by an error
-notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">mergeDelayError(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> that emits <code>Publisher</code>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to
-receive all successfully emitted items from all of the source <code>Publisher</code>s without being interrupted by
-an error notification from one of them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#mergeDelayError(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">mergeDelayError(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Flattens a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> that emits <code>Publisher</code>s into one <code>Publisher</code>, in a way that allows a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to
-receive all successfully emitted items from all of the source <code>Publisher</code>s without being interrupted by
-an error notification from one of them, while limiting the
-number of concurrent subscriptions to these <code>Publisher</code>s.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#mergeWith(io.reactivex.rxjava4.core.CompletableSource)" class="member-name-link">mergeWith(CompletableSource)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -6361,22 +6259,6 @@ events in a cancellation-safe manner.</div>
 <dd>
 <div class="block">Interface to map/wrap a downstream <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to an upstream <code>Observer</code>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig&lt;T&gt;</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
-<dd>
-<div class="block">Configuration record for Observable.sequenceEqual() operators.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#%3Cinit%3E(int)" class="member-name-link">ObservableSequenceEqualConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig</a></dt>
-<dd>
-<div class="block">Constructs a configuration record.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#%3Cinit%3E(int,io.reactivex.rxjava4.functions.BiPredicate)" class="member-name-link">ObservableSequenceEqualConfig(int, BiPredicate)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig</a></dt>
-<dd>
-<div class="block">Constructs a configuration record.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#%3Cinit%3E(io.reactivex.rxjava4.functions.BiPredicate)" class="member-name-link">ObservableSequenceEqualConfig(BiPredicate)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig</a></dt>
-<dd>
-<div class="block">Constructs a configuration record.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/ObservableSource.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">ObservableSource&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
 <div class="block">Represents a basic, non-backpressured <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> source base interface,
@@ -6410,12 +6292,7 @@ asynchronously with an unbounded buffer with <a href="io/reactivex/rxjava4/core/
 <div class="block">Signals the success item or the terminal signals of the current <code>Single</code> on the specified <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>,
 asynchronously.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#observeOn(io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">observeOn(Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Signals the items and terminal signals of the current <code>Flowable</code> on the specified <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>,
-asynchronously with a bounded buffer and optionally delays <code>onError</code> notifications.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#observeOn(io.reactivex.rxjava4.core.Scheduler,boolean,int)" class="member-name-link">observeOn(Scheduler, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#observeOn(io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">observeOn(Scheduler, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Signals the items and terminal signals of the current <code>Flowable</code> on the specified <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>,
 asynchronously with a bounded buffer of configurable size and optionally delays <code>onError</code> notifications.</div>
@@ -6519,56 +6396,62 @@ is an instance of the supplied <a href="https://docs.oracle.com/en/java/javase/2
 <div class="block">Buffers an unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
 downstream to consume the items at its own place.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(boolean)" class="member-name-link">onBackpressureBuffer(boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Buffers an unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
-downstream to consume the items at its own place, optionally delaying an error until all buffered items have been consumed.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(int)" class="member-name-link">onBackpressureBuffer(int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Buffers an limited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
-downstream to consume the items at its own place, however, the resulting <code>Flowable</code> will signal a
-<a href="io/reactivex/rxjava4/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava4.exceptions"><code>MissingBackpressureException</code></a> via <code>onError</code> as soon as the buffer's capacity is exceeded, dropping all undelivered
-items, and canceling the flow.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(int,boolean)" class="member-name-link">onBackpressureBuffer(int, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Buffers an limited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
-downstream to consume the items at its own place, however, the resulting <code>Flowable</code> will signal a
-<a href="io/reactivex/rxjava4/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava4.exceptions"><code>MissingBackpressureException</code></a> via <code>onError</code> as soon as the buffer's capacity is exceeded, dropping all undelivered
-items, and canceling the flow.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(int,boolean,boolean)" class="member-name-link">onBackpressureBuffer(int, boolean, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(long,io.reactivex.rxjava4.core.BackpressureOverflowStrategy)" class="member-name-link">onBackpressureBuffer(long, BackpressureOverflowStrategy)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Buffers an optionally unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
 downstream to consume the items at its own place.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(int,boolean,boolean,io.reactivex.rxjava4.functions.Action)" class="member-name-link">onBackpressureBuffer(int, boolean, boolean, Action)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(long,io.reactivex.rxjava4.core.BackpressureOverflowStrategy,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">onBackpressureBuffer(long, BackpressureOverflowStrategy, Consumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Buffers an optionally unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
 downstream to consume the items at its own place.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(int,boolean,boolean,io.reactivex.rxjava4.functions.Action,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">onBackpressureBuffer(int, boolean, boolean, Action, Consumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(io.reactivex.rxjava4.core.config.OnBackpressureBufferConfig)" class="member-name-link">onBackpressureBuffer(OnBackpressureBufferConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Buffers an optionally unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
 downstream to consume the items at its own place.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(int,io.reactivex.rxjava4.functions.Action)" class="member-name-link">onBackpressureBuffer(int, Action)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig&lt;T&gt;</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
 <dd>
-<div class="block">Buffers an limited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
-downstream to consume the items at its own place, however, the resulting <code>Flowable</code> will signal a
-<a href="io/reactivex/rxjava4/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava4.exceptions"><code>MissingBackpressureException</code></a> via <code>onError</code> as soon as the buffer's capacity is exceeded, dropping all undelivered
-items, canceling the flow and calling the <code>onOverflow</code> action.</div>
+<div class="block">Configuration record for onBackpressureBuffer() operators.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(long,io.reactivex.rxjava4.functions.Action,io.reactivex.rxjava4.core.BackpressureOverflowStrategy)" class="member-name-link">onBackpressureBuffer(long, Action, BackpressureOverflowStrategy)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#%3Cinit%3E(boolean)" class="member-name-link">OnBackpressureBufferConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
 <dd>
-<div class="block">Buffers an optionally unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
-downstream to consume the items at its own place.</div>
+<div class="block">Creates a config with the given error delay mode, capacity of <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>,
+bounded, and no callback.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureBuffer(long,io.reactivex.rxjava4.functions.Action,io.reactivex.rxjava4.core.BackpressureOverflowStrategy,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">onBackpressureBuffer(long, Action, BackpressureOverflowStrategy, Consumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#%3Cinit%3E(boolean,boolean)" class="member-name-link">OnBackpressureBufferConfig(boolean, boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
 <dd>
-<div class="block">Buffers an optionally unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
-downstream to consume the items at its own place.</div>
+<div class="block">Creates a config with the given error delay mode, given boundedneess,
+capacity of <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> and no callback.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#%3Cinit%3E(int)" class="member-name-link">OnBackpressureBufferConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
+<dd>
+<div class="block">Creates a config with the given capacity, no error delay, bounded, no callbacks.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#%3Cinit%3E(int,boolean)" class="member-name-link">OnBackpressureBufferConfig(int, boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
+<dd>
+<div class="block">Creates a config with the given capacity, given error delay mode,
+bounded, and no callback.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#%3Cinit%3E(int,boolean,boolean)" class="member-name-link">OnBackpressureBufferConfig(int, boolean, boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
+<dd>
+<div class="block">Creates a config with the given capacity, error delay mode and unboundedness,
+and no callback.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#%3Cinit%3E(int,boolean,boolean,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">OnBackpressureBufferConfig(int, boolean, boolean, Consumer)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
+<dd>
+<div class="block">Creates a config with all the provided values.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#%3Cinit%3E(int,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">OnBackpressureBufferConfig(int, Consumer)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
+<dd>
+<div class="block">Creates a config with the given capacity, given onDropped callback
+no error delay, bounded, and no callback.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#%3Cinit%3E(io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">OnBackpressureBufferConfig(Consumer)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
+<dd>
+<div class="block">Creates a config with the given onDropped callback, capacity of <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>,
+no error delay, bounded, and no callback.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#onBackpressureDrop()" class="member-name-link">onBackpressureDrop()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -6680,6 +6563,14 @@ should not block but throw an IllegalArgumentException.</div>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#onComputationScheduler(io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">onComputationScheduler(Scheduler)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Calls the associated hook function.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#onDropped()" class="member-name-link">onDropped()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#param-onDropped"><code>onDropped</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SampleConfig.html#onDropped()" class="member-name-link">onDropped()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SampleConfig.html" title="class in io.reactivex.rxjava4.core.config">SampleConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/SampleConfig.html#param-onDropped"><code>onDropped</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/CompletableEmitter.html#onError(java.lang.Throwable)" class="member-name-link">onError(Throwable)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/CompletableEmitter.html" title="interface in io.reactivex.rxjava4.core">CompletableEmitter</a></dt>
 <dd>
@@ -8207,16 +8098,6 @@ within periodic time intervals.</div>
 <div class="block">Returns an <code>Observable</code> that emits the most recently emitted item (if any) emitted by the current <code>Observable</code>
 within periodic time intervals.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#sample(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">sample(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the most recently emitted item (if any) emitted by the current <code>Flowable</code>
-within periodic time intervals and optionally emit the very last upstream item when the upstream completes.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#sample(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">sample(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits the most recently emitted item (if any) emitted by the current <code>Observable</code>
-within periodic time intervals and optionally emit the very last upstream item when the upstream completes.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#sample(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">sample(long, TimeUnit, Scheduler)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits the most recently emitted item (if any) emitted by the current <code>Flowable</code>
@@ -8227,25 +8108,13 @@ within periodic time intervals, where the intervals are defined on a particular 
 <div class="block">Returns an <code>Observable</code> that emits the most recently emitted item (if any) emitted by the current <code>Observable</code>
 within periodic time intervals, where the intervals are defined on a particular <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#sample(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">sample(long, TimeUnit, Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#sample(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.SampleConfig)" class="member-name-link">sample(long, TimeUnit, Scheduler, SampleConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits the most recently emitted item (if any) emitted by the current <code>Flowable</code>
 within periodic time intervals, where the intervals are defined on a particular <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>
 and optionally emit the very last upstream item when the upstream completes.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#sample(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">sample(long, TimeUnit, Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits the most recently emitted item (if any) emitted by the current <code>Observable</code>
-within periodic time intervals, where the intervals are defined on a particular <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>
- and optionally emit the very last upstream item when the upstream completes.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#sample(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">sample(long, TimeUnit, Scheduler, boolean, Consumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the most recently emitted item (if any) emitted by the current <code>Flowable</code>
-within periodic time intervals, where the intervals are defined on a particular <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>
-and optionally emit the very last upstream item when the upstream completes.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#sample(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">sample(long, TimeUnit, Scheduler, boolean, Consumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#sample(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.SampleConfig)" class="member-name-link">sample(long, TimeUnit, Scheduler, SampleConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the most recently emitted item (if any) emitted by the current <code>Observable</code>
 within periodic time intervals, where the intervals are defined on a particular <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
@@ -8275,6 +8144,22 @@ emission from the <code>sampler</code> <code>Publisher</code>.</div>
 emits the most recently emitted item (if any) emitted by the current <code>Flowable</code> since the previous
 emission from the <code>sampler</code> <code>Publisher</code>
 and optionally emit the very last upstream item when the upstream or other <code>Publisher</code> complete.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SampleConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">SampleConfig&lt;T&gt;</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record for the timed sample() operator.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SampleConfig.html#%3Cinit%3E(boolean)" class="member-name-link">SampleConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SampleConfig.html" title="class in io.reactivex.rxjava4.core.config">SampleConfig</a></dt>
+<dd>
+<div class="block">Creates a config with the given emit last option ad an empty onDropped callback.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SampleConfig.html#%3Cinit%3E(boolean,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">SampleConfig(boolean, Consumer)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SampleConfig.html" title="class in io.reactivex.rxjava4.core.config">SampleConfig</a></dt>
+<dd>
+<div class="block">Creates a config with the given parameters.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SampleConfig.html#%3Cinit%3E(io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">SampleConfig(Consumer)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SampleConfig.html" title="class in io.reactivex.rxjava4.core.config">SampleConfig</a></dt>
+<dd>
+<div class="block">Creates a config with the given onDropped callback and an no-emit last.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/operators/ScalarSupplier.html" class="type-name-link" title="interface in io.reactivex.rxjava4.operators">ScalarSupplier&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/operators/package-summary.html">io.reactivex.rxjava4.operators</a></dt>
 <dd>
@@ -8393,7 +8278,7 @@ equality function.</div>
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link"><code>Boolean</code></a> value that indicates whether two <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a> sequences are the
 same by comparing the items emitted by each <code>ObservableSource</code> pairwise.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#sequenceEqual(io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.config.ObservableSequenceEqualConfig)" class="member-name-link">sequenceEqual(ObservableSource, ObservableSource, ObservableSequenceEqualConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#sequenceEqual(io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.core.config.SequenceEqualConfig)" class="member-name-link">sequenceEqual(ObservableSource, ObservableSource, SequenceEqualConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link"><code>Boolean</code></a> value that indicates whether two <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a> sequences are the
 same by comparing the items emitted by each <code>ObservableSource</code> pairwise based on the results of a specified
@@ -8408,22 +8293,27 @@ equality function.</div>
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link"><code>Boolean</code></a> value that indicates whether two <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequences are the
 same by comparing the items emitted by each <code>Publisher</code> pairwise.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#sequenceEqual(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,int)" class="member-name-link">sequenceEqual(Flow.Publisher, Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link"><code>Boolean</code></a> value that indicates whether two <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequences are the
-same by comparing the items emitted by each <code>Publisher</code> pairwise.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#sequenceEqual(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.functions.BiPredicate)" class="member-name-link">sequenceEqual(Flow.Publisher, Flow.Publisher, BiPredicate)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#sequenceEqual(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.SequenceEqualConfig)" class="member-name-link">sequenceEqual(Flow.Publisher, Flow.Publisher, SequenceEqualConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link"><code>Boolean</code></a> value that indicates whether two <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequences are the
 same by comparing the items emitted by each <code>Publisher</code> pairwise based on the results of a specified
 equality function.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#sequenceEqual(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.functions.BiPredicate,int)" class="member-name-link">sequenceEqual(Flow.Publisher, Flow.Publisher, BiPredicate, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">SequenceEqualConfig&lt;T&gt;</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link"><code>Boolean</code></a> value that indicates whether two <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> sequences are the
-same by comparing the items emitted by each <code>Publisher</code> pairwise based on the results of a specified
-equality function.</div>
+<div class="block">Configuration record for sequenceEqual() operators.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html#%3Cinit%3E(int)" class="member-name-link">SequenceEqualConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">SequenceEqualConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html#%3Cinit%3E(int,io.reactivex.rxjava4.functions.BiPredicate)" class="member-name-link">SequenceEqualConfig(int, BiPredicate)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">SequenceEqualConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html#%3Cinit%3E(io.reactivex.rxjava4.functions.BiPredicate)" class="member-name-link">SequenceEqualConfig(BiPredicate)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">SequenceEqualConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration record.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#sequential()" class="member-name-link">sequential()</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -8909,16 +8799,6 @@ before the source completes.</div>
 <div class="block">Returns an <code>Observable</code> that drops items emitted by the current <code>Observable</code> during a specified time window
 before the source completes.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#skipLast(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">skipLast(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that drops items emitted by the current <code>Flowable</code> during a specified time window
-before the source completes.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#skipLast(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">skipLast(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that drops items emitted by the current <code>Observable</code> during a specified time window
-before the source completes.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#skipLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">skipLast(long, TimeUnit, Scheduler)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that drops items emitted by the current <code>Flowable</code> during a specified time window
@@ -8929,22 +8809,12 @@ before the source completes.</div>
 <div class="block">Returns an <code>Observable</code> that drops items emitted by the current <code>Observable</code> during a specified time window
 (defined on a specified scheduler) before the source completes.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#skipLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">skipLast(long, TimeUnit, Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#skipLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">skipLast(long, TimeUnit, Scheduler, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that drops items emitted by the current <code>Flowable</code> during a specified time window
 (defined on a specified scheduler) before the source completes.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#skipLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">skipLast(long, TimeUnit, Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that drops items emitted by the current <code>Observable</code> during a specified time window
-(defined on a specified scheduler) before the source completes.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#skipLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean,int)" class="member-name-link">skipLast(long, TimeUnit, Scheduler, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that drops items emitted by the current <code>Flowable</code> during a specified time window
-(defined on a specified scheduler) before the source completes.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#skipLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean,int)" class="member-name-link">skipLast(long, TimeUnit, Scheduler, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#skipLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">skipLast(long, TimeUnit, Scheduler, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that drops items emitted by the current <code>Observable</code> during a specified time window
 (defined on a specified scheduler) before the source completes.</div>
@@ -9032,23 +8902,23 @@ island size rounded up to the next power of 2.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html#%3Cinit%3E(boolean)" class="member-name-link">StandardBufferedConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></dt>
 <dd>
-<div class="block">Constructs a configuration record with convenience for the basic no-delay/delay error management.</div>
+<div class="block">Sets the error mode to IMMEDIATE (false) or END (true) and the bufferSize to <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html#%3Cinit%3E(boolean,int)" class="member-name-link">StandardBufferedConfig(boolean, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></dt>
 <dd>
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode to IMMEDIATE (false) or END (true) and the bufferSize to the provided value.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html#%3Cinit%3E(int)" class="member-name-link">StandardBufferedConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></dt>
 <dd>
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode to IMMEDIATE and the bufferSize to the provided value.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode)" class="member-name-link">StandardBufferedConfig(ErrorMode)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></dt>
 <dd>
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode to the provided value and the bufferSize to <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a></div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode,int)" class="member-name-link">StandardBufferedConfig(ErrorMode, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardBufferedConfig</a></dt>
 <dd>
-<div class="block">Constructs a configuration record.</div>
+<div class="block">Sets the error mode and the bufferSize to the provided values.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
 <dd>
@@ -9057,19 +8927,23 @@ amounts and buffer/prefetch sizes.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html#%3Cinit%3E(boolean)" class="member-name-link">StandardConcurrentBufferedConfig(boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a></dt>
 <dd>
-<div class="block">Optionally delay error, <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+and bufferSize to <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html#%3Cinit%3E(boolean,int)" class="member-name-link">StandardConcurrentBufferedConfig(boolean, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a></dt>
 <dd>
-<div class="block">Optionally delays errors and sets the buffer size too.</div>
+<div class="block">Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+to the provided value and bufferSize to <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html#%3Cinit%3E(boolean,int,int)" class="member-name-link">StandardConcurrentBufferedConfig(boolean, int, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a></dt>
 <dd>
-<div class="block">Optionally delay error, <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+to the provided value and bufferSize to the provided value too.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html#%3Cinit%3E(int)" class="member-name-link">StandardConcurrentBufferedConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a></dt>
 <dd>
-<div class="block">Optionally set the buffer size, no delay errors.</div>
+<div class="block">Sets the error mode to IMMEDIATE, the maxConcurrency to the provided value
+and bufferSize to <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode,int,int)" class="member-name-link">StandardConcurrentBufferedConfig(ErrorMode, int, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a></dt>
 <dd>
@@ -9077,11 +8951,13 @@ amounts and buffer/prefetch sizes.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode)" class="member-name-link">StandardConcurrentBufferedConfig(ErrorMode)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a></dt>
 <dd>
-<div class="block">Optionally delay error, <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided value, the maxConcurrency
+and bufferSize to <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode,int)" class="member-name-link">StandardConcurrentBufferedConfig(ErrorMode, int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardConcurrentBufferedConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentBufferedConfig</a></dt>
 <dd>
-<div class="block">Optionally delay error, <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided value, the maxConcurrency to the provided value
+and bufferSize to <a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
 <dd>
@@ -9658,7 +9534,7 @@ of these <code>ObservableSource</code>s.</div>
 <code>Flowable</code> that returns a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, and then emitting the items emitted by the most recently emitted
 of these <code>Publisher</code>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchMap(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">switchMap(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">switchMap(Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a new <code>Flowable</code> by applying a function that you supply to each item emitted by the current
 <code>Flowable</code> that returns a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, and then emitting the items emitted by the most recently emitted
@@ -9689,18 +9565,6 @@ of them terminate.</div>
 disposing the subscription to the previous <code>CompletableSource</code>, thus keeping at most one
 active <code>CompletableSource</code> running and delaying any main or inner errors until all
 of them terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchMapDelayError(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapDelayError(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a new <code>Flowable</code> by applying a function that you supply to each item emitted by the current
-<code>Flowable</code> that returns a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, and then emitting the items emitted by the most recently emitted
-of these <code>Publisher</code>s and delays any error until all <code>Publisher</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchMapDelayError(io.reactivex.rxjava4.functions.Function,int)" class="member-name-link">switchMapDelayError(Function, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a new <code>Flowable</code> by applying a function that you supply to each item emitted by the current
-<code>Flowable</code> that returns a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, and then emitting the items emitted by the most recently emitted
-of these <code>Publisher</code>s and delays any error until all <code>Publisher</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchMapMaybe(io.reactivex.rxjava4.functions.Function)" class="member-name-link">switchMapMaybe(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -9763,7 +9627,7 @@ most recently emitted of those <code>ObservableSource</code>s.</div>
 <div class="block">Converts an <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a> that emits <code>ObservableSource</code>s into an <code>Observable</code> that emits the items emitted by the
 most recently emitted of those <code>ObservableSource</code>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchOnNext(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">switchOnNext(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchOnNext(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">switchOnNext(Flow.Publisher, StandardBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Converts a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> that emits <code>Publisher</code>s into a <code>Publisher</code> that emits the items emitted by the
 most recently emitted of those <code>Publisher</code>s.</div>
@@ -9811,16 +9675,6 @@ all of them until all terminate.</div>
 a new <code>SingleSource</code> is emitted, disposing the previously running <code>SingleSource</code>,
 exposing the success items as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence and delaying all errors from
 all of them until all terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchOnNextDelayError(java.util.concurrent.Flow.Publisher)" class="member-name-link">switchOnNextDelayError(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Converts a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> that emits <code>Publisher</code>s into a <code>Publisher</code> that emits the items emitted by the
-most recently emitted of those <code>Publisher</code>s and delays any exception until all <code>Publisher</code>s terminate.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#switchOnNextDelayError(java.util.concurrent.Flow.Publisher,int)" class="member-name-link">switchOnNextDelayError(Flow.Publisher, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Converts a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> that emits <code>Publisher</code>s into a <code>Publisher</code> that emits the items emitted by the
-most recently emitted of those <code>Publisher</code>s and delays any exception until all <code>Publisher</code>s terminate.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/operators/QueueFuseable.html#SYNC" class="member-name-link">SYNC</a> - Static variable in interface io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava4.operators">QueueFuseable</a></dt>
 <dd>
@@ -9892,13 +9746,13 @@ provided by a given <a href="io/reactivex/rxjava4/core/Scheduler.html" title="cl
 emitted in a specified window of time before the current <code>Observable</code> completed, where the timing information is
 provided by a given <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#takeLast(long,long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean,int)" class="member-name-link">takeLast(long, long, TimeUnit, Scheduler, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#takeLast(long,long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">takeLast(long, long, TimeUnit, Scheduler, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits at most a specified number of items from the current <code>Flowable</code> that were
 emitted in a specified window of time before the current <code>Flowable</code> completed, where the timing information is
 provided by a given <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#takeLast(long,long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean,int)" class="member-name-link">takeLast(long, long, TimeUnit, Scheduler, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#takeLast(long,long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">takeLast(long, long, TimeUnit, Scheduler, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits at most a specified number of items from the current <code>Observable</code> that were
 emitted in a specified window of time before the current <code>Observable</code> completed, where the timing information is
@@ -9910,16 +9764,6 @@ provided by a given <a href="io/reactivex/rxjava4/core/Scheduler.html" title="cl
 window of time before the current <code>Flowable</code> completed.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#takeLast(long,java.util.concurrent.TimeUnit)" class="member-name-link">takeLast(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits the items from the current <code>Observable</code> that were emitted in a specified
-window of time before the current <code>Observable</code> completed.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#takeLast(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">takeLast(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the items from the current <code>Flowable</code> that were emitted in a specified
-window of time before the current <code>Flowable</code> completed.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#takeLast(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">takeLast(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the items from the current <code>Observable</code> that were emitted in a specified
 window of time before the current <code>Observable</code> completed.</div>
@@ -9936,25 +9780,13 @@ window of time before the current <code>Flowable</code> completed, where the tim
 window of time before the current <code>Observable</code> completed, where the timing information is provided by a specified
 <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#takeLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">takeLast(long, TimeUnit, Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#takeLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">takeLast(long, TimeUnit, Scheduler, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits the items from the current <code>Flowable</code> that were emitted in a specified
 window of time before the current <code>Flowable</code> completed, where the timing information is provided by a specified
 <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#takeLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">takeLast(long, TimeUnit, Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits the items from the current <code>Observable</code> that were emitted in a specified
-window of time before the current <code>Observable</code> completed, where the timing information is provided by a specified
-<a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#takeLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean,int)" class="member-name-link">takeLast(long, TimeUnit, Scheduler, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the items from the current <code>Flowable</code> that were emitted in a specified
-window of time before the current <code>Flowable</code> completed, where the timing information is provided by a specified
-<a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#takeLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean,int)" class="member-name-link">takeLast(long, TimeUnit, Scheduler, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#takeLast(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">takeLast(long, TimeUnit, Scheduler, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the items from the current <code>Observable</code> that were emitted in a specified
 window of time before the current <code>Observable</code> completed, where the timing information is provided by a specified
@@ -10221,18 +10053,6 @@ the specified timeout elapses between them.</div>
 item from upstream, then periodically emitting the latest item (if any) when
 the specified timeout elapses between them.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#throttleLatest(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">throttleLatest(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Throttles items from the upstream <code>Flowable</code> by first emitting the next
-item from upstream, then periodically emitting the latest item (if any) when
-the specified timeout elapses between them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#throttleLatest(long,java.util.concurrent.TimeUnit,boolean)" class="member-name-link">throttleLatest(long, TimeUnit, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Throttles items from the current <code>Observable</code> by first emitting the next
-item from upstream, then periodically emitting the latest item (if any) when
-the specified timeout elapses between them.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#throttleLatest(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">throttleLatest(long, TimeUnit, Scheduler)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Throttles items from the upstream <code>Flowable</code> by first emitting the next
@@ -10245,25 +10065,13 @@ the specified timeout elapses between them.</div>
 item from upstream, then periodically emitting the latest item (if any) when
 the specified timeout elapses between them.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#throttleLatest(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">throttleLatest(long, TimeUnit, Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Throttles items from the upstream <code>Flowable</code> by first emitting the next
-item from upstream, then periodically emitting the latest item (if any) when
-the specified timeout elapses between them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#throttleLatest(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">throttleLatest(long, TimeUnit, Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Throttles items from the current <code>Observable</code> by first emitting the next
-item from upstream, then periodically emitting the latest item (if any) when
-the specified timeout elapses between them.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#throttleLatest(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">throttleLatest(long, TimeUnit, Scheduler, boolean, Consumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#throttleLatest(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.SampleConfig)" class="member-name-link">throttleLatest(long, TimeUnit, Scheduler, SampleConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Throttles items from the upstream <code>Flowable</code> by first emitting the next
 item from upstream, then periodically emitting the latest item (if any) when
 the specified timeout elapses between them, invoking the consumer for any dropped item.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#throttleLatest(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">throttleLatest(long, TimeUnit, Scheduler, boolean, Consumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#throttleLatest(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.config.SampleConfig)" class="member-name-link">throttleLatest(long, TimeUnit, Scheduler, SampleConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Throttles items from the current <code>Observable</code> by first emitting the next
 item from upstream, then periodically emitting the latest item (if any) when
@@ -11056,11 +10864,19 @@ transparently relaying signals between the two async representations of a sequen
 <div class="block">Converts this <code>Flowable</code> into a <a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core"><code>Streamable</code></a> instance,
 transparently relaying signals between the two async representations of a sequence.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SampleConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SampleConfig.html" title="class in io.reactivex.rxjava4.core.config">SampleConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">SequenceEqualConfig</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
@@ -11167,6 +10983,10 @@ if the emission is not allowed to happen due to lifecycle restrictions.</div>
 </dl>
 <h2 class="title" id="I:U">U</h2>
 <dl class="index">
+<dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#unbounded()" class="member-name-link">unbounded()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#param-unbounded"><code>unbounded</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/annotations/BackpressureKind.html#UNBOUNDED_IN" class="member-name-link">UNBOUNDED_IN</a> - Enum constant in enum class io.reactivex.rxjava4.annotations.<a href="io/reactivex/rxjava4/annotations/BackpressureKind.html" title="enum class in io.reactivex.rxjava4.annotations">BackpressureKind</a></dt>
 <dd>
 <div class="block">The operator requests <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html#MAX_VALUE" class="external-link"><code>Long.MAX_VALUE</code></a> from upstream but respects the backpressure
@@ -11808,12 +11628,12 @@ two other <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface
 <div class="block">Returns a <code>Maybe</code> that emits the results of a specified combiner function applied to combinations of
 items emitted, in sequence, by an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of other <a href="io/reactivex/rxjava4/core/MaybeSource.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeSource</code></a>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#zip(java.lang.Iterable,io.reactivex.rxjava4.core.config.StandardBufferedConfig,io.reactivex.rxjava4.functions.Function)" class="member-name-link">zip(Iterable, StandardBufferedConfig, Function)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#zip(java.lang.Iterable,io.reactivex.rxjava4.functions.Function)" class="member-name-link">zip(Iterable, Function)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the results of a specified combiner function applied to combinations of
 items emitted, in sequence, by an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of other <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#zip(java.lang.Iterable,io.reactivex.rxjava4.functions.Function)" class="member-name-link">zip(Iterable, Function)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#zip(java.lang.Iterable,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">zip(Iterable, Function, StandardBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the results of a specified combiner function applied to combinations of
 items emitted, in sequence, by an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of other <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s.</div>
@@ -11829,7 +11649,7 @@ to be emitted to the downstream.</div>
 <div class="block">Returns a <code>Flowable</code> that emits the results of a specified combiner function applied to combinations of
 items emitted, in sequence, by an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of other <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#zip(java.lang.Iterable,io.reactivex.rxjava4.functions.Function,boolean,int)" class="member-name-link">zip(Iterable, Function, boolean, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#zip(java.lang.Iterable,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">zip(Iterable, Function, StandardBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits the results of a specified combiner function applied to combinations of
 items emitted, in sequence, by an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> of other <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s.</div>
@@ -11839,12 +11659,7 @@ items emitted, in sequence, by an <a href="https://docs.oracle.com/en/java/javas
 <div class="block">Returns a <code>Flowable</code> that emits the results of a specified combiner function applied to combinations of
 two items emitted, in sequence, by two other <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#zip(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.functions.BiFunction,boolean)" class="member-name-link">zip(Flow.Publisher, Flow.Publisher, BiFunction, boolean)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the results of a specified combiner function applied to combinations of
-two items emitted, in sequence, by two other <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#zip(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.functions.BiFunction,boolean,int)" class="member-name-link">zip(Flow.Publisher, Flow.Publisher, BiFunction, boolean, int)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#zip(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.functions.BiFunction,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">zip(Flow.Publisher, Flow.Publisher, BiFunction, StandardBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits the results of a specified combiner function applied to combinations of
 two items emitted, in sequence, by two other <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s.</div>
@@ -11884,15 +11699,10 @@ eight items emitted, in sequence, by eight other <a href="https://docs.oracle.co
 <div class="block">Returns a <code>Flowable</code> that emits the results of a specified combiner function applied to combinations of
 nine items emitted, in sequence, by nine other <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#zipArray(io.reactivex.rxjava4.core.ObservableSource%5B%5D,io.reactivex.rxjava4.core.config.StandardBufferedConfig,io.reactivex.rxjava4.functions.Function)" class="member-name-link">zipArray(ObservableSource[], StandardBufferedConfig, Function)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#zipArray(io.reactivex.rxjava4.core.ObservableSource%5B%5D,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">zipArray(ObservableSource[], Function, StandardBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the results of a specified combiner function applied to combinations of
 items emitted, in sequence, by an array of other <a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableSource</code></a>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#zipArray(io.reactivex.rxjava4.functions.Function,boolean,int,java.util.concurrent.Flow.Publisher...)" class="member-name-link">zipArray(Function, boolean, int, Flow.Publisher...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits the results of a specified combiner function applied to combinations of
-items emitted, in sequence, by an array of other <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#zipArray(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.MaybeSource...)" class="member-name-link">zipArray(Function, MaybeSource...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -11904,6 +11714,11 @@ items emitted, in sequence, by an array of other <a href="io/reactivex/rxjava4/c
 <div class="block">Waits until all <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> sources provided via an array signal a success
 value and calls a zipper function with an array of these values to return a result
 to be emitted to downstream.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#zipArray(java.util.concurrent.Flow.Publisher%5B%5D,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">zipArray(Flow.Publisher[], Function, StandardBufferedConfig)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Returns a <code>Flowable</code> that emits the results of a specified combiner function applied to combinations of
+items emitted, in sequence, by an array of other <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#zipWith(io.reactivex.rxjava4.core.MaybeSource,io.reactivex.rxjava4.functions.BiFunction)" class="member-name-link">zipWith(MaybeSource, BiFunction)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -11940,12 +11755,7 @@ values, one each from the current <code>Observable</code> and a specified <a hre
 <div class="block">Returns a <code>Flowable</code> that emits items that are the result of applying a specified function to pairs of
 values, one each from the current <code>Flowable</code> and another specified <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#zipWith(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.functions.BiFunction,boolean)" class="member-name-link">zipWith(Flow.Publisher, BiFunction, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Returns a <code>Flowable</code> that emits items that are the result of applying a specified function to pairs of
-values, one each from the current <code>Flowable</code> and another specified <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#zipWith(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.functions.BiFunction,boolean,int)" class="member-name-link">zipWith(Flow.Publisher, BiFunction, boolean, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#zipWith(java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.functions.BiFunction,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">zipWith(Flow.Publisher, BiFunction, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits items that are the result of applying a specified function to pairs of
 values, one each from the current <code>Flowable</code> and another specified <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>.</div>

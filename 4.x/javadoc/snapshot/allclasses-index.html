@@ -472,22 +472,22 @@ events in a cancellation-safe manner.</div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to map/wrap a downstream <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to an upstream <code>Observer</code>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/ObservableSequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">ObservableSequenceEqualConfig&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
-<div class="block">Configuration record for Observable.sequenceEqual() operators.</div>
-</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Represents a basic, non-backpressured <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> source base interface,
 consumable via an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableTransformer.html" title="interface in io.reactivex.rxjava4.core">ObservableTransformer&lt;Upstream, Downstream&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/ObservableTransformer.html" title="interface in io.reactivex.rxjava4.core">ObservableTransformer&lt;Upstream, Downstream&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to compose <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a>s.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core">Observer&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core">Observer&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Provides a mechanism for receiving push-based notifications.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="block">Configuration record for onBackpressureBuffer() operators.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="io/reactivex/rxjava4/exceptions/OnErrorNotImplementedException.html" title="class in io.reactivex.rxjava4.exceptions">OnErrorNotImplementedException</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
@@ -598,15 +598,19 @@ subscription and associated resources.</div>
 <div class="block">Wraps another <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> and ensures all <code>onXXX</code> methods conform the protocol
 (except the requirement for serialized access).</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/ScalarSupplier.html" title="interface in io.reactivex.rxjava4.operators">ScalarSupplier&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/SampleConfig.html" title="class in io.reactivex.rxjava4.core.config">SampleConfig&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="block">Configuration record for the timed sample() operator.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/ScalarSupplier.html" title="interface in io.reactivex.rxjava4.operators">ScalarSupplier&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A marker interface indicating that a scalar, constant value
 is held by the implementing reactive type which can be
 safely extracted during assembly time can be used for
 optimization.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <code>Scheduler</code> is an object that specifies an API for scheduling
 units of work provided in the form of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link"><code>Runnable</code></a>s to be
 executed without delay (effectively as soon as possible), after a specified time delay or periodically
@@ -616,23 +620,27 @@ these units of work get executed by some underlying task-execution scheme
 with some uniform properties and guarantees regardless of the particular underlying
 scheme.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core">Scheduler.Worker</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core">Scheduler.Worker</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Represents an isolated, sequential worker of a parent Scheduler for executing <code>Runnable</code> tasks on
 an underlying task-execution scheme (such as custom Threads, event loop, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link"><code>Executor</code></a> or Actor system).</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/schedulers/SchedulerRunnableIntrospection.html" title="interface in io.reactivex.rxjava4.schedulers">SchedulerRunnableIntrospection</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/schedulers/SchedulerRunnableIntrospection.html" title="interface in io.reactivex.rxjava4.schedulers">SchedulerRunnableIntrospection</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface to indicate the implementor class wraps a <code>Runnable</code> that can
 be accessed via <a href="io/reactivex/rxjava4/schedulers/SchedulerRunnableIntrospection.html#getWrappedRunnable()"><code>SchedulerRunnableIntrospection.getWrappedRunnable()</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Static factory methods for returning standard <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instances.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab6"><a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">SchedulerSupport</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab6">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab6"><a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">SchedulerSupport</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab6">
 <div class="block">Indicates what kind of scheduler the class or method uses.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/config/SequenceEqualConfig.html" title="class in io.reactivex.rxjava4.core.config">SequenceEqualConfig&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="block">Configuration record for sequenceEqual() operators.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/disposables/SerialDisposable.html" title="class in io.reactivex.rxjava4.disposables">SerialDisposable</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">

@@ -1331,7 +1331,6 @@ terminates (normally or with an error) and disposes all other <code>Completable<
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
 <dt>Since:</dt>
 <dd>4.0.0</dd>
 </dl>
@@ -2092,7 +2091,6 @@ completes only when all source <a href="CompletableSource.html" title="interface
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>maxConcurrency</code> is less than 1</dd>
 <dt>Since:</dt>
 <dd>4.0.0</dd>
 </dl>
@@ -2127,6 +2125,8 @@ them terminate in a way or another.
 <dd>the new <code>Completable</code> instance</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>sources</code> or <code>config</code> is <code>null</code></dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
 </dl>
 </div>
 </section>

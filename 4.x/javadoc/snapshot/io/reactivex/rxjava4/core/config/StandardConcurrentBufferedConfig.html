@@ -186,22 +186,26 @@ TODO once value classes are available, make this a record class.</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(boolean)" class="member-name-link">StandardConcurrentBufferedConfig</a><wbr>(boolean&nbsp;delayErrors)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Optionally delay error, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+and bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(boolean,int)" class="member-name-link">StandardConcurrentBufferedConfig</a><wbr>(boolean&nbsp;delayErrors,
  int&nbsp;maxConcurrency)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Optionally delays errors and sets the buffer size too.</div>
+<div class="block">Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+to the provided value and bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(boolean,int,int)" class="member-name-link">StandardConcurrentBufferedConfig</a><wbr>(boolean&nbsp;delayErrors,
  int&nbsp;maxConcurrency,
  int&nbsp;bufferSize)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Optionally delay error, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+to the provided value and bufferSize to the provided value too.</div>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">StandardConcurrentBufferedConfig</a><wbr>(int&nbsp;maxConcurrency)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Optionally set the buffer size, no delay errors.</div>
+<div class="block">Sets the error mode to IMMEDIATE, the maxConcurrency to the provided value
+and bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode,int,int)" class="member-name-link">StandardConcurrentBufferedConfig</a><wbr>(<a href="../../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&nbsp;errorMode,
  int&nbsp;maxConcurrency,
@@ -211,12 +215,14 @@ TODO once value classes are available, make this a record class.</div>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode)" class="member-name-link">StandardConcurrentBufferedConfig</a><wbr>(<a href="../ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&nbsp;errorMode)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Optionally delay error, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided value, the maxConcurrency
+and bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.reactivex.rxjava4.core.ErrorMode,int)" class="member-name-link">StandardConcurrentBufferedConfig</a><wbr>(<a href="../ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&nbsp;errorMode,
  int&nbsp;maxConcurrency)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Optionally delay error, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided value, the maxConcurrency to the provided value
+and bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 </div>
 </div>
 </section>
@@ -351,7 +357,8 @@ TODO once value classes are available, make this a record class.</div>
 <h3>StandardConcurrentBufferedConfig</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StandardConcurrentBufferedConfig</span><wbr><span class="parameters">(boolean&nbsp;delayErrors)</span></div>
-<div class="block">Optionally delay error, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+and bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>delayErrors</code> - should the error be delayed?</dd>
@@ -364,7 +371,8 @@ TODO once value classes are available, make this a record class.</div>
 <h3>StandardConcurrentBufferedConfig</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StandardConcurrentBufferedConfig</span><wbr><span class="parameters">(<a href="../ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&nbsp;errorMode)</span></div>
-<div class="block">Optionally delay error, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided value, the maxConcurrency
+and bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>errorMode</code> - how to handle when errors appear from the inner or outer sources</dd>
@@ -377,7 +385,8 @@ TODO once value classes are available, make this a record class.</div>
 <h3>StandardConcurrentBufferedConfig</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StandardConcurrentBufferedConfig</span><wbr><span class="parameters">(int&nbsp;maxConcurrency)</span></div>
-<div class="block">Optionally set the buffer size, no delay errors.</div>
+<div class="block">Sets the error mode to IMMEDIATE, the maxConcurrency to the provided value
+and bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>maxConcurrency</code> - the maximum number of concurrent flows</dd>
@@ -391,7 +400,8 @@ TODO once value classes are available, make this a record class.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StandardConcurrentBufferedConfig</span><wbr><span class="parameters">(boolean&nbsp;delayErrors,
  int&nbsp;maxConcurrency)</span></div>
-<div class="block">Optionally delays errors and sets the buffer size too.</div>
+<div class="block">Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+to the provided value and bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>delayErrors</code> - should the errors be delayed?</dd>
@@ -406,7 +416,8 @@ TODO once value classes are available, make this a record class.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StandardConcurrentBufferedConfig</span><wbr><span class="parameters">(<a href="../ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a>&nbsp;errorMode,
  int&nbsp;maxConcurrency)</span></div>
-<div class="block">Optionally delay error, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided value, the maxConcurrency to the provided value
+and bufferSize to <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>errorMode</code> - how to handle when errors appear from the inner or outer sources</dd>
@@ -422,12 +433,13 @@ TODO once value classes are available, make this a record class.</div>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StandardConcurrentBufferedConfig</span><wbr><span class="parameters">(boolean&nbsp;delayErrors,
  int&nbsp;maxConcurrency,
  int&nbsp;bufferSize)</span></div>
-<div class="block">Optionally delay error, <a href="../Flowable.html#bufferSize()"><code>Flowable.bufferSize()</code></a> sizes</div>
+<div class="block">Sets the error mode to provided IMMEDIATE (false) or END (true), the maxConcurrency
+to the provided value and bufferSize to the provided value too.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>delayErrors</code> - should the error be delayed?</dd>
 <dd><code>maxConcurrency</code> - the maximum number of concurrent flows</dd>
-<dd><code>bufferSize</code> - what would be the buffer size</dd>
+<dd><code>bufferSize</code> - the expected number of items to buffer or prefetch from the various sources</dd>
 </dl>
 </div>
 </section>
@@ -445,7 +457,7 @@ TODO once value classes are available, make this a record class.</div>
 <dt>Parameters:</dt>
 <dd><code>errorMode</code> - how to handle when errors appear from the inner or outer sources</dd>
 <dd><code>maxConcurrency</code> - the maximum number of concurrent flows?</dd>
-<dd><code>bufferSize</code> - what would be the buffer size</dd>
+<dd><code>bufferSize</code> - the expected number of items to buffer or prefetch from the various sources</dd>
 </dl>
 </div>
 </section>
