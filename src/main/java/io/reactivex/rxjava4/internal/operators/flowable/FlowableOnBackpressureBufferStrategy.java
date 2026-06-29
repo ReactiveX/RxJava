@@ -35,25 +35,23 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
     final long bufferSize;
 
-    final Action onOverflow;
-
     final BackpressureOverflowStrategy strategy;
 
     final Consumer<? super T> onDropped;
 
     public FlowableOnBackpressureBufferStrategy(Flowable<T> source,
-            long bufferSize, Action onOverflow, BackpressureOverflowStrategy strategy,
+            long bufferSize,
+            BackpressureOverflowStrategy strategy,
             Consumer<? super T> onDropped) {
         super(source);
         this.bufferSize = bufferSize;
-        this.onOverflow = onOverflow;
         this.strategy = strategy;
         this.onDropped = onDropped;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new OnBackpressureBufferStrategySubscriber<>(s, onOverflow, strategy, bufferSize, onDropped));
+        source.subscribe(new OnBackpressureBufferStrategySubscriber<>(s, strategy, bufferSize, onDropped));
     }
 
     static final class OnBackpressureBufferStrategySubscriber<T>
@@ -64,8 +62,6 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
         private static final long serialVersionUID = 3240706908776709697L;
 
         final Subscriber<? super T> downstream;
-
-        final Action onOverflow;
 
         final Consumer<? super T> onDropped;
 
@@ -84,11 +80,10 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
         volatile boolean done;
         Throwable error;
 
-        OnBackpressureBufferStrategySubscriber(Subscriber<? super T> actual, Action onOverflow,
+        OnBackpressureBufferStrategySubscriber(Subscriber<? super T> actual,
                 BackpressureOverflowStrategy strategy, long bufferSize,
                 Consumer<? super T> onDropped) {
             this.downstream = actual;
-            this.onOverflow = onOverflow;
             this.strategy = strategy;
             this.bufferSize = bufferSize;
             this.requested = new AtomicLong();
@@ -112,7 +107,6 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
             if (done) {
                 return;
             }
-            boolean callOnOverflow = false;
             boolean callError = false;
             boolean callDrain = false;
             Deque<T> dq = deque;
@@ -123,12 +117,10 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                    case DROP_LATEST:
                        toDrop = dq.pollLast();
                        dq.offer(t);
-                       callOnOverflow = true;
                        break;
                    case DROP_OLDEST:
                        toDrop = dq.poll();
                        dq.offer(t);
-                       callOnOverflow = true;
                        break;
                    default:
                        // signal error
@@ -139,16 +131,6 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                 } else {
                    dq.offer(t);
                    callDrain = true;
-                }
-            }
-
-            if (callOnOverflow && onOverflow != null) {
-                try {
-                    onOverflow.run();
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    upstream.cancel();
-                    onError(ex);
                 }
             }
 

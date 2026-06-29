@@ -31,7 +31,7 @@ import com.google.common.base.Ticker;
 import com.google.common.cache.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.flowables.GroupedFlowable;
 import io.reactivex.rxjava4.functions.*;
@@ -1002,8 +1002,8 @@ public class FlowableGroupByTest extends RxJavaTest {
             Flowable.merge(
                     Flowable.range(0, n)
                     .groupBy(i -> i % (Flowable.bufferSize() + 2))
-                    .observeOn(Schedulers.computation(), false, n)
-            , n)
+                    .observeOn(Schedulers.computation(), new StandardBufferedConfig(false, n))
+            , new StandardConcurrentBufferedConfig(n))
             .blockingLast();
         }
     }
@@ -1110,7 +1110,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @SuppressUndeliverable
     public void keySelectorAndDelayError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .groupBy(Functions.<Integer>identity(), true)
+        .groupBy(Functions.<Integer>identity(), new StandardBufferedConfig(true))
         .flatMap((Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>) g -> g)
         .test()
         .assertFailure(TestException.class, 1);
@@ -1120,7 +1120,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @SuppressUndeliverable
     public void keyAndValueSelectorAndDelayError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true)
+        .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), new StandardBufferedConfig(true))
         .flatMap((Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>) g -> g)
         .test()
         .assertFailure(TestException.class, 1);
@@ -1184,7 +1184,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     public void delayErrorSimpleComplete() {
         Flowable.just(1)
-        .groupBy(Functions.justFunction(1), true)
+        .groupBy(Functions.justFunction(1), new StandardBufferedConfig(true))
         .flatMap(Functions.<Flowable<Integer>>identity())
         .test()
         .assertResult(1);
@@ -1242,7 +1242,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @SuppressUndeliverable
     public void groupError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .groupBy(Functions.justFunction(1), true)
+        .groupBy(Functions.justFunction(1), new StandardBufferedConfig(true))
         .flatMap((Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>) GroupedFlowable::hide)
         .test()
         .assertFailure(TestException.class, 1);
@@ -1251,7 +1251,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     public void groupComplete() {
         Flowable.just(1)
-        .groupBy(Functions.justFunction(1), true)
+        .groupBy(Functions.justFunction(1), new StandardBufferedConfig(true))
         .flatMap((Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>) GroupedFlowable::hide)
         .test()
         .assertResult(1);
@@ -1265,7 +1265,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             throw ex;
         };
         Flowable.just(1)
-        .groupBy(Functions.<Integer>identity(), Functions.identity(), true, 16, evictingMapFactory)
+        .groupBy(Functions.<Integer>identity(), Functions.identity(), evictingMapFactory, new StandardBufferedConfig(true, 16))
         .test()
         .assertNoValues()
         .assertError(ex);
@@ -1294,7 +1294,8 @@ public class FlowableGroupByTest extends RxJavaTest {
         Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactorySynchronousOnly(1);
         PublishSubject<Integer> subject = PublishSubject.create();
         TestSubscriberEx<Integer> ts = subject.toFlowable(BackpressureStrategy.BUFFER)
-                .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true, 16, evictingMapFactory)
+                .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), evictingMapFactory,
+                        new StandardBufferedConfig(true, 16))
                 .flatMap(addCompletedKey(completed))
                 .to(TestHelper.<Integer>testConsumer());
         subject.onNext(1);
@@ -1315,7 +1316,8 @@ public class FlowableGroupByTest extends RxJavaTest {
         PublishSubject<Integer> subject = PublishSubject.create();
         TestSubscriber<Integer> ts = subject
                 .toFlowable(BackpressureStrategy.BUFFER)
-                .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true, 16, evictingMapFactory)
+                .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), evictingMapFactory,
+                        new StandardBufferedConfig(true, 16))
                 .flatMap((Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>) g -> g)
                 .test();
         RuntimeException ex = new RuntimeException();
@@ -1337,7 +1339,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         int numValues = 1000;
         TestSubscriber<Integer> ts =
             Flowable.range(1, numValues)
-                .groupBy(mod5, Functions.<Integer>identity(), true, 16, evictingMapFactory)
+                .groupBy(mod5, Functions.<Integer>identity(), evictingMapFactory, new StandardBufferedConfig(true, 16))
                 .flatMap(addCompletedKey(completed))
                 .test()
                 .assertComplete()
@@ -1367,8 +1369,8 @@ public class FlowableGroupByTest extends RxJavaTest {
         final List<String> list = new CopyOnWriteArrayList<>();
         Flowable<Integer> stream = source //
                 .doOnCancel(() -> list.add("Source cancelled"))
-                .<Integer, Integer>groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), false,
-                        Flowable.bufferSize(), mapFactory) //
+                .<Integer, Integer>groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(),
+                        mapFactory, new StandardBufferedConfig(false, Flowable.bufferSize())) //
                 .flatMap(group -> group //
                         .doOnComplete(() -> list.add("Group completed")).doOnCancel(() -> list.add("Group cancelled")));
         TestSubscriber<Integer> ts = stream //
@@ -1556,7 +1558,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            pp.groupBy(v -> v % 10, Functions.<Integer>identity(), false, 2048)
+            pp.groupBy(v -> v % 10, Functions.<Integer>identity(), new StandardBufferedConfig(false, 2048))
             .flatMap((Function<GroupedFlowable<Integer, Integer>, GroupedFlowable<Integer, Integer>>) v -> v)
             .subscribe(ts);
 
@@ -1717,7 +1719,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void delayErrorCompleteMoreWorkInGroup() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.groupBy(_ -> 1, true)
+        TestSubscriber<Integer> ts = pp.groupBy(_ -> 1, new StandardBufferedConfig(true))
         .flatMap(g -> g.doOnNext(v -> {
             if (v == 1) {
                 pp.onNext(2);
@@ -1789,7 +1791,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         TestSubscriber<Integer> test = Flowable
                 .range(1, groups)
                 .repeat(iterations / groups)
-                .groupBy(i -> i, i -> i, false, 128, sizeCap(sizeCap, notifyOnExplicitRevoke))
+                .groupBy(i -> i, i -> i, sizeCap(sizeCap, notifyOnExplicitRevoke),  new StandardBufferedConfig(false, 128))
                 .flatMap(gf -> gf.compose(operation), new StandardConcurrentBufferedConfig(flatMapConcurrency))
                 .test();
         test.awaitDone(5, TimeUnit.SECONDS);
@@ -1818,9 +1820,11 @@ public class FlowableGroupByTest extends RxJavaTest {
         TestSubscriber<Integer> ts = Flowable
         .range(1, 500_000)
         .map(i -> i % groups)
-        .groupBy(i -> i, i -> i, false, groupByBufferSize,
+        .groupBy(i -> i, i -> i,
                 // set cap too high
-                sizeCap(groups * 100, notifyOnExplicitEviction))
+                sizeCap(groups * 100, notifyOnExplicitEviction),
+                new StandardBufferedConfig(false, groupByBufferSize)
+        )
         .flatMap(gf -> gf
                 .take(10, TimeUnit.MILLISECONDS)
                 , new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
@@ -1893,8 +1897,8 @@ public class FlowableGroupByTest extends RxJavaTest {
         .range(1, 500_000)
         .map(i -> i % groups)
         .doOnCancel(() -> System.out.println("Cancelling upstream"))
-        .groupBy(i -> i, i -> i, false, groupByBufferSize,
-                              sizeCap(groups * 2, notifyOnExplicitEviction))
+        .groupBy(i -> i, i -> i, sizeCap(groups * 2, notifyOnExplicitEviction),
+                new StandardBufferedConfig(false, groupByBufferSize))
         .flatMap(gf -> gf
                      .observeOn(Schedulers.computation())
                      // .take(10)
@@ -1918,8 +1922,8 @@ public class FlowableGroupByTest extends RxJavaTest {
         .range(1, 500_000)
         .map(i -> i % groups)
         .doOnCancel(() -> System.out.println("Cancelling upstream"))
-        .groupBy(i -> i, i -> i, false, groupByBufferSize,
-                              sizeCap(groups * 2, notifyOnExplicitEviction))
+        .groupBy(i -> i, i -> i, sizeCap(groups * 2, notifyOnExplicitEviction),
+                new StandardBufferedConfig(false, groupByBufferSize))
         .flatMap(gf -> gf
                      .hide()
                      .observeOn(Schedulers.computation())
@@ -1991,8 +1995,8 @@ public class FlowableGroupByTest extends RxJavaTest {
         .range(1, 500_000)
         .map(i -> i % groups)
         .doOnCancel(() -> System.out.println("Cancelling upstream"))
-        .groupBy(i -> i, i -> i, false, groupByBufferSize,
-                              sizeCap(groups * 2, notifyOnExplicitEviction))
+        .groupBy(i -> i, i -> i, sizeCap(groups * 2, notifyOnExplicitEviction),
+                new StandardBufferedConfig(false, groupByBufferSize))
         .flatMap(gf -> gf
                      .observeOn(Schedulers.computation())
                      .filter(_ -> true)
@@ -2017,8 +2021,8 @@ public class FlowableGroupByTest extends RxJavaTest {
         .range(1, 500_000)
         .map(i -> i % groups)
         .doOnCancel(() -> System.out.println("Cancelling upstream"))
-        .groupBy(i -> i, i -> i, false, groupByBufferSize,
-                              sizeCap(groups * 2, notifyOnExplicitEviction))
+        .groupBy(i -> i, i -> i, sizeCap(groups * 2, notifyOnExplicitEviction),
+                new StandardBufferedConfig(false, groupByBufferSize))
         .flatMap(gf -> gf
                      .hide()
                      .observeOn(Schedulers.computation())
@@ -2060,7 +2064,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         Flowable
         .range(1, 500_000)
         .map(i -> i % groups)
-        .groupBy(i -> i, i -> i, false, groupByBufferSize, ttlCapGuava(Duration.ofMillis(10)))
+        .groupBy(i -> i, i -> i, ttlCapGuava(Duration.ofMillis(10)), new StandardBufferedConfig(false, groupByBufferSize))
         .flatMap(gf -> gf.observeOn(Schedulers.computation()), new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -2079,7 +2083,8 @@ public class FlowableGroupByTest extends RxJavaTest {
         Flowable
         .range(1, 500_000)
         .map(i -> i % groups)
-        .groupBy(i -> i, i -> i, false, groupByBufferSize, ttlCapGuava(Duration.ofMillis(10)))
+        .groupBy(i -> i, i -> i, ttlCapGuava(Duration.ofMillis(10)),
+                new StandardBufferedConfig(false, groupByBufferSize))
         .flatMap(gf -> gf.observeOn(Schedulers.computation()), new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)

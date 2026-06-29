@@ -309,7 +309,7 @@ public class FlowableDebounceTest extends RxJavaTest {
     public void debounceWithTimeBackpressure() throws InterruptedException {
         TestScheduler scheduler = new TestScheduler();
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>();
-        Flowable.merge(
+        Flowable.mergeArray(
                 Flowable.just(1),
                 Flowable.just(2).delay(10, TimeUnit.MILLISECONDS, scheduler)
         ).debounce(20, TimeUnit.MILLISECONDS, scheduler).take(1).subscribe(subscriber);

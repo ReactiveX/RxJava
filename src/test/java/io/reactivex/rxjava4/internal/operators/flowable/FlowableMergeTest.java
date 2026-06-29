@@ -100,7 +100,7 @@ public class FlowableMergeTest extends RxJavaTest {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
-        Flowable<String> m = Flowable.merge(f1, f2);
+        Flowable<String> m = Flowable.mergeArray(f1, f2);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, never()).onError(any(Throwable.class));
@@ -184,7 +184,7 @@ public class FlowableMergeTest extends RxJavaTest {
         final TestASynchronousFlowable f1 = new TestASynchronousFlowable();
         final TestASynchronousFlowable f2 = new TestASynchronousFlowable();
 
-        Flowable<String> m = Flowable.merge(Flowable.unsafeCreate(f1), Flowable.unsafeCreate(f2));
+        Flowable<String> m = Flowable.mergeArray(Flowable.unsafeCreate(f1), Flowable.unsafeCreate(f2));
         TestSubscriber<String> ts = new TestSubscriber<>(stringSubscriber);
         m.subscribe(ts);
 
@@ -219,7 +219,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
         final AtomicReference<Throwable> error = new AtomicReference<>();
 
-        Flowable<String> m = Flowable.merge(Flowable.unsafeCreate(f1), Flowable.unsafeCreate(f2));
+        Flowable<String> m = Flowable.mergeArray(Flowable.unsafeCreate(f1), Flowable.unsafeCreate(f2));
         m.subscribe(new DefaultSubscriber<>() /* NFI */ {
 
             @Override
@@ -300,7 +300,7 @@ public class FlowableMergeTest extends RxJavaTest {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six"
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
 
-        Flowable<String> m = Flowable.merge(f1, f2);
+        Flowable<String> m = Flowable.mergeArray(f1, f2);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
@@ -324,7 +324,7 @@ public class FlowableMergeTest extends RxJavaTest {
         final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null)); // we expect to lose all of these since o2 is done first and fails
         final Flowable<String> f4 = Flowable.unsafeCreate(new TestErrorFlowable("nine")); // we expect to lose all of these since o2 is done first and fails
 
-        Flowable<String> m = Flowable.merge(f1, f2, f3, f4);
+        Flowable<String> m = Flowable.mergeArray(f1, f2, f3, f4);
         m.subscribe(stringSubscriber);
 
         verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
@@ -406,7 +406,7 @@ public class FlowableMergeTest extends RxJavaTest {
         Flowable<Long> f2 = createFlowableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
         TestSubscriberEx<Long> ts = new TestSubscriberEx<>();
-        Flowable.merge(f1, f2).subscribe(ts);
+        Flowable.mergeArray(f1, f2).subscribe(ts);
 
         // we haven't incremented time so nothing should be received yet
         ts.assertNoValues();
@@ -448,7 +448,7 @@ public class FlowableMergeTest extends RxJavaTest {
             Flowable<Long> f2 = createFlowableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
             TestSubscriber<Long> ts = new TestSubscriber<>();
-            Flowable.merge(f1, f2).subscribe(ts);
+            Flowable.mergeArray(f1, f2).subscribe(ts);
 
             // we haven't incremented time so nothing should be received yet
             ts.assertNoValues();
@@ -516,7 +516,8 @@ public class FlowableMergeTest extends RxJavaTest {
         Flowable<Integer> f = Flowable.range(1, 10000).subscribeOn(Schedulers.newThread());
 
         for (int i = 0; i < 10; i++) {
-            Flowable<Integer> merge = Flowable.merge(f.onBackpressureBuffer(), f.onBackpressureBuffer(), f.onBackpressureBuffer());
+            Flowable<Integer> merge = Flowable.mergeArray(
+                    f.onBackpressureBuffer(), f.onBackpressureBuffer(), f.onBackpressureBuffer());
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
             merge.subscribe(ts);
 
@@ -560,7 +561,7 @@ public class FlowableMergeTest extends RxJavaTest {
         });
 
         for (int i = 0; i < 10; i++) {
-            Flowable<Integer> merge = Flowable.merge(f, f, f);
+            Flowable<Integer> merge = Flowable.mergeArray(f, f, f);
             TestSubscriber<Integer> ts = new TestSubscriber<>();
             merge.subscribe(ts);
 
@@ -598,7 +599,7 @@ public class FlowableMergeTest extends RxJavaTest {
         });
 
         for (int i = 0; i < 10; i++) {
-            Flowable<Integer> merge = Flowable.merge(f.onBackpressureBuffer(), f.onBackpressureBuffer(), f.onBackpressureBuffer());
+            Flowable<Integer> merge = Flowable.mergeArray(f.onBackpressureBuffer(), f.onBackpressureBuffer(), f.onBackpressureBuffer());
             TestSubscriber<Integer> ts = new TestSubscriber<>();
             merge.subscribe(ts);
 
@@ -626,7 +627,8 @@ public class FlowableMergeTest extends RxJavaTest {
             }
         };
 
-        Flowable.merge(f1.take(Flowable.bufferSize() * 2), f2.take(Flowable.bufferSize() * 2)).subscribe(testSubscriber);
+        Flowable.mergeArray(f1.take(Flowable.bufferSize() * 2), f2.take(Flowable.bufferSize() * 2))
+        .subscribe(testSubscriber);
         testSubscriber.awaitDone(5, TimeUnit.SECONDS);
         if (!testSubscriber.errors().isEmpty()) {
             testSubscriber.errors().getFirst().printStackTrace();
@@ -662,7 +664,8 @@ public class FlowableMergeTest extends RxJavaTest {
             }
         };
 
-        Flowable.merge(f1.take(Flowable.bufferSize() * 2), Flowable.just(-99)).subscribe(testSubscriber);
+        Flowable.mergeArray(f1.take(Flowable.bufferSize() * 2), Flowable.just(-99))
+        .subscribe(testSubscriber);
         testSubscriber.awaitDone(10, TimeUnit.SECONDS);
 
         List<Integer> onNextEvents = testSubscriber.values();
@@ -708,7 +711,9 @@ public class FlowableMergeTest extends RxJavaTest {
             }
         };
 
-        Flowable.merge(f1.take(Flowable.bufferSize() * 2), f2.take(Flowable.bufferSize() * 2)).observeOn(Schedulers.computation()).subscribe(testSubscriber);
+        Flowable.mergeArray(f1.take(Flowable.bufferSize() * 2), f2.take(Flowable.bufferSize() * 2))
+        .observeOn(Schedulers.computation())
+        .subscribe(testSubscriber);
         testSubscriber.awaitDone(10, TimeUnit.SECONDS);
         if (!testSubscriber.errors().isEmpty()) {
             testSubscriber.errors().getFirst().printStackTrace();
@@ -962,7 +967,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
     @Test
     public void shouldCompleteAfterApplyingBackpressure_NormalPath() {
-        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(Flowable.range(1, 2)));
+        Flowable<Integer> source = Flowable.merge(Flowable.just(Flowable.range(1, 2)), StandardConcurrentBufferedConfig.DELAY_ERRORS);
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>(0L);
         source.subscribe(subscriber);
         subscriber.request(3); // 1, 2, <complete> - with request(2) we get the 1 and 2 but not the <complete>
@@ -972,7 +977,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
     @Test
     public void shouldCompleteAfterApplyingBackpressure_FastPath() {
-        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(Flowable.just(1)));
+        Flowable<Integer> source = Flowable.merge(Flowable.just(Flowable.just(1)), StandardConcurrentBufferedConfig.DELAY_ERRORS);
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>(0L);
         source.subscribe(subscriber);
         subscriber.request(2); // 1, <complete> - should work as per .._NormalPath above
@@ -983,7 +988,9 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void shouldNotCompleteIfThereArePendingScalarSynchronousEmissionsWhenTheLastInnerSubscriberCompletes() {
         TestScheduler scheduler = new TestScheduler();
-        Flowable<Long> source = Flowable.mergeDelayError(Flowable.just(1L), Flowable.timer(1, TimeUnit.SECONDS, scheduler).skip(1));
+        Flowable<Long> source = Flowable.mergeArray(
+                StandardConcurrentBufferedConfig.DELAY_ERRORS,
+                Flowable.just(1L), Flowable.timer(1, TimeUnit.SECONDS, scheduler).skip(1));
         TestSubscriberEx<Long> subscriber = new TestSubscriberEx<>(0L);
         source.subscribe(subscriber);
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -1000,7 +1007,8 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_NormalPath() {
         Throwable exception = new Throwable();
-        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.range(1, 2), Flowable.<Integer>error(exception));
+        Flowable<Integer> source = Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS,
+                Flowable.range(1, 2), Flowable.<Integer>error(exception));
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>(0L);
         source.subscribe(subscriber);
         subscriber.request(3); // 1, 2, <error>
@@ -1012,7 +1020,8 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_FastPath() {
         Throwable exception = new Throwable();
-        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(1), Flowable.<Integer>error(exception));
+        Flowable<Integer> source = Flowable.mergeArray(StandardConcurrentBufferedConfig.DELAY_ERRORS,
+                Flowable.just(1), Flowable.<Integer>error(exception));
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>(0L);
         source.subscribe(subscriber);
         subscriber.request(2); // 1, <error>
@@ -1023,7 +1032,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
     @Test
     public void shouldNotCompleteWhileThereAreStillScalarSynchronousEmissionsInTheQueue() {
-        Flowable<Integer> source = Flowable.merge(Flowable.just(1), Flowable.just(2));
+        Flowable<Integer> source = Flowable.mergeArray(Flowable.just(1), Flowable.just(2));
         TestSubscriber<Integer> subscriber = new TestSubscriber<>(1L);
         source.subscribe(subscriber);
         subscriber.assertValue(1);
@@ -1034,7 +1043,9 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void shouldNotReceivedDelayedErrorWhileThereAreStillScalarSynchronousEmissionsInTheQueue() {
         Throwable exception = new Throwable();
-        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(1), Flowable.just(2), Flowable.<Integer>error(exception));
+        Flowable<Integer> source = Flowable.mergeArray(
+                StandardConcurrentBufferedConfig.DELAY_ERRORS,
+                Flowable.just(1), Flowable.just(2), Flowable.<Integer>error(exception));
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>(0L);
         subscriber.request(1);
         source.subscribe(subscriber);
@@ -1048,7 +1059,9 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void shouldNotReceivedDelayedErrorWhileThereAreStillNormalEmissionsInTheQueue() {
         Throwable exception = new Throwable();
-        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.range(1, 2), Flowable.range(3, 2), Flowable.<Integer>error(exception));
+        Flowable<Integer> source = Flowable.mergeArray(
+                StandardConcurrentBufferedConfig.DELAY_ERRORS,
+                Flowable.range(1, 2), Flowable.range(3, 2), Flowable.<Integer>error(exception));
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>(0L);
         subscriber.request(3);
         source.subscribe(subscriber);
@@ -1220,7 +1233,7 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void negativeMaxConcurrent() {
         try {
-            Flowable.merge(Arrays.asList(Flowable.just(1), Flowable.just(2)), -1);
+            Flowable.merge(Arrays.asList(Flowable.just(1), Flowable.just(2)), new StandardConcurrentBufferedConfig(-1));
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             assertEquals("maxConcurrency > 0 required but it was -1", e.getMessage());
@@ -1230,7 +1243,7 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void zeroMaxConcurrent() {
         try {
-            Flowable.merge(Arrays.asList(Flowable.just(1), Flowable.just(2)), 0);
+            Flowable.merge(Arrays.asList(Flowable.just(1), Flowable.just(2)), new StandardConcurrentBufferedConfig(0));
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             assertEquals("maxConcurrency > 0 required but it was 0", e.getMessage());
@@ -1241,7 +1254,8 @@ public class FlowableMergeTest extends RxJavaTest {
     public void mergeConcurrentJustJust() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.merge(Flowable.just(Flowable.just(1)), 5).subscribe(ts);
+        Flowable.merge(Flowable.just(Flowable.just(1)), new StandardConcurrentBufferedConfig(5))
+        .subscribe(ts);
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -1252,7 +1266,8 @@ public class FlowableMergeTest extends RxJavaTest {
     public void mergeConcurrentJustRange() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.merge(Flowable.just(Flowable.range(1, 5)), 5).subscribe(ts);
+        Flowable.merge(Flowable.just(Flowable.range(1, 5)), new StandardConcurrentBufferedConfig(5))
+        .subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();
@@ -1267,7 +1282,8 @@ public class FlowableMergeTest extends RxJavaTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        Flowable.mergeArray(1, 128, new Flowable[] { pp1, pp2 }).subscribe(ts);
+        Flowable.mergeArray(new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 1, 128), new Flowable[] { pp1, pp2 })
+        .subscribe(ts);
 
         assertTrue("ps1 has no subscribers?!", pp1.hasSubscribers());
         assertFalse("ps2 has subscribers?!", pp2.hasSubscribers());
@@ -1406,7 +1422,7 @@ public class FlowableMergeTest extends RxJavaTest {
             Flowable<Integer> source1 = Flowable.error(new TestException("First"));
             Flowable<Integer> source2 = Flowable.error(new TestException("Second"));
 
-            Flowable.merge(source1, source2)
+            Flowable.mergeArray(source1, source2)
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 

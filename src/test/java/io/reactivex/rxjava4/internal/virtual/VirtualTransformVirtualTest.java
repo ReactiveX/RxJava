@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
 public class VirtualTransformVirtualTest {
@@ -75,7 +76,7 @@ public class VirtualTransformVirtualTest {
     public void observeOn() throws Throwable {
         Flowable.range(1, 10000)
         .virtualTransform((v, e, _) -> e.emit(v))
-        .observeOn(Schedulers.single(), false, 2)
+        .observeOn(Schedulers.single(), new StandardBufferedConfig(false, 2))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertNoErrors()

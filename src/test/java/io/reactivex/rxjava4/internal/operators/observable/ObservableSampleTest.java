@@ -22,7 +22,8 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.core.config.SampleConfig;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
@@ -275,7 +276,7 @@ public class ObservableSampleTest extends RxJavaTest {
     @Test
     public void emitLastTimed() {
         Observable.just(1)
-        .sample(1, TimeUnit.DAYS, true)
+        .sample(1, TimeUnit.DAYS, Schedulers.computation(), SampleConfig.EMIT_LAST)
         .test()
         .assertResult(1);
     }
@@ -283,7 +284,7 @@ public class ObservableSampleTest extends RxJavaTest {
     @Test
     public void emitLastTimedEmpty() {
         Observable.empty()
-        .sample(1, TimeUnit.DAYS, true)
+        .sample(1, TimeUnit.DAYS, Schedulers.computation(), SampleConfig.EMIT_LAST)
         .test()
         .assertResult();
     }
@@ -291,7 +292,7 @@ public class ObservableSampleTest extends RxJavaTest {
     @Test
     public void emitLastTimedCustomScheduler() {
         Observable.just(1)
-        .sample(1, TimeUnit.DAYS, Schedulers.single(), true)
+        .sample(1, TimeUnit.DAYS, Schedulers.single(), SampleConfig.EMIT_LAST)
         .test()
         .assertResult(1);
     }
@@ -303,7 +304,7 @@ public class ObservableSampleTest extends RxJavaTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            TestObserver<Integer> to = ps.sample(1, TimeUnit.SECONDS, scheduler, true)
+            TestObserver<Integer> to = ps.sample(1, TimeUnit.SECONDS, scheduler, SampleConfig.EMIT_LAST)
             .test();
 
             ps.onNext(1);

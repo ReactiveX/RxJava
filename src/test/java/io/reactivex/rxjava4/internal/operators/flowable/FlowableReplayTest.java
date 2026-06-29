@@ -30,6 +30,7 @@ import static java.util.concurrent.Flow.*;
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.flowables.ConnectableFlowable;
@@ -937,7 +938,7 @@ public class FlowableReplayTest extends RxJavaTest {
                 .subscribeOn(Schedulers.cached());
         Flowable<Long> cached = source.replay().autoConnect();
 
-        Flowable<Long> output = cached.observeOn(Schedulers.computation(), false, 1024);
+        Flowable<Long> output = cached.observeOn(Schedulers.computation(), new StandardBufferedConfig(false, 1024));
 
         List<TestSubscriberEx<Long>> list = new ArrayList<>(100);
         for (int i = 0; i < 100; i++) {

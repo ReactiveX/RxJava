@@ -16,14 +16,15 @@ package io.reactivex.rxjava4.internal.operators.mixed;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.observers.TestObserver;
@@ -56,7 +57,7 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void simpleLongPrefetch() {
         Flowable.range(1, 1024)
-        .concatMapCompletable(Functions.justFunction(Completable.complete()), 32)
+        .concatMapCompletable(Functions.justFunction(Completable.complete()), new StandardBufferedConfig(32))
         .test()
         .assertResult();
     }
@@ -64,7 +65,7 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void simpleLongPrefetchHidden() {
         Flowable.range(1, 1024).hide()
-        .concatMapCompletable(Functions.justFunction(Completable.complete()), 32)
+        .concatMapCompletable(Functions.justFunction(Completable.complete()), new StandardBufferedConfig(32))
         .test()
         .assertResult();
     }
@@ -88,8 +89,9 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void innerErrorDelayed() {
         TestObserverEx<Void> to = Flowable.range(1, 5)
-        .concatMapCompletableDelayError(
-                _ -> Completable.error(new TestException())
+        .concatMapCompletable(
+                _ -> Completable.error(new TestException()),
+                StandardBufferedConfig.DELAY_ERRORS
         )
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class)
@@ -161,8 +163,9 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = pp.concatMapCompletableDelayError(
-                Functions.justFunction(cs), false).test();
+        TestObserver<Void> to = pp.concatMapCompletable(
+                Functions.justFunction(cs), StandardBufferedConfig.DELAY_ERRORS_BOUNDARY)
+                .test();
 
         to.assertEmpty();
 
@@ -190,13 +193,13 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
         final CompletableSubject cs = CompletableSubject.create();
         final CompletableSubject cs2 = CompletableSubject.create();
 
-        TestObserver<Void> to = pp.concatMapCompletableDelayError(
+        TestObserver<Void> to = pp.concatMapCompletable(
                         v -> {
                             if (v == 1) {
                                 return cs;
                             }
                             return cs2;
-                        }, true, 32
+                        }, new StandardBufferedConfig(ErrorMode.END, 32)
         )
         .test();
 
@@ -260,7 +263,7 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
                 }
             }
             .concatMapCompletable(
-                    Functions.justFunction(Completable.never()), 1
+                    Functions.justFunction(Completable.never()), new StandardBufferedConfig(1)
             )
             .test()
             .assertFailure(QueueOverflowException.class);
@@ -359,13 +362,15 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancelDelayError() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Completable>) upstream ->
-            upstream.concatMapCompletableDelayError((Function<Integer, Completable>) _ -> Completable.complete().hide(), false, 2));
+            upstream.concatMapCompletable((Function<Integer, Completable>) _ -> Completable.complete().hide(),
+                    new StandardBufferedConfig(ErrorMode.BOUNDARY, 2)));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Completable>) upstream ->
-            upstream.concatMapCompletableDelayError((Function<Integer, Completable>) _ -> Completable.complete().hide(), true, 2));
+            upstream.concatMapCompletable((Function<Integer, Completable>) _ -> Completable.complete().hide(),
+                    new StandardBufferedConfig(ErrorMode.END, 2)));
     }
 
     @Test

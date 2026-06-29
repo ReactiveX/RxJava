@@ -749,7 +749,7 @@ public class ObservableDelayTest extends RxJavaTest {
     @Test
     public void delayWithTimeDelayError() throws Exception {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-        .delay(100, TimeUnit.MILLISECONDS, true)
+        .delay(100, TimeUnit.MILLISECONDS, Schedulers.computation(), true)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, 1);

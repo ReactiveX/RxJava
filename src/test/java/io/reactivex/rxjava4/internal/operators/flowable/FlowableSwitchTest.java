@@ -18,16 +18,17 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
@@ -498,7 +499,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void delayErrors() {
         PublishProcessor<Publisher<Integer>> source = PublishProcessor.create();
 
-        TestSubscriberEx<Integer> ts = source.switchMapDelayError(Functions.<Publisher<Integer>>identity())
+        TestSubscriberEx<Integer> ts = source.switchMap(Functions.<Publisher<Integer>>identity(), StandardBufferedConfig.DELAY_ERRORS)
                 .to(TestHelper.<Integer>testConsumer());
 
         ts.assertNoValues()
@@ -534,7 +535,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
         Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(list::add);
 
-        Flowable.switchOnNext(Flowable.just(source).hide(), 2)
+        Flowable.switchOnNext(Flowable.just(source).hide(), new StandardBufferedConfig(2))
         .test(1);
 
         assertEquals(Arrays.asList(1, 2, 3), list);
@@ -546,7 +547,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
         Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(list::add);
 
-        Flowable.switchOnNextDelayError(Flowable.just(source).hide())
+        Flowable.switchOnNext(Flowable.just(source).hide(), StandardBufferedConfig.DELAY_ERRORS)
         .test(1);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), list);
@@ -558,7 +559,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
         Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(list::add);
 
-        Flowable.switchOnNextDelayError(Flowable.just(source).hide(), 2)
+        Flowable.switchOnNext(Flowable.just(source).hide(), new StandardBufferedConfig(2))
         .test(1);
 
         assertEquals(Arrays.asList(1, 2, 3), list);
@@ -568,7 +569,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void switchOnNextDelayErrorWithError() {
         PublishProcessor<Flowable<Integer>> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Flowable.switchOnNextDelayError(pp).test();
+        TestSubscriber<Integer> ts = Flowable.switchOnNext(pp, StandardBufferedConfig.DELAY_ERRORS).test();
 
         pp.onNext(Flowable.just(1));
         pp.onNext(Flowable.<Integer>error(new TestException()));
@@ -582,7 +583,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void switchOnNextDelayErrorBufferSize() {
         PublishProcessor<Flowable<Integer>> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Flowable.switchOnNextDelayError(pp, 2).test();
+        TestSubscriber<Integer> ts = Flowable.switchOnNext(pp, new StandardBufferedConfig(2)).test();
 
         pp.onNext(Flowable.just(1));
         pp.onNext(Flowable.range(2, 4));
@@ -594,13 +595,13 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapDelayErrorEmptySource() {
         assertSame(Flowable.empty(), Flowable.<Object>empty()
-                .switchMapDelayError((Function<Object, Publisher<Integer>>) _ -> Flowable.just(1), 16));
+                .switchMap((Function<Object, Publisher<Integer>>) _ -> Flowable.just(1), new StandardBufferedConfig(true, 16)));
     }
 
     @Test
     public void switchMapDelayErrorJustSource() {
         Flowable.just(0)
-        .switchMapDelayError((Function<Object, Publisher<Integer>>) _ -> Flowable.just(1), 16)
+        .switchMap((Function<Object, Publisher<Integer>>) _ -> Flowable.just(1), new StandardBufferedConfig(true, 16))
         .test()
         .assertResult(1);
 
@@ -609,13 +610,13 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapErrorEmptySource() {
         assertSame(Flowable.empty(), Flowable.<Object>empty()
-                .switchMap((Function<Object, Publisher<Integer>>) _ -> Flowable.just(1), 16));
+                .switchMap((Function<Object, Publisher<Integer>>) _ -> Flowable.just(1), new StandardBufferedConfig(16)));
     }
 
     @Test
     public void switchMapJustSource() {
         Flowable.just(0)
-        .switchMap((Function<Object, Publisher<Integer>>) _ -> Flowable.just(1), 16)
+        .switchMap((Function<Object, Publisher<Integer>>) _ -> Flowable.just(1), new StandardBufferedConfig(16))
         .test()
         .assertResult(1);
 
@@ -852,7 +853,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void scalarMapDelayError() {
-        Flowable.switchOnNextDelayError(Flowable.just(Flowable.just(1)))
+        Flowable.switchOnNext(Flowable.just(Flowable.just(1)), StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertResult(1);
     }
@@ -881,7 +882,7 @@ public class FlowableSwitchTest extends RxJavaTest {
                     s.onNext(i);
                 }
             }
-        }), 8)
+        }), new StandardBufferedConfig(8))
         .test(1L)
         .assertFailure(QueueOverflowException.class, 0);
     }
@@ -1077,7 +1078,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void innerCompletedDelayError() {
         BehaviorProcessor.createDefault(Flowable.empty().hide())
-        .switchMapDelayError(v -> v)
+        .switchMap(v -> v, StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertEmpty()
         ;
@@ -1089,7 +1090,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = BehaviorProcessor.createDefault(pp)
         .onBackpressureBuffer()
-        .switchMapDelayError(v -> v)
+        .switchMap(v -> v, StandardBufferedConfig.DELAY_ERRORS)
         .test(1L)
         ;
 

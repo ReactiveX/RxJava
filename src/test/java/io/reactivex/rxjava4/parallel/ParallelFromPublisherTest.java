@@ -17,19 +17,19 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscribers.BasicFuseableSubscriber;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
-import io.reactivex.rxjava4.operators.QueueFuseable;
-import io.reactivex.rxjava4.operators.QueueSubscription;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.processors.*;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.*;
@@ -148,7 +148,7 @@ public class ParallelFromPublisherTest extends RxJavaTest {
         final ConcurrentHashMap<String, String> processing = new ConcurrentHashMap<>();
 
         TestSubscriberEx<Object> ts = Flowable.range(1, 10)
-        .observeOn(Schedulers.single(), false, 1)
+        .observeOn(Schedulers.single(), new StandardBufferedConfig(false, 1))
         .doOnNext(_ -> between.add(Thread.currentThread().getName()))
         .parallel(2, 1)
         .runOn(Schedulers.computation(), 1)

@@ -122,7 +122,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<>();
-        Flowable<Integer> merged = Flowable.merge(incrementingIntegers(c1), incrementingIntegers(c2));
+        Flowable<Integer> merged = Flowable.mergeArray(incrementingIntegers(c1), incrementingIntegers(c2));
 
         merged.take(num).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -143,7 +143,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<>();
-        Flowable<Integer> merged = Flowable.merge(
+        Flowable<Integer> merged = Flowable.mergeArray(
                 incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
                 incrementingIntegers(c2).subscribeOn(Schedulers.computation()));
 
@@ -172,7 +172,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
             AtomicInteger c2 = new AtomicInteger();
 
             TestSubscriber<Integer> ts = new TestSubscriber<>();
-            Flowable<Integer> merged = Flowable.merge(
+            Flowable<Integer> merged = Flowable.mergeArray(
                     incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
                     incrementingIntegers(c2).subscribeOn(Schedulers.computation()));
 
@@ -195,7 +195,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<>();
-        Flowable<Integer> merged = Flowable.merge(
+        Flowable<Integer> merged = Flowable.mergeArray(
                 incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
                 incrementingIntegers(c2).subscribeOn(Schedulers.computation()));
 
@@ -580,10 +580,13 @@ public class FlowableBackpressureTests extends RxJavaTest {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        firehose(c).takeWhile(t1 -> t1 < 100000)
+        firehose(c)
+        .takeWhile(t1 -> t1 < 100000)
         .onBackpressureBuffer()
         .observeOn(Schedulers.computation())
-        .map(SLOW_PASS_THRU).take(num).subscribe(ts);
+        .map(SLOW_PASS_THRU)
+        .take(num)
+        .subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();

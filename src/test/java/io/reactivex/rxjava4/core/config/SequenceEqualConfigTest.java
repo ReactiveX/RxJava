@@ -23,15 +23,15 @@ import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.functions.BiPredicate;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 
-public class ObservableSequenceEqualConfigTest extends RxJavaTest {
+public class SequenceEqualConfigTest extends RxJavaTest {
 
     @Test
     public void validation() {
         BiPredicate<Object, Object> predicate = Objects::equals;
 
-        assertEquals(5, new ObservableSequenceEqualConfig<>(5).bufferSize(), "bufferSize - 5");
-        assertEquals(ObjectHelper.equalsPredicate(), new ObservableSequenceEqualConfig<>(5).isEqual(), "isEqual - std");
-        assertEquals(5, new ObservableSequenceEqualConfig<>(5, predicate).bufferSize(), "bufferSize - 5");
-        assertEquals(predicate, new ObservableSequenceEqualConfig<>(5, predicate).isEqual(), "isEqual - custom");
+        assertEquals(5, new SequenceEqualConfig<>(5).bufferSize(), "bufferSize - 5");
+        assertEquals(ObjectHelper.equalsPredicate(), new SequenceEqualConfig<>(5).isEqual(), "isEqual - std");
+        assertEquals(5, new SequenceEqualConfig<>(5, predicate).bufferSize(), "bufferSize - 5");
+        assertEquals(predicate, new SequenceEqualConfig<>(5, predicate).isEqual(), "isEqual - custom");
     }
 }

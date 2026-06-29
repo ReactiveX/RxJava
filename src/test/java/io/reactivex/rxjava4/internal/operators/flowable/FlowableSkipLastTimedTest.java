@@ -16,13 +16,14 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.processors.PublishProcessor;
@@ -164,7 +165,7 @@ public class FlowableSkipLastTimedTest extends RxJavaTest {
     @Test
     public void skipLastTimedDefaultSchedulerDelayError() {
         Flowable.just(1).concatWith(Flowable.just(2).delay(500, TimeUnit.MILLISECONDS))
-        .skipLast(300, TimeUnit.MILLISECONDS, true)
+        .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.computation(), StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -173,7 +174,7 @@ public class FlowableSkipLastTimedTest extends RxJavaTest {
     @Test
     public void skipLastTimedCustomSchedulerDelayError() {
         Flowable.just(1).concatWith(Flowable.just(2).delay(500, TimeUnit.MILLISECONDS))
-        .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.cached(), true)
+        .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.cached(), StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -208,7 +209,7 @@ public class FlowableSkipLastTimedTest extends RxJavaTest {
     @Test
     public void errorDelayed() {
         Flowable.error(new TestException())
-        .skipLast(1, TimeUnit.DAYS, new TestScheduler(), true)
+        .skipLast(1, TimeUnit.DAYS, new TestScheduler(), StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class);
     }
@@ -227,7 +228,7 @@ public class FlowableSkipLastTimedTest extends RxJavaTest {
     public void observeOn() {
         Flowable.range(1, 1000)
         .skipLast(0, TimeUnit.SECONDS)
-        .observeOn(Schedulers.single(), false, 16)
+        .observeOn(Schedulers.single(), new StandardBufferedConfig(false, 16))
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
@@ -245,7 +246,7 @@ public class FlowableSkipLastTimedTest extends RxJavaTest {
     public void delayErrorMoreWork() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.skipLast(0, TimeUnit.MILLISECONDS, true)
+        TestSubscriber<Integer> ts = pp.skipLast(0, TimeUnit.MILLISECONDS, Schedulers.computation(), StandardBufferedConfig.DELAY_ERRORS)
         .doOnNext(v -> {
             if (v == 1) {
                 pp.onNext(1);

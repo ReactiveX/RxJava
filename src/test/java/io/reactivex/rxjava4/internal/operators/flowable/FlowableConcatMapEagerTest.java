@@ -530,7 +530,8 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         Flowable<Integer> source = Flowable.just(1);
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.concatEager(Arrays.asList(source, source, source), 1, 1).subscribe(ts);
+        Flowable.concatEager(Arrays.asList(source, source, source), new StandardConcurrentBufferedConfig(ErrorMode.BOUNDARY, 1, 1))
+        .subscribe(ts);
 
         ts.assertValues(1, 1, 1);
         ts.assertNoErrors();
@@ -554,7 +555,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         Flowable<Integer> source = Flowable.just(1);
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.concatEager(Flowable.just(source, source, source), 1, 1).subscribe(ts);
+        Flowable.concatEager(Flowable.just(source, source, source), new StandardConcurrentBufferedConfig(ErrorMode.BOUNDARY, 1, 1)).subscribe(ts);
 
         ts.assertValues(1, 1, 1);
         ts.assertNoErrors();
@@ -565,9 +566,10 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     public void badCapacityHint() throws Exception {
         Flowable<Integer> source = Flowable.just(1);
         try {
-            Flowable.concatEager(Arrays.asList(source, source, source), 1, -99);
+            Flowable.concatEager(Arrays.asList(source, source, source),
+                    new StandardConcurrentBufferedConfig(ErrorMode.BOUNDARY, 1, -99));
         } catch (IllegalArgumentException ex) {
-            assertEquals("prefetch > 0 required but it was -99", ex.getMessage());
+            assertEquals("bufferSize > 0 required but it was -99", ex.getMessage());
         }
 
     }
@@ -577,7 +579,8 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     public void mappingBadCapacityHint() throws Exception {
         Flowable<Integer> source = Flowable.just(1);
         try {
-            Flowable.just(source, source, source).concatMapEager((Function)Functions.identity(), new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 10, -99));
+            Flowable.just(source, source, source).concatMapEager((Function)Functions.identity(),
+                    new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 10, -99));
         } catch (IllegalArgumentException ex) {
             assertEquals("bufferSize > 0 required but it was -99", ex.getMessage());
         }
@@ -622,7 +625,8 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         Flowable<Integer> source = Flowable.just(1);
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.concatEager(Flowable.just(source, source, source), 1, 1).subscribe(ts);
+        Flowable.concatEager(Flowable.just(source, source, source), new StandardConcurrentBufferedConfig(ErrorMode.BOUNDARY, 1, 1))
+        .subscribe(ts);
 
         ts.assertValues(1, 1, 1);
         ts.assertNoErrors();
@@ -1087,44 +1091,44 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void iterableDelayError() {
-        Flowable.concatEagerDelayError(Arrays.asList(
+        Flowable.concatEager(Arrays.asList(
                 Flowable.range(1, 2),
                 Flowable.error(new TestException()),
                 Flowable.range(3, 3)
-        ))
+        ), StandardConcurrentBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 
     @Test
     public void iterableDelayErrorMaxConcurrency() {
-        Flowable.concatEagerDelayError(Arrays.asList(
+        Flowable.concatEager(Arrays.asList(
                 Flowable.range(1, 2),
                 Flowable.error(new TestException()),
                 Flowable.range(3, 3)
-        ), 1, 1)
+        ), new StandardConcurrentBufferedConfig(ErrorMode.END, 1, 1))
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 
     @Test
     public void publisherDelayError() {
-        Flowable.concatEagerDelayError(Flowable.fromArray(
+        Flowable.concatEager(Flowable.fromArray(
                 Flowable.range(1, 2),
                 Flowable.error(new TestException()),
                 Flowable.range(3, 3)
-        ))
+        ), StandardConcurrentBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 
     @Test
     public void publisherDelayErrorMaxConcurrency() {
-        Flowable.concatEagerDelayError(Flowable.fromArray(
+        Flowable.concatEager(Flowable.fromArray(
                 Flowable.range(1, 2),
                 Flowable.error(new TestException()),
                 Flowable.range(3, 3)
-        ), 1, 1)
+        ), new StandardConcurrentBufferedConfig(ErrorMode.END, 1, 1))
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }

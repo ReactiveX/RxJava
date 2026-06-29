@@ -15,30 +15,31 @@ package io.reactivex.rxjava4.core.config;
 
 import java.util.Objects;
 
+import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.functions.BiPredicate;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 
 /**
- * Configuration record for Observable.sequenceEqual() operators.
+ * Configuration record for sequenceEqual() operators.
  * @param <T> the element type of the sequences being compared
  * @param bufferSize the expected number of items to cache from the inner {@code ObservableSource}s
  * @param isEqual the custom lambda to compare two elements
  * @since 4.0.0
  */
-public record ObservableSequenceEqualConfig<T>(int bufferSize, BiPredicate<? super T, ? super T> isEqual) {
+public record SequenceEqualConfig<T>(int bufferSize, @NonNull BiPredicate<? super T, ? super T> isEqual) {
 
     /**
      * The default configuration with bufferSize of Observable.bufferSize() and a default Objects.equals predicate.
      */
-    public static final ObservableSequenceEqualConfig<Object> DEFAULT =
-            new ObservableSequenceEqualConfig<>(Observable.bufferSize(), ObjectHelper.equalsPredicate());
+    public static final SequenceEqualConfig<Object> DEFAULT =
+            new SequenceEqualConfig<>(Observable.bufferSize(), ObjectHelper.equalsPredicate());
 
     /**
      * Constructs a configuration record.
      * @param bufferSize the expected number of row combination items to be buffered internally
      */
-    public ObservableSequenceEqualConfig(int bufferSize) {
+    public SequenceEqualConfig(int bufferSize) {
         this(bufferSize, ObjectHelper.equalsPredicate());
     }
 
@@ -46,7 +47,7 @@ public record ObservableSequenceEqualConfig<T>(int bufferSize, BiPredicate<? sup
      * Constructs a configuration record.
  * @param isEqual the custom lambda to compare two elements
      */
-    public ObservableSequenceEqualConfig(BiPredicate<? super T, ? super T> isEqual) {
+    public SequenceEqualConfig(@NonNull BiPredicate<? super T, ? super T> isEqual) {
         this(Observable.bufferSize(), isEqual);
     }
 
@@ -55,7 +56,7 @@ public record ObservableSequenceEqualConfig<T>(int bufferSize, BiPredicate<? sup
      * @param bufferSize the expected number of items to cache from the inner {@code ObservableSource}s
      * @param isEqual the custom lambda to compare two elements
      */
-    public ObservableSequenceEqualConfig {
+    public SequenceEqualConfig {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         Objects.requireNonNull(isEqual, "isEqual is null");
     }

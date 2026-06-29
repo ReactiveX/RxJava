@@ -1103,7 +1103,7 @@ public class ObservableZipTest extends RxJavaTest {
     @Test
     public void zipArrayEmpty() {
         assertSame(Observable.empty(), Observable.zipArray(
-                new Observable<?>[0], new StandardBufferedConfig(false, 16), Functions.<Object[]>identity()));
+                new Observable<?>[0], Functions.<Object[]>identity(), new StandardBufferedConfig(false, 16)));
     }
 
     @Test

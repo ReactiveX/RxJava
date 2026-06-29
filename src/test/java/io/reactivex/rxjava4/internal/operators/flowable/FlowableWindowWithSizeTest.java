@@ -26,6 +26,7 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
@@ -145,7 +146,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
                 .doOnNext(_ -> count.incrementAndGet())
                 .observeOn(Schedulers.computation())
                 .window(5, 4)
-                .take(2), 128)
+                .take(2), new StandardConcurrentBufferedConfig(128))
                 .subscribe(ts);
         ts.awaitDone(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();

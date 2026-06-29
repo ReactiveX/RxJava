@@ -28,7 +28,7 @@ public class FlowableGroupByTests extends RxJavaTest {
 
     @Test
     public void takeUnsubscribesOnGroupBy() {
-        Flowable.merge(
+        Flowable.mergeArray(
             FlowableEventStream.getEventStream("HTTP-ClusterA", 50),
             FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
@@ -45,7 +45,7 @@ public class FlowableGroupByTests extends RxJavaTest {
 
     @Test
     public void takeUnsubscribesOnFlatMapOfGroupBy() {
-        Flowable.merge(
+        Flowable.mergeArray(
             FlowableEventStream.getEventStream("HTTP-ClusterA", 50),
             FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
         )

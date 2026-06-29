@@ -640,7 +640,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
             }
         };
 
-        Flowable.merge(pp, 2)
+        Flowable.merge(pp, new StandardConcurrentBufferedConfig(2))
         .subscribe(ts);
 
         pp.onNext(Flowable.just(1));
@@ -701,7 +701,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     @Test
     public void noCrossBoundaryFusion() {
         for (int i = 0; i < 500; i++) {
-            TestSubscriber<String> ts = Flowable.merge(
+            TestSubscriber<String> ts = Flowable.mergeArray(
                     Flowable.just(1).observeOn(Schedulers.single()).map(_ -> Thread.currentThread().getName().substring(0, 4)),
                     Flowable.just(1).observeOn(Schedulers.computation()).map(_ -> Thread.currentThread().getName().substring(0, 4))
             )

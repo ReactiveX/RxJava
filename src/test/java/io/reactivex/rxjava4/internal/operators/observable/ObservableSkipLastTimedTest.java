@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.schedulers.*;
@@ -162,7 +163,7 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
     @Test
     public void skipLastTimedDefaultSchedulerDelayError() {
         Observable.just(1).concatWith(Observable.just(2).delay(500, TimeUnit.MILLISECONDS))
-        .skipLast(300, TimeUnit.MILLISECONDS, true)
+        .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.computation(), StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -171,7 +172,7 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
     @Test
     public void skipLastTimedCustomSchedulerDelayError() {
         Observable.just(1).concatWith(Observable.just(2).delay(500, TimeUnit.MILLISECONDS))
-        .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.cached(), true)
+        .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.cached(), StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -209,7 +210,8 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler, true).test();
+            final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler, StandardBufferedConfig.DELAY_ERRORS)
+                    .test();
 
             Runnable r1 = ps::onComplete;
 
@@ -222,7 +224,7 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
     @Test
     public void errorDelayed() {
         Observable.error(new TestException())
-        .skipLast(1, TimeUnit.DAYS, new TestScheduler(), true)
+        .skipLast(1, TimeUnit.DAYS, new TestScheduler(), StandardBufferedConfig.DELAY_ERRORS)
         .test()
         .assertFailure(TestException.class);
     }
@@ -259,7 +261,8 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler, true).test();
+            final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler, StandardBufferedConfig.DELAY_ERRORS)
+                    .test();
 
             Runnable r1 = () -> {
                 ps.onNext(1);
@@ -279,7 +282,7 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
 
         // FIXME the timeunit now matters due to rounding
-        Observable<Integer> result = source.skipLast(1000, TimeUnit.MILLISECONDS, scheduler, true);
+        Observable<Integer> result = source.skipLast(1000, TimeUnit.MILLISECONDS, scheduler, StandardBufferedConfig.DELAY_ERRORS);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -317,7 +320,7 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler, true);
+        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler, StandardBufferedConfig.DELAY_ERRORS);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -342,7 +345,7 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler, true);
+        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler, StandardBufferedConfig.DELAY_ERRORS);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -370,7 +373,7 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Observable<Integer> result = source.skipLast(1, TimeUnit.MILLISECONDS, scheduler, true);
+        Observable<Integer> result = source.skipLast(1, TimeUnit.MILLISECONDS, scheduler, StandardBufferedConfig.DELAY_ERRORS);
 
         Observer<Object> o = TestHelper.mockObserver();
 

@@ -40,7 +40,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
 
         Flowable<Integer> f1 = Flowable.just(1, 2, 3, 4, 5);
         Flowable<Integer> f2 = Flowable.just(6, 7, 8, 9, 10);
-        Flowable<String> f = Flowable.merge(f1, f2).map(t -> {
+        Flowable<String> f = Flowable.mergeArray(f1, f2).map(t -> {
             assertTrue(Thread.currentThread().getName().startsWith("RxCachedThreadScheduler"));
             return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
         });

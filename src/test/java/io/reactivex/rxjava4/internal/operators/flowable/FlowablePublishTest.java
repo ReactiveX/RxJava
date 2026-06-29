@@ -102,7 +102,7 @@ public class FlowablePublishTest extends RxJavaTest {
         }).doOnComplete(() -> System.out.println("^^^^^^^^^^^^^ completed SLOW"));
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
-        Flowable.merge(fast, slow).subscribe(ts);
+        Flowable.mergeArray(fast, slow).subscribe(ts);
         is.connect();
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();

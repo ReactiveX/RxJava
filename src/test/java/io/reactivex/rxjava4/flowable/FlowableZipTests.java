@@ -21,6 +21,7 @@ import java.util.concurrent.Flow.Publisher;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.flowable.FlowableCovarianceTest.*;
 import io.reactivex.rxjava4.flowable.FlowableEventStream.Event;
 import io.reactivex.rxjava4.flowables.GroupedFlowable;
@@ -97,7 +98,7 @@ public class FlowableZipTests extends RxJavaTest {
     @Test
     public void zipWithDelayError() {
         Flowable.just(1)
-        .zipWith(Flowable.just(2), Integer::sum, true)
+        .zipWith(Flowable.just(2), Integer::sum, new StandardBufferedConfig(true))
         .test()
         .assertResult(3);
     }
@@ -105,7 +106,7 @@ public class FlowableZipTests extends RxJavaTest {
     @Test
     public void zipWithDelayErrorBufferSize() {
         Flowable.just(1)
-        .zipWith(Flowable.just(2), Integer::sum, true, 16)
+        .zipWith(Flowable.just(2), Integer::sum, new StandardBufferedConfig(true, 16))
         .test()
         .assertResult(3);
     }

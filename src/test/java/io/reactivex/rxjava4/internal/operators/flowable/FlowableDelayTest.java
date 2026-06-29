@@ -766,7 +766,7 @@ public class FlowableDelayTest extends RxJavaTest {
     @Test
     public void delayWithTimeDelayError() throws Exception {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .delay(100, TimeUnit.MILLISECONDS, true)
+        .delay(100, TimeUnit.MILLISECONDS, Schedulers.computation(), true)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, 1);

@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.internal.schedulers.CachedScheduler;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -40,7 +41,8 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
             os.add(Flowable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
 
             List<String> expected = Arrays.asList("one", "two", "three", "four", "five", "one", "two", "three", "four", "five", "one", "two", "three", "four", "five");
-            Iterator<String> iter = Flowable.merge(os, 1).blockingIterable().iterator();
+            Iterator<String> iter = Flowable.merge(os, new StandardConcurrentBufferedConfig(1))
+                    .blockingIterable().iterator();
             List<String> actual = new ArrayList<>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
@@ -65,7 +67,8 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
                 os.add(Flowable.unsafeCreate(sco));
             }
 
-            Iterator<String> iter = Flowable.merge(os, maxConcurrent).blockingIterable().iterator();
+            Iterator<String> iter = Flowable.merge(os, new StandardConcurrentBufferedConfig(maxConcurrent))
+                    .blockingIterable().iterator();
             List<String> actual = new ArrayList<>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
@@ -117,7 +120,8 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
         for (int i = 0; i < n; i++) {
             sourceList.add(Flowable.just(i));
         }
-        Iterator<Integer> it = Flowable.merge(Flowable.fromIterable(sourceList), 1).blockingIterable().iterator();
+        Iterator<Integer> it = Flowable.merge(Flowable.fromIterable(sourceList), new StandardConcurrentBufferedConfig(1))
+                .blockingIterable().iterator();
         int j = 0;
         while (it.hasNext()) {
             assertEquals((Integer)j, it.next());
@@ -133,7 +137,8 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
         for (int i = 0; i < n; i++) {
             sourceList.add(Flowable.just(i));
         }
-        Iterator<Integer> it = Flowable.merge(Flowable.fromIterable(sourceList), 1).take(n / 2).blockingIterable().iterator();
+        Iterator<Integer> it = Flowable.merge(Flowable.fromIterable(sourceList), new StandardConcurrentBufferedConfig(1))
+                .take(n / 2).blockingIterable().iterator();
         int j = 0;
         while (it.hasNext()) {
             assertEquals((Integer)j, it.next());
@@ -153,7 +158,8 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
                 result.add(j);
             }
 
-            Flowable.merge(sourceList, i).subscribe(ts);
+            Flowable.merge(sourceList, new StandardConcurrentBufferedConfig(i))
+            .subscribe(ts);
 
             ts.assertNoErrors();
             ts.assertTerminated();
@@ -172,7 +178,8 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
                 result.add(j);
             }
 
-            Flowable.merge(sourceList, i - 1).subscribe(ts);
+            Flowable.merge(sourceList, new StandardConcurrentBufferedConfig(i - 1))
+            .subscribe(ts);
 
             ts.assertNoErrors();
             ts.assertTerminated();
@@ -204,7 +211,8 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
                 expected.add(j);
             }
 
-            Flowable.merge(sourceList, i).subscribe(ts);
+            Flowable.merge(sourceList, new StandardConcurrentBufferedConfig(i))
+            .subscribe(ts);
 
             ts.awaitDone(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
@@ -236,7 +244,8 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
                 expected.add(j);
             }
 
-            Flowable.merge(sourceList, i - 1).subscribe(ts);
+            Flowable.merge(sourceList, new StandardConcurrentBufferedConfig(i - 1))
+            .subscribe(ts);
 
             ts.awaitDone(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
@@ -264,7 +273,8 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
             }
         };
 
-        Flowable.merge(sourceList, 2).subscribe(ts);
+        Flowable.merge(sourceList, new StandardConcurrentBufferedConfig(2))
+        .subscribe(ts);
 
         ts.request(5);
 
@@ -287,7 +297,9 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        Flowable.merge(sourceList, 2).take(5).subscribe(ts);
+        Flowable.merge(sourceList, new StandardConcurrentBufferedConfig(2))
+        .take(5)
+        .subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
