@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
-import io.reactivex.rxjava4.exceptions.Exceptions;
+import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.util.BackpressureHelper;
 
 /**
@@ -105,7 +105,11 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     if (ex != STOP && !cancelled) {
-                        downstream.onError(ex);
+                        if (ex instanceof ThrowableWrapper) {
+                            downstream.onError(ex.getCause());
+                        } else {
+                            downstream.onError(ex);
+                        }
                     }
                     return null;
                 }

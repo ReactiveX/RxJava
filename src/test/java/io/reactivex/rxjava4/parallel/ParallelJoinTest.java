@@ -429,7 +429,7 @@ public class ParallelJoinTest extends RxJavaTest {
 
     @Test
     public void onNextMissingBackpressureRace() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
                 AtomicReference<Subscriber<? super Integer>> ref1 = new AtomicReference<>();
@@ -473,7 +473,7 @@ public class ParallelJoinTest extends RxJavaTest {
 
     @Test
     public void onNextMissingBackpressureDelayErrorRace() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
                 AtomicReference<Subscriber<? super Integer>> ref1 = new AtomicReference<>();

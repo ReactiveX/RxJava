@@ -28,7 +28,7 @@ public final class Exceptions {
     }
     /**
      * Convenience method to throw a {@code RuntimeException} and {@code Error} directly
-     * or wrap any other exception type into a {@code RuntimeException}.
+     * or wrap any other exception type into a {@link ThrowableWrapper}.
      * @param t the exception to throw directly or wrapped
      * @return because {@code propagate} itself throws an exception or error, this is a sort of phantom return
      *         value; {@code propagate} does not actually return anything

@@ -864,7 +864,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
     @Test
     public void signalsAfterMapperCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {

@@ -28,11 +28,11 @@ import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
-public class SingleSafeSubscribeTest {
+public class SingleSafeSubscribeTest extends RxJavaTest {
 
     @Test
     public void normalSuccess() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             SingleObserver<Integer> consumer = mock(SingleObserver.class);
 
@@ -50,7 +50,7 @@ public class SingleSafeSubscribeTest {
 
     @Test
     public void normalError() throws Throwable  {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             SingleObserver<Integer> consumer = mock(SingleObserver.class);
 
@@ -68,7 +68,7 @@ public class SingleSafeSubscribeTest {
 
     @Test
     public void onSubscribeCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             SingleObserver<Integer> consumer = mock(SingleObserver.class);
             doThrow(new TestException()).when(consumer).onSubscribe(any());
@@ -99,7 +99,7 @@ public class SingleSafeSubscribeTest {
 
     @Test
     public void onSuccessCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             SingleObserver<Integer> consumer = mock(SingleObserver.class);
             doThrow(new TestException()).when(consumer).onSuccess(any());
@@ -124,7 +124,7 @@ public class SingleSafeSubscribeTest {
 
     @Test
     public void onErrorCrash() throws Throwable  {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             SingleObserver<Integer> consumer = mock(SingleObserver.class);
             doThrow(new TestException()).when(consumer).onError(any());

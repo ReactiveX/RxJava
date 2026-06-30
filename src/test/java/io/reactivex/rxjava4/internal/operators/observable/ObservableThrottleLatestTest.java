@@ -616,7 +616,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
      */
     @Test
     public void onDroppedDisposeCrashesDrop() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             PublishSubject<Integer> ps = PublishSubject.create();
 
             TestScheduler sch = new TestScheduler();

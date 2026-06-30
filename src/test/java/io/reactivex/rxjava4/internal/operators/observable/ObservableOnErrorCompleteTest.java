@@ -19,13 +19,13 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Observable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.testsupport.*;
 
-public class ObservableOnErrorCompleteTest {
+public class ObservableOnErrorCompleteTest extends RxJavaTest {
 
     @Test
     public void normal() {
@@ -45,7 +45,7 @@ public class ObservableOnErrorCompleteTest {
 
     @Test
     public void error() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Observable.error(new TestException())
             .onErrorComplete()
             .test()
@@ -57,7 +57,7 @@ public class ObservableOnErrorCompleteTest {
 
     @Test
     public void errorMatches() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Observable.error(new TestException())
             .onErrorComplete(error -> error instanceof TestException)
             .test()
@@ -69,7 +69,7 @@ public class ObservableOnErrorCompleteTest {
 
     @Test
     public void errorNotMatches() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Observable.error(new IOException())
             .onErrorComplete(error -> error instanceof TestException)
             .test()
@@ -81,7 +81,7 @@ public class ObservableOnErrorCompleteTest {
 
     @Test
     public void errorPredicateCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             TestObserverEx<Object> to = Observable.error(new IOException())
             .onErrorComplete(_ -> { throw new TestException(); })
             .subscribeWith(new TestObserverEx<>())
@@ -96,7 +96,7 @@ public class ObservableOnErrorCompleteTest {
 
     @Test
     public void itemsThenError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Observable.range(1, 5)
             .map(v -> 4 / (3 - v))
             .onErrorComplete()

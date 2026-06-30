@@ -101,6 +101,10 @@ public final class RxJavaPlugins {
 
     @SuppressWarnings("rawtypes")
     @Nullable
+    static volatile Function<? super Streamable, ? extends Streamable> onStreamableAssembly;
+
+    @SuppressWarnings("rawtypes")
+    @Nullable
     static volatile BiFunction<? super Flowable, @NonNull ? super Subscriber, @NonNull ? extends Subscriber> onFlowableSubscribe;
 
     @SuppressWarnings("rawtypes")
@@ -808,6 +812,16 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
+    public static Function<? super Streamable, ? extends Streamable> getOnStreamableAssembly() {
+        return onStreamableAssembly;
+    }
+
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
+    @Nullable
+    @SuppressWarnings("rawtypes")
     public static Function<? super Single, ? extends Single> getOnSingleAssembly() {
         return onSingleAssembly;
     }
@@ -897,6 +911,18 @@ public final class RxJavaPlugins {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
         RxJavaPlugins.onMaybeAssembly = onMaybeAssembly;
+    }
+
+    /**
+     * Sets the specific hook function.
+     * @param onStreamableAssembly the hook function to set, null allowed
+     */
+    @SuppressWarnings("rawtypes")
+    public static void setOnStreamableAssembly(@Nullable Function<? super Streamable, ? extends Streamable> onStreamableAssembly) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onStreamableAssembly = onStreamableAssembly;
     }
 
     /**
@@ -1122,6 +1148,22 @@ public final class RxJavaPlugins {
     @NonNull
     public static <@NonNull T> Flowable<T> onAssembly(@NonNull Flowable<T> source) {
         Function<? super Flowable, ? extends Flowable> f = onFlowableAssembly;
+        if (f != null) {
+            return apply(f, source);
+        }
+        return source;
+    }
+
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
+     * @return the value returned by the hook
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @NonNull
+    public static <@NonNull T> Streamable<T> onAssembly(@NonNull Streamable<T> source) {
+        Function<? super Streamable, ? extends Streamable> f = onStreamableAssembly;
         if (f != null) {
             return apply(f, source);
         }

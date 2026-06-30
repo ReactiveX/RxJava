@@ -19,13 +19,13 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Single;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.subjects.SingleSubject;
 import io.reactivex.rxjava4.testsupport.*;
 
-public class SingleOnErrorCompleteTest {
+public class SingleOnErrorCompleteTest extends RxJavaTest {
 
     @Test
     public void normal() {
@@ -37,7 +37,7 @@ public class SingleOnErrorCompleteTest {
 
     @Test
     public void error() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Single.error(new TestException())
             .onErrorComplete()
             .test()
@@ -49,7 +49,7 @@ public class SingleOnErrorCompleteTest {
 
     @Test
     public void errorMatches() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Single.error(new TestException())
             .onErrorComplete(error -> error instanceof TestException)
             .test()
@@ -61,7 +61,7 @@ public class SingleOnErrorCompleteTest {
 
     @Test
     public void errorNotMatches() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Single.error(new IOException())
             .onErrorComplete(error -> error instanceof TestException)
             .test()
@@ -73,7 +73,7 @@ public class SingleOnErrorCompleteTest {
 
     @Test
     public void errorPredicateCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             TestObserverEx<Object> to = Single.error(new IOException())
             .onErrorComplete(_ -> { throw new TestException(); })
             .subscribeWith(new TestObserverEx<>())

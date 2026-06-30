@@ -28,11 +28,11 @@ import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
-public class CompletableSafeSubscribeTest {
+public class CompletableSafeSubscribeTest extends RxJavaTest {
 
     @Test
     public void normalError() throws Throwable  {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             CompletableObserver consumer = mock(CompletableObserver.class);
 
             Completable.error(new TestException())
@@ -49,7 +49,7 @@ public class CompletableSafeSubscribeTest {
 
     @Test
     public void normalEmpty() throws Throwable  {
-        TestHelper.withErrorTracking(_ -> {
+        withErrorTracking(_ -> {
             CompletableObserver consumer = mock(CompletableObserver.class);
 
             Completable.complete()
@@ -64,7 +64,7 @@ public class CompletableSafeSubscribeTest {
 
     @Test
     public void onSubscribeCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             CompletableObserver consumer = mock(CompletableObserver.class);
             doThrow(new TestException()).when(consumer).onSubscribe(any());
 
@@ -94,7 +94,7 @@ public class CompletableSafeSubscribeTest {
 
     @Test
     public void onErrorCrash() throws Throwable  {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             CompletableObserver consumer = mock(CompletableObserver.class);
             doThrow(new TestException()).when(consumer).onError(any());
 
@@ -123,7 +123,7 @@ public class CompletableSafeSubscribeTest {
 
     @Test
     public void onCompleteCrash() throws Throwable  {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             CompletableObserver consumer = mock(CompletableObserver.class);
             doThrow(new TestException()).when(consumer).onComplete();
 

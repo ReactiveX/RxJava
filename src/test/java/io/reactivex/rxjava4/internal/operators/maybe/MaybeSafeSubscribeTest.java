@@ -28,11 +28,11 @@ import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
-public class MaybeSafeSubscribeTest {
+public class MaybeSafeSubscribeTest extends RxJavaTest {
 
     @Test
     public void normalSuccess() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             MaybeObserver<Integer> consumer = mock(MaybeObserver.class);
 
@@ -50,7 +50,7 @@ public class MaybeSafeSubscribeTest {
 
     @Test
     public void normalError() throws Throwable  {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             MaybeObserver<Integer> consumer = mock(MaybeObserver.class);
 
@@ -68,7 +68,7 @@ public class MaybeSafeSubscribeTest {
 
     @Test
     public void normalEmpty() throws Throwable  {
-        TestHelper.withErrorTracking(_ -> {
+        withErrorTracking(_ -> {
             @SuppressWarnings("unchecked")
             MaybeObserver<Integer> consumer = mock(MaybeObserver.class);
 
@@ -84,7 +84,7 @@ public class MaybeSafeSubscribeTest {
 
     @Test
     public void onSubscribeCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             MaybeObserver<Integer> consumer = mock(MaybeObserver.class);
             doThrow(new TestException()).when(consumer).onSubscribe(any());
@@ -116,7 +116,7 @@ public class MaybeSafeSubscribeTest {
 
     @Test
     public void onSuccessCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             MaybeObserver<Integer> consumer = mock(MaybeObserver.class);
             doThrow(new TestException()).when(consumer).onSuccess(any());
@@ -141,7 +141,7 @@ public class MaybeSafeSubscribeTest {
 
     @Test
     public void onErrorCrash() throws Throwable  {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             MaybeObserver<Integer> consumer = mock(MaybeObserver.class);
             doThrow(new TestException()).when(consumer).onError(any());
@@ -171,7 +171,7 @@ public class MaybeSafeSubscribeTest {
 
     @Test
     public void onCompleteCrash() throws Throwable  {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             MaybeObserver<Integer> consumer = mock(MaybeObserver.class);
             doThrow(new TestException()).when(consumer).onComplete();

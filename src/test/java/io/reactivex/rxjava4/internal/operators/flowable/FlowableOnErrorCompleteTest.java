@@ -19,13 +19,13 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.*;
 
-public class FlowableOnErrorCompleteTest {
+public class FlowableOnErrorCompleteTest extends RxJavaTest {
 
     @Test
     public void normal() {
@@ -59,7 +59,7 @@ public class FlowableOnErrorCompleteTest {
 
     @Test
     public void error() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Flowable.error(new TestException())
             .onErrorComplete()
             .test()
@@ -71,7 +71,7 @@ public class FlowableOnErrorCompleteTest {
 
     @Test
     public void errorMatches() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Flowable.error(new TestException())
             .onErrorComplete(error -> error instanceof TestException)
             .test()
@@ -83,7 +83,7 @@ public class FlowableOnErrorCompleteTest {
 
     @Test
     public void errorNotMatches() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Flowable.error(new IOException())
             .onErrorComplete(error -> error instanceof TestException)
             .test()
@@ -95,7 +95,7 @@ public class FlowableOnErrorCompleteTest {
 
     @Test
     public void errorPredicateCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             TestSubscriberEx<Object> ts = Flowable.error(new IOException())
             .onErrorComplete(_ -> { throw new TestException(); })
             .subscribeWith(new TestSubscriberEx<>())
@@ -110,7 +110,7 @@ public class FlowableOnErrorCompleteTest {
 
     @Test
     public void itemsThenError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Flowable.range(1, 5)
             .map(v -> 4 / (3 - v))
             .onErrorComplete()

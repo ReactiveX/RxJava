@@ -450,7 +450,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
     @Test
     public void openError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             TestException ex1 = new TestException();
             TestException ex2 = new TestException();
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -487,7 +487,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
     @Test
     public void closeError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             AtomicReference<Subscriber<? super Integer>> ref1 = new AtomicReference<>();
             AtomicReference<Subscriber<? super Integer>> ref2 = new AtomicReference<>();
 
@@ -601,7 +601,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
     @Test
     public void mainIgnoresCancelBeforeOnError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Flowable.fromPublisher(s -> {
                 s.onSubscribe(new BooleanSubscription());
                 s.onNext(1);

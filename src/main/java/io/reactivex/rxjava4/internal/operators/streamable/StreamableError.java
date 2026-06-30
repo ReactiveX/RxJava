@@ -13,34 +13,43 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 
-public final class StreamableEmpty<T> implements Streamable<T> {
+public record StreamableError<T>(@NonNull Throwable throwable) implements Streamable<T> {
 
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
-        return new EmptyStreamer<>();
+        return createFailed(throwable);
     }
 
-    static final class EmptyStreamer<T> implements Streamer<T> {
+    public static <@NonNull T> Streamer<@NonNull T> createFailed(@NonNull Throwable throwable) {
+        return new ErrorStreamer<>(throwable);
+    }
+
+    static final class ErrorStreamer<T> implements Streamer<T> {
+
+        final CompletionStage<Boolean> throwable;
+
+        ErrorStreamer(Throwable throwable) {
+            this.throwable = CompletableFuture.failedFuture(throwable);
+        }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
-            return NEXT_FALSE;
+        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+            return throwable;
         }
 
         @Override
         public @NonNull T current() {
-            throw new NoSuchElementException("This Streamable/Streamer never has elements");
+            throw new IllegalStateException("current cannot be called if next() did not result in a true CompletionStage");
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(DisposableContainer canceller) {
+        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
             return FINISHED;
         }
     }

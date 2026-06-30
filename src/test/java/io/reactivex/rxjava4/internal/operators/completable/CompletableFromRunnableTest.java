@@ -125,7 +125,7 @@ public class CompletableFromRunnableTest extends RxJavaTest {
 
     @Test
     public void disposeWhileRunningError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             TestObserver<Void> to = new TestObserver<>();
 
             Completable.fromRunnable(() -> {

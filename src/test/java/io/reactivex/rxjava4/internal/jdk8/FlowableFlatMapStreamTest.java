@@ -180,7 +180,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
 
     @Test
     public void upstreamCancelledCloseCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = pp
@@ -262,7 +262,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
 
     @Test
     public void queueOverflow() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
@@ -329,7 +329,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
 
     @Test
     public void mapperThrowsWhenUpstreamErrors() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             AtomicInteger counter = new AtomicInteger();

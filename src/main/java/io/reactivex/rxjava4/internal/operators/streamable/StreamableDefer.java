@@ -13,22 +13,22 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import java.util.concurrent.*;
+import io.reactivex.rxjava4.annotations.NonNull;
+import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.exceptions.Exceptions;
+import io.reactivex.rxjava4.functions.Supplier;
 
-public enum StreamableHelper {
-    INSTANCE;
+public record StreamableDefer<T>(Supplier<? extends Streamable<? extends T>> supplier) implements Streamable<T> {
 
     @SuppressWarnings("unchecked")
-    public static <T> CompletionStage<T> toCompletionStage(Future<T> future) {
-        if (future instanceof CompletionStage) {
-            return (CompletionStage<T>) future;
+    @Override
+    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+        try {
+            return (Streamer<T>)(supplier.get().stream(cancellation));
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            return StreamableError.createFailed(ex);
         }
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return future.get();
-            } catch (Exception e) {
-                throw new CompletionException(e);
-            }
-        });
     }
 }

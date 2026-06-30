@@ -179,7 +179,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
 
     @Test
     public void upstreamCancelledCloseCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             PublishSubject<Integer> ps = PublishSubject.create();
 
             TestObserver<Integer> to = ps
@@ -273,7 +273,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
 
     @Test
     public void mapperThrowsWhenUpstreamErrors() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             PublishSubject<Integer> ps = PublishSubject.create();
 
             AtomicInteger counter = new AtomicInteger();

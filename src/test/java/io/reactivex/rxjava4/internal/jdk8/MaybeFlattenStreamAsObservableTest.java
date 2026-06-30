@@ -293,7 +293,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
 
     @Test
     public void streamCloseCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Maybe.just(1)
             .flattenStreamAsObservable(v -> Stream.of(v).onClose(() -> { throw new TestException(); }))
             .test()

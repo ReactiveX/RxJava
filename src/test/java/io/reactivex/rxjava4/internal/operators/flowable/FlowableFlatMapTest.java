@@ -908,7 +908,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
     @Test
     public void signalsAfterMapperCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull Subscriber<? super @NonNull Integer> s) {

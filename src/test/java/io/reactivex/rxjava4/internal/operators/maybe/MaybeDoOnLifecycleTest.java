@@ -76,7 +76,7 @@ public class MaybeDoOnLifecycleTest extends RxJavaTest {
 
     @Test
     public void onSubscribeCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<? super Disposable> onSubscribe = mock(Consumer.class);
             Action onDispose = mock(Action.class);
@@ -109,7 +109,7 @@ public class MaybeDoOnLifecycleTest extends RxJavaTest {
 
     @Test
     public void onDisposeCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<? super Disposable> onSubscribe = mock(Consumer.class);
             Action onDispose = mock(Action.class);

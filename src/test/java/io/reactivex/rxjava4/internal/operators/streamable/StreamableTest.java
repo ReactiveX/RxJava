@@ -25,14 +25,13 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.subscriptions.EmptySubscription;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
-import io.reactivex.rxjava4.testsupport.TestHelper;
 
 @Isolated
 public class StreamableTest extends StreamableBaseTest {
 
     @Test
     public void empty() throws Throwable {
-        TestHelper.withVirtual(exec -> {
+        withVirtual(exec -> {
 
             var ts = new TestSubscriber<Integer>();
             ts.onSubscribe(EmptySubscription.INSTANCE);
@@ -54,7 +53,7 @@ public class StreamableTest extends StreamableBaseTest {
 
     @Test
     public void just() throws Throwable {
-        TestHelper.withVirtual(exec -> {
+        withVirtual(exec -> {
 
             var ts = new TestSubscriber<Integer>();
             ts.onSubscribe(EmptySubscription.INSTANCE);
@@ -76,7 +75,7 @@ public class StreamableTest extends StreamableBaseTest {
 
     @RepeatedTest(100)
     public void fromFlowable() throws Throwable {
-        TestHelper.withVirtual(exec -> {
+        withVirtual(exec -> {
             Flowable.range(1, 10)
             .toStreamable(exec)
             .test(exec)
@@ -91,7 +90,7 @@ public class StreamableTest extends StreamableBaseTest {
 
     @RepeatedTest(100)
     public void fromFlowableToStreamableToFlowable() throws Throwable {
-        TestHelper.withVirtual(exec -> {
+        withVirtual(exec -> {
             Flowable.range(1, 10)
             .toStreamable(exec)
             .toFlowable(exec)
@@ -107,7 +106,7 @@ public class StreamableTest extends StreamableBaseTest {
 
     @RepeatedTest(100)
     public void createAndTransform() throws Throwable {
-        TestHelper.onVirtual(exec -> {
+        onVirtual(exec -> {
             Streamable.<Integer>create(emitter -> {
                 for (int i = 1; i < 11; i++) {
                     emitter.emit(i);
@@ -125,7 +124,7 @@ public class StreamableTest extends StreamableBaseTest {
 
     @RepeatedTest(100)
     public void flowableRangeAndTransform() throws Throwable {
-        TestHelper.onVirtual(exec -> {
+        onVirtual(exec -> {
             Flowable.range(1, 10)
             .toStreamable(exec)
             .transform((item, emitter, _) -> emitter.emit(-item - 1), exec)
@@ -140,7 +139,7 @@ public class StreamableTest extends StreamableBaseTest {
 
     @Test
     public void flowableRangeAndTransform1() throws Throwable {
-        TestHelper.onVirtual(exec -> {
+        onVirtual(exec -> {
             System.out.println(">> START");
             Flowable.range(1, 10)
             .doOnSubscribe(_ -> System.out.println("Flowable::doOnSubscribe"))
@@ -164,7 +163,7 @@ public class StreamableTest extends StreamableBaseTest {
 
     @Test
     public void flowableRangeAndTransformFlowable1() throws Throwable {
-        TestHelper.onVirtual(exec -> {
+        onVirtual(exec -> {
             System.out.println(">> START");
             Flowable.range(1, 10)
             .doOnSubscribe(_ -> System.out.println("Flowable::doOnSubscribe"))
@@ -193,7 +192,7 @@ public class StreamableTest extends StreamableBaseTest {
 
     @Test
     public void flowableRangeAndTransform2() throws Throwable {
-        TestHelper.withCachedExecutor(exec -> {
+        withCachedExecutor(exec -> {
             System.out.println(">> START");
             var ts = Flowable.range(1, 10)
             .doOnSubscribe(_ -> System.out.println("Flowable::doOnSubscribe"))
@@ -222,7 +221,7 @@ public class StreamableTest extends StreamableBaseTest {
 
     @Test
     public void rangeTransformFilter() throws Throwable {
-        TestHelper.withVirtual(exec -> Flowable.range(1, 10)
+        withVirtual(exec -> Flowable.range(1, 10)
         .toStreamable(exec)
         .transform((item, emitter, _) -> {
             if ((item & 1) == 0) {
@@ -236,7 +235,7 @@ public class StreamableTest extends StreamableBaseTest {
 
     @Test
     public void rangeTransformTake() throws Throwable {
-        TestHelper.withVirtual(exec -> {
+        withVirtual(exec -> {
             var cancelled = new AtomicInteger();
             Flowable.range(1, 10)
             .doOnCancel(cancelled::incrementAndGet)
@@ -257,7 +256,7 @@ public class StreamableTest extends StreamableBaseTest {
 
     @Test
     public void concat() throws Throwable {
-        TestHelper.withVirtual(exec -> {
+        withVirtual(exec -> {
 
             var srcs = Flowable.just(Streamable.just(1), Streamable.empty(), Streamable.just(2))
             .toStreamable();

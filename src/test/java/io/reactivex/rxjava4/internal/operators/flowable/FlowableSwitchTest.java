@@ -1005,7 +1005,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void innerIgnoresCancelAndErrors() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<Object> ts = pp

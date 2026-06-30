@@ -193,7 +193,7 @@ public class ParallelSortedJoinTest extends RxJavaTest {
 
     @Test
     public void comparatorCrashWhileMainOnError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             PublishProcessor<List<Integer>> pp1 = PublishProcessor.create();
             PublishProcessor<List<Integer>> pp2 = PublishProcessor.create();
 
