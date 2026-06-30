@@ -207,9 +207,9 @@ public class FlowableTakeUntilTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertTerminated();
 
-        assertFalse("Source still has observers", source.hasSubscribers());
-        assertFalse("Until still has observers", until.hasSubscribers());
-        assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
+        assertFalse(source.hasSubscribers(), "Source still has observers");
+        assertFalse(until.hasSubscribers(), "Until still has observers");
+        assertFalse(ts.isCancelled(), "TestSubscriber is unsubscribed");
     }
 
     @Test
@@ -231,9 +231,9 @@ public class FlowableTakeUntilTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertTerminated();
 
-        assertFalse("Source still has observers", source.hasSubscribers());
-        assertFalse("Until still has observers", until.hasSubscribers());
-        assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
+        assertFalse(source.hasSubscribers(), "Source still has observers");
+        assertFalse(until.hasSubscribers(), "Until still has observers");
+        assertFalse(ts.isCancelled(), "TestSubscriber is unsubscribed");
     }
 
     @Test
@@ -254,9 +254,9 @@ public class FlowableTakeUntilTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertTerminated();
 
-        assertFalse("Source still has observers", source.hasSubscribers());
-        assertFalse("Until still has observers", until.hasSubscribers());
-        assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
+        assertFalse(source.hasSubscribers(), "Source still has observers");
+        assertFalse(until.hasSubscribers(), "Until still has observers");
+        assertFalse(ts.isCancelled(), "TestSubscriber is unsubscribed");
     }
 
     @Test
@@ -280,8 +280,8 @@ public class FlowableTakeUntilTest extends RxJavaTest {
         ts.assertComplete();
         ts.assertNoErrors();
 
-        assertFalse("Until still has observers", until.hasSubscribers());
-        assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
+        assertFalse(until.hasSubscribers(), "Until still has observers");
+        assertFalse(ts.isCancelled(), "TestSubscriber is unsubscribed");
     }
 
     @Test
@@ -301,15 +301,15 @@ public class FlowableTakeUntilTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = main.takeUntil(other).test();
 
-        assertTrue("Main no subscribers?", main.hasSubscribers());
-        assertTrue("Other no subscribers?", other.hasSubscribers());
+        assertTrue(main.hasSubscribers(), "Main no subscribers?");
+        assertTrue(other.hasSubscribers(), "Other no subscribers?");
 
         main.onNext(1);
         main.onNext(2);
         main.onComplete();
 
-        assertFalse("Main has subscribers?", main.hasSubscribers());
-        assertFalse("Other has subscribers?", other.hasSubscribers());
+        assertFalse(main.hasSubscribers(), "Main has subscribers?");
+        assertFalse(other.hasSubscribers(), "Other has subscribers?");
 
         ts.assertResult(1, 2);
     }
@@ -321,13 +321,13 @@ public class FlowableTakeUntilTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = main.takeUntil(other).test();
 
-        assertTrue("Main no subscribers?", main.hasSubscribers());
-        assertTrue("Other no subscribers?", other.hasSubscribers());
+        assertTrue(main.hasSubscribers(), "Main no subscribers?");
+        assertTrue(other.hasSubscribers(), "Other no subscribers?");
 
         main.onComplete();
 
-        assertFalse("Main has subscribers?", main.hasSubscribers());
-        assertFalse("Other has subscribers?", other.hasSubscribers());
+        assertFalse(main.hasSubscribers(), "Main has subscribers?");
+        assertFalse(other.hasSubscribers(), "Other has subscribers?");
 
         ts.assertResult();
     }
@@ -339,13 +339,13 @@ public class FlowableTakeUntilTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = main.takeUntil(other).test();
 
-        assertTrue("Main no subscribers?", main.hasSubscribers());
-        assertTrue("Other no subscribers?", other.hasSubscribers());
+        assertTrue(main.hasSubscribers(), "Main no subscribers?");
+        assertTrue(other.hasSubscribers(), "Other no subscribers?");
 
         main.onError(new TestException());
 
-        assertFalse("Main has subscribers?", main.hasSubscribers());
-        assertFalse("Other has subscribers?", other.hasSubscribers());
+        assertFalse(main.hasSubscribers(), "Main has subscribers?");
+        assertFalse(other.hasSubscribers(), "Other has subscribers?");
 
         ts.assertFailure(TestException.class);
     }
@@ -357,13 +357,13 @@ public class FlowableTakeUntilTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = main.takeUntil(other).test();
 
-        assertTrue("Main no subscribers?", main.hasSubscribers());
-        assertTrue("Other no subscribers?", other.hasSubscribers());
+        assertTrue(main.hasSubscribers(), "Main no subscribers?");
+        assertTrue(other.hasSubscribers(), "Other no subscribers?");
 
         other.onNext(1);
 
-        assertFalse("Main has subscribers?", main.hasSubscribers());
-        assertFalse("Other has subscribers?", other.hasSubscribers());
+        assertFalse(main.hasSubscribers(), "Main has subscribers?");
+        assertFalse(other.hasSubscribers(), "Other has subscribers?");
 
         ts.assertResult();
     }
@@ -375,13 +375,13 @@ public class FlowableTakeUntilTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = main.takeUntil(other).test();
 
-        assertTrue("Main no subscribers?", main.hasSubscribers());
-        assertTrue("Other no subscribers?", other.hasSubscribers());
+        assertTrue(main.hasSubscribers(), "Main no subscribers?");
+        assertTrue(other.hasSubscribers(), "Other no subscribers?");
 
         other.onComplete();
 
-        assertFalse("Main has subscribers?", main.hasSubscribers());
-        assertFalse("Other has subscribers?", other.hasSubscribers());
+        assertFalse(main.hasSubscribers(), "Main has subscribers?");
+        assertFalse(other.hasSubscribers(), "Other has subscribers?");
 
         ts.assertResult();
     }
@@ -393,13 +393,13 @@ public class FlowableTakeUntilTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = main.takeUntil(other).test();
 
-        assertTrue("Main no subscribers?", main.hasSubscribers());
-        assertTrue("Other no subscribers?", other.hasSubscribers());
+        assertTrue(main.hasSubscribers(), "Main no subscribers?");
+        assertTrue(other.hasSubscribers(), "Other no subscribers?");
 
         other.onError(new TestException());
 
-        assertFalse("Main has subscribers?", main.hasSubscribers());
-        assertFalse("Other has subscribers?", other.hasSubscribers());
+        assertFalse(main.hasSubscribers(), "Main has subscribers?");
+        assertFalse(other.hasSubscribers(), "Other has subscribers?");
 
         ts.assertFailure(TestException.class);
     }
@@ -411,13 +411,13 @@ public class FlowableTakeUntilTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = main.takeUntil(other).test();
 
-        assertTrue("Main no subscribers?", main.hasSubscribers());
-        assertTrue("Other no subscribers?", other.hasSubscribers());
+        assertTrue(main.hasSubscribers(), "Main no subscribers?");
+        assertTrue(other.hasSubscribers(), "Other no subscribers?");
 
         ts.cancel();
 
-        assertFalse("Main has subscribers?", main.hasSubscribers());
-        assertFalse("Other has subscribers?", other.hasSubscribers());
+        assertFalse(main.hasSubscribers(), "Main has subscribers?");
+        assertFalse(other.hasSubscribers(), "Other has subscribers?");
 
         ts.assertEmpty();
     }

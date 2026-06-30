@@ -806,14 +806,14 @@ public class TestObserverExTest extends RxJavaTest {
             to.assertValueSequence(Collections.<Integer>emptyList());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError expected) {
-            assertTrue(expected.getMessage(), expected.getMessage().startsWith("More values received than expected (0)"));
+            assertTrue(expected.getMessage().startsWith("More values received than expected (0)"), expected.getMessage());
         }
 
         try {
             to.assertValueSequence(Collections.singletonList(1));
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError expected) {
-            assertTrue(expected.getMessage(), expected.getMessage().startsWith("More values received than expected (1)"));
+            assertTrue(expected.getMessage().startsWith("More values received than expected (1)"), expected.getMessage());
         }
 
         to.assertValueSequence(Arrays.asList(1, 2));
@@ -822,7 +822,7 @@ public class TestObserverExTest extends RxJavaTest {
             to.assertValueSequence(Arrays.asList(1, 2, 3));
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError expected) {
-            assertTrue(expected.getMessage(), expected.getMessage().startsWith("Fewer values received than expected (2)"));
+            assertTrue(expected.getMessage().startsWith("Fewer values received than expected (2)"), expected.getMessage());
         }
     }
 
@@ -860,7 +860,7 @@ public class TestObserverExTest extends RxJavaTest {
         try {
             to.awaitDone(5, TimeUnit.SECONDS);
         } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+            assertTrue(ex.getCause() instanceof InterruptedException, ex.toString());
         }
     }
 
@@ -1108,13 +1108,13 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateEmpty() {
-        assertThrows("No values", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestObserverEx<Object> to = new TestObserverEx<>();
 
             Observable.empty().subscribe(to);
 
             to.assertValue(_ -> false);
-        });
+        }, "No values");
     }
 
     @Test
@@ -1128,35 +1128,35 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateNoMatch() {
-        assertThrows("Value not present", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestObserverEx<Integer> to = new TestObserverEx<>();
 
             Observable.just(1).subscribe(to);
 
             to.assertValue(o -> o != 1);
-        });
+        }, "Value not present");
     }
 
     @Test
     public void assertValuePredicateMatchButMore() {
-        assertThrows("Value present but other values as well", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestObserverEx<Integer> to = new TestObserverEx<>();
 
             Observable.just(1, 2).subscribe(to);
 
             to.assertValue(o -> o == 1);
-        });
+        }, "Value present but other values as well");
     }
 
     @Test
     public void assertValueAtPredicateEmpty() {
-        assertThrows("No values", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestObserverEx<Object> to = new TestObserverEx<>();
 
             Observable.empty().subscribe(to);
 
             to.assertValueAt(0, _ -> false);
-        });
+        }, "No values");
     }
 
     @Test
@@ -1170,35 +1170,35 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertValueAtPredicateNoMatch() {
-        assertThrows("Value not present", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestObserverEx<Integer> to = new TestObserverEx<>();
 
             Observable.just(1, 2, 3).subscribe(to);
 
             to.assertValueAt(2, o -> o != 3);
-        });
+        }, "Value not present");
     }
 
     @Test
     public void assertValueAtInvalidIndex() {
-        assertThrows("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestObserverEx<Integer> to = new TestObserverEx<>();
 
             Observable.just(1, 2).subscribe(to);
 
             to.assertValueAt(2, o -> o == 1);
-        });
+        }, "Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)");
     }
 
     @Test
     public void assertValueAtIndexEmpty() {
-        assertThrows("No values", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestObserverEx<Object> to = new TestObserverEx<>();
 
             Observable.empty().subscribe(to);
 
             to.assertValueAt(0, "a");
-        });
+        }, "No values");
     }
 
     @Test
@@ -1212,24 +1212,24 @@ public class TestObserverExTest extends RxJavaTest {
 
     @Test
     public void assertValueAtIndexNoMatch() {
-        assertThrows("\nexpected: b (class: String)\ngot: c (class: String) (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestObserverEx<String> to = new TestObserverEx<>();
 
             Observable.just("a", "b", "c").subscribe(to);
 
             to.assertValueAt(2, "b");
-        });
+        }, "\nexpected: b (class: String)\ngot: c (class: String) (latch = 0, values = 3, errors = 0, completions = 1)");
     }
 
     @Test
     public void assertValueAtIndexInvalidIndex() {
-        assertThrows("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestObserverEx<String> to = new TestObserverEx<>();
 
             Observable.just("a", "b").subscribe(to);
 
             to.assertValueAt(2, "c");
-        });
+        }, "Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)");
     }
 
     @Test
@@ -1244,7 +1244,7 @@ public class TestObserverExTest extends RxJavaTest {
             }
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
-            assertTrue(ex.toString(), ex.toString().contains("testing with item=2"));
+            assertTrue(ex.toString().contains("testing with item=2"), ex.toString());
         }
     }
 

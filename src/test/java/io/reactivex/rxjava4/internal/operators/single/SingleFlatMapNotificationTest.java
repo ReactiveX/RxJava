@@ -90,7 +90,7 @@ public class SingleFlatMapNotificationTest extends RxJavaTest {
             .test()
             .assertResult(3);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -102,7 +102,7 @@ public class SingleFlatMapNotificationTest extends RxJavaTest {
             .test()
             .assertFailure(IOException.class);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 }

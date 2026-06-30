@@ -161,7 +161,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void nullOnTerminate() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             UnicastProcessor.create(5, null);
         });
     }

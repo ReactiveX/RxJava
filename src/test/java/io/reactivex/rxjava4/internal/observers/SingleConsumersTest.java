@@ -69,11 +69,11 @@ public class SingleConsumersTest implements Consumer<Object> {
 
         Disposable d = subscribeAutoDispose(processor, composite, this, Functions.ON_ERROR_MISSING);
 
-        assertFalse(d.getClass().toString(), ((LambdaConsumerIntrospection)d).hasCustomOnError());
+        assertFalse(((LambdaConsumerIntrospection)d).hasCustomOnError(), d.getClass().toString());
 
         assertTrue(composite.size() > 0);
 
-        assertTrue(events.toString(), events.isEmpty());
+        assertTrue(events.isEmpty(), events.toString());
 
         processor.onSuccess(1);
 
@@ -90,7 +90,7 @@ public class SingleConsumersTest implements Consumer<Object> {
 
         assertTrue(composite.size() > 0);
 
-        assertTrue(events.toString(), events.isEmpty());
+        assertTrue(events.isEmpty(), events.toString());
 
         processor.onSuccess(1);
 
@@ -105,15 +105,15 @@ public class SingleConsumersTest implements Consumer<Object> {
 
         Disposable d = subscribeAutoDispose(processor, composite, this, this);
 
-        assertTrue(d.getClass().toString(), ((LambdaConsumerIntrospection)d).hasCustomOnError());
+        assertTrue(((LambdaConsumerIntrospection)d).hasCustomOnError(), d.getClass().toString());
 
         assertTrue(composite.size() > 0);
 
-        assertTrue(events.toString(), events.isEmpty());
+        assertTrue(events.isEmpty(), events.toString());
 
         processor.onError(new IOException());
 
-        assertTrue(events.toString(), events.getFirst() instanceof IOException);
+        assertTrue(events.getFirst() instanceof IOException, events.toString());
 
         assertEquals(0, composite.size());
     }
@@ -128,7 +128,7 @@ public class SingleConsumersTest implements Consumer<Object> {
 
             processor.onSuccess(1);
 
-            assertTrue(events.toString(), events.isEmpty());
+            assertTrue(events.isEmpty(), events.toString());
 
             TestHelper.assertUndeliverable(errors, 0, IOException.class);
         } finally {
@@ -146,7 +146,7 @@ public class SingleConsumersTest implements Consumer<Object> {
 
             processor.onError(new IllegalArgumentException());
 
-            assertTrue(events.toString(), events.isEmpty());
+            assertTrue(events.isEmpty(), events.toString());
 
             TestHelper.assertError(errors, 0, CompositeException.class);
             List<Throwable> inners = TestHelper.compositeList(errors.getFirst());

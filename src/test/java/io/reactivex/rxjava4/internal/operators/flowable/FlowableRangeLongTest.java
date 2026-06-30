@@ -81,7 +81,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void rangeWithOverflow4() {
-        assertThrows(TestException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             Flowable.rangeLong(2, Long.MAX_VALUE);
         });
     }

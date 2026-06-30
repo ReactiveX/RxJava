@@ -126,6 +126,6 @@ public class SchedulerLifecycleTest extends RxJavaTest {
         // cached threads may get dropped between the two checks
         rxThreadsAfter.removeAll(rxThreadsBefore);
 
-        assertTrue("Some new threads appeared: " + rxThreadsAfter, rxThreadsAfter.isEmpty());
+        assertTrue(rxThreadsAfter.isEmpty(), "Some new threads appeared: " + rxThreadsAfter);
     }
 }

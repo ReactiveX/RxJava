@@ -275,8 +275,8 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
 
         to.assertFailure(TestException.class);
 
-        assertFalse("main has observers!", ps.hasObservers());
-        assertFalse("other has observers", ms.hasObservers());
+        assertFalse(ps.hasObservers(), "main has observers!");
+        assertFalse(ms.hasObservers(), "other has observers");
     }
 
     @Test
@@ -293,8 +293,8 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
 
         to.assertFailure(TestException.class);
 
-        assertFalse("main has observers!", ps.hasObservers());
-        assertFalse("other has observers", ms.hasObservers());
+        assertFalse(ps.hasObservers(), "main has observers!");
+        assertFalse(ms.hasObservers(), "other has observers");
     }
 
     @Test

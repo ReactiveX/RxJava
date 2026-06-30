@@ -537,7 +537,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
-        assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
+        assertTrue(start + 20 * 1000 * 1000 > after, String.format("%,3d -> %,3d%n", start, after));
     }
 
     @Test
@@ -563,7 +563,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
-        assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
+        assertTrue(start + 20 * 1000 * 1000 > after, String.format("%,3d -> %,3d%n", start, after));
     }
 
     static final class ExceptionData extends Exception {
@@ -597,7 +597,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
-        assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
+        assertTrue(start + 20 * 1000 * 1000 > after, String.format("%,3d -> %,3d%n", start, after));
     }
 
     @Test
@@ -623,7 +623,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
-        assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
+        assertTrue(start + 20 * 1000 * 1000 > after, String.format("%,3d -> %,3d%n", start, after));
     }
 
     @Test

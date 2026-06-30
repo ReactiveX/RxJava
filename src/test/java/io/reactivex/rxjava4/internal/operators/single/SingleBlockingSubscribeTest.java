@@ -193,7 +193,7 @@ public class SingleBlockingSubscribeTest {
             Single.<Integer>error(new TestException())
             .blockingSubscribe(success, consumer);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(success, never()).accept(any());
             verify(consumer).accept(any(TestException.class));
@@ -212,7 +212,7 @@ public class SingleBlockingSubscribeTest {
             .delay(50, TimeUnit.MILLISECONDS, Schedulers.computation(), true)
             .blockingSubscribe(success, consumer);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(success, never()).accept(any());
             verify(consumer).accept(any(TestException.class));
@@ -255,7 +255,7 @@ public class SingleBlockingSubscribeTest {
             .doOnDispose(onDispose)
             .blockingSubscribe(success, consumer);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(onDispose).run();
             verify(success, never()).accept(any());
@@ -334,7 +334,7 @@ public class SingleBlockingSubscribeTest {
             .doOnDispose(onDispose)
             .blockingSubscribe(to);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(onDispose).run();
             to.assertFailure(InterruptedException.class);

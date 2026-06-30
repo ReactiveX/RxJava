@@ -70,7 +70,7 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
 
             System.out.println("unsubscribeThread: " + unsubscribeThread);
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
-            assertSame(unsubscribeThread.toString(), unsubscribeThread, uiEventLoop.getThread());
+            assertSame(unsubscribeThread, uiEventLoop.getThread(), unsubscribeThread.toString());
 
             observer.assertValues(1, 2);
             observer.assertTerminated();

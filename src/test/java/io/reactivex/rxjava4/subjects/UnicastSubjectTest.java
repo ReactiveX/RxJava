@@ -206,14 +206,14 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
 
     @Test
     public void negativeCapacityHint() {
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             UnicastSubject.create(-1);
         });
     }
 
     @Test
     public void zeroCapacityHint() {
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             UnicastSubject.create(0);
         });
     }

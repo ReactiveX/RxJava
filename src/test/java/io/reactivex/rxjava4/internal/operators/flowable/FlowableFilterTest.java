@@ -147,11 +147,11 @@ public class FlowableFilterTest extends RxJavaTest {
             throw new TestException();
         }).subscribe(ts);
 
-        assertTrue("Not subscribed?", pp.hasSubscribers());
+        assertTrue(pp.hasSubscribers(), "Not subscribed?");
 
         pp.onNext(1);
 
-        assertFalse("Subscribed?", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Subscribed?");
 
         ts.assertError(TestException.class);
     }

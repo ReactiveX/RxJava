@@ -277,7 +277,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
             TestHelper.race(ft, r2);
 
-            assertFalse("The task was interrupted", interrupted.get());
+            assertFalse(interrupted.get(), "The task was interrupted");
         }
     }
 

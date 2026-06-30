@@ -61,7 +61,7 @@ public class MaybePeekTest extends RxJavaTest {
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
 
-            assertTrue("" + err, err[0] instanceof TestException);
+            assertTrue(err[0] instanceof TestException, "" + err);
             assertEquals("First", err[0].getMessage());
 
             to.assertFailureAndMessage(TestException.class, "First");

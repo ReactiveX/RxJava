@@ -53,21 +53,20 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
     @Test
     public void toIteratorWithException() {
         assertThrows(TestException.class, () -> {
-            // code that is expected to throw Exception (or subclass)
+            Flowable<String> obs = Flowable.unsafeCreate(subscriber -> {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext("one");
+                subscriber.onError(new TestException());
+            });
+
+            Iterator<String> it = obs.blockingIterable().iterator();
+
+            assertTrue(it.hasNext());
+            assertEquals("one", it.next());
+
+            assertTrue(it.hasNext());
+            it.next();
         });
-        Flowable<String> obs = Flowable.unsafeCreate(subscriber -> {
-            subscriber.onSubscribe(new BooleanSubscription());
-            subscriber.onNext("one");
-            subscriber.onError(new TestException());
-        });
-
-        Iterator<String> it = obs.blockingIterable().iterator();
-
-        assertTrue(it.hasNext());
-        assertEquals("one", it.next());
-
-        assertTrue(it.hasNext());
-        it.next();
     }
 
     @Test

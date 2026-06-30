@@ -306,7 +306,7 @@ public class ObservableTimerTest extends RxJavaTest {
                 Observable.timer(0, TimeUnit.MILLISECONDS).blockingFirst();
             }
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -335,7 +335,7 @@ public class ObservableTimerTest extends RxJavaTest {
 
                 Thread.sleep(500);
 
-                assertTrue(s.getClass().getSimpleName(), interrupted.get());
+                assertTrue(interrupted.get(), s.getClass().getSimpleName());
             }
         } finally {
             exec.shutdown();

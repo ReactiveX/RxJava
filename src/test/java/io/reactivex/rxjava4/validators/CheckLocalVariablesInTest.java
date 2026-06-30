@@ -469,7 +469,7 @@ public class CheckLocalVariablesInTest extends RxJavaTest {
     }
 
     @Test
-    public void testNGInJUnitFiles() throws Throwable {
+    public void checkFortestNGInJUnitFiles() throws Throwable {
         findPattern("\\sorg\\.testng\\.", false, f -> !f.toLowerCase().contains("tck"));
     }
 

@@ -28,10 +28,11 @@ public class CheckParameterNamesInClassesTest extends RxJavaTest {
 
     @Test
     public void javacParametersEnabled() throws Exception {
-        assertEquals("Please enable saving parameter names via the -parameters javac argument",
+        assertEquals(
                 "paramName",
                 getClass()
                 .getDeclaredMethod("method", Integer.TYPE)
-                .getParameters()[0].getName());
+                .getParameters()[0].getName(),
+                "Please enable saving parameter names via the -parameters javac argument");
     }
 }

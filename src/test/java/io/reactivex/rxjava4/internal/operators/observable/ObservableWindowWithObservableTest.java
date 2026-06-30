@@ -325,8 +325,8 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
         source.onNext(1);
 
-        assertFalse("source not disposed", source.hasObservers());
-        assertFalse("boundary not disposed", boundary.hasObservers());
+        assertFalse(source.hasObservers(), "source not disposed");
+        assertFalse(boundary.hasObservers(), "boundary not disposed");
 
         to.assertResult(1);
     }
@@ -588,7 +588,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -618,7 +618,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
         .assertNoErrors()
         .assertNotComplete();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
 
         inner.get().test().assertResult();
     }

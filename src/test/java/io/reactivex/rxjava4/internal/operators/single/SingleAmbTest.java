@@ -269,7 +269,7 @@ public class SingleAmbTest extends RxJavaTest {
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
-            assertFalse("Interrupted!", interrupted.get());
+            assertFalse(interrupted.get(), "Interrupted!");
         }
     }
 
@@ -294,7 +294,7 @@ public class SingleAmbTest extends RxJavaTest {
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
-            assertFalse("Interrupted!", interrupted.get());
+            assertFalse(interrupted.get(), "Interrupted!");
         }
     }
 

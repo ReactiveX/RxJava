@@ -419,7 +419,7 @@ public class FlowableSwitchTest extends RxJavaTest {
                     isUnsubscribed.set(bs.isCancelled());
                 })
         ).take(1).subscribe();
-        assertTrue("Switch doesn't propagate 'unsubscribe'", isUnsubscribed.get());
+        assertTrue(isUnsubscribed.get(), "Switch doesn't propagate 'unsubscribe'");
     }
     /** The upstream producer hijacked the switch producer stopping the requests aimed at the inner observables. */
     @Test
@@ -669,7 +669,7 @@ public class FlowableSwitchTest extends RxJavaTest {
                 TestHelper.race(r1, r2);
 
                 for (Throwable e : errors) {
-                    assertTrue(e.toString(), e instanceof TestException);
+                    assertTrue(e instanceof TestException, e.toString());
                 }
             } finally {
                 RxJavaPlugins.reset();
@@ -705,7 +705,7 @@ public class FlowableSwitchTest extends RxJavaTest {
                 TestHelper.race(r1, r2);
 
                 for (Throwable e : errors) {
-                    assertTrue(e.toString(), e instanceof TestException);
+                    assertTrue(e instanceof TestException, e.toString());
                 }
             } finally {
                 RxJavaPlugins.reset();

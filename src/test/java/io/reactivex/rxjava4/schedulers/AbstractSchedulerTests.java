@@ -597,11 +597,15 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         final CountDownLatch cdl = new CountDownLatch(1);
         Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = s.schedulePeriodicallyDirect(countDownRunnable, 100, 100, TimeUnit.MILLISECONDS);
-        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
 
-        assertSame(countDownRunnable, wrapper.getWrappedRunnable());
-        assertTrue(cdl.await(5, TimeUnit.SECONDS));
-        disposable.dispose();
+        if (disposable instanceof SchedulerRunnableIntrospection wrapper) {
+            assertSame(countDownRunnable, wrapper.getWrappedRunnable());
+            assertTrue(cdl.await(5, TimeUnit.SECONDS));
+            disposable.dispose();
+        } else {
+            disposable.dispose();
+            throw new AssertionError(disposable.getClass() + " does not implement SchedulerRunnableIntrospection");
+        }
     }
 
     @Test
@@ -614,9 +618,13 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         final CountDownLatch cdl = new CountDownLatch(1);
         Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
-        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
-        assertSame(countDownRunnable, wrapper.getWrappedRunnable());
-        disposable.dispose();
+        if (disposable instanceof SchedulerRunnableIntrospection wrapper) {
+            assertSame(countDownRunnable, wrapper.getWrappedRunnable());
+            disposable.dispose();
+        } else {
+            disposable.dispose();
+            throw new AssertionError(disposable.getClass() + " does not implement SchedulerRunnableIntrospection");
+        }
     }
 
     @Test

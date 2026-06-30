@@ -214,7 +214,7 @@ public class SingleSubscribeTest extends RxJavaTest {
             result[1] = t2;
         });
 
-        assertTrue("Not disposed?!", d.isDisposed());
+        assertTrue(d.isDisposed(), "Not disposed?!");
         assertEquals(1, result[0]);
         assertNull(result[1]);
     }
@@ -229,8 +229,8 @@ public class SingleSubscribeTest extends RxJavaTest {
             result[1] = t2;
         });
 
-        assertTrue("Not disposed?!", d.isDisposed());
+        assertTrue(d.isDisposed(), "Not disposed?!");
         assertNull(result[0]);
-        assertTrue("" + result[1], result[1] instanceof IOException);
+        assertTrue(result[1] instanceof IOException, "" + result[1]);
     }
 }

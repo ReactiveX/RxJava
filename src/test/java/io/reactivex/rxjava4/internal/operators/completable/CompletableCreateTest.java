@@ -266,7 +266,7 @@ public class CompletableCreateTest extends RxJavaTest {
 
             assertFalse(response[0]);
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }

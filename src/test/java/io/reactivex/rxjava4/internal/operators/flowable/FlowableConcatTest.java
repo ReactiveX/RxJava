@@ -811,8 +811,8 @@ public class FlowableConcatTest {
 
         CompositeException composite = (CompositeException)ts.errors().getFirst();
         List<Throwable> list = composite.getExceptions();
-        assertTrue(list.get(0).toString(), list.get(0) instanceof NullPointerException);
-        assertTrue(list.get(1).toString(), list.get(1) instanceof TestException);
+        assertTrue(list.get(0) instanceof NullPointerException, list.get(0).toString());
+        assertTrue(list.get(1) instanceof TestException, list.get(1).toString());
     }
 
     @Test

@@ -164,7 +164,7 @@ public class ObservableSerializeTest extends RxJavaTest {
 
             // we can have concurrency ...
             int n = onSubscribe.maxConcurrentThreads.get();
-            assertTrue("" + n, n > 1);
+            assertTrue(n > 1, "" + n);
             // ... but the onNext execution should be single threaded
             assertEquals(1, busyobserver.maxConcurrentThreads.get());
         }

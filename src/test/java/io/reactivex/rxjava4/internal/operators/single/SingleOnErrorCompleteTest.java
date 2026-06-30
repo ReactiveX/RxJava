@@ -43,7 +43,7 @@ public class SingleOnErrorCompleteTest {
             .test()
             .assertResult();
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -55,7 +55,7 @@ public class SingleOnErrorCompleteTest {
             .test()
             .assertResult();
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -67,7 +67,7 @@ public class SingleOnErrorCompleteTest {
             .test()
             .assertFailure(IOException.class);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -82,7 +82,7 @@ public class SingleOnErrorCompleteTest {
             TestHelper.assertError(to, 0, IOException.class);
             TestHelper.assertError(to, 1, TestException.class);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -94,11 +94,11 @@ public class SingleOnErrorCompleteTest {
                 .onErrorComplete()
                 .test();
 
-        assertTrue("No subscribers?!", ss.hasObservers());
+        assertTrue(ss.hasObservers(), "No subscribers?!");
 
         to.dispose();
 
-        assertFalse("Still subscribers?!", ss.hasObservers());
+        assertFalse(ss.hasObservers(), "Still subscribers?!");
     }
 
     @Test

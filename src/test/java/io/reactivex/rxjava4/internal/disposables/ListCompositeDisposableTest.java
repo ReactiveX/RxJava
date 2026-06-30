@@ -24,7 +24,6 @@ import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
-
 public class ListCompositeDisposableTest extends RxJavaTest {
 
     @Test

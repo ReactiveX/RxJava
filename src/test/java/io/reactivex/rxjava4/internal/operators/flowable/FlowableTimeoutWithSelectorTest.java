@@ -300,7 +300,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
             latchTimeout.set(true);
         }
 
-        assertFalse("CoundDownLatch timeout", latchTimeout.get());
+        assertFalse(latchTimeout.get(), "CoundDownLatch timeout");
 
         InOrder inOrder = inOrder(subscriber);
         inOrder.verify(subscriber).onSubscribe(notNull());

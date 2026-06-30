@@ -395,7 +395,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             Thread.sleep(50);
         }
 
-        assertTrue("Interruption did not propagate", isInterrupted.get());
+        assertTrue(isInterrupted.get(), "Interruption did not propagate");
     }
 
     @Test
@@ -433,7 +433,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                 Thread.sleep(50);
             }
 
-            assertTrue("Interruption did not propagate", isInterrupted.get());
+            assertTrue(isInterrupted.get(), "Interruption did not propagate");
         } finally {
             worker.dispose();
         }
@@ -473,7 +473,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                 Thread.sleep(50);
             }
 
-            assertTrue("Interruption did not propagate", isInterrupted.get());
+            assertTrue(isInterrupted.get(), "Interruption did not propagate");
         } finally {
             exec.shutdown();
         }
@@ -516,7 +516,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                     Thread.sleep(50);
                 }
 
-                assertTrue("Interruption did not propagate", isInterrupted.get());
+                assertTrue(isInterrupted.get(), "Interruption did not propagate");
             } finally {
                 worker.dispose();
             }
@@ -559,7 +559,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                 Thread.sleep(50);
             }
 
-            assertFalse("Interruption happened", isInterrupted.get());
+            assertFalse(isInterrupted.get(), "Interruption happened");
         } finally {
             exec.shutdown();
         }
@@ -602,7 +602,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                     Thread.sleep(50);
                 }
 
-                assertFalse("Interruption happened", isInterrupted.get());
+                assertFalse(isInterrupted.get(), "Interruption happened");
             } finally {
                 worker.dispose();
             }
@@ -645,7 +645,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                 Thread.sleep(50);
             }
 
-            assertFalse("Interruption happened", isInterrupted.get());
+            assertFalse(isInterrupted.get(), "Interruption happened");
         } finally {
             exec.shutdown();
         }
@@ -688,7 +688,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                     Thread.sleep(50);
                 }
 
-                assertFalse("Interruption happened", isInterrupted.get());
+                assertFalse(isInterrupted.get(), "Interruption happened");
             } finally {
                 worker.dispose();
             }
@@ -731,7 +731,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                 Thread.sleep(50);
             }
 
-            assertFalse("Interruption happened", isInterrupted.get());
+            assertFalse(isInterrupted.get(), "Interruption happened");
         } finally {
             exec.shutdown();
         }
@@ -774,7 +774,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                     Thread.sleep(50);
                 }
 
-                assertFalse("Interruption happened", isInterrupted.get());
+                assertFalse(isInterrupted.get(), "Interruption happened");
             } finally {
                 worker.dispose();
             }
@@ -817,7 +817,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                 Thread.sleep(50);
             }
 
-            assertFalse("Interruption happened", isInterrupted.get());
+            assertFalse(isInterrupted.get(), "Interruption happened");
         } finally {
             exec.shutdown();
         }
@@ -860,7 +860,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
                     Thread.sleep(50);
                 }
 
-                assertFalse("Interruption happened", isInterrupted.get());
+                assertFalse(isInterrupted.get(), "Interruption happened");
             } finally {
                 worker.dispose();
             }
@@ -947,7 +947,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             int i = 150;
 
             while (i-- > 0) {
-                assertFalse("Task interrupt detected", exec.interruptReceived.get());
+                assertFalse(exec.interruptReceived.get(), "Task interrupt detected");
                 Thread.sleep(10);
             }
 
@@ -970,7 +970,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             d.dispose();
 
             Thread.sleep(100);
-            assertTrue("Task interrupt detected", exec.interruptReceived.get());
+            assertTrue(exec.interruptReceived.get(), "Task interrupt detected");
 
         } finally {
             exec.shutdownNow();
@@ -1002,11 +1002,11 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             int i = 50;
 
             while (i-- > 0) {
-                assertFalse("Task interrupt detected", exec.interruptReceived.get());
+                assertFalse(exec.interruptReceived.get(), "Task interrupt detected");
                 Thread.sleep(10);
             }
 
-            assertTrue("Task run at all", taskRun.get());
+            assertTrue(taskRun.get(), "Task run at all");
 
         } finally {
             exec.shutdownNow();

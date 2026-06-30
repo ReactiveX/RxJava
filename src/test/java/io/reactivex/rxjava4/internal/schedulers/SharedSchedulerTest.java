@@ -19,7 +19,7 @@ import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -227,7 +227,7 @@ public class SharedSchedulerTest implements Runnable {
 
             TestHelper.race(r1, r2, Schedulers.single());
 
-            assertTrue("Future not disposed", d.isDisposed());
+            assertTrue(d.isDisposed(), "Future not disposed");
         }
     }
 
@@ -243,7 +243,7 @@ public class SharedSchedulerTest implements Runnable {
 
             TestHelper.race(r1, r2, Schedulers.single());
 
-            assertFalse("Future disposed", d.isDisposed());
+            assertFalse(d.isDisposed(), "Future disposed");
             assertEquals(i + 1, calls);
         }
     }

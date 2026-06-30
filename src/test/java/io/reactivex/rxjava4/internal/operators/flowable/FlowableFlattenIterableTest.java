@@ -344,7 +344,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         ts.assertError(TestException.class);
         ts.assertNotComplete();
 
-        assertFalse("PublishProcessor has Subscribers?!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "PublishProcessor has Subscribers?!");
     }
 
     @Test
@@ -423,7 +423,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("PublishProcessor has Subscribers?!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "PublishProcessor has Subscribers?!");
         assertEquals(1, counter.get());
     }
 
@@ -497,19 +497,19 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
                 assertEquals(QueueFuseable.SYNC, qs.requestFusion(QueueFuseable.ANY));
 
                 try {
-                    assertFalse("Source reports being empty!", qs.isEmpty());
+                    assertFalse(qs.isEmpty(), "Source reports being empty!");
 
                     assertEquals(1, qs.poll().intValue());
 
-                    assertFalse("Source reports being empty!", qs.isEmpty());
+                    assertFalse(qs.isEmpty(), "Source reports being empty!");
 
                     assertEquals(2, qs.poll().intValue());
 
-                    assertFalse("Source reports being empty!", qs.isEmpty());
+                    assertFalse(qs.isEmpty(), "Source reports being empty!");
 
                     qs.clear();
 
-                    assertTrue("Source reports not empty!", qs.isEmpty());
+                    assertTrue(qs.isEmpty(), "Source reports not empty!");
 
                     assertNull(qs.poll());
                 } catch (Throwable ex) {
@@ -611,15 +611,15 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
                 assertEquals(QueueFuseable.SYNC, qs.requestFusion(QueueFuseable.ANY));
 
                 try {
-                    assertFalse("Source reports being empty!", qs.isEmpty());
+                    assertFalse(qs.isEmpty(), "Source reports being empty!");
 
                     assertEquals(1, qs.poll().intValue());
 
-                    assertFalse("Source reports being empty!", qs.isEmpty());
+                    assertFalse(qs.isEmpty(), "Source reports being empty!");
 
                     assertEquals(3, qs.poll().intValue());
 
-                    assertTrue("Source reports being non-empty!", qs.isEmpty());
+                    assertTrue(qs.isEmpty(), "Source reports being non-empty!");
                 } catch (Throwable ex) {
                     throw ExceptionHelper.wrapOrThrow(ex);
                 }

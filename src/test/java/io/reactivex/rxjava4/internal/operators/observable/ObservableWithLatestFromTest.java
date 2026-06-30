@@ -298,9 +298,9 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertComplete();
 
-        assertFalse("ps1 has subscribers?", ps1.hasObservers());
-        assertFalse("ps2 has subscribers?", ps2.hasObservers());
-        assertFalse("ps3 has subscribers?", ps3.hasObservers());
+        assertFalse(ps1.hasObservers(), "ps1 has subscribers?");
+        assertFalse(ps2.hasObservers(), "ps2 has subscribers?");
+        assertFalse(ps3.hasObservers(), "ps3 has subscribers?");
     }
 
     @Test
@@ -345,9 +345,9 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertComplete();
 
-        assertFalse("ps1 has subscribers?", ps1.hasObservers());
-        assertFalse("ps2 has subscribers?", ps2.hasObservers());
-        assertFalse("ps3 has subscribers?", ps3.hasObservers());
+        assertFalse(ps1.hasObservers(), "ps1 has subscribers?");
+        assertFalse(ps2.hasObservers(), "ps2 has subscribers?");
+        assertFalse(ps3.hasObservers(), "ps3 has subscribers?");
     }
 
     @Test

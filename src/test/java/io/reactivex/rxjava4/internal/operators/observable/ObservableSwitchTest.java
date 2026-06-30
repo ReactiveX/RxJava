@@ -358,7 +358,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                     isUnsubscribed.set(bs.isDisposed());
                 })
         ).take(1).subscribe();
-        assertTrue("Switch doesn't propagate 'unsubscribe'", isUnsubscribed.get());
+        assertTrue(isUnsubscribed.get(), "Switch doesn't propagate 'unsubscribe'");
     }
     /** The upstream producer hijacked the switch producer stopping the requests aimed at the inner observables. */
     @Test
@@ -602,7 +602,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 TestHelper.race(r1, r2);
 
                 for (Throwable e : errors) {
-                    assertTrue(e.toString(), e instanceof TestException);
+                    assertTrue(e instanceof TestException, e.toString());
                 }
             } finally {
                 RxJavaPlugins.reset();
@@ -640,7 +640,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 TestHelper.race(r1, r2);
 
                 for (Throwable e : errors) {
-                    assertTrue(e.getCause().toString(), e.getCause() instanceof TestException);
+                    assertTrue(e.getCause() instanceof TestException, e.getCause().toString());
                 }
             } finally {
                 RxJavaPlugins.reset();
@@ -847,7 +847,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 TestHelper.race(r1, r2);
 
                 for (Throwable e : errors) {
-                    assertTrue(e.toString(), e.getCause() instanceof TestException);
+                    assertTrue(e.getCause() instanceof TestException, e.toString());
                 }
             } finally {
                 RxJavaPlugins.reset();

@@ -87,7 +87,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
 
         ts.cancel();
 
-        assertFalse("Source has subscribers?", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Source has subscribers?");
     }
 
     @Test
@@ -114,7 +114,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("Source has subscribers?", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Source has subscribers?");
 
     }
 
@@ -151,7 +151,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("Source has subscribers?", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Source has subscribers?");
     }
 
     @Test
@@ -169,7 +169,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("Source has subscribers?", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Source has subscribers?");
     }
 
     @Test
@@ -190,7 +190,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
 
         assertEquals(MissingBackpressureException.DEFAULT_MESSAGE,
                 ts.errors().getFirst().getMessage());
-        assertFalse("Source has subscribers?", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Source has subscribers?");
     }
 
     @Test
@@ -212,7 +212,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
         ts.assertNotComplete();
 
         assertEquals(MissingBackpressureException.DEFAULT_MESSAGE, ts.errors().getFirst().getMessage());
-        assertFalse("Source has subscribers?", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Source has subscribers?");
     }
 
     @Test
@@ -229,7 +229,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.publish(_ -> Flowable.range(1, 5)).test(0);
 
-        assertTrue("pp has no Subscribers?!", pp.hasSubscribers());
+        assertTrue(pp.hasSubscribers(), "pp has no Subscribers?!");
 
         ts.assertNoValues()
         .assertNoErrors()
@@ -239,7 +239,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
 
         ts.assertResult(1, 2, 3, 4, 5);
 
-        assertFalse("pp has Subscribers?!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "pp has Subscribers?!");
     }
 
     @Test
@@ -421,7 +421,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
                 .publish(Functions.identity())
                 .test()
                 .awaitDone(1, TimeUnit.SECONDS);
-        assertFalse("Unnecessary upstream .cancel() call in FlowablePublishMulticast", parentUpstreamCancelled.get());
+        assertFalse(parentUpstreamCancelled.get(), "Unnecessary upstream .cancel() call in FlowablePublishMulticast");
     }
 
     @Test
@@ -432,7 +432,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
                 .publish(v -> Flowable.concatArray(v.take(1), v.skip(5)))
                 .test()
                 .awaitDone(1, TimeUnit.SECONDS);
-        assertFalse("Unnecessary upstream .cancel() call in FlowablePublishMulticast", parentUpstreamCancelled.get());
+        assertFalse(parentUpstreamCancelled.get(), "Unnecessary upstream .cancel() call in FlowablePublishMulticast");
     }
 
     @Test
@@ -444,6 +444,6 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
                 .take(1)
                 .test()
                 .awaitDone(1, TimeUnit.SECONDS);
-        assertTrue("Upstream .cancel() not called in FlowablePublishMulticast", parentUpstreamCancelled.get());
+        assertTrue(parentUpstreamCancelled.get(), "Upstream .cancel() not called in FlowablePublishMulticast");
     }
 }

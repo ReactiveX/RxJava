@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

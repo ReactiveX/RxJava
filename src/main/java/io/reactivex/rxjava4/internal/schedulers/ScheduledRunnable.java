@@ -17,11 +17,13 @@ import java.io.Serial;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
+import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
+import io.reactivex.rxjava4.schedulers.SchedulerRunnableIntrospection;
 
 public final class ScheduledRunnable extends AtomicReferenceArray<Object>
-implements Runnable, Callable<Object>, Disposable {
+implements Runnable, Callable<Object>, Disposable, SchedulerRunnableIntrospection {
 
     @Serial
     private static final long serialVersionUID = -6120223772001106981L;
@@ -175,5 +177,10 @@ implements Runnable, Callable<Object>, Disposable {
         }
 
         return getClass().getSimpleName() + "[" + state + "]";
+    }
+
+    @Override
+    public @NonNull Runnable getWrappedRunnable() {
+        return actual;
     }
 }

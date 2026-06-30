@@ -480,7 +480,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
                 int c = to.values().size();
                 if (c == 1) {
                     int v = to.values().getFirst();
-                    assertTrue("" + v, v == 1 || v == 2);
+                    assertTrue(v == 1 || v == 2, "" + v);
                 } else {
                     to.assertResult(1, 2);
                 }

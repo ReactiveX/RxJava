@@ -691,7 +691,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -733,7 +733,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -774,7 +774,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -816,7 +816,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -857,7 +857,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -899,7 +899,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -918,7 +918,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -932,7 +932,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         .doOnNext(inner::set)
         .test();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
 
         to
         .assertValueCount(1)
@@ -958,7 +958,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -972,7 +972,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         .doOnNext(inner::set)
         .test();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
 
         to
         .assertValueCount(1)
@@ -998,7 +998,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -1012,7 +1012,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         .doOnNext(inner::set)
         .test();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
 
         to
         .assertValueCount(1)

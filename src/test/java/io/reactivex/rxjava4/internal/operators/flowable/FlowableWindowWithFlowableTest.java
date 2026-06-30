@@ -364,8 +364,8 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         source.onNext(1);
 
-        assertFalse("source not disposed", source.hasSubscribers());
-        assertFalse("boundary not disposed", boundary.hasSubscribers());
+        assertFalse(source.hasSubscribers(), "source not disposed");
+        assertFalse(boundary.hasSubscribers(), "boundary not disposed");
 
         ts.assertResult(1);
     }
@@ -625,7 +625,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         ts
         .assertResult(1);
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
     }
 
     @Test
@@ -655,7 +655,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         .assertNoErrors()
         .assertNotComplete();
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
 
         inner.get().test().assertResult();
     }

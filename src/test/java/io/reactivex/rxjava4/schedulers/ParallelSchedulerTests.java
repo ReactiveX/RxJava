@@ -19,20 +19,33 @@ import java.util.HashMap;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.schedulers.ComputationScheduler;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.testsupport.SuppressUndeliverable;
 
-public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests {
+public class ParallelSchedulerTests extends AbstractSchedulerConcurrencyTests {
+
+    Scheduler scheduler;
+
+    @BeforeEach
+    public void before() {
+        scheduler = Schedulers.createParallel(new ParallelSchedulerConfig(2));
+    }
+
+    @AfterEach
+    public void after() {
+        scheduler.shutdown();
+    }
 
     @Override
     protected Scheduler getScheduler() {
-        return Schedulers.computation();
+        return scheduler;
     }
 
     @Test

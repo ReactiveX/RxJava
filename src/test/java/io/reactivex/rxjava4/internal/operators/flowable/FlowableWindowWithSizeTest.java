@@ -380,7 +380,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         ts
         .assertResult(1);
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
     }
 
     @Test
@@ -403,7 +403,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
 
         inner.get().test().assertResult(1);
     }
@@ -424,7 +424,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         ts
         .assertResult(1);
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
     }
 
     @Test
@@ -447,7 +447,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
 
         inner.get().test().assertResult(1);
     }
@@ -468,7 +468,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         ts
         .assertResult(1);
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
     }
 
     @Test
@@ -491,7 +491,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
 
         inner.get().test().assertResult(1);
     }
@@ -623,7 +623,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         ts.cancel();
 
-        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Subject still has subscribers!");
     }
 
     @Test
@@ -639,7 +639,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         ts.cancel();
 
-        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Subject still has subscribers!");
     }
 
     @Test
@@ -653,7 +653,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         ts.cancel();
 
-        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Subject still has subscribers!");
     }
 
     @Test
@@ -669,7 +669,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         ts.cancel();
 
-        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Subject still has subscribers!");
     }
 
     @Test
@@ -683,7 +683,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         ts.cancel();
 
-        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Subject still has subscribers!");
     }
 
     @Test
@@ -699,6 +699,6 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         ts.cancel();
 
-        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Subject still has subscribers!");
     }
 }

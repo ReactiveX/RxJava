@@ -29,7 +29,7 @@
 
 package io.reactivex.rxjava4.internal.virtual;
 
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.concurrent.*;

@@ -382,8 +382,8 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
 
         ts.assertFailure(TestException.class);
 
-        assertFalse("main has observers!", pp.hasSubscribers());
-        assertFalse("other has observers", ms.hasObservers());
+        assertFalse(pp.hasSubscribers(), "main has observers!");
+        assertFalse(ms.hasObservers(), "other has observers");
     }
 
     @Test
@@ -400,8 +400,8 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
 
         ts.assertFailure(TestException.class);
 
-        assertFalse("main has observers!", pp.hasSubscribers());
-        assertFalse("other has observers", ms.hasObservers());
+        assertFalse(pp.hasSubscribers(), "main has observers!");
+        assertFalse(ms.hasObservers(), "other has observers");
     }
 
     @Test

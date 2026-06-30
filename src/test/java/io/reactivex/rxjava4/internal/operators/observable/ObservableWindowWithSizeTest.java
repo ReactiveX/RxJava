@@ -293,7 +293,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -316,7 +316,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
 
         inner.get().test().assertResult(1);
     }
@@ -337,7 +337,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -360,7 +360,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
 
         inner.get().test().assertResult(1);
     }
@@ -381,7 +381,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -404,7 +404,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
 
         inner.get().test().assertResult(1);
     }
@@ -420,7 +420,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
         to.dispose();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -436,7 +436,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
         to.dispose();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -446,11 +446,11 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         TestObserver<Observable<Integer>> to = ps.window(10, 15)
         .test();
 
-        assertTrue(ps.hasObservers());
+        assertTrue(ps.hasObservers(), "Subject has no observers!");
 
         to.dispose();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -460,13 +460,13 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         TestObserver<Observable<Integer>> to = ps.window(10, 15)
         .test();
 
-        assertTrue(ps.hasObservers());
+        assertTrue(ps.hasObservers(), "Subject has no observers!");
 
         ps.onNext(1);
 
         to.dispose();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -476,11 +476,11 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         TestObserver<Observable<Integer>> to = ps.window(10, 5)
         .test();
 
-        assertTrue(ps.hasObservers());
+        assertTrue(ps.hasObservers(), "Subject has no observers!");
 
         to.dispose();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -490,12 +490,12 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         TestObserver<Observable<Integer>> to = ps.window(10, 5)
         .test();
 
-        assertTrue(ps.hasObservers());
+        assertTrue(ps.hasObservers(), "Subject has no observers!");
 
         ps.onNext(1);
 
         to.dispose();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 }

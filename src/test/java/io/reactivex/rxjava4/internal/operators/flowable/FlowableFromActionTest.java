@@ -92,7 +92,7 @@ public class FlowableFromActionTest extends RxJavaTest {
 
         Flowable<Void> m = Flowable.fromAction(() -> counter[0]++);
 
-        assertTrue(m.getClass().toString(), m instanceof Supplier);
+        assertTrue(m instanceof Supplier, m.getClass().toString());
 
         assertNull(((Supplier<Void>)m).get());
 

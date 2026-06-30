@@ -204,7 +204,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
             assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
             // FIXME toBlocking methods run on the current thread
             String name = Thread.currentThread().getName();
-            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+            assertFalse(name.startsWith("Rx"), "Wrong thread name: " + name);
         });
 
     }
@@ -222,7 +222,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
             assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
             // FIXME toBlocking methods run on the caller's thread
             String name = Thread.currentThread().getName();
-            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+            assertFalse(name.startsWith("Rx"), "Wrong thread name: " + name);
         });
     }
 
@@ -254,7 +254,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
 //                assertTrue(name.startsWith("RxComputationThreadPool"));
             // FIXME toBlocking now runs its methods on the caller thread
             String name = Thread.currentThread().getName();
-            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+            assertFalse(name.startsWith("Rx"), "Wrong thread name: " + name);
         });
     }
 

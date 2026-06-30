@@ -268,8 +268,8 @@ public class ObservableMergeWithSingleTest extends RxJavaTest {
 
         to.assertFailure(TestException.class);
 
-        assertFalse("main has observers!", ps.hasObservers());
-        assertFalse("other has observers", ss.hasObservers());
+        assertFalse(ps.hasObservers(), "main has observers!");
+        assertFalse(ss.hasObservers(), "other has observers");
     }
 
     @Test
@@ -286,8 +286,8 @@ public class ObservableMergeWithSingleTest extends RxJavaTest {
 
         to.assertFailure(TestException.class);
 
-        assertFalse("main has observers!", ps.hasObservers());
-        assertFalse("other has observers", ss.hasObservers());
+        assertFalse(ps.hasObservers(), "main has observers!");
+        assertFalse(ss.hasObservers(), "other has observers");
     }
 
     @Test

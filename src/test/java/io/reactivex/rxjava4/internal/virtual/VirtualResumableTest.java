@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.virtual;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;

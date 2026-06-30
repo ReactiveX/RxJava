@@ -140,6 +140,14 @@ public class CheckNewLinesBeforeAnnotationTest extends RxJavaTest {
                                             .append("\\R");
                                         }
                                         fail.append("\n");
+                                        fail.append(" at ")
+                                        .append(fname.substring(0, fname.indexOf('.')))
+                                        .append(".method(")
+                                        .append(fname)
+                                        .append(":")
+                                        .append(i + 1)
+                                        .append(")\r\n")
+                                        ;
                                         total++;
                                     }
                                 }

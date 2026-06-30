@@ -64,11 +64,11 @@ public class FlowableCastTest extends RxJavaTest {
 
         pp.cast(String.class).subscribe(ts);
 
-        assertTrue("Not subscribed?", pp.hasSubscribers());
+        assertTrue(pp.hasSubscribers(), "Not subscribed?");
 
         pp.onNext(1);
 
-        assertFalse("Subscribed?", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Subscribed?");
 
         ts.assertError(ClassCastException.class);
     }

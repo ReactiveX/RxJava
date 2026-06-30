@@ -451,15 +451,17 @@ public abstract class Scheduler {
             final long firstNowNanoseconds = now(TimeUnit.NANOSECONDS);
             final long firstStartInNanoseconds = firstNowNanoseconds + unit.toNanos(initialDelay);
 
-            Disposable d = schedule(new PeriodicTask(firstStartInNanoseconds, decoratedRun, firstNowNanoseconds, sd,
-                    periodInNanoseconds), initialDelay, unit);
+            var task = new PeriodicTask(firstStartInNanoseconds, decoratedRun, firstNowNanoseconds, sd,
+                    periodInNanoseconds);
+
+            Disposable d = schedule(task, initialDelay, unit);
 
             if (d == EmptyDisposable.INSTANCE) {
                 return d;
             }
             first.replace(d);
 
-            return sd;
+            return task;
         }
 
         /**
@@ -495,7 +497,7 @@ public abstract class Scheduler {
          * Holds state and logic to calculate when the next delayed invocation
          * of this task has to happen (accounting for clock drifts).
          */
-        final class PeriodicTask implements Runnable, SchedulerRunnableIntrospection {
+        final class PeriodicTask implements Runnable, SchedulerRunnableIntrospection, Disposable {
             @NonNull
             final Runnable decoratedRun;
             @NonNull
@@ -545,6 +547,16 @@ public abstract class Scheduler {
             @Override
             public Runnable getWrappedRunnable() {
                 return this.decoratedRun;
+            }
+
+            @Override
+            public void dispose() {
+                sd.dispose();
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return sd.isDisposed();
             }
         }
 

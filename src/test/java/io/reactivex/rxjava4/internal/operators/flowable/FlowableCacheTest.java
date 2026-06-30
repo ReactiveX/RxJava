@@ -36,14 +36,14 @@ public class FlowableCacheTest extends RxJavaTest {
     public void coldReplayNoBackpressure() {
         FlowableCache<Integer> source = new FlowableCache<>(Flowable.range(0, 1000), 16);
 
-        assertFalse("Source is connected!", source.isConnected());
+        assertFalse(source.isConnected(), "Source is connected!");
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         source.subscribe(ts);
 
-        assertTrue("Source is not connected!", source.isConnected());
-        assertFalse("Subscribers retained!", source.hasSubscribers());
+        assertTrue(source.isConnected(), "Source is not connected!");
+        assertFalse(source.hasSubscribers(), "Subscribers retained!");
 
         ts.assertNoErrors();
         ts.assertTerminated();
@@ -59,15 +59,15 @@ public class FlowableCacheTest extends RxJavaTest {
     public void coldReplayBackpressure() {
         FlowableCache<Integer> source = new FlowableCache<>(Flowable.range(0, 1000), 16);
 
-        assertFalse("Source is connected!", source.isConnected());
+        assertFalse(source.isConnected(), "Source is connected!");
 
         TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
         ts.request(10);
 
         source.subscribe(ts);
 
-        assertTrue("Source is not connected!", source.isConnected());
-        assertFalse("Subscribers retained!", source.hasSubscribers());
+        assertTrue(source.isConnected(), "Source is not connected!");
+        assertFalse(source.hasSubscribers(), "Subscribers retained!");
 
         ts.assertNoErrors();
         ts.assertNotComplete();
@@ -79,7 +79,7 @@ public class FlowableCacheTest extends RxJavaTest {
         }
 
         ts.cancel();
-        assertFalse("Subscribers retained!", source.hasSubscribers());
+        assertFalse(source.hasSubscribers(), "Subscribers retained!");
     }
 
     @Test

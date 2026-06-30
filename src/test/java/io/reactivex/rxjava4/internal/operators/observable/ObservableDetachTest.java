@@ -47,7 +47,7 @@ public class ObservableDetachTest extends RxJavaTest {
         System.gc();
         Thread.sleep(200);
 
-        assertNull("Object retained!", wr.get());
+        assertNull(wr.get(), "Object retained!");
 
     }
 
@@ -98,7 +98,7 @@ public class ObservableDetachTest extends RxJavaTest {
         System.gc();
         Thread.sleep(200);
 
-        assertNull("Object retained!", wr.get());
+        assertNull(wr.get(), "Object retained!");
 
     }
 

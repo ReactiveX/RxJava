@@ -78,13 +78,12 @@ public class BlockingFlowableToFutureTest {
     @Test
     public void getAfterCancel() throws Exception {
         assertThrows(CancellationException.class, () -> {
-            // code that is expected to throw Exception (or subclass)
+            Flowable<String> obs = Flowable.never();
+            Future<String> f = obs.toFuture();
+            boolean cancelled = f.cancel(true);
+            assertTrue(cancelled);  // because OperationNeverComplete never does
+            f.get();                // Future.get() docs require this to throw
         });
-        Flowable<String> obs = Flowable.never();
-        Future<String> f = obs.toFuture();
-        boolean cancelled = f.cancel(true);
-        assertTrue(cancelled);  // because OperationNeverComplete never does
-        f.get();                // Future.get() docs require this to throw
     }
 
     @Test

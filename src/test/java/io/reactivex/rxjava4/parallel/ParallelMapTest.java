@@ -77,7 +77,7 @@ public class ParallelMapTest extends RxJavaTest {
 
             assertFalse(errors.isEmpty());
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
             }
         } finally {
             RxJavaPlugins.reset();
@@ -97,7 +97,7 @@ public class ParallelMapTest extends RxJavaTest {
 
             assertFalse(errors.isEmpty());
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
             }
         } finally {
             RxJavaPlugins.reset();

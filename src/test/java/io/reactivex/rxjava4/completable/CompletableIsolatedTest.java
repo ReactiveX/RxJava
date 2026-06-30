@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.completable;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;

@@ -179,12 +179,12 @@ public class CheckOperatorsUseInterfacesTest extends RxJavaTest {
             checkClass(CheckOperatorsUseInterfacesTest.class);
             throw new RuntimeException("Should have failed");
         } catch (AssertionError expected) {
-            assertTrue(expected.toString(), expected.toString().contains("method1"));
-            assertTrue(expected.toString(), expected.toString().contains("method2"));
-            assertTrue(expected.toString(), expected.toString().contains("method3"));
-            assertTrue(expected.toString(), expected.toString().contains("method4"));
-            assertTrue(expected.toString(), expected.toString().contains("method5"));
-            assertTrue(expected.toString(), expected.toString().contains("method6"));
+            assertTrue(expected.toString().contains("method1"), expected.toString());
+            assertTrue(expected.toString().contains("method2"), expected.toString());
+            assertTrue(expected.toString().contains("method3"), expected.toString());
+            assertTrue(expected.toString().contains("method4"), expected.toString());
+            assertTrue(expected.toString().contains("method5"), expected.toString());
+            assertTrue(expected.toString().contains("method6"), expected.toString());
         }
     }
 

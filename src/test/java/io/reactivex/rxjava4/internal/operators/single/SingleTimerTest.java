@@ -55,7 +55,7 @@ public class SingleTimerTest extends RxJavaTest {
 
                 Thread.sleep(500);
 
-                assertTrue(s.getClass().getSimpleName(), interrupted.get());
+                assertTrue(interrupted.get(), s.getClass().getSimpleName());
             }
         } finally {
             exec.shutdown();

@@ -258,7 +258,7 @@ public class MaybeBlockingSubscribeTest {
             Maybe.<Integer>error(new TestException())
             .blockingSubscribe(success, consumer);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(success, never()).accept(any());
             verify(consumer).accept(any(TestException.class));
@@ -277,7 +277,7 @@ public class MaybeBlockingSubscribeTest {
             .delay(50, TimeUnit.MILLISECONDS, Schedulers.computation())
             .blockingSubscribe(success, consumer);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(success, never()).accept(any());
             verify(consumer).accept(any(TestException.class));
@@ -392,7 +392,7 @@ public class MaybeBlockingSubscribeTest {
             .doOnDispose(onDispose)
             .blockingSubscribe(success, consumer, action);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(onDispose).run();
             verify(success, never()).accept(any());
@@ -493,7 +493,7 @@ public class MaybeBlockingSubscribeTest {
             .doOnDispose(onDispose)
             .blockingSubscribe(to);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(onDispose).run();
             to.assertFailure(InterruptedException.class);

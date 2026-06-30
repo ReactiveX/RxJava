@@ -229,9 +229,9 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
 
         to.assertFailure(TestException.class);
 
-        assertFalse("Source has observers!", source.hasObservers());
-        assertFalse("Start has observers!", start.hasObservers());
-        assertFalse("End has observers!", end.hasObservers());
+        assertFalse(source.hasObservers(), "Source has observers!");
+        assertFalse(start.hasObservers(), "Start has observers!");
+        assertFalse(end.hasObservers(), "End has observers!");
     }
 
     @Test
@@ -250,9 +250,9 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
 
         to.assertFailure(TestException.class);
 
-        assertFalse("Source has observers!", source.hasObservers());
-        assertFalse("Start has observers!", start.hasObservers());
-        assertFalse("End has observers!", end.hasObservers());
+        assertFalse(source.hasObservers(), "Source has observers!");
+        assertFalse(start.hasObservers(), "Start has observers!");
+        assertFalse(end.hasObservers(), "End has observers!");
     }
 
     @Test
@@ -365,7 +365,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -396,7 +396,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         .assertNoErrors()
         .assertNotComplete();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
 
         inner.get().test().assertResult();
     }

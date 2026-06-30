@@ -82,7 +82,15 @@ public class CheckTestPrefixInMethodNameTest extends RxJavaTest {
                                                 .append(fileName)
                                                 .append("#L").append(lineNum)
                                                 .append("    ").append(line)
-                                                .append("\n");
+                                                .append("\n")
+                                                .append(" at ")
+                                                .append(fileName.substring(0, fileName.indexOf('.')))
+                                                .append(".method(")
+                                                .append(fileName)
+                                                .append(':')
+                                                .append(lineNum)
+                                                .append(")\n")
+                                                ;
                                         total++;
                                     }
                                 }

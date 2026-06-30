@@ -59,7 +59,7 @@ public class ParallelPeekTest extends RxJavaTest {
 
             assertFalse(errors.isEmpty());
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
             }
         } finally {
             RxJavaPlugins.reset();
@@ -83,7 +83,7 @@ public class ParallelPeekTest extends RxJavaTest {
             assertFalse(errors.isEmpty());
 
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
             }
         } finally {
             RxJavaPlugins.reset();
@@ -107,7 +107,7 @@ public class ParallelPeekTest extends RxJavaTest {
             assertFalse(errors.isEmpty());
 
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
             }
         } finally {
             RxJavaPlugins.reset();
@@ -144,7 +144,7 @@ public class ParallelPeekTest extends RxJavaTest {
             assertFalse(errors.isEmpty());
 
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
             }
         } finally {
             RxJavaPlugins.reset();
@@ -169,8 +169,8 @@ public class ParallelPeekTest extends RxJavaTest {
 
             for (Throwable ex : errors) {
                 Throwable exc = ex.getCause();
-                assertTrue(ex.toString(), exc instanceof TestException
-                        || exc instanceof IOException);
+                assertTrue(exc instanceof TestException
+                        || exc instanceof IOException, ex.toString());
             }
         } finally {
             RxJavaPlugins.reset();

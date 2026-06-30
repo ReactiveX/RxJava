@@ -228,7 +228,7 @@ public class FlowableTakeWhileTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertValue(1);
 
-        assertFalse("Unsubscribed!", ts.isCancelled());
+        assertFalse(ts.isCancelled(), "Unsubscribed!");
     }
 
     @Test
