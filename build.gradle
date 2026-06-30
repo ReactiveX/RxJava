@@ -22,6 +22,7 @@ ext {
     guavaVersion = "33.6.0-jre"
     jupiterVersion = "6.1.1"
     jupiterLauncherVersion = "6.1.1"
+    junitPioneerVersion = "2.3.0"
 }
 
 def releaseTag = System.getenv("BUILD_TAG")
@@ -54,6 +55,8 @@ dependencies {
     testImplementation "org.junit.platform:junit-platform-launcher:$jupiterLauncherVersion"
 
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:$jupiterLauncherVersion"  // already have this
+
+    testImplementation "org.junit-pioneer:junit-pioneer:$junitPioneerVersion"
 }
 
 // === Experimental JDK handling for Outreach Program ===

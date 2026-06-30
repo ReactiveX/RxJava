@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.*;
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.operators.QueueFuseable;
 import io.reactivex.rxjava4.subscribers.*;

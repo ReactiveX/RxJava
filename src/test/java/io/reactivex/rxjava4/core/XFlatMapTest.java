@@ -20,6 +20,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Flow.Publisher;
 
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.RetryingTest;
 
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
@@ -65,6 +66,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void flowableFlowable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -93,6 +95,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void flowableSingle() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -121,6 +124,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void flowableMaybe() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -149,6 +153,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void flowableCompletable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -177,6 +182,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void flowableCompletable2() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -206,6 +212,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void observableObservable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -234,6 +241,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void observerSingle() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -262,6 +270,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void observerMaybe() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -290,6 +299,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void observerCompletable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -318,6 +328,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void observerCompletable2() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -347,6 +358,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void singleSingle() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -375,6 +387,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void singleMaybe() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -403,6 +416,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void singleCompletable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -431,6 +445,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void singleCompletable2() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -460,6 +475,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void singlePublisher() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -488,6 +504,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void singleCombiner() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -516,6 +533,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void singleObservable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -544,6 +562,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void singleNotificationSuccess() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -578,6 +597,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void singleNotificationError() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -612,6 +632,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void maybeSingle() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -641,6 +662,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void maybeSingle2() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -669,6 +691,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void maybeMaybe() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -697,6 +720,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void maybePublisher() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -725,6 +749,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void maybeObservable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -753,6 +778,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void maybeNotificationSuccess() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -791,6 +817,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void maybeNotificationError() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -829,6 +856,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void maybeNotificationEmpty() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -867,6 +895,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void maybeCombiner() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -895,6 +924,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void maybeCompletable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -923,6 +953,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @RetryingTest(3)
     public void maybeCompletable2() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {

@@ -27,7 +27,7 @@ import io.reactivex.rxjava4.disposables.CompositeDisposable;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
-public class SchedulerMultiWorkerSupportParallelTest extends RxJavaTest {
+public class SchedulerMultiWorkerSupportParallelNonTrackingTest extends RxJavaTest {
 
     final int max = 2;
 
@@ -35,7 +35,7 @@ public class SchedulerMultiWorkerSupportParallelTest extends RxJavaTest {
 
     @BeforeEach
     public void before() {
-        scheduler = Schedulers.createParallel(new ParallelSchedulerConfig(2, false));
+        scheduler = Schedulers.createParallel(new ParallelSchedulerConfig(2));
     }
 
     @AfterEach

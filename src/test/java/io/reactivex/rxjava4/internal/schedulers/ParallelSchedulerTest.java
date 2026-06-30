@@ -27,7 +27,7 @@ import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.schedulers.ParallelScheduler.TrackingParallelWorker.TrackedAction;
-import io.reactivex.rxjava4.schedulers.Schedulers;
+import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class ParallelSchedulerTest implements Runnable {
@@ -426,6 +426,50 @@ public class ParallelSchedulerTest implements Runnable {
         assertEquals(psc5.parallelism(), 1, "Parallelism");
         assertFalse(psc5.tracking(), "Tracking");
         assertEquals(psc5.threadNamePrefix(), "Test", "threadNamePrefix");
+        }
+    }
+
+    @Test
+    public void introspectionNonTracking() {
+        Runnable run = () -> { };
+        var scheduler = Schedulers.createParallel(new ParallelSchedulerConfig(2, false));
+        try {
+            var worker = scheduler.createWorker();
+            try {
+                var task = worker.schedule(run);
+
+                if (task instanceof SchedulerRunnableIntrospection intro) {
+                    assertSame(run, intro.getWrappedRunnable());
+                } else {
+                    fail(task.getClass() + " doesn't implement SchedulerRunnableIntrospection");
+                }
+            } finally {
+                worker.dispose();
+            }
+        } finally {
+            scheduler.shutdown();
+        }
+    }
+
+    @Test
+    public void introspectionTracking() {
+        Runnable run = () -> { };
+        var scheduler = Schedulers.createParallel(new ParallelSchedulerConfig(2, true));
+        try {
+            var worker = scheduler.createWorker();
+            try {
+                var task = worker.schedule(run);
+
+                if (task instanceof SchedulerRunnableIntrospection intro) {
+                    assertSame(run, intro.getWrappedRunnable());
+                } else {
+                    fail(task.getClass() + " doesn't implement SchedulerRunnableIntrospection");
+                }
+            } finally {
+                worker.dispose();
+            }
+        } finally {
+            scheduler.shutdown();
         }
     }
 }
