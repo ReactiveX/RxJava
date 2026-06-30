@@ -23,7 +23,6 @@ import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
-import io.reactivex.rxjava4.core.config.ParallelSchedulerConfig;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
