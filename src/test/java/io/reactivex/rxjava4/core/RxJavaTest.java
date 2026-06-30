@@ -18,8 +18,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.exceptions.UndeliverableException;
+import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
-import io.reactivex.rxjava4.testsupport.*;
+import io.reactivex.rxjava4.testsupport.SuppressUndeliverable;
 
 @Timeout(value = 5, unit = TimeUnit.MINUTES)
 public abstract class RxJavaTest {
@@ -53,4 +54,27 @@ public abstract class RxJavaTest {
         RxJavaPlugins.setErrorHandler(null);
     }
 
+    /**
+     * Wrap your test body into this retry lambda-based callback to retry flaky tests
+     * that usually depend on Thread.sleep consistency.
+     * @param count the number of times to retry
+     * @param code the code to run
+     */
+    public static void withRetry(int count, Action code) {
+        AssertionError error = null;
+        while (count-- > 0) {
+            try {
+                code.run();
+                return;
+            } catch (Throwable ex) {
+                if (error == null) {
+                    error = new AssertionError("withRetry failures");
+                }
+                error.addSuppressed(ex);
+            }
+        }
+        if (error != null) {
+            throw error;
+        }
+    }
 }
