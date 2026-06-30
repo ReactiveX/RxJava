@@ -23,6 +23,7 @@ import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
+import io.reactivex.rxjava4.core.config.ParallelSchedulerConfig;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -245,6 +246,28 @@ public class SharedSchedulerTest implements Runnable {
 
             assertFalse(d.isDisposed(), "Future disposed");
             assertEquals(i + 1, calls);
+        }
+    }
+
+    @Test
+    public void introspection() {
+        Runnable run = () -> { };
+        var scheduler = Schedulers.computation().share();
+        try {
+            var worker = scheduler.createWorker();
+            try {
+                var task = worker.schedule(run);
+
+                if (task instanceof SchedulerRunnableIntrospection intro) {
+                    assertSame(run, intro.getWrappedRunnable());
+                } else {
+                    fail(task.getClass() + " doesn't implement SchedulerRunnableIntrospection");
+                }
+            } finally {
+                worker.dispose();
+            }
+        } finally {
+            scheduler.shutdown();
         }
     }
 }
