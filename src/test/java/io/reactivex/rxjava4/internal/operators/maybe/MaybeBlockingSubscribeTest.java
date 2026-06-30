@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Maybe;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -258,7 +258,7 @@ public class MaybeBlockingSubscribeTest {
             Maybe.<Integer>error(new TestException())
             .blockingSubscribe(success, consumer);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(success, never()).accept(any());
             verify(consumer).accept(any(TestException.class));
@@ -277,7 +277,7 @@ public class MaybeBlockingSubscribeTest {
             .delay(50, TimeUnit.MILLISECONDS, Schedulers.computation())
             .blockingSubscribe(success, consumer);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(success, never()).accept(any());
             verify(consumer).accept(any(TestException.class));
@@ -392,7 +392,7 @@ public class MaybeBlockingSubscribeTest {
             .doOnDispose(onDispose)
             .blockingSubscribe(success, consumer, action);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(onDispose).run();
             verify(success, never()).accept(any());
@@ -493,7 +493,7 @@ public class MaybeBlockingSubscribeTest {
             .doOnDispose(onDispose)
             .blockingSubscribe(to);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(onDispose).run();
             to.assertFailure(InterruptedException.class);

@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.concurrent.Flow.*;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.MissingBackpressureException;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.operators.SpscArrayQueue;

@@ -13,21 +13,21 @@
 
 package io.reactivex.rxjava4.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.disposables.SequentialDisposable;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.schedulers.TrampolineScheduler;
@@ -499,7 +499,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
                     }
                 }, initial, 0, TimeUnit.MILLISECONDS));
 
-                assertTrue("" + initial, cdl.await(5, TimeUnit.SECONDS));
+                assertTrue(cdl.await(5, TimeUnit.SECONDS), "" + initial);
             } finally {
                 sd.dispose();
             }
@@ -534,7 +534,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
                     }
                 }, initial, 0, TimeUnit.MILLISECONDS));
 
-                assertTrue("" + initial, cdl.await(5, TimeUnit.SECONDS));
+                assertTrue(cdl.await(5, TimeUnit.SECONDS), "" + initial);
             } finally {
                 sd.dispose();
                 w.dispose();
@@ -597,11 +597,15 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         final CountDownLatch cdl = new CountDownLatch(1);
         Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = s.schedulePeriodicallyDirect(countDownRunnable, 100, 100, TimeUnit.MILLISECONDS);
-        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
 
-        assertSame(countDownRunnable, wrapper.getWrappedRunnable());
-        assertTrue(cdl.await(5, TimeUnit.SECONDS));
-        disposable.dispose();
+        if (disposable instanceof SchedulerRunnableIntrospection wrapper) {
+            assertSame(countDownRunnable, wrapper.getWrappedRunnable());
+            assertTrue(cdl.await(5, TimeUnit.SECONDS));
+            disposable.dispose();
+        } else {
+            disposable.dispose();
+            throw new AssertionError(disposable.getClass() + " does not implement SchedulerRunnableIntrospection");
+        }
     }
 
     @Test
@@ -614,9 +618,13 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         final CountDownLatch cdl = new CountDownLatch(1);
         Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
-        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
-        assertSame(countDownRunnable, wrapper.getWrappedRunnable());
-        disposable.dispose();
+        if (disposable instanceof SchedulerRunnableIntrospection wrapper) {
+            assertSame(countDownRunnable, wrapper.getWrappedRunnable());
+            disposable.dispose();
+        } else {
+            disposable.dispose();
+            throw new AssertionError(disposable.getClass() + " does not implement SchedulerRunnableIntrospection");
+        }
     }
 
     @Test

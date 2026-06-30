@@ -13,24 +13,24 @@
 
 package io.reactivex.rxjava4.disposables;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SerialDisposableTests extends RxJavaTest {
     private SerialDisposable serialDisposable;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         serialDisposable = new SerialDisposable();
     }

@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Completable;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -184,7 +184,7 @@ public class CompletableBlockingSubscribeTest {
             Completable.error(new TestException())
             .blockingSubscribe(action, consumer);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(action, never()).run();
             verify(consumer).accept(any(TestException.class));
@@ -202,7 +202,7 @@ public class CompletableBlockingSubscribeTest {
             .delay(50, TimeUnit.MILLISECONDS, Schedulers.computation(), true)
             .blockingSubscribe(action, consumer);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(action, never()).run();
             verify(consumer).accept(any(TestException.class));
@@ -243,7 +243,7 @@ public class CompletableBlockingSubscribeTest {
             .doOnDispose(onDispose)
             .blockingSubscribe(action, consumer);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(onDispose).run();
             verify(action, never()).run();
@@ -322,7 +322,7 @@ public class CompletableBlockingSubscribeTest {
             .doOnDispose(onDispose)
             .blockingSubscribe(to);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
 
             verify(onDispose).run();
             to.assertFailure(InterruptedException.class);

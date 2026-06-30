@@ -17,9 +17,11 @@ import java.io.Serial;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.Scheduler;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
+import io.reactivex.rxjava4.schedulers.SchedulerRunnableIntrospection;
 
 /**
  * A Scheduler implementation that uses one of the Workers from another Scheduler
@@ -122,7 +124,7 @@ public final class SharedScheduler extends Scheduler {
 
         static final class SharedAction
         extends AtomicReference<DisposableContainer>
-        implements Runnable, Disposable {
+        implements Runnable, Disposable, SchedulerRunnableIntrospection {
             @Serial
             private static final long serialVersionUID = 4949851341419870956L;
 
@@ -185,6 +187,11 @@ public final class SharedScheduler extends Scheduler {
                         }
                     }
                 }
+            }
+
+            @Override
+            public @NonNull Runnable getWrappedRunnable() {
+                return actual;
             }
         }
     }

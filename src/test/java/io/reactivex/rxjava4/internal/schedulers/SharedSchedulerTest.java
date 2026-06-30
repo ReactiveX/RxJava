@@ -13,16 +13,17 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
+import io.reactivex.rxjava4.core.config.ParallelSchedulerConfig;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -39,7 +40,7 @@ public class SharedSchedulerTest implements Runnable {
         calls++;
     }
 
-    @Test(timeout = 5000)
+    @Test @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS)
     public void normal() {
         var scheduler = Schedulers.cached().share();
         try {
@@ -57,7 +58,7 @@ public class SharedSchedulerTest implements Runnable {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS)
     public void delay() {
         var scheduler = Schedulers.cached().share();
         try {
@@ -198,7 +199,7 @@ public class SharedSchedulerTest implements Runnable {
         assertTrue(d.isDisposed());
     }
 
-    @Test(timeout = 5000)
+    @Test @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS)
     public void futureDisposeRace() throws Exception {
         var scheduler = Schedulers.computation().share();
         try {
@@ -227,7 +228,7 @@ public class SharedSchedulerTest implements Runnable {
 
             TestHelper.race(r1, r2, Schedulers.single());
 
-            assertTrue("Future not disposed", d.isDisposed());
+            assertTrue(d.isDisposed(), "Future not disposed");
         }
     }
 
@@ -243,8 +244,30 @@ public class SharedSchedulerTest implements Runnable {
 
             TestHelper.race(r1, r2, Schedulers.single());
 
-            assertFalse("Future disposed", d.isDisposed());
+            assertFalse(d.isDisposed(), "Future disposed");
             assertEquals(i + 1, calls);
+        }
+    }
+
+    @Test
+    public void introspection() {
+        Runnable run = () -> { };
+        var scheduler = Schedulers.computation().share();
+        try {
+            var worker = scheduler.createWorker();
+            try {
+                var task = worker.schedule(run);
+
+                if (task instanceof SchedulerRunnableIntrospection intro) {
+                    assertSame(run, intro.getWrappedRunnable());
+                } else {
+                    fail(task.getClass() + " doesn't implement SchedulerRunnableIntrospection");
+                }
+            } finally {
+                worker.dispose();
+            }
+        } finally {
+            scheduler.shutdown();
         }
     }
 }

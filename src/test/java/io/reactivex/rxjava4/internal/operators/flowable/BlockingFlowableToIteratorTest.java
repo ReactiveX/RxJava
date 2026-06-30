@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -50,21 +50,23 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
 
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void toIteratorWithException() {
-        Flowable<String> obs = Flowable.unsafeCreate(subscriber -> {
-            subscriber.onSubscribe(new BooleanSubscription());
-            subscriber.onNext("one");
-            subscriber.onError(new TestException());
+        assertThrows(TestException.class, () -> {
+            Flowable<String> obs = Flowable.unsafeCreate(subscriber -> {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext("one");
+                subscriber.onError(new TestException());
+            });
+
+            Iterator<String> it = obs.blockingIterable().iterator();
+
+            assertTrue(it.hasNext());
+            assertEquals("one", it.next());
+
+            assertTrue(it.hasNext());
+            it.next();
         });
-
-        Iterator<String> it = obs.blockingIterable().iterator();
-
-        assertTrue(it.hasNext());
-        assertEquals("one", it.next());
-
-        assertTrue(it.hasNext());
-        it.next();
     }
 
     @Test
@@ -104,10 +106,12 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void remove() {
-        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<>(128);
-        it.remove();
+        assertThrows(UnsupportedOperationException.class, () -> {
+            BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<>(128);
+            it.remove();
+        });
     }
 
     @Test
@@ -130,40 +134,46 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
 
             it.hasNext();
         } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+            assertTrue(ex.getCause() instanceof InterruptedException, ex.toString());
         }
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void emptyThrowsNoSuch() {
-        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<>(128);
-        it.onComplete();
-        it.next();
+        assertThrows(NoSuchElementException.class, () -> {
+            BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<>(128);
+            it.onComplete();
+            it.next();
+        });
     }
 
-    @Test(expected = QueueOverflowException.class)
+    @Test
     public void overflowQueue() {
-        Iterator<Integer> it = new Flowable<Integer>() /* NFI */ {
-            @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
-                s.onSubscribe(new BooleanSubscription());
-                s.onNext(1);
-                s.onNext(2);
+        assertThrows(QueueOverflowException.class, () -> {
+            Iterator<Integer> it = new Flowable<Integer>() /* NFI */ {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onNext(2);
+                }
             }
-        }
-        .blockingIterable(1)
-        .iterator();
+            .blockingIterable(1)
+            .iterator();
 
-        it.next();
+            it.next();
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void disposedIteratorHasNextReturns() {
-        Iterator<Integer> it = PublishProcessor.<Integer>create()
-                .blockingIterable().iterator();
-        ((Disposable)it).dispose();
-        assertFalse(it.hasNext());
-        it.next();
+        assertThrows(NoSuchElementException.class, () -> {
+            Iterator<Integer> it = PublishProcessor.<Integer>create()
+                    .blockingIterable().iterator();
+            ((Disposable)it).dispose();
+            assertFalse(it.hasNext());
+            it.next();
+        });
     }
 
     @Test

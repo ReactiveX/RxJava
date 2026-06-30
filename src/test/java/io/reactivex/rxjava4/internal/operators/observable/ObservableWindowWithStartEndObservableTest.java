@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
@@ -40,7 +40,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
 
-    @Before
+    @BeforeEach
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
@@ -229,9 +229,9 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
 
         to.assertFailure(TestException.class);
 
-        assertFalse("Source has observers!", source.hasObservers());
-        assertFalse("Start has observers!", start.hasObservers());
-        assertFalse("End has observers!", end.hasObservers());
+        assertFalse(source.hasObservers(), "Source has observers!");
+        assertFalse(start.hasObservers(), "Start has observers!");
+        assertFalse(end.hasObservers(), "End has observers!");
     }
 
     @Test
@@ -250,9 +250,9 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
 
         to.assertFailure(TestException.class);
 
-        assertFalse("Source has observers!", source.hasObservers());
-        assertFalse("Start has observers!", start.hasObservers());
-        assertFalse("End has observers!", end.hasObservers());
+        assertFalse(source.hasObservers(), "Source has observers!");
+        assertFalse(start.hasObservers(), "Start has observers!");
+        assertFalse(end.hasObservers(), "End has observers!");
     }
 
     @Test
@@ -365,7 +365,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -396,7 +396,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         .assertNoErrors()
         .assertNotComplete();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
 
         inner.get().test().assertResult();
     }

@@ -13,9 +13,9 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.processors.PublishProcessor;

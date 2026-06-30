@@ -13,23 +13,23 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.CompositeDisposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.util.CrashingMappedIterable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -43,7 +43,7 @@ public class FlowableAmbTest extends RxJavaTest {
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
@@ -273,15 +273,15 @@ public class FlowableAmbTest extends RxJavaTest {
 
         Flowable.ambArray(source1, source2, source3).subscribe(ts);
 
-        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
-        assertTrue("Source 2 doesn't have subscribers!", source2.hasSubscribers());
-        assertTrue("Source 3 doesn't have subscribers!", source3.hasSubscribers());
+        assertTrue(source1.hasSubscribers(), "Source 1 doesn't have subscribers!");
+        assertTrue(source2.hasSubscribers(), "Source 2 doesn't have subscribers!");
+        assertTrue(source3.hasSubscribers(), "Source 3 doesn't have subscribers!");
 
         source1.onNext(1);
 
-        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
-        assertFalse("Source 2 still has subscribers!", source2.hasSubscribers());
-        assertFalse("Source 2 still has subscribers!", source3.hasSubscribers());
+        assertTrue(source1.hasSubscribers(), "Source 1 doesn't have subscribers!");
+        assertFalse(source2.hasSubscribers(), "Source 2 still has subscribers!");
+        assertFalse(source3.hasSubscribers(), "Source 2 still has subscribers!");
 
     }
 
@@ -512,7 +512,7 @@ public class FlowableAmbTest extends RxJavaTest {
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
-            assertFalse("Interrupted!", interrupted.get());
+            assertFalse(interrupted.get(), "Interrupted!");
         }
     }
 
@@ -535,7 +535,7 @@ public class FlowableAmbTest extends RxJavaTest {
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
-            assertFalse("Interrupted!", interrupted.get());
+            assertFalse(interrupted.get(), "Interrupted!");
         }
     }
 
@@ -557,7 +557,7 @@ public class FlowableAmbTest extends RxJavaTest {
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
-            assertFalse("Interrupted!", interrupted.get());
+            assertFalse(interrupted.get(), "Interrupted!");
         }
     }
 

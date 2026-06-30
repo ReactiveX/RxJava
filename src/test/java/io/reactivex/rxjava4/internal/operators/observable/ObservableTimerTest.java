@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.operators.observable.ObservableTimer.TimerObserver;
 import io.reactivex.rxjava4.observables.ConnectableObservable;
@@ -42,7 +42,7 @@ public class ObservableTimerTest extends RxJavaTest {
 
     TestScheduler scheduler;
 
-    @Before
+    @BeforeEach
     public void before() {
         observer = TestHelper.mockObserver();
 
@@ -306,7 +306,7 @@ public class ObservableTimerTest extends RxJavaTest {
                 Observable.timer(0, TimeUnit.MILLISECONDS).blockingFirst();
             }
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -335,7 +335,7 @@ public class ObservableTimerTest extends RxJavaTest {
 
                 Thread.sleep(500);
 
-                assertTrue(s.getClass().getSimpleName(), interrupted.get());
+                assertTrue(interrupted.get(), s.getClass().getSimpleName());
             }
         } finally {
             exec.shutdown();

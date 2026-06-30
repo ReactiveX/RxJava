@@ -13,17 +13,17 @@
 
 package io.reactivex.rxjava4.testsupport;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -186,22 +186,28 @@ public class TestSubscriberExTest extends RxJavaTest {
         assertTrue(unsub.get());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullDelegate1() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(null);
-        ts.onComplete();
+        assertThrows(NullPointerException.class, () -> {
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(null);
+            ts.onComplete();
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullDelegate2() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(null);
-        ts.onComplete();
+        assertThrows(NullPointerException.class, () -> {
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(null);
+            ts.onComplete();
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullDelegate3() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(null, 0L);
-        ts.onComplete();
+        assertThrows(NullPointerException.class, () -> {
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(null, 0L);
+            ts.onComplete();
+        });
     }
 
     @Test
@@ -550,7 +556,7 @@ public class TestSubscriberExTest extends RxJavaTest {
             try {
                 ts.awaitDone(5, TimeUnit.SECONDS);
             } catch (RuntimeException allowed) {
-                assertTrue(allowed.toString(), allowed.getCause() instanceof InterruptedException);
+                assertTrue(allowed.getCause() instanceof InterruptedException, allowed.toString());
             }
 
             ts.dispose();
@@ -1182,7 +1188,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         try {
             ts.awaitDone(5, TimeUnit.SECONDS);
         } catch (RuntimeException allowed) {
-            assertTrue(allowed.toString(), allowed.getCause() instanceof InterruptedException);
+            assertTrue(allowed.getCause() instanceof InterruptedException, allowed.toString());
         }
 
         // FIXME ? catch consumes this flag
@@ -1193,7 +1199,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         try {
             ts.awaitDone(5, TimeUnit.SECONDS);
         } catch (RuntimeException allowed) {
-            assertTrue(allowed.toString(), allowed.getCause() instanceof InterruptedException);
+            assertTrue(allowed.getCause() instanceof InterruptedException, allowed.toString());
         }
 
         // FIXME ? catch consumes this flag
@@ -1341,7 +1347,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         try {
             ts.awaitDone(5, TimeUnit.SECONDS);
         } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+            assertTrue(ex.getCause() instanceof InterruptedException, ex.toString());
         }
     }
 
@@ -1533,13 +1539,13 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateEmpty() {
-        assertThrows("No values", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
             Flowable.empty().subscribe(ts);
 
             ts.assertValue(_ -> false);
-        });
+        }, "No values");
     }
 
     @Test
@@ -1553,35 +1559,35 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateNoMatch() {
-        assertThrows("Value not present", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
             Flowable.just(1).subscribe(ts);
 
             ts.assertValue(o -> o != 1);
-        });
+        }, "Value not present");
     }
 
     @Test
     public void assertValuePredicateMatchButMore() {
-        assertThrows("Value present but other values as well", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
             Flowable.just(1, 2).subscribe(ts);
 
             ts.assertValue(o -> o == 1);
-        });
+        }, "Value present but other values as well");
     }
 
     @Test
     public void assertValueAtPredicateEmpty() {
-        assertThrows("No values", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
             Flowable.empty().subscribe(ts);
 
             ts.assertValueAt(0, _ -> false);
-        });
+        }, "No values");
     }
 
     @Test
@@ -1595,24 +1601,24 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void assertValueAtPredicateNoMatch() {
-        assertThrows("Value not present", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
             Flowable.just(1, 2, 3).subscribe(ts);
 
             ts.assertValueAt(2, o -> o != 3);
-        });
+        }, "Value not present");
     }
 
     @Test
     public void assertValueAtInvalidIndex() {
-        assertThrows("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
             Flowable.just(1, 2).subscribe(ts);
 
             ts.assertValueAt(2, o -> o == 1);
-        });
+        }, "Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)");
     }
 
     @Test
@@ -1639,7 +1645,7 @@ public class TestSubscriberExTest extends RxJavaTest {
             }
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
-            assertTrue(ex.toString(), ex.toString().contains("testing with item=2"));
+            assertTrue(ex.toString().contains("testing with item=2"), ex.toString());
         }
     }
 
@@ -1655,7 +1661,7 @@ public class TestSubscriberExTest extends RxJavaTest {
             ts.assertResult(1);
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
-            assertTrue(ex.toString(), ex.toString().contains("timeout!"));
+            assertTrue(ex.toString().contains("timeout!"), ex.toString());
         }
     }
 
@@ -1669,7 +1675,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
-            assertTrue(ex.toString(), ex.toString().contains("timeout!"));
+            assertTrue(ex.toString().contains("timeout!"), ex.toString());
         }
     }
 
@@ -1683,7 +1689,7 @@ public class TestSubscriberExTest extends RxJavaTest {
             ts.assertResult(1);
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
-            assertTrue(ex.toString(), ex.toString().contains("timeout!"));
+            assertTrue(ex.toString().contains("timeout!"), ex.toString());
         }
     }
 
@@ -1696,7 +1702,7 @@ public class TestSubscriberExTest extends RxJavaTest {
             ts.assertResult(1);
             throw new RuntimeException("Should have thrown!");
         } catch (Throwable ex) {
-            assertTrue(ex.toString(), ex.toString().contains("disposed!"));
+            assertTrue(ex.toString().contains("disposed!"), ex.toString());
         }
     }
 

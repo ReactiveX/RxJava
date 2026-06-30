@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.processors.PublishProcessor;

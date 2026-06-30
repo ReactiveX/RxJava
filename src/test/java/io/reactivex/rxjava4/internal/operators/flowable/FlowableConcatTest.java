@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -24,7 +24,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
@@ -811,8 +811,8 @@ public class FlowableConcatTest {
 
         CompositeException composite = (CompositeException)ts.errors().getFirst();
         List<Throwable> list = composite.getExceptions();
-        assertTrue(list.get(0).toString(), list.get(0) instanceof NullPointerException);
-        assertTrue(list.get(1).toString(), list.get(1) instanceof TestException);
+        assertTrue(list.get(0) instanceof NullPointerException, list.get(0).toString());
+        assertTrue(list.get(1) instanceof TestException, list.get(1).toString());
     }
 
     @Test

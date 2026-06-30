@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.operators.maybe;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;

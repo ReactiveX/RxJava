@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
@@ -260,7 +260,7 @@ public class BlockingObservableNextTest extends RxJavaTest {
                 assertTrue(it.hasNext());
                 int b = it.next();
                 // we should have a different value
-                assertTrue("a and b should be different", a != b);
+                assertTrue(a != b, "a and b should be different");
 
                 // wait for some time (if times out we are blocked somewhere so fail ... set very high for very slow, constrained machines)
                 timeHasPassed.await(8000, TimeUnit.MILLISECONDS);
@@ -268,8 +268,8 @@ public class BlockingObservableNextTest extends RxJavaTest {
                 assertTrue(it.hasNext());
                 int c = it.next();
 
-                assertTrue("c should not just be the next in sequence", c != (b + 1));
-                assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
+                assertTrue(c != (b + 1), "c should not just be the next in sequence");
+                assertTrue(c >= COUNT, "expected that c [" + c + "] is higher than or equal to " + COUNT);
 
                 assertTrue(it.hasNext());
                 int d = it.next();
@@ -307,8 +307,8 @@ public class BlockingObservableNextTest extends RxJavaTest {
             BlockingObservableNext.NextIterator<Long> it = (BlockingObservableNext.NextIterator<Long>)iter.iterator();
 
             for (long i = 0; i < 10; i++) {
-                Assert.assertTrue(it.hasNext());
-                Assert.assertEquals(j + "th iteration next", Long.valueOf(i), it.next());
+                assertTrue(it.hasNext());
+                assertEquals(Long.valueOf(i), it.next(), j + "th iteration next");
             }
             terminal.onNext(1);
         }
@@ -329,13 +329,15 @@ public class BlockingObservableNextTest extends RxJavaTest {
             Thread.currentThread().interrupt();
             it.next();
         } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+            assertTrue(ex.getCause() instanceof InterruptedException, ex.toString());
         }
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void remove() {
-        Observable.never().blockingNext().iterator().remove();
+        assertThrows(UnsupportedOperationException.class, () -> {
+            Observable.never().blockingNext().iterator().remove();
+        });
     }
 
     @Test

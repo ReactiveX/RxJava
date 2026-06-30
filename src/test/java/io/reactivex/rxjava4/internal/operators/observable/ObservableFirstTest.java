@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.NoSuchElementException;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
@@ -33,7 +33,7 @@ public class ObservableFirstTest extends RxJavaTest {
 
     private static final Predicate<String> IS_D = "d"::equals;
 
-    @Before
+    @BeforeEach
     public void before() {
         w = TestHelper.mockObserver();
         wo = TestHelper.mockSingleObserver();

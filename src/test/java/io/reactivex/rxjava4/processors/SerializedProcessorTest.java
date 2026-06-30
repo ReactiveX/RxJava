@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.processors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
@@ -437,7 +437,7 @@ public class SerializedProcessorTest extends RxJavaTest {
             ;
 
             Set<Integer> actualSet = new HashSet<>(ts.values());
-            assertEquals("" + actualSet, expectedSet, actualSet);
+            assertEquals(expectedSet, actualSet, "" + actualSet);
         }
     }
 

@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
@@ -29,7 +29,7 @@ import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.*;
@@ -41,7 +41,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     int count;
 
-    @Before
+    @BeforeEach
     public void before() {
         stringObserver = TestHelper.mockObserver();
 
@@ -52,7 +52,7 @@ public class ObservableMergeTest extends RxJavaTest {
         }
     }
 
-    @After
+    @AfterEach
     public void after() {
         try {
             Thread.sleep(100);
@@ -181,7 +181,7 @@ public class ObservableMergeTest extends RxJavaTest {
         verify(stringObserver, times(1)).onComplete();
     }
 
-    @Ignore("The underlying test keeps randomly failing and I don't know how to fix it or what it actually tries to test.")
+    @Disabled("The underlying test keeps randomly failing and I don't know how to fix it or what it actually tries to test.")
     @Test
     public void synchronizationOfMultipleSequencesLoop() throws Throwable {
         for (int i = 0; i < 100; i++) {
@@ -190,7 +190,7 @@ public class ObservableMergeTest extends RxJavaTest {
         }
     }
 
-    @Ignore("The underlying test keeps randomly failing and I don't know how to fix it or what it actually tries to test.")
+    @Disabled("The underlying test keeps randomly failing and I don't know how to fix it or what it actually tries to test.")
     @Test
     public void synchronizationOfMultipleSequences() throws Throwable {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
@@ -995,7 +995,7 @@ public class ObservableMergeTest extends RxJavaTest {
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }

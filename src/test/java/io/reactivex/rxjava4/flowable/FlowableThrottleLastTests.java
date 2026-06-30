@@ -16,16 +16,15 @@ package io.reactivex.rxjava4.flowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.rxjava4.core.Observer;
+import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Action;
-import org.junit.Test;
-import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
-
-import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.TestScheduler;
 import io.reactivex.rxjava4.testsupport.TestHelper;

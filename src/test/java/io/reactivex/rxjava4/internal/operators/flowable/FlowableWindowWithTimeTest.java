@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
@@ -39,7 +39,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
 
-    @Before
+    @BeforeEach
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
@@ -131,7 +131,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
             @Override
             public void onError(Throwable e) {
-                Assert.fail(e.getMessage());
+                fail(e.getMessage());
             }
 
             @Override
@@ -181,7 +181,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertComplete();
-        Assert.assertTrue(!ts.values().isEmpty());
+        assertTrue(!ts.values().isEmpty());
     }
 
     @Test
@@ -540,7 +540,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
             Thread.sleep(100);
         }
 
-        assertTrue("intervalRange was not cancelled!", cancel1.get());
+        assertTrue(cancel1.get(), "intervalRange was not cancelled!");
     }
 
     @Test
@@ -889,7 +889,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -931,7 +931,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -972,7 +972,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -1014,7 +1014,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -1055,7 +1055,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -1097,7 +1097,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
 
-        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+        assertFalse(isInterrupted.get(), "The doOnNext got interrupted!");
     }
 
     @Test
@@ -1116,7 +1116,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         ts
         .assertResult(1);
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
     }
 
     @Test
@@ -1130,7 +1130,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         .doOnNext(inner::set)
         .test();
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
 
         ts
         .assertValueCount(1)
@@ -1156,7 +1156,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         ts
         .assertResult(1);
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
     }
 
     @Test
@@ -1170,7 +1170,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         .doOnNext(inner::set)
         .test();
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
 
         ts
         .assertValueCount(1)
@@ -1196,7 +1196,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         ts
         .assertResult(1);
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
     }
 
     @Test
@@ -1210,7 +1210,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         .doOnNext(inner::set)
         .test();
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
 
         ts
         .assertValueCount(1)

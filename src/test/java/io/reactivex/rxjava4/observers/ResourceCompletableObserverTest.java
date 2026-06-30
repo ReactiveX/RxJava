@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.observers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.util.EndConsumerHelper;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -56,10 +56,12 @@ public class ResourceCompletableObserverTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullResource() {
-        TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
-        rco.add(null);
+        assertThrows(NullPointerException.class, () -> {
+            TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
+            rco.add(null);
+        });
     }
 
     @Test

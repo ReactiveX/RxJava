@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
@@ -222,9 +222,9 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
 
         assertEquals(3, cex.size());
 
-        assertTrue(cex.get(0).toString(), cex.get(0) instanceof TestException);
-        assertTrue(cex.get(1).toString(), cex.get(1) instanceof TestException);
-        assertTrue(cex.get(2).toString(), cex.get(2) instanceof TestException);
+        assertTrue(cex.get(0) instanceof TestException, cex.get(0).toString());
+        assertTrue(cex.get(1) instanceof TestException, cex.get(1).toString());
+        assertTrue(cex.get(2) instanceof TestException, cex.get(2).toString());
     }
 
     @Test

@@ -17,9 +17,10 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import io.reactivex.rxjava4.core.RxJavaTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
+import io.reactivex.rxjava4.functions.Predicate;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 /**
@@ -39,11 +40,19 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  */
 public class CheckLocalVariablesInTest extends RxJavaTest {
 
-    static void findPattern(String pattern) throws Exception {
-        findPattern(pattern, false);
+    static void findPattern(String pattern) throws Throwable {
+        findPattern(pattern, false, _ -> true);
     }
 
-    static void findPattern(String pattern, boolean checkMain) throws Exception {
+    static void findPattern(String pattern, boolean checkMain) throws Throwable {
+        findPattern(pattern, checkMain, _ -> true);
+    }
+
+    static void findPattern(String pattern, Predicate<? super String> fileFilter) throws Throwable {
+        findPattern(pattern, false, fileFilter);
+    }
+
+    static void findPattern(String pattern, boolean checkMain, Predicate<? super String> fileFilter) throws Throwable {
         File f = TestHelper.findSource("Flowable");
         if (f == null) {
             System.out.println("Unable to find sources of RxJava");
@@ -77,7 +86,7 @@ public class CheckLocalVariablesInTest extends RxJavaTest {
                         dirs.offer(u);
                     } else {
                         String fname = u.getName();
-                        if (fname.endsWith(".java")) {
+                        if (fname.endsWith(".java") && fileFilter.test(u.getAbsolutePath())) {
 
                             int lineNum = 0;
                             try (BufferedReader in = new BufferedReader(new FileReader(u))) {
@@ -124,339 +133,344 @@ public class CheckLocalVariablesInTest extends RxJavaTest {
     }
 
     @Test
-    public void subscriberAsTo() throws Exception {
+    public void subscriberAsTo() throws Throwable {
         findPattern("TestSubscriber(Ex)?<.*>\\s+to");
     }
 
     @Test
-    public void observerAsTs() throws Exception {
+    public void observerAsTs() throws Throwable {
         findPattern("TestObserver(Ex)?<.*>\\s+ts");
     }
 
     @Test
-    public void subscriberNoArgAsTo() throws Exception {
+    public void subscriberNoArgAsTo() throws Throwable {
         findPattern("TestSubscriber(Ex)?\\s+to");
     }
 
     @Test
-    public void observerNoArgAsTs() throws Exception {
+    public void observerNoArgAsTs() throws Throwable {
         findPattern("TestObserver(Ex)?\\s+ts");
     }
 
     @Test
-    public void publishSubjectAsPp() throws Exception {
+    public void publishSubjectAsPp() throws Throwable {
         findPattern("PublishSubject<.*>\\s+pp");
     }
 
     @Test
-    public void publishProcessorAsPs() throws Exception {
+    public void publishProcessorAsPs() throws Throwable {
         findPattern("PublishProcessor<.*>\\s+ps");
     }
 
     @Test
-    public void unicastSubjectAsUp() throws Exception {
+    public void unicastSubjectAsUp() throws Throwable {
         findPattern("UnicastSubject<.*>\\s+up");
     }
 
     @Test
-    public void unicastProcessorAsUs() throws Exception {
+    public void unicastProcessorAsUs() throws Throwable {
         findPattern("UnicastProcessor<.*>\\s+us");
     }
 
     @Test
-    public void behaviorProcessorAsBs() throws Exception {
+    public void behaviorProcessorAsBs() throws Throwable {
         findPattern("BehaviorProcessor<.*>\\s+bs");
     }
 
     @Test
-    public void behaviorSubjectAsBp() throws Exception {
+    public void behaviorSubjectAsBp() throws Throwable {
         findPattern("BehaviorSubject<.*>\\s+bp");
     }
 
     @Test
-    public void connectableFlowableAsCo() throws Exception {
+    public void connectableFlowableAsCo() throws Throwable {
         findPattern("ConnectableFlowable<.*>\\s+co(0-9|\\b)");
     }
 
     @Test
-    public void connectableObservableAsCf() throws Exception {
+    public void connectableObservableAsCf() throws Throwable {
         findPattern("ConnectableObservable<.*>\\s+cf(0-9|\\b)");
     }
 
     @Test
-    public void queueDisposableInsteadOfQueueFuseable() throws Exception {
+    public void queueDisposableInsteadOfQueueFuseable() throws Throwable {
         findPattern("QueueDisposable\\.(NONE|SYNC|ASYNC|ANY|BOUNDARY)");
     }
 
     @Test
-    public void queueSubscriptionInsteadOfQueueFuseable() throws Exception {
+    public void queueSubscriptionInsteadOfQueueFuseable() throws Throwable {
         findPattern("QueueSubscription\\.(NONE|SYNC|ASYNC|ANY|BOUNDARY)");
     }
 
     @Test
-    public void singleSourceAsMs() throws Exception {
+    public void singleSourceAsMs() throws Throwable {
         findPattern("SingleSource<.*>\\s+ms");
     }
 
     @Test
-    public void singleSubjectAsMs() throws Exception {
+    public void singleSubjectAsMs() throws Throwable {
         findPattern("SingleSubject<.*>\\s+ms");
     }
 
     @Test
-    public void singleSourceAsCs() throws Exception {
+    public void singleSourceAsCs() throws Throwable {
         findPattern("SingleSource<.*>\\s+cs");
     }
 
     @Test
-    public void maybeSourceAsSs() throws Exception {
+    public void maybeSourceAsSs() throws Throwable {
         findPattern("MaybeSource<.*>\\s+ss");
     }
 
     @Test
-    public void maybeSubjectAsSs() throws Exception {
+    public void maybeSubjectAsSs() throws Throwable {
         findPattern("MaybeSubject<.*>\\s+ss");
     }
 
     @Test
-    public void maybeSourceAsCs() throws Exception {
+    public void maybeSourceAsCs() throws Throwable {
         findPattern("MaybeSource<.*>\\s+cs");
     }
 
     @Test
-    public void completableSourceAsSs() throws Exception {
+    public void completableSourceAsSs() throws Throwable {
         findPattern("CompletableSource<.*>\\s+ss");
     }
 
     @Test
-    public void completableSourceAsMs() throws Exception {
+    public void completableSourceAsMs() throws Throwable {
         findPattern("CompletableSource<.*>\\s+ms");
     }
 
     @Test
-    public void completableSubjectAsSs() throws Exception {
+    public void completableSubjectAsSs() throws Throwable {
         findPattern("CompletableSubject<.*>\\s+ss");
     }
 
     @Test
-    public void completableSubjectAsMs() throws Exception {
+    public void completableSubjectAsMs() throws Throwable {
         findPattern("CompletableSubject<.*>\\s+ms");
     }
 
     @Test
-    public void observableAsC() throws Exception {
+    public void observableAsC() throws Throwable {
         findPattern("Observable<.*>\\s+c\\b");
     }
 
     @Test
-    public void subscriberAsObserver() throws Exception {
+    public void subscriberAsObserver() throws Throwable {
         findPattern("Subscriber<.*>\\s+observer[0-9]?\\b");
     }
 
     @Test
-    public void subscriberAsO() throws Exception {
+    public void subscriberAsO() throws Throwable {
         findPattern("Subscriber<.*>\\s+o[0-9]?\\b");
     }
 
     @Test
-    public void singleAsObservable() throws Exception {
+    public void singleAsObservable() throws Throwable {
         findPattern("Single<.*>\\s+observable\\b");
     }
 
     @Test
-    public void singleAsFlowable() throws Exception {
+    public void singleAsFlowable() throws Throwable {
         findPattern("Single<.*>\\s+flowable\\b");
     }
 
     @Test
-    public void observerAsSubscriber() throws Exception {
+    public void observerAsSubscriber() throws Throwable {
         findPattern("Observer<.*>\\s+subscriber[0-9]?\\b");
     }
 
     @Test
-    public void observerAsS() throws Exception {
+    public void observerAsS() throws Throwable {
         findPattern("Observer<.*>\\s+s[0-9]?\\b");
     }
 
     @Test
-    public void observerNoArgAsSubscriber() throws Exception {
+    public void observerNoArgAsSubscriber() throws Throwable {
         findPattern("Observer\\s+subscriber[0-9]?\\b");
     }
 
     @Test
-    public void observerNoArgAsS() throws Exception {
+    public void observerNoArgAsS() throws Throwable {
         findPattern("Observer\\s+s[0-9]?\\b");
     }
 
     @Test
-    public void flowableAsObservable() throws Exception {
+    public void flowableAsObservable() throws Throwable {
         findPattern("Flowable<.*>\\s+observable[0-9]?\\b");
     }
 
     @Test
-    public void flowableAsO() throws Exception {
+    public void flowableAsO() throws Throwable {
         findPattern("Flowable<.*>\\s+o[0-9]?\\b");
     }
 
     @Test
-    public void flowableNoArgAsO() throws Exception {
+    public void flowableNoArgAsO() throws Throwable {
         findPattern("Flowable\\s+o[0-9]?\\b");
     }
 
     @Test
-    public void flowableNoArgAsObservable() throws Exception {
+    public void flowableNoArgAsObservable() throws Throwable {
         findPattern("Flowable\\s+observable[0-9]?\\b");
     }
 
     @Test
-    public void processorAsSubject() throws Exception {
+    public void processorAsSubject() throws Throwable {
         findPattern("Processor<.*>\\s+subject(0-9)?\\b");
     }
 
     @Test
-    public void maybeAsObservable() throws Exception {
+    public void maybeAsObservable() throws Throwable {
         findPattern("Maybe<.*>\\s+observable\\b");
     }
 
     @Test
-    public void maybeAsFlowable() throws Exception {
+    public void maybeAsFlowable() throws Throwable {
         findPattern("Maybe<.*>\\s+flowable\\b");
     }
 
     @Test
-    public void completableAsObservable() throws Exception {
+    public void completableAsObservable() throws Throwable {
         findPattern("Completable\\s+observable\\b");
     }
 
     @Test
-    public void completableAsFlowable() throws Exception {
+    public void completableAsFlowable() throws Throwable {
         findPattern("Completable\\s+flowable\\b");
     }
 
     @Test
-    public void subscriptionAsFieldS() throws Exception {
+    public void subscriptionAsFieldS() throws Throwable {
         findPattern("Subscription\\s+s[0-9]?;", true);
     }
 
     @Test
-    public void subscriptionAsD() throws Exception {
+    public void subscriptionAsD() throws Throwable {
         findPattern("Subscription\\s+d[0-9]?", true);
     }
 
     @Test
-    public void subscriptionAsSubscription() throws Exception {
+    public void subscriptionAsSubscription() throws Throwable {
         findPattern("Subscription\\s+subscription[0-9]?;", true);
     }
 
     @Test
-    public void subscriptionAsDParenthesis() throws Exception {
+    public void subscriptionAsDParenthesis() throws Throwable {
         findPattern("Subscription\\s+d[0-9]?\\)", true);
     }
 
     @Test
-    public void queueSubscriptionAsD() throws Exception {
+    public void queueSubscriptionAsD() throws Throwable {
         findPattern("Subscription<.*>\\s+q?d[0-9]?\\b", true);
     }
 
     @Test
-    public void booleanSubscriptionAsbd() throws Exception {
+    public void booleanSubscriptionAsbd() throws Throwable {
         findPattern("BooleanSubscription\\s+bd[0-9]?;", true);
     }
 
     @Test
-    public void atomicSubscriptionAsS() throws Exception {
+    public void atomicSubscriptionAsS() throws Throwable {
         findPattern("AtomicReference<Subscription>\\s+s[0-9]?;", true);
     }
 
     @Test
-    public void atomicSubscriptionAsSInit() throws Exception {
+    public void atomicSubscriptionAsSInit() throws Throwable {
         findPattern("AtomicReference<Subscription>\\s+s[0-9]?\\s", true);
     }
 
     @Test
-    public void atomicSubscriptionAsSubscription() throws Exception {
+    public void atomicSubscriptionAsSubscription() throws Throwable {
         findPattern("AtomicReference<Subscription>\\s+subscription[0-9]?", true);
     }
 
     @Test
-    public void atomicSubscriptionAsD() throws Exception {
+    public void atomicSubscriptionAsD() throws Throwable {
         findPattern("AtomicReference<Subscription>\\s+d[0-9]?", true);
     }
 
     @Test
-    public void disposableAsS() throws Exception {
+    public void disposableAsS() throws Throwable {
         // the space before makes sure it doesn't match onSubscribe(Subscription) unnecessarily
         findPattern("Disposable\\s+s[0-9]?\\b", true);
     }
 
     @Test
-    public void disposableAsFieldD() throws Exception {
+    public void disposableAsFieldD() throws Throwable {
         findPattern("Disposable\\s+d[0-9]?;", true);
     }
 
     @Test
-    public void atomicDisposableAsS() throws Exception {
+    public void atomicDisposableAsS() throws Throwable {
         findPattern("AtomicReference<Disposable>\\s+s[0-9]?", true);
     }
 
     @Test
-    public void atomicDisposableAsD() throws Exception {
+    public void atomicDisposableAsD() throws Throwable {
         findPattern("AtomicReference<Disposable>\\s+d[0-9]?;", true);
     }
 
     @Test
-    public void subscriberAsFieldActual() throws Exception {
+    public void subscriberAsFieldActual() throws Throwable {
         findPattern("Subscriber<.*>\\s+actual[;\\)]", true);
     }
 
     @Test
-    public void subscriberNoArgAsFieldActual() throws Exception {
+    public void subscriberNoArgAsFieldActual() throws Throwable {
         findPattern("Subscriber\\s+actual[;\\)]", true);
     }
 
     @Test
-    public void subscriberAsFieldS() throws Exception {
+    public void subscriberAsFieldS() throws Throwable {
         findPattern("Subscriber<.*>\\s+s[0-9]?;", true);
     }
 
     @Test
-    public void observerAsFieldActual() throws Exception {
+    public void observerAsFieldActual() throws Throwable {
         findPattern("Observer<.*>\\s+actual[;\\)]", true);
     }
 
     @Test
-    public void observerAsFieldSO() throws Exception {
+    public void observerAsFieldSO() throws Throwable {
         findPattern("Observer<.*>\\s+[so][0-9]?;", true);
     }
 
     @Test
-    public void observerNoArgAsFieldActual() throws Exception {
+    public void observerNoArgAsFieldActual() throws Throwable {
         findPattern("Observer\\s+actual[;\\)]", true);
     }
 
     @Test
-    public void observerNoArgAsFieldCs() throws Exception {
+    public void observerNoArgAsFieldCs() throws Throwable {
         findPattern("Observer\\s+cs[;\\)]", true);
     }
 
     @Test
-    public void observerNoArgAsFieldSO() throws Exception {
+    public void observerNoArgAsFieldSO() throws Throwable {
         findPattern("Observer\\s+[so][0-9]?;", true);
     }
 
     @Test
-    public void queueDisposableAsD() throws Exception {
+    public void queueDisposableAsD() throws Throwable {
         findPattern("Disposable<.*>\\s+q?s[0-9]?\\b", true);
     }
 
     @Test
-    public void disposableAsDParenthesis() throws Exception {
+    public void disposableAsDParenthesis() throws Throwable {
         findPattern("Disposable\\s+s[0-9]?\\)", true);
     }
 
     @Test
-    public void compositeDisposableAsCs() throws Exception {
+    public void compositeDisposableAsCs() throws Throwable {
         findPattern("CompositeDisposable\\s+cs[0-9]?", true);
+    }
+
+    @Test
+    public void checkFortestNGInJUnitFiles() throws Throwable {
+        findPattern("\\sorg\\.testng\\.", false, f -> !f.toLowerCase().contains("tck"));
     }
 
 }

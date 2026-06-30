@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.subjects;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -117,7 +117,7 @@ public class MaybeSubjectTest extends RxJavaTest {
         assertNull(ms.getValue());
         assertFalse(ms.hasComplete());
         assertTrue(ms.hasThrowable());
-        assertTrue(ms.getThrowable().toString(), ms.getThrowable() instanceof IOException);
+        assertTrue(ms.getThrowable() instanceof IOException, ms.getThrowable().toString());
         assertFalse(ms.hasObservers());
         assertEquals(0, ms.observerCount());
 
@@ -129,7 +129,7 @@ public class MaybeSubjectTest extends RxJavaTest {
         assertNull(ms.getValue());
         assertFalse(ms.hasComplete());
         assertTrue(ms.hasThrowable());
-        assertTrue(ms.getThrowable().toString(), ms.getThrowable() instanceof IOException);
+        assertTrue(ms.getThrowable() instanceof IOException, ms.getThrowable().toString());
         assertFalse(ms.hasObservers());
         assertEquals(0, ms.observerCount());
     }

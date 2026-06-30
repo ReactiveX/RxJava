@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
@@ -247,7 +247,7 @@ public class CompletableConcatTest extends RxJavaTest {
             }
 
             latch.await();
-            assertFalse("The second Completable was interrupted!", interrupted[0]);
+            assertFalse(interrupted[0], "The second Completable was interrupted!");
         }
     }
 

@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.observers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -35,7 +35,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
     Observer<String> observer;
 
-    @Before
+    @BeforeEach
     public void before() {
         observer = TestHelper.mockObserver();
     }
@@ -264,7 +264,7 @@ public class SerializedObserverTest extends RxJavaTest {
      *
      * @throws InterruptedException if the {@link CountDownLatch#await()} is interrupted
      */
-    @Ignore("this is non-deterministic ... haven't figured out what's wrong with the test yet (benjchristensen: July 2014)")
+    @Disabled("this is non-deterministic ... haven't figured out what's wrong with the test yet (benjchristensen: July 2014)")
     @Test
     public void notificationDelay() throws InterruptedException {
         ExecutorService tp1 = Executors.newFixedThreadPool(1);
@@ -354,7 +354,7 @@ public class SerializedObserverTest extends RxJavaTest {
      *
      * @throws InterruptedException if the {@link CountDownLatch#await()} is interrupted
      */
-    @Ignore("Demonstrates thread starvation problem. Read Javadoc")
+    @Disabled("Demonstrates thread starvation problem. Read Javadoc")
     @Test
     public void threadStarvation() throws InterruptedException {
 
@@ -1057,7 +1057,7 @@ public class SerializedObserverTest extends RxJavaTest {
                 }
 
                 for (Throwable e : errors) {
-                    assertTrue(e.toString(), e.getCause() instanceof TestException);
+                    assertTrue(e.getCause() instanceof TestException, e.toString());
                 }
             } finally {
                 RxJavaPlugins.reset();

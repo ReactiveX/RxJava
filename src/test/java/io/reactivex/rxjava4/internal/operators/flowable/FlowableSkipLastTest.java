@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -97,9 +97,11 @@ public class FlowableSkipLastTest extends RxJavaTest {
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void skipLastWithNegativeCount() {
-        Flowable.just("one").skipLast(-1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable.just("one").skipLast(-1);
+        });
     }
 
     @Test

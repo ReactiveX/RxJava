@@ -13,25 +13,23 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.Observable;
-import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
@@ -47,7 +45,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     private Scheduler.Worker innerScheduler;
     private Observer<String> observer;
 
-    @Before
+    @BeforeEach
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
@@ -360,7 +358,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                     isUnsubscribed.set(bs.isDisposed());
                 })
         ).take(1).subscribe();
-        assertTrue("Switch doesn't propagate 'unsubscribe'", isUnsubscribed.get());
+        assertTrue(isUnsubscribed.get(), "Switch doesn't propagate 'unsubscribe'");
     }
     /** The upstream producer hijacked the switch producer stopping the requests aimed at the inner observables. */
     @Test
@@ -392,7 +390,7 @@ public class ObservableSwitchTest extends RxJavaTest {
         to.assertTerminated();
         to.assertNoErrors();
 
-        Assert.assertEquals(250, to.values().size());
+        assertEquals(250, to.values().size());
     }
 
     @Test
@@ -604,7 +602,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 TestHelper.race(r1, r2);
 
                 for (Throwable e : errors) {
-                    assertTrue(e.toString(), e instanceof TestException);
+                    assertTrue(e instanceof TestException, e.toString());
                 }
             } finally {
                 RxJavaPlugins.reset();
@@ -642,7 +640,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 TestHelper.race(r1, r2);
 
                 for (Throwable e : errors) {
-                    assertTrue(e.getCause().toString(), e.getCause() instanceof TestException);
+                    assertTrue(e.getCause() instanceof TestException, e.getCause().toString());
                 }
             } finally {
                 RxJavaPlugins.reset();
@@ -849,7 +847,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 TestHelper.race(r1, r2);
 
                 for (Throwable e : errors) {
-                    assertTrue(e.toString(), e.getCause() instanceof TestException);
+                    assertTrue(e.getCause() instanceof TestException, e.toString());
                 }
             } finally {
                 RxJavaPlugins.reset();

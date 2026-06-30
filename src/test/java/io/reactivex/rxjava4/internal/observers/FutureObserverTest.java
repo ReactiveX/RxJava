@@ -14,12 +14,12 @@
 package io.reactivex.rxjava4.internal.observers;
 
 import static io.reactivex.rxjava4.internal.util.ExceptionHelper.timeoutMessage;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -32,7 +32,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class FutureObserverTest extends RxJavaTest {
     FutureObserver<Integer> fo;
 
-    @Before
+    @BeforeEach
     public void before() {
         fo = new FutureObserver<>();
     }
@@ -111,7 +111,7 @@ public class FutureObserverTest extends RxJavaTest {
             try {
                 fo.get(5, TimeUnit.MILLISECONDS);
             } catch (ExecutionException ex) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
                 assertEquals("One", ex.getCause().getMessage());
             }
 
@@ -229,7 +229,7 @@ public class FutureObserverTest extends RxJavaTest {
             try {
                 fo.get(5, TimeUnit.MILLISECONDS);
             } catch (ExecutionException ex) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
                 assertEquals("One", ex.getCause().getMessage());
             }
 
@@ -249,7 +249,7 @@ public class FutureObserverTest extends RxJavaTest {
             try {
                 assertNull(fo.get(5, TimeUnit.MILLISECONDS));
             } catch (ExecutionException ex) {
-                assertTrue(ex.toString(), ex.getCause() instanceof NoSuchElementException);
+                assertTrue(ex.getCause() instanceof NoSuchElementException, ex.toString());
             }
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -322,10 +322,12 @@ public class FutureObserverTest extends RxJavaTest {
         assertEquals(1, fo.get(5, TimeUnit.MILLISECONDS).intValue());
     }
 
-    @Test(expected = InterruptedException.class)
+    @Test
     public void getInterrupted() throws Exception {
-        Thread.currentThread().interrupt();
-        fo.get();
+        assertThrows(InterruptedException.class, () -> {
+            Thread.currentThread().interrupt();
+            fo.get();
+        });
     }
 
     @Test

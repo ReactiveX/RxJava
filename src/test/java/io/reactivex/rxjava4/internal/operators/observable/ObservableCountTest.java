@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;

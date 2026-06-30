@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.processors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -159,19 +159,25 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         assertTrue(didRunOnTerminate.get());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullOnTerminate() {
-        UnicastProcessor.create(5, null);
+        assertThrows(NullPointerException.class, () -> {
+            UnicastProcessor.create(5, null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void negativeCapacityHint() {
-        UnicastProcessor.create(-1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            UnicastProcessor.create(-1);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void zeroCapacityHint() {
-        UnicastProcessor.create(0);
+        assertThrows(IllegalArgumentException.class, () -> {
+            UnicastProcessor.create(0);
+        });
     }
 
     @Test

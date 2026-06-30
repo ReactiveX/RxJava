@@ -13,10 +13,11 @@
 
 package io.reactivex.rxjava4.completable;
 
-import java.util.concurrent.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.*;
@@ -57,7 +58,7 @@ public class CompletableIsolatedTest extends RxJavaTest {
             }
         });
 
-        Assert.assertEquals("calls count mismatch", 6, calls.get());
-        Assert.assertNull("error present", err.get());
+        assertEquals(6, calls.get(), "calls count mismatch");
+        assertNull(err.get(), "error present");
     }
 }

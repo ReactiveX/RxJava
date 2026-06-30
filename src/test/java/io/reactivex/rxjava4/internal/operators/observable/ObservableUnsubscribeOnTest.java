@@ -13,18 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -70,7 +70,7 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
 
             System.out.println("unsubscribeThread: " + unsubscribeThread);
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
-            assertSame(unsubscribeThread.toString(), unsubscribeThread, uiEventLoop.getThread());
+            assertSame(unsubscribeThread, uiEventLoop.getThread(), unsubscribeThread.toString());
 
             observer.assertValues(1, 2);
             observer.assertTerminated();

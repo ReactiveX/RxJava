@@ -13,24 +13,23 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.operators.flowable.FlowableFlattenIterable.FlattenIterableSubscriber;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
-import io.reactivex.rxjava4.operators.QueueFuseable;
-import io.reactivex.rxjava4.operators.QueueSubscription;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -345,7 +344,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         ts.assertError(TestException.class);
         ts.assertNotComplete();
 
-        Assert.assertFalse("PublishProcessor has Subscribers?!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "PublishProcessor has Subscribers?!");
     }
 
     @Test
@@ -424,8 +423,8 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        Assert.assertFalse("PublishProcessor has Subscribers?!", pp.hasSubscribers());
-        Assert.assertEquals(1, counter.get());
+        assertFalse(pp.hasSubscribers(), "PublishProcessor has Subscribers?!");
+        assertEquals(1, counter.get());
     }
 
     @Test
@@ -498,19 +497,19 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
                 assertEquals(QueueFuseable.SYNC, qs.requestFusion(QueueFuseable.ANY));
 
                 try {
-                    assertFalse("Source reports being empty!", qs.isEmpty());
+                    assertFalse(qs.isEmpty(), "Source reports being empty!");
 
                     assertEquals(1, qs.poll().intValue());
 
-                    assertFalse("Source reports being empty!", qs.isEmpty());
+                    assertFalse(qs.isEmpty(), "Source reports being empty!");
 
                     assertEquals(2, qs.poll().intValue());
 
-                    assertFalse("Source reports being empty!", qs.isEmpty());
+                    assertFalse(qs.isEmpty(), "Source reports being empty!");
 
                     qs.clear();
 
-                    assertTrue("Source reports not empty!", qs.isEmpty());
+                    assertTrue(qs.isEmpty(), "Source reports not empty!");
 
                     assertNull(qs.poll());
                 } catch (Throwable ex) {
@@ -612,15 +611,15 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
                 assertEquals(QueueFuseable.SYNC, qs.requestFusion(QueueFuseable.ANY));
 
                 try {
-                    assertFalse("Source reports being empty!", qs.isEmpty());
+                    assertFalse(qs.isEmpty(), "Source reports being empty!");
 
                     assertEquals(1, qs.poll().intValue());
 
-                    assertFalse("Source reports being empty!", qs.isEmpty());
+                    assertFalse(qs.isEmpty(), "Source reports being empty!");
 
                     assertEquals(3, qs.poll().intValue());
 
-                    assertTrue("Source reports being non-empty!", qs.isEmpty());
+                    assertTrue(qs.isEmpty(), "Source reports being non-empty!");
                 } catch (Throwable ex) {
                     throw ExceptionHelper.wrapOrThrow(ex);
                 }

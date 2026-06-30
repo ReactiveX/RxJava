@@ -13,8 +13,9 @@
 
 package io.reactivex.rxjava4.internal.fuseable;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.testsupport.TestHelper;
 

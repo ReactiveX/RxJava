@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.validators;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 
@@ -64,7 +64,7 @@ public class CheckPublicFinalMethodsTest extends RxJavaTest {
     }
 
     @Test
-    @Ignore("Interfaces and defaults not yet handled, TODO")
+    @Disabled("Interfaces and defaults not yet handled, TODO")
     public void streamable() {
         scan(Streamable.class);
     }

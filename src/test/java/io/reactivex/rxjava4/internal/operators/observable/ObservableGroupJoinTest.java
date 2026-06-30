@@ -13,18 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 
-import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
@@ -51,7 +51,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
 
     BiFunction<Integer, Observable<Integer>, Observable<Integer>> add2 = (leftValue, rightValues) -> rightValues.map(rightValue -> add.apply(leftValue, rightValue));
 
-    @Before
+    @BeforeEach
     public void before() {
         MockitoAnnotations.openMocks(this);
     }

@@ -13,10 +13,12 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import java.util.List;
+import java.util.concurrent.Flow.Subscription;
+
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -33,7 +35,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
 
     TestSubscriberEx<Integer> ts;
 
-    @Before
+    @BeforeEach
     public void before() {
         source = new PublishAsyncEmitter();
         sourceNoCancel = new PublishAsyncEmitterNoCancel();
@@ -52,7 +54,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
 
         ts.assertValue(1);
 
-        Assert.assertEquals(0, source.requested());
+        assertEquals(0, source.requested());
 
         ts.request(1);
 
@@ -136,7 +138,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
         ts.assertError(MissingBackpressureException.class);
         ts.assertNotComplete();
 
-        Assert.assertEquals("create: " + MissingBackpressureException.DEFAULT_MESSAGE, ts.errors().getFirst().getMessage());
+        assertEquals("create: " + MissingBackpressureException.DEFAULT_MESSAGE, ts.errors().getFirst().getMessage());
     }
 
     @Test

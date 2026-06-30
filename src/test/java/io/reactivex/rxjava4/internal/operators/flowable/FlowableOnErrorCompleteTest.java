@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.exceptions.*;
@@ -65,7 +65,7 @@ public class FlowableOnErrorCompleteTest {
             .test()
             .assertResult();
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -77,7 +77,7 @@ public class FlowableOnErrorCompleteTest {
             .test()
             .assertResult();
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -89,7 +89,7 @@ public class FlowableOnErrorCompleteTest {
             .test()
             .assertFailure(IOException.class);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -104,7 +104,7 @@ public class FlowableOnErrorCompleteTest {
             TestHelper.assertError(ts, 0, IOException.class);
             TestHelper.assertError(ts, 1, TestException.class);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -117,7 +117,7 @@ public class FlowableOnErrorCompleteTest {
             .test()
             .assertResult(2, 4);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -129,11 +129,11 @@ public class FlowableOnErrorCompleteTest {
                 .onErrorComplete()
                 .test();
 
-        assertTrue("No subscribers?!", pp.hasSubscribers());
+        assertTrue(pp.hasSubscribers(), "No subscribers?!");
 
         ts.cancel();
 
-        assertFalse("Still subscribers?!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Still subscribers?!");
     }
 
     @Test

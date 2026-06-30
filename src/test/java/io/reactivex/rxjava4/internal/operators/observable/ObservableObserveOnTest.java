@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -21,8 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.annotations.Nullable;
@@ -30,16 +29,14 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.operators.flowable.FlowableObserveOnTest.DisposeTrackingScheduler;
 import io.reactivex.rxjava4.internal.operators.observable.ObservableObserveOn.ObserveOnObserver;
 import io.reactivex.rxjava4.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava4.observers.*;
-import io.reactivex.rxjava4.operators.QueueDisposable;
-import io.reactivex.rxjava4.operators.QueueFuseable;
-import io.reactivex.rxjava4.operators.SimpleQueue;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.subjects.*;
@@ -204,10 +201,10 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
         Observable.range(1, 100000).map(t1 -> t1 * _multiple).observeOn(Schedulers.newThread())
         .blockingForEach(t1 -> {
-            Assert.assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+            assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
             // FIXME toBlocking methods run on the current thread
             String name = Thread.currentThread().getName();
-            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+            assertFalse(name.startsWith("Rx"), "Wrong thread name: " + name);
         });
 
     }
@@ -222,10 +219,10 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
         Observable.range(1, 100000).map(t1 -> t1 * _multiple).observeOn(Schedulers.computation())
         .blockingForEach(t1 -> {
-            Assert.assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+            assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
             // FIXME toBlocking methods run on the caller's thread
             String name = Thread.currentThread().getName();
-            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+            assertFalse(name.startsWith("Rx"), "Wrong thread name: " + name);
         });
     }
 
@@ -253,11 +250,11 @@ public class ObservableObserveOnTest extends RxJavaTest {
             return t1 * _multiple;
         }).observeOn(Schedulers.computation())
         .blockingForEach(t1 -> {
-            Assert.assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+            assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
 //                assertTrue(name.startsWith("RxComputationThreadPool"));
             // FIXME toBlocking now runs its methods on the caller thread
             String name = Thread.currentThread().getName();
-            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+            assertFalse(name.startsWith("Rx"), "Wrong thread name: " + name);
         });
     }
 

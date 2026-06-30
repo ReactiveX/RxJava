@@ -13,18 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -227,8 +227,8 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
         inOrder.verify(subscriber, times(1)).onError(any(Throwable.class));
         inOrder.verify(subscriber, never()).onComplete();
 
-        assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
-        assertEquals("Only 1 active subscription", 1, so.maxActive.get());
+        assertEquals(6, so.efforts.get(), "Start 6 threads, retry 5 then fail on 6");
+        assertEquals(1, so.maxActive.get(), "Only 1 active subscription");
     }
 
     @Test
@@ -254,7 +254,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
         inOrder.verify(subscriber, times(1)).onError(any(Throwable.class));
         inOrder.verify(subscriber, never()).onComplete();
 
-        assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
+        assertEquals(6, so.efforts.get(), "Start 6 threads, retry 5 then fail on 6");
     }
 
     @Test

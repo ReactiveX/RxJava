@@ -18,33 +18,39 @@
 
 package io.reactivex.rxjava4.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.internal.queue.MpscLinkedQueue;
 
 public class SimpleQueueTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void spscArrayQueueNull() {
-        SpscArrayQueue<Object> q = new SpscArrayQueue<>(16);
-        q.offer(null);
+        assertThrows(NullPointerException.class, () -> {
+            SpscArrayQueue<Object> q = new SpscArrayQueue<>(16);
+            q.offer(null);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void spscLinkedArrayQueueNull() {
-        SpscLinkedArrayQueue<Object> q = new SpscLinkedArrayQueue<>(16);
-        q.offer(null);
+        assertThrows(NullPointerException.class, () -> {
+            SpscLinkedArrayQueue<Object> q = new SpscLinkedArrayQueue<>(16);
+            q.offer(null);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mpscLinkedQueueNull() {
-        MpscLinkedQueue<Object> q = new MpscLinkedQueue<>();
-        q.offer(null);
+        assertThrows(NullPointerException.class, () -> {
+            MpscLinkedQueue<Object> q = new MpscLinkedQueue<>();
+            q.offer(null);
+        });
     }
 
     @Test

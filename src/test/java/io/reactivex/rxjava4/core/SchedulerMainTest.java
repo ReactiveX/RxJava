@@ -13,23 +13,18 @@
 
 package io.reactivex.rxjava4.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.After;
-import org.junit.Test;
+import java.util.concurrent.*;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
 public class SchedulerMainTest {
     private static final String DRIFT_USE_NANOTIME = "rxjava4.scheduler.use-nanotime";
 
-    @After
+    @AfterEach
     public void cleanup() {
         // reset value to default in order to not influence other tests
         Scheduler.IS_DRIFT_USE_NANOTIME = false;

@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -22,7 +22,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.annotations.Nullable;
@@ -201,7 +201,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
             // FIXME toBlocking methods run on the current thread
             String name = Thread.currentThread().getName();
-            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+            assertFalse(name.startsWith("Rx"), "Wrong thread name: " + name);
         });
 
     }
@@ -219,7 +219,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
             // FIXME toBlocking methods run on the caller's thread
             String name = Thread.currentThread().getName();
-            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+            assertFalse(name.startsWith("Rx"), "Wrong thread name: " + name);
         });
     }
 
@@ -252,7 +252,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 //                assertTrue(name.startsWith("RxComputationThreadPool"));
             // FIXME toBlocking now runs its methods on the caller thread
             String name = Thread.currentThread().getName();
-            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+            assertFalse(name.startsWith("Rx"), "Wrong thread name: " + name);
         });
     }
 

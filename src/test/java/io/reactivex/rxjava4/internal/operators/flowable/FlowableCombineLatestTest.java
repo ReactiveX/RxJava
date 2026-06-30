@@ -13,19 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
@@ -909,7 +908,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                     m.invoke(null, params0);
                     fail("Should have thrown @ " + m);
                 } catch (InvocationTargetException ex) {
-                    assertTrue(ex.toString(), ex.getCause() instanceof NullPointerException);
+                    assertTrue(ex.getCause() instanceof NullPointerException, ex.toString());
 
                     if (j < i) {
                         assertEquals("source" + (j + 1) + " is null", ex.getCause().getMessage());
@@ -1059,7 +1058,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                         .assertNoValues();
 
                         for (Throwable e : TestHelper.errorList(ts)) {
-                            assertTrue(e.toString(), e instanceof TestException);
+                            assertTrue(e instanceof TestException, e.toString());
                         }
 
                     } else {
@@ -1068,7 +1067,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                 }
 
                 for (Throwable e : errors) {
-                    assertTrue(e.toString(), e.getCause() instanceof TestException);
+                    assertTrue(e.getCause() instanceof TestException, e.toString());
                 }
             } finally {
                 RxJavaPlugins.reset();
@@ -1127,7 +1126,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
             assertEquals(0, count[0]);
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1150,7 +1149,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
             assertEquals(0, count[0]);
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1190,7 +1189,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
             testSubscriber.awaitDone(5, TimeUnit.SECONDS);
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }

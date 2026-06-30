@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -78,9 +78,11 @@ public class FlowableRangeLongTest extends RxJavaTest {
         Flowable.rangeLong(1, Long.MAX_VALUE);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rangeWithOverflow4() {
-        Flowable.rangeLong(2, Long.MAX_VALUE);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable.rangeLong(2, Long.MAX_VALUE);
+        });
     }
 
     @Test

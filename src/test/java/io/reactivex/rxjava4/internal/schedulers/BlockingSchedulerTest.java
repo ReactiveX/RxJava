@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -34,7 +34,8 @@ public class BlockingSchedulerTest {
 
     TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void workerUntimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -50,13 +51,13 @@ public class BlockingSchedulerTest {
 
             ts.assertResult(1, 2, 3, 4, 5);
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void workerUntimedVia() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -72,13 +73,13 @@ public class BlockingSchedulerTest {
 
             ts.assertResult(1, 2, 3, 4, 5);
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void workerTimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
@@ -94,13 +95,13 @@ public class BlockingSchedulerTest {
             });
 
             ts.assertResult(1, 2, 3, 4, 5);
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void directCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -116,7 +117,7 @@ public class BlockingSchedulerTest {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void workerCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -136,7 +137,7 @@ public class BlockingSchedulerTest {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void directUntimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -162,13 +163,13 @@ public class BlockingSchedulerTest {
             for (Throwable t : errors) {
                 t.printStackTrace();
             }
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void directTimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -191,13 +192,13 @@ public class BlockingSchedulerTest {
             });
 
             ts.assertResult(1, 2, 3, 4, 5);
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void cancelDirect() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -224,13 +225,13 @@ public class BlockingSchedulerTest {
             });
 
             ts.assertEmpty();
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void cancelDirectUntimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -257,13 +258,13 @@ public class BlockingSchedulerTest {
             });
 
             ts.assertEmpty();
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void cancelWorker() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -296,13 +297,13 @@ public class BlockingSchedulerTest {
             });
 
             ts.assertEmpty();
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void cancelWorkerUntimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -337,13 +338,13 @@ public class BlockingSchedulerTest {
             });
 
             ts.assertEmpty();
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void asyncShutdown() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -358,13 +359,13 @@ public class BlockingSchedulerTest {
 
             scheduler.execute(() -> { });
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void asyncInterrupt() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -377,13 +378,13 @@ public class BlockingSchedulerTest {
 
             scheduler.execute(() -> { });
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void asyncDispose() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -407,13 +408,13 @@ public class BlockingSchedulerTest {
                 }, 500, TimeUnit.MILLISECONDS);
             });
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void asyncFeedInto() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -431,13 +432,13 @@ public class BlockingSchedulerTest {
             }));
 
             assertEquals(n, counter[0]);
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void asyncFeedInto2() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -455,13 +456,13 @@ public class BlockingSchedulerTest {
             });
 
             assertEquals(n, counter[0]);
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     public void backtoSameThread() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -478,7 +479,7 @@ public class BlockingSchedulerTest {
 
             assertSame(t0, t1[0]);
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }

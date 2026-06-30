@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.exceptions;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -28,19 +28,19 @@ public class OnErrorNotImplementedExceptionTest extends RxJavaTest {
 
     List<Throwable> errors;
 
-    @Before
+    @BeforeEach
     public void before() {
         errors = TestHelper.trackPluginErrors();
     }
 
-    @After
+    @AfterEach
     public void after() {
         RxJavaPlugins.reset();
 
-        assertFalse("" + errors, errors.isEmpty());
+        assertFalse(errors.isEmpty(), "" + errors);
         TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
         Throwable c = errors.getFirst().getCause();
-        assertTrue("" + c, c instanceof TestException);
+        assertTrue(c instanceof TestException, "" + c);
     }
 
     @Test

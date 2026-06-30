@@ -13,12 +13,13 @@
 
 package io.reactivex.rxjava4.internal.subscriptions;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import java.util.concurrent.Flow.Subscription;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.disposables.Disposable;

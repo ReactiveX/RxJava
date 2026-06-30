@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -145,16 +145,20 @@ public class SingleZipIterableTest extends RxJavaTest {
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void zipIterableOneIsNull() {
-        Single.zip(Arrays.asList(null, Single.just(1)), (Function<Object[], Object>) _ -> 1)
-        .blockingGet();
+        assertThrows(NullPointerException.class, () -> {
+            Single.zip(Arrays.asList(null, Single.just(1)), (Function<Object[], Object>) _ -> 1)
+            .blockingGet();
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void zipIterableTwoIsNull() {
-        Single.zip(Arrays.asList(Single.just(1), null), (Function<Object[], Object>) _ -> 1)
-        .blockingGet();
+        assertThrows(NullPointerException.class, () -> {
+            Single.zip(Arrays.asList(Single.just(1), null), (Function<Object[], Object>) _ -> 1)
+            .blockingGet();
+        });
     }
 
     @Test

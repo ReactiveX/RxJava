@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.processors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;

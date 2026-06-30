@@ -13,21 +13,21 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.config.*;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -364,8 +364,8 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         source.onNext(1);
 
-        assertFalse("source not disposed", source.hasSubscribers());
-        assertFalse("boundary not disposed", boundary.hasSubscribers());
+        assertFalse(source.hasSubscribers(), "source not disposed");
+        assertFalse(boundary.hasSubscribers(), "boundary not disposed");
 
         ts.assertResult(1);
     }
@@ -625,7 +625,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         ts
         .assertResult(1);
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
     }
 
     @Test
@@ -655,7 +655,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         .assertNoErrors()
         .assertNotComplete();
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
 
         inner.get().test().assertResult();
     }

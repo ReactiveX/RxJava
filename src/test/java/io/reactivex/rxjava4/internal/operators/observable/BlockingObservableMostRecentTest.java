@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.RxJavaTest;
@@ -57,20 +57,22 @@ public class BlockingObservableMostRecentTest extends RxJavaTest {
 
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void mostRecentWithException() {
-        Subject<String> s = PublishSubject.create();
+        assertThrows(TestException.class, () -> {
+            Subject<String> s = PublishSubject.create();
 
-        Iterator<String> it = mostRecent(s, "default").iterator();
+            Iterator<String> it = mostRecent(s, "default").iterator();
 
-        assertTrue(it.hasNext());
-        assertEquals("default", it.next());
-        assertEquals("default", it.next());
+            assertTrue(it.hasNext());
+            assertEquals("default", it.next());
+            assertEquals("default", it.next());
 
-        s.onError(new TestException());
-        assertTrue(it.hasNext());
+            s.onError(new TestException());
+            assertTrue(it.hasNext());
 
-        it.next();
+            it.next();
+        });
     }
 
     @Test
@@ -83,17 +85,17 @@ public class BlockingObservableMostRecentTest extends RxJavaTest {
         for (int j = 0; j < 3; j++) {
             Iterator<Long> it = iter.iterator();
 
-            Assert.assertEquals(Long.valueOf(-1), it.next());
+            assertEquals(Long.valueOf(-1), it.next());
 
             for (int i = 0; i < 9; i++) {
                 scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-                Assert.assertTrue(it.hasNext());
-                Assert.assertEquals(Long.valueOf(i), it.next());
+                assertTrue(it.hasNext());
+                assertEquals(Long.valueOf(i), it.next());
             }
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            Assert.assertFalse(it.hasNext());
+            assertFalse(it.hasNext());
         }
 
     }

@@ -13,9 +13,9 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.operators.ScalarSupplier;
@@ -27,7 +27,7 @@ public class MaybeJustTest extends RxJavaTest {
     public void scalarSupplier() {
         Maybe<Integer> m = Maybe.just(1);
 
-        assertTrue(m.getClass().toString(), m instanceof ScalarSupplier);
+        assertTrue(m instanceof ScalarSupplier, m.getClass().toString());
 
         assertEquals(1, ((ScalarSupplier<Integer>)m).get().intValue());
     }

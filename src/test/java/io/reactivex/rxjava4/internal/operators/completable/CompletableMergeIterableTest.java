@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.operators.completable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.CompositeDisposable;

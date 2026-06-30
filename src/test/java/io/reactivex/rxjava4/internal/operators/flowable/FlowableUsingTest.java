@@ -13,18 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -139,14 +139,18 @@ public class FlowableUsingTest extends RxJavaTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void usingWithResourceFactoryError() {
-        performTestUsingWithResourceFactoryError(false);
+        assertThrows(TestException.class, () -> {
+            performTestUsingWithResourceFactoryError(false);
+        });
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void usingWithResourceFactoryErrorDisposeEagerly() {
-        performTestUsingWithResourceFactoryError(true);
+        assertThrows(TestException.class, () -> {
+            performTestUsingWithResourceFactoryError(true);
+        });
     }
 
     private void performTestUsingWithResourceFactoryError(boolean disposeEagerly) {
@@ -322,7 +326,7 @@ public class FlowableUsingTest extends RxJavaTest {
 
         ts.assertError(TestException.class);
 
-        Assert.assertEquals(1, count.get());
+        assertEquals(1, count.get());
     }
 
     @Test
@@ -343,7 +347,7 @@ public class FlowableUsingTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        Assert.assertEquals(1, count.get());
+        assertEquals(1, count.get());
     }
 
     @Test

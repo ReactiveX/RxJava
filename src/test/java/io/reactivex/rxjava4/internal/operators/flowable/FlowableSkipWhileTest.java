@@ -16,9 +16,10 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.Test;
+import java.util.concurrent.Flow.Subscriber;
+
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;

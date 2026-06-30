@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
+import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.observable.ObservableCovarianceTest.*;
 
 public class ObservableConcatTests extends RxJavaTest {

@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -32,7 +32,6 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
     @Override
     protected Scheduler getScheduler() {
-        // this is an implementation of ExecutorScheduler
         return Schedulers.computation();
     }
 

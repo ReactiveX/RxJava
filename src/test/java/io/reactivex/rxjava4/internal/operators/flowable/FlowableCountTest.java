@@ -13,7 +13,9 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import org.junit.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -21,21 +23,21 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class FlowableCountTest extends RxJavaTest {
     @Test
     public void simpleFlowable() {
-        Assert.assertEquals(0, Flowable.empty().count().toFlowable().blockingLast().intValue());
+        assertEquals(0, Flowable.empty().count().toFlowable().blockingLast().intValue());
 
-        Assert.assertEquals(1, Flowable.just(1).count().toFlowable().blockingLast().intValue());
+        assertEquals(1, Flowable.just(1).count().toFlowable().blockingLast().intValue());
 
-        Assert.assertEquals(10, Flowable.range(1, 10).count().toFlowable().blockingLast().intValue());
+        assertEquals(10, Flowable.range(1, 10).count().toFlowable().blockingLast().intValue());
 
     }
 
     @Test
     public void simple() {
-        Assert.assertEquals(0, Flowable.empty().count().blockingGet().intValue());
+        assertEquals(0, Flowable.empty().count().blockingGet().intValue());
 
-        Assert.assertEquals(1, Flowable.just(1).count().blockingGet().intValue());
+        assertEquals(1, Flowable.just(1).count().blockingGet().intValue());
 
-        Assert.assertEquals(10, Flowable.range(1, 10).count().blockingGet().intValue());
+        assertEquals(10, Flowable.range(1, 10).count().blockingGet().intValue());
 
     }
 

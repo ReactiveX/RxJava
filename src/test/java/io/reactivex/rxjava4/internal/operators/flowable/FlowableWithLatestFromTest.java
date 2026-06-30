@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.Subscriber;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -263,13 +263,13 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         result.subscribe(ts);
 
-        assertTrue("Other has no observers!", other.hasSubscribers());
+        assertTrue(other.hasSubscribers(), "Other has no observers!");
 
         ts.request(1);
 
         source.onNext(1);
 
-        assertTrue("Other has no observers!", other.hasSubscribers());
+        assertTrue(other.hasSubscribers(), "Other has no observers!");
 
         ts.assertNoValues();
 
@@ -292,7 +292,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         ts.cancel();
 
-        assertFalse("Other has observers!", other.hasSubscribers());
+        assertFalse(other.hasSubscribers(), "Other has observers!");
 
         ts.assertNoErrors();
     }
@@ -341,9 +341,9 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("ps1 has subscribers?", pp1.hasSubscribers());
-        assertFalse("ps2 has subscribers?", pp2.hasSubscribers());
-        assertFalse("ps3 has subscribers?", pp3.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "ps1 has subscribers?");
+        assertFalse(pp2.hasSubscribers(), "ps2 has subscribers?");
+        assertFalse(pp3.hasSubscribers(), "ps3 has subscribers?");
     }
 
     @Test
@@ -388,9 +388,9 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("ps1 has subscribers?", pp1.hasSubscribers());
-        assertFalse("ps2 has subscribers?", pp2.hasSubscribers());
-        assertFalse("ps3 has subscribers?", pp3.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "ps1 has subscribers?");
+        assertFalse(pp2.hasSubscribers(), "ps2 has subscribers?");
+        assertFalse(pp3.hasSubscribers(), "ps3 has subscribers?");
     }
 
     @Test
@@ -443,8 +443,8 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("ps1 has subscribers?", pp1.hasSubscribers());
-        assertFalse("ps2 has subscribers?", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "ps1 has subscribers?");
+        assertFalse(pp2.hasSubscribers(), "ps2 has subscribers?");
     }
 
     @Test
@@ -476,8 +476,8 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("ps1 has subscribers?", pp1.hasSubscribers());
-        assertFalse("ps2 has subscribers?", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "ps1 has subscribers?");
+        assertFalse(pp2.hasSubscribers(), "ps2 has subscribers?");
     }
 
     @Test

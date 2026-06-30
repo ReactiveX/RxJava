@@ -13,9 +13,10 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.rxjava4.testsupport.TestHelper;

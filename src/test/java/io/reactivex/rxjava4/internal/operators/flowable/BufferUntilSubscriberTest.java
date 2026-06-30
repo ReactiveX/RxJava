@@ -13,14 +13,16 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
@@ -60,13 +62,13 @@ public class BufferUntilSubscriberTest extends RxJavaTest {
                     })
                     .subscribe();
             if (!innerLatch.await(30, TimeUnit.SECONDS)) {
-                Assert.fail("Failed inner latch wait, iteration " + iters);
+                fail("Failed inner latch wait, iteration " + iters);
             }
         }
         if (!latch.await(30, TimeUnit.SECONDS)) {
-            Assert.fail("Incomplete! Went through " + latch.getCount() + " iterations");
+            fail("Incomplete! Went through " + latch.getCount() + " iterations");
         } else {
-            Assert.assertEquals(NITERS, counter.get());
+            assertEquals(NITERS, counter.get());
         }
     }
 }

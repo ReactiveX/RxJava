@@ -13,13 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.reactivex.rxjava4.core.*;
@@ -82,7 +83,7 @@ public class ObservableToListTest extends RxJavaTest {
     public void listWithBlockingFirstObservable() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         List<String> actual = o.toList().toObservable().blockingFirst();
-        Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
+        assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
 
     @Test
@@ -140,7 +141,7 @@ public class ObservableToListTest extends RxJavaTest {
     public void listWithBlockingFirst() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         List<String> actual = o.toList().blockingGet();
-        Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
+        assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
 
     static void await(CyclicBarrier cb) {

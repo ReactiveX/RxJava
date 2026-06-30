@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
@@ -152,7 +152,7 @@ public class ObservableConcatMapSchedulerTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(to.values().toString(), to.values().getFirst().startsWith("RxSingleScheduler-"));
+        assertTrue(to.values().getFirst().startsWith("RxSingleScheduler-"), to.values().toString());
     }
 
     @Test
@@ -166,7 +166,7 @@ public class ObservableConcatMapSchedulerTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(to.values().toString(), to.values().getFirst().startsWith("RxSingleScheduler-"));
+        assertTrue(to.values().getFirst().startsWith("RxSingleScheduler-"), to.values().toString());
     }
 
     @Test
@@ -180,7 +180,7 @@ public class ObservableConcatMapSchedulerTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(to.values().toString(), to.values().getFirst().startsWith("RxSingleScheduler-"));
+        assertTrue(to.values().getFirst().startsWith("RxSingleScheduler-"), to.values().toString());
     }
 
     @Test
@@ -194,7 +194,7 @@ public class ObservableConcatMapSchedulerTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(to.values().toString(), to.values().getFirst().startsWith("RxSingleScheduler-"));
+        assertTrue(to.values().getFirst().startsWith("RxSingleScheduler-"), to.values().toString());
     }
 
     @Test
@@ -207,7 +207,7 @@ public class ObservableConcatMapSchedulerTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(to.values().toString(), to.values().getFirst().startsWith("RxSingleScheduler-"));
+        assertTrue(to.values().getFirst().startsWith("RxSingleScheduler-"), to.values().toString());
     }
 
     @Test
@@ -221,7 +221,7 @@ public class ObservableConcatMapSchedulerTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(to.values().toString(), to.values().getFirst().startsWith("RxSingleScheduler-"));
+        assertTrue(to.values().getFirst().startsWith("RxSingleScheduler-"), to.values().toString());
     }
 
     @Test
@@ -799,7 +799,7 @@ public class ObservableConcatMapSchedulerTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(to.values().toString(), to.values().getFirst().startsWith("RxSingleScheduler-"));
+        assertTrue(to.values().getFirst().startsWith("RxSingleScheduler-"), to.values().toString());
     }
 
     @Test
@@ -817,7 +817,7 @@ public class ObservableConcatMapSchedulerTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(to.values().toString(), to.values().getFirst().startsWith("RxSingleScheduler-"));
+        assertTrue(to.values().getFirst().startsWith("RxSingleScheduler-"), to.values().toString());
     }
 
     @Test
@@ -835,7 +835,7 @@ public class ObservableConcatMapSchedulerTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertTrue(to.values().toString(), to.values().getFirst().startsWith("RxSingleScheduler-"));
+        assertTrue(to.values().getFirst().startsWith("RxSingleScheduler-"), to.values().toString());
     }
 
     @Test

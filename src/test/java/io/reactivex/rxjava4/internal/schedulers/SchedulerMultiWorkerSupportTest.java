@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -111,8 +111,8 @@ public class SchedulerMultiWorkerSupportTest extends RxJavaTest {
 
                 assertTrue(cdl.await(5, TimeUnit.SECONDS));
 
-                assertEquals(threads1.toString(), max, threads1.size());
-                assertEquals(threads2.toString(), max, threads2.size());
+                assertEquals(max, threads1.size(), threads1.toString());
+                assertEquals(max, threads2.size(), threads2.toString());
             } finally {
                 composite.dispose();
             }

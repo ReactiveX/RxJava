@@ -16,9 +16,9 @@ package io.reactivex.rxjava4.validators;
 import java.io.*;
 import java.util.*;
 
-import io.reactivex.rxjava4.core.RxJavaTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 /**
@@ -140,6 +140,14 @@ public class CheckNewLinesBeforeAnnotationTest extends RxJavaTest {
                                             .append("\\R");
                                         }
                                         fail.append("\n");
+                                        fail.append(" at ")
+                                        .append(fname.substring(0, fname.indexOf('.')))
+                                        .append(".method(")
+                                        .append(fname)
+                                        .append(":")
+                                        .append(i + 1)
+                                        .append(")\r\n")
+                                        ;
                                         total++;
                                     }
                                 }

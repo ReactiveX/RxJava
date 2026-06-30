@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -22,7 +22,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.*;
@@ -46,7 +46,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
     int count;
 
-    @Before
+    @BeforeEach
     public void before() {
         stringSubscriber = TestHelper.mockSubscriber();
 
@@ -57,7 +57,7 @@ public class FlowableMergeTest extends RxJavaTest {
         }
     }
 
-    @After
+    @AfterEach
     public void after() {
         try {
             Thread.sleep(100);
@@ -196,7 +196,7 @@ public class FlowableMergeTest extends RxJavaTest {
         verify(stringSubscriber, times(1)).onComplete();
     }
 
-    @Ignore("The underlying test keeps randomly failing and I don't know how to fix it or what it actually tries to test.")
+    @Disabled("The underlying test keeps randomly failing and I don't know how to fix it or what it actually tries to test.")
     @org.junit.jupiter.api.Test
     public void synchronizationOfMultipleSequencesLoop() throws Throwable {
         for (int i = 0; i < 100; i++) {
@@ -205,7 +205,7 @@ public class FlowableMergeTest extends RxJavaTest {
         }
     }
 
-    @Ignore("The underlying test keeps randomly failing and I don't know how to fix it or what it actually tries to test.")
+    @Disabled("The underlying test keeps randomly failing and I don't know how to fix it or what it actually tries to test.")
     @Test
     public void synchronizationOfMultipleSequences() throws Throwable {
         final TestASynchronousFlowable f1 = new TestASynchronousFlowable();
@@ -1285,14 +1285,14 @@ public class FlowableMergeTest extends RxJavaTest {
         Flowable.mergeArray(new StandardConcurrentBufferedConfig(ErrorMode.IMMEDIATE, 1, 128), new Flowable[] { pp1, pp2 })
         .subscribe(ts);
 
-        assertTrue("ps1 has no subscribers?!", pp1.hasSubscribers());
-        assertFalse("ps2 has subscribers?!", pp2.hasSubscribers());
+        assertTrue(pp1.hasSubscribers(), "ps1 has no subscribers?!");
+        assertFalse(pp2.hasSubscribers(), "ps2 has subscribers?!");
 
         pp1.onNext(1);
         pp1.onComplete();
 
-        assertFalse("ps1 has subscribers?!", pp1.hasSubscribers());
-        assertTrue("ps2 has no subscribers?!", pp2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "ps1 has subscribers?!");
+        assertTrue(pp2.hasSubscribers(), "ps2 has no subscribers?!");
 
         pp2.onNext(2);
         pp2.onComplete();
@@ -1426,7 +1426,7 @@ public class FlowableMergeTest extends RxJavaTest {
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }

@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
+import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.operators.observable.BlockingObservableIterable.BlockingObservableIterator;
@@ -49,21 +49,23 @@ public class BlockingObservableToIteratorTest extends RxJavaTest {
 
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void toIteratorWithException() {
-        Observable<String> obs = Observable.unsafeCreate(observer -> {
-            observer.onSubscribe(Disposable.empty());
-            observer.onNext("one");
-            observer.onError(new TestException());
+        assertThrows(TestException.class, () -> {
+            Observable<String> obs = Observable.unsafeCreate(observer -> {
+                observer.onSubscribe(Disposable.empty());
+                observer.onNext("one");
+                observer.onError(new TestException());
+            });
+
+            Iterator<String> it = obs.blockingIterable().iterator();
+
+            assertTrue(it.hasNext());
+            assertEquals("one", it.next());
+
+            assertTrue(it.hasNext());
+            it.next();
         });
-
-        Iterator<String> it = obs.blockingIterable().iterator();
-
-        assertTrue(it.hasNext());
-        assertEquals("one", it.next());
-
-        assertTrue(it.hasNext());
-        it.next();
     }
 
     @Test
@@ -86,30 +88,36 @@ public class BlockingObservableToIteratorTest extends RxJavaTest {
 
             it.hasNext();
         } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+            assertTrue(ex.getCause() instanceof InterruptedException, ex.toString());
         }
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void emptyThrowsNoSuch() {
-        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<>(128);
-        it.onComplete();
-        it.next();
+        assertThrows(NoSuchElementException.class, () -> {
+            BlockingObservableIterator<Integer> it = new BlockingObservableIterator<>(128);
+            it.onComplete();
+            it.next();
+        });
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void remove() {
-        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<>(128);
-        it.remove();
+        assertThrows(UnsupportedOperationException.class, () -> {
+            BlockingObservableIterator<Integer> it = new BlockingObservableIterator<>(128);
+            it.remove();
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void disposedIteratorHasNextReturns() {
-        Iterator<Integer> it = PublishSubject.<Integer>create()
-                .blockingIterable().iterator();
-        ((Disposable)it).dispose();
-        assertFalse(it.hasNext());
-        it.next();
+        assertThrows(NoSuchElementException.class, () -> {
+            Iterator<Integer> it = PublishSubject.<Integer>create()
+                    .blockingIterable().iterator();
+            ((Disposable)it).dispose();
+            assertFalse(it.hasNext());
+            it.next();
+        });
     }
 
     @Test
@@ -122,12 +130,14 @@ public class BlockingObservableToIteratorTest extends RxJavaTest {
         assertFalse(it.hasNext());
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void errorAfterDispose() {
-        Iterator<Object> it = Observable.error(new TestException()).blockingIterable().iterator();
+        assertThrows(TestException.class, () -> {
+            Iterator<Object> it = Observable.error(new TestException()).blockingIterable().iterator();
 
-        ((Disposable)it).dispose();
+            ((Disposable)it).dispose();
 
-        it.hasNext();
+            it.hasNext();
+        });
     }
 }

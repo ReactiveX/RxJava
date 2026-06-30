@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.subscribers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -36,7 +36,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
 
     Subscriber<String> subscriber;
 
-    @Before
+    @BeforeEach
     public void before() {
         subscriber = TestHelper.mockSubscriber();
     }
@@ -265,7 +265,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
      *
      * @throws InterruptedException if await() is interrupted
      */
-    @Ignore("this is non-deterministic ... haven't figured out what's wrong with the test yet (benjchristensen: July 2014)")
+    @Disabled("this is non-deterministic ... haven't figured out what's wrong with the test yet (benjchristensen: July 2014)")
     @Test
     public void notificationDelay() throws InterruptedException {
         ExecutorService tp1 = Executors.newFixedThreadPool(1);
@@ -355,7 +355,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
      *
      * @throws InterruptedException if await() is interrupted
      */
-    @Ignore("Demonstrates thread starvation problem. Read JavaDoc")
+    @Disabled("Demonstrates thread starvation problem. Read JavaDoc")
     @Test
     public void threadStarvation() throws InterruptedException {
 
@@ -1051,7 +1051,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
                 } else {
                     ts.assertFailure(TestException.class).assertError(ex);
-                    assertTrue("" + errors, errors.isEmpty());
+                    assertTrue(errors.isEmpty(), "" + errors);
                 }
             } finally {
                 RxJavaPlugins.reset();

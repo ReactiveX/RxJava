@@ -19,13 +19,13 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.List;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.operators.QueueFuseable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -45,7 +45,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
         return s.toUpperCase();
     };
 
-    @Before
+    @BeforeEach
     public void before() {
         w = TestHelper.mockObserver();
         w2 = TestHelper.mockObserver();

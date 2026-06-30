@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
 import io.reactivex.rxjava4.core.*;
@@ -835,7 +835,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
                         .assertNoValues();
 
                         for (Throwable e : TestHelper.errorList(to)) {
-                            assertTrue(e.toString(), e instanceof TestException);
+                            assertTrue(e instanceof TestException, e.toString());
                         }
 
                     } else {
@@ -844,7 +844,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
                 }
 
                 for (Throwable e : errors) {
-                    assertTrue(e.toString(), e.getCause() instanceof TestException);
+                    assertTrue(e.getCause() instanceof TestException, e.toString());
                 }
             } finally {
                 RxJavaPlugins.reset();
@@ -867,7 +867,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
             assertEquals(0, count[0]);
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -892,7 +892,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
             assertEquals(0, count[0]);
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -932,7 +932,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
             testObserver.awaitDone(5, TimeUnit.SECONDS);
 
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }

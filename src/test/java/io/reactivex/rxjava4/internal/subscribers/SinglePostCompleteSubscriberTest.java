@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
-import org.junit.Test;
+import java.io.Serial;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.TestHelper;
-
-import java.io.Serial;
 
 public class SinglePostCompleteSubscriberTest extends RxJavaTest {
 

@@ -13,23 +13,21 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Iterator;
 import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.observers.TestObserver;
-import io.reactivex.rxjava4.operators.QueueDisposable;
-import io.reactivex.rxjava4.operators.QueueFuseable;
-import io.reactivex.rxjava4.operators.SimpleQueue;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.testsupport.*;
 
 public class ObservableFromStreamTest extends RxJavaTest {

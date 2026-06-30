@@ -13,17 +13,18 @@
 
 package io.reactivex.rxjava4.disposables;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.exceptions.CompositeException;
 import io.reactivex.rxjava4.testsupport.TestHelper;
-import org.junit.Test;
 
 public class CompositeDisposableTest extends RxJavaTest {
 
@@ -224,10 +225,12 @@ public class CompositeDisposableTest extends RxJavaTest {
         cd.remove(cd1); // try removing again
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void addingNullDisposableIllegal() {
-        CompositeDisposable cd = new CompositeDisposable();
-        cd.add(null);
+        assertThrows(NullPointerException.class, () -> {
+            CompositeDisposable cd = new CompositeDisposable();
+            cd.add(null);
+        });
     }
 
     @Test
@@ -661,15 +664,15 @@ public class CompositeDisposableTest extends RxJavaTest {
 
         var e = cd.register(d);
 
-        assertFalse("d is disposed", d.isDisposed());
-        assertFalse("e is disposed", e.isDisposed());
-        assertFalse("cd is disposed", cd.isDisposed());
+        assertFalse(d.isDisposed(), "d is disposed");
+        assertFalse(e.isDisposed(), "e is disposed");
+        assertFalse(cd.isDisposed(), "cd is disposed");
 
         e.dispose();
 
-        assertTrue("d is not is disposed", d.isDisposed());
-        assertTrue("e not is disposed", e.isDisposed());
-        assertFalse("cd is disposed", cd.isDisposed());
+        assertTrue(d.isDisposed(), "d is not is disposed");
+        assertTrue(e.isDisposed(), "e not is disposed");
+        assertFalse(cd.isDisposed(), "cd is disposed");
 
         assertEquals(0, cd.size());
     }
@@ -682,15 +685,15 @@ public class CompositeDisposableTest extends RxJavaTest {
 
         var e = cd.subscribe(d);
 
-        assertFalse("d is disposed", d.isDisposed());
-        assertFalse("e is disposed", e.isDisposed());
-        assertFalse("cd is disposed", cd.isDisposed());
+        assertFalse(d.isDisposed(), "d is disposed");
+        assertFalse(e.isDisposed(), "e is disposed");
+        assertFalse(cd.isDisposed(), "cd is disposed");
 
         e.dispose();
 
-        assertFalse("d is disposed", d.isDisposed());
-        assertTrue("e not is disposed", e.isDisposed());
-        assertFalse("cd is disposed", cd.isDisposed());
+        assertFalse(d.isDisposed(), "d is disposed");
+        assertTrue(e.isDisposed(), "e not is disposed");
+        assertFalse(cd.isDisposed(), "cd is disposed");
 
         assertEquals(0, cd.size());
     }

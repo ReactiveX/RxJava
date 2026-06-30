@@ -13,9 +13,9 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -34,7 +34,7 @@ public class ObservableLiftTest extends RxJavaTest {
             .test();
             fail("Should have thrown");
         } catch (NullPointerException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+            assertTrue(ex.getCause() instanceof TestException, ex.toString());
         }
     }
 }

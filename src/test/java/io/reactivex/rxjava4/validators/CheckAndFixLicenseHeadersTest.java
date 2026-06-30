@@ -16,9 +16,9 @@ package io.reactivex.rxjava4.validators;
 import java.io.*;
 import java.util.*;
 
-import io.reactivex.rxjava4.core.RxJavaTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 /**

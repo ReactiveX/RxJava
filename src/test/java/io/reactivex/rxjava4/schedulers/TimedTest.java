@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 
@@ -88,8 +88,10 @@ public class TimedTest extends RxJavaTest {
         assertEquals("Timed[time=5, unit=SECONDS, value=1]", t1.toString());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void timeUnitNullFail() throws Exception {
-        new Timed<>(1, 5, null);
+        assertThrows(NullPointerException.class, () -> {
+            new Timed<>(1, 5, null);
+        });
     }
 }

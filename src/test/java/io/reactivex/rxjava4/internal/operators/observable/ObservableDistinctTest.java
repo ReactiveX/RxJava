@@ -13,25 +13,24 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.core.RxJavaTest;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
-import io.reactivex.rxjava4.operators.QueueDisposable;
-import io.reactivex.rxjava4.operators.QueueFuseable;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.subjects.UnicastSubject;
 import io.reactivex.rxjava4.testsupport.*;
@@ -48,7 +47,7 @@ public class ObservableDistinctTest extends RxJavaTest {
         return s.toUpperCase();
     };
 
-    @Before
+    @BeforeEach
     public void before() {
         w = TestHelper.mockObserver();
     }

@@ -13,18 +13,17 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
@@ -261,12 +260,12 @@ public class FlowableFlatMapTest extends RxJavaTest {
         return source.doOnSubscribe(_ -> {
                 int n = subscriptionCount.getAndIncrement();
                 if (n >= m) {
-                    Assert.fail("Too many subscriptions! " + (n + 1));
+                    fail("Too many subscriptions! " + (n + 1));
                 }
         }).doOnComplete(() -> {
                 int n = subscriptionCount.decrementAndGet();
                 if (n < 0) {
-                    Assert.fail("Too many unsubscriptions! " + (n - 1));
+                    fail("Too many unsubscriptions! " + (n - 1));
                 }
         });
     }
@@ -288,8 +287,8 @@ public class FlowableFlatMapTest extends RxJavaTest {
         Set<Integer> expected = new HashSet<>(Arrays.asList(
                 10, 11, 20, 21, 30, 31, 40, 41, 50, 51, 60, 61, 70, 71, 80, 81, 90, 91, 100, 101
         ));
-        Assert.assertEquals(expected.size(), ts.values().size());
-        Assert.assertTrue(expected.containsAll(ts.values()));
+        assertEquals(expected.size(), ts.values().size());
+        assertTrue(expected.containsAll(ts.values()));
     }
 
     @Test
@@ -310,9 +309,9 @@ public class FlowableFlatMapTest extends RxJavaTest {
                 1010, 1011, 2020, 2021, 3030, 3031, 4040, 4041, 5050, 5051,
                 6060, 6061, 7070, 7071, 8080, 8081, 9090, 9091, 10100, 10101
         ));
-        Assert.assertEquals(expected.size(), ts.values().size());
+        assertEquals(expected.size(), ts.values().size());
         System.out.println("--> testFlatMapSelectorMaxConcurrent: " + ts.values());
-        Assert.assertTrue(expected.containsAll(ts.values()));
+        assertTrue(expected.containsAll(ts.values()));
     }
 
     @Test
@@ -450,7 +449,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
         int j = 1;
         for (Integer v : ts.values()) {
-            Assert.assertEquals(j, v.intValue());
+            assertEquals(j, v.intValue());
 
             j += 2;
         }
@@ -471,8 +470,8 @@ public class FlowableFlatMapTest extends RxJavaTest {
         int j = 1;
         List<Integer> list = ts.values();
         for (int i = 0; i < list.size(); i += 2) {
-            Assert.assertEquals(j, list.get(i).intValue());
-            Assert.assertEquals(j + 1, list.get(i + 1).intValue());
+            assertEquals(j, list.get(i).intValue());
+            assertEquals(j + 1, list.get(i + 1).intValue());
 
             j += 2;
         }
@@ -492,7 +491,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
         int j = 1;
         for (Integer v : ts.values()) {
-            Assert.assertEquals(j, v.intValue());
+            assertEquals(j, v.intValue());
 
             j += 2;
         }
@@ -513,8 +512,8 @@ public class FlowableFlatMapTest extends RxJavaTest {
         int j = 1;
         List<Integer> list = ts.values();
         for (int i = 0; i < list.size(); i += 2) {
-            Assert.assertEquals(j, list.get(i).intValue());
-            Assert.assertEquals(j + 1, list.get(i + 1).intValue());
+            assertEquals(j, list.get(i).intValue());
+            assertEquals(j + 1, list.get(i + 1).intValue());
 
             j += 2;
         }
@@ -531,11 +530,11 @@ public class FlowableFlatMapTest extends RxJavaTest {
             throw new TestException();
         }, (t1, _) -> t1).subscribe(ts);
 
-        Assert.assertTrue("Not subscribed?", pp.hasSubscribers());
+        assertTrue(pp.hasSubscribers(), "Not subscribed?");
 
         pp.onNext(1);
 
-        Assert.assertFalse("Subscribed?", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Subscribed?");
 
         ts.assertError(TestException.class);
     }
@@ -711,8 +710,8 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
             List<String> list = ts.values();
 
-            assertTrue(list.toString(), list.contains("RxSi"));
-            assertTrue(list.toString(), list.contains("RxCo"));
+            assertTrue(list.contains("RxSi"), list.toString());
+            assertTrue(list.contains("RxCo"), list.toString());
         }
     }
 
@@ -731,7 +730,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
                 TestHelper.race(r1, r2);
 
-                assertTrue(errors.toString(), errors.isEmpty());
+                assertTrue(errors.isEmpty(), errors.toString());
             } finally {
                 RxJavaPlugins.reset();
             }
@@ -760,7 +759,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
                     TestHelper.race(r1, r2);
 
-                    assertTrue(errors.toString(), errors.isEmpty());
+                    assertTrue(errors.isEmpty(), errors.toString());
                 } finally {
                     RxJavaPlugins.reset();
                 }
@@ -867,11 +866,11 @@ public class FlowableFlatMapTest extends RxJavaTest {
         .test();
 
         pp1.onNext(1);
-        assertTrue("No subscribers?", pp2.hasSubscribers());
+        assertTrue(pp2.hasSubscribers(), "No subscribers?");
 
         pp1.onError(new TestException());
 
-        assertFalse("Has subscribers?", pp2.hasSubscribers());
+        assertFalse(pp2.hasSubscribers(), "Has subscribers?");
     }
 
     @Test
@@ -884,11 +883,11 @@ public class FlowableFlatMapTest extends RxJavaTest {
         .test();
 
         pp1.onNext(1);
-        assertTrue("No subscribers?", pp2.hasSubscribers());
+        assertTrue(pp2.hasSubscribers(), "No subscribers?");
 
         pp2.onError(new TestException());
 
-        assertFalse("Has subscribers?", pp1.hasSubscribers());
+        assertFalse(pp1.hasSubscribers(), "Has subscribers?");
     }
 
     @Test
@@ -1216,7 +1215,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         .assertValuesOnly(1);
     }
 
-    @Test(timeout = 5000)
+    @Test @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS)
     public void mixedScalarAsync() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             Flowable

@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -26,13 +26,15 @@ import io.reactivex.rxjava4.testsupport.SuppressUndeliverable;
 
 public class ExecutorSchedulerDelayedRunnableTest extends RxJavaTest {
 
-    @Test(expected = TestException.class)
+    @Test
     @SuppressUndeliverable
     public void delayedRunnableCrash() {
-        DelayedRunnable dl = new DelayedRunnable(() -> {
-            throw new TestException();
+        assertThrows(TestException.class, () -> {
+            DelayedRunnable dl = new DelayedRunnable(() -> {
+                throw new TestException();
+            });
+            dl.run();
         });
-        dl.run();
     }
 
     @Test

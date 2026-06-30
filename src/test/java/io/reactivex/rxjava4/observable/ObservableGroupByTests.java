@@ -13,10 +13,10 @@
 
 package io.reactivex.rxjava4.observable;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observable.ObservableEventStream.Event;
 import io.reactivex.rxjava4.observables.GroupedObservable;
 

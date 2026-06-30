@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.parallel;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -331,7 +331,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
             List<List<Integer>> list = ts.values();
 
-            Assert.assertEquals(100000, list.get(0).size() + list.get(1).size() + list.get(2).size());
+            assertEquals(100000, list.get(0).size() + list.get(1).size() + list.get(2).size());
         } finally {
             exec.shutdown();
         }
@@ -363,7 +363,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
             List<List<Integer>> list = ts.values();
 
-            Assert.assertEquals(100000, list.get(0).size() + list.get(1).size() + list.get(2).size());
+            assertEquals(100000, list.get(0).size() + list.get(1).size() + list.get(2).size());
         } finally {
             exec.shutdown();
         }
@@ -396,7 +396,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
             List<List<Integer>> list = ts.values();
 
-            Assert.assertEquals(100000, list.get(0).size() + list.get(1).size() + list.get(2).size());
+            assertEquals(100000, list.get(0).size() + list.get(1).size() + list.get(2).size());
         } finally {
             exec.shutdown();
         }
@@ -429,7 +429,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
             List<List<Integer>> list = ts.values();
 
-            Assert.assertEquals(100000, list.get(0).size() + list.get(1).size() + list.get(2).size());
+            assertEquals(100000, list.get(0).size() + list.get(1).size() + list.get(2).size());
         } finally {
             exec.shutdown();
         }
@@ -462,7 +462,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
             List<List<Integer>> list = ts.values();
 
-            Assert.assertEquals(100000, list.get(0).size() + list.get(1).size() + list.get(2).size());
+            assertEquals(100000, list.get(0).size() + list.get(1).size() + list.get(2).size());
         } finally {
             exec.shutdown();
         }
@@ -496,7 +496,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
             List<List<Integer>> list = ts.values();
 
-            Assert.assertEquals(1000, list.get(0).size() + list.get(1).size() + list.get(2).size());
+            assertEquals(1000, list.get(0).size() + list.get(1).size() + list.get(2).size());
         } finally {
             exec.shutdown();
         }
@@ -536,7 +536,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
             List<List<Integer>> list = ts.values();
 
-            Assert.assertEquals(1000, list.get(0).size() + list.get(1).size() + list.get(2).size());
+            assertEquals(1000, list.get(0).size() + list.get(1).size() + list.get(2).size());
         } finally {
             exec.shutdown();
         }
@@ -689,7 +689,7 @@ public class ParallelFlowableTest extends RxJavaTest {
         .assertError(TestException.class)
         .assertNotComplete();
 
-        assertTrue("" + count[0], count[0] < 5);
+        assertTrue(count[0] < 5, "" + count[0]);
     }
 
     @Test
@@ -710,7 +710,7 @@ public class ParallelFlowableTest extends RxJavaTest {
         .assertError(TestException.class)
         .assertNotComplete();
 
-        assertTrue("" + count[0], count[0] < 5);
+        assertTrue(count[0] < 5, "" + count[0]);
     }
 
     @Test
@@ -731,7 +731,7 @@ public class ParallelFlowableTest extends RxJavaTest {
             for (Throwable ex : errors) {
                 ex.printStackTrace();
             }
-            assertTrue(errors.toString(), errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -859,9 +859,11 @@ public class ParallelFlowableTest extends RxJavaTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void fromPublishers() {
-        ParallelFlowable.fromArray(new Publisher[0]);
+        assertThrows(IllegalArgumentException.class, () -> {
+            ParallelFlowable.fromArray(new Publisher[0]);
+        });
     }
 
     @Test
@@ -873,12 +875,14 @@ public class ParallelFlowableTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4, 5);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void toThrows() {
-        Flowable.range(1, 5)
-        .parallel()
-        .to((ParallelFlowableConverter<Integer, Flowable<Integer>>) _ -> {
-            throw new TestException();
+        assertThrows(TestException.class, () -> {
+            Flowable.range(1, 5)
+            .parallel()
+            .to((ParallelFlowableConverter<Integer, Flowable<Integer>>) _ -> {
+                throw new TestException();
+            });
         });
     }
 

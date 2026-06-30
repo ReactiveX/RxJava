@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -43,8 +43,8 @@ public class LambdaSubscriberTest extends RxJavaTest {
 
         Flowable.just(1).subscribe(subscriber);
 
-        assertTrue(received.toString(), received.getFirst() instanceof TestException);
-        assertEquals(received.toString(), 1, received.size());
+        assertTrue(received.getFirst() instanceof TestException, received.toString());
+        assertEquals(1, received.size(), received.toString());
 
         assertTrue(subscriber.isDisposed());
     }
@@ -62,8 +62,8 @@ public class LambdaSubscriberTest extends RxJavaTest {
 
         Flowable.just(1).subscribe(subscriber);
 
-        assertTrue(received.toString(), received.getFirst() instanceof TestException);
-        assertEquals(received.toString(), 1, received.size());
+        assertTrue(received.getFirst() instanceof TestException, received.toString());
+        assertEquals(1, received.size(), received.toString());
 
         assertTrue(subscriber.isDisposed());
     }
@@ -84,7 +84,7 @@ public class LambdaSubscriberTest extends RxJavaTest {
 
             Flowable.<Integer>error(new TestException("Outer")).subscribe(subscriber);
 
-            assertTrue(received.toString(), received.isEmpty());
+            assertTrue(received.isEmpty(), received.toString());
 
             assertTrue(subscriber.isDisposed());
 
@@ -113,7 +113,7 @@ public class LambdaSubscriberTest extends RxJavaTest {
 
             Flowable.<Integer>empty().subscribe(subscriber);
 
-            assertTrue(received.toString(), received.isEmpty());
+            assertTrue(received.isEmpty(), received.toString());
 
             assertTrue(subscriber.isDisposed());
 
@@ -182,15 +182,15 @@ public class LambdaSubscriberTest extends RxJavaTest {
             throw new TestException();
         }, errors::add);
 
-        assertTrue("No observers?!", pp.hasSubscribers());
-        assertTrue("Has errors already?!", errors.isEmpty());
+        assertTrue(pp.hasSubscribers(), "No observers?!");
+        assertTrue(errors.isEmpty(), "Has errors already?!");
 
         pp.onNext(1);
 
-        assertFalse("Has observers?!", pp.hasSubscribers());
-        assertFalse("No errors?!", errors.isEmpty());
+        assertFalse(pp.hasSubscribers(), "Has observers?!");
+        assertFalse(errors.isEmpty(), "No errors?!");
 
-        assertTrue(errors.toString(), errors.getFirst() instanceof TestException);
+        assertTrue(errors.getFirst() instanceof TestException, errors.toString());
     }
 
     @Test
@@ -205,10 +205,10 @@ public class LambdaSubscriberTest extends RxJavaTest {
             throw new TestException();
         }));
 
-        assertFalse("Has observers?!", pp.hasSubscribers());
-        assertFalse("No errors?!", errors.isEmpty());
+        assertFalse(pp.hasSubscribers(), "Has observers?!");
+        assertFalse(errors.isEmpty(), "No errors?!");
 
-        assertTrue(errors.toString(), errors.getFirst() instanceof TestException);
+        assertTrue(errors.getFirst() instanceof TestException, errors.toString());
     }
 
     @Test

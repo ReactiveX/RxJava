@@ -13,21 +13,20 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamObservableSource;
 import io.reactivex.rxjava4.observables.ConnectableObservable;
@@ -55,13 +54,13 @@ public class ObservablePublishTest extends RxJavaTest {
 
         // subscribe once
         o.subscribe(v -> {
-            Assert.assertEquals("one", v);
+            assertEquals("one", v);
             latch.countDown();
         });
 
         // subscribe again
         o.subscribe(v -> {
-            Assert.assertEquals("one", v);
+            assertEquals("one", v);
             latch.countDown();
         });
 

@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -90,7 +90,7 @@ public class SingleFlatMapNotificationTest extends RxJavaTest {
             .test()
             .assertResult(3);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -102,7 +102,7 @@ public class SingleFlatMapNotificationTest extends RxJavaTest {
             .test()
             .assertFailure(IOException.class);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 }

@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -61,7 +61,7 @@ public class MaybePeekTest extends RxJavaTest {
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
 
-            assertTrue("" + err, err[0] instanceof TestException);
+            assertTrue(err[0] instanceof TestException, "" + err);
             assertEquals("First", err[0].getMessage());
 
             to.assertFailureAndMessage(TestException.class, "First");

@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
@@ -275,8 +275,8 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
 
         to.assertFailure(TestException.class);
 
-        assertFalse("main has observers!", ps.hasObservers());
-        assertFalse("other has observers", ms.hasObservers());
+        assertFalse(ps.hasObservers(), "main has observers!");
+        assertFalse(ms.hasObservers(), "other has observers");
     }
 
     @Test
@@ -293,8 +293,8 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
 
         to.assertFailure(TestException.class);
 
-        assertFalse("main has observers!", ps.hasObservers());
-        assertFalse("other has observers", ms.hasObservers());
+        assertFalse(ps.hasObservers(), "main has observers!");
+        assertFalse(ms.hasObservers(), "other has observers");
     }
 
     @Test

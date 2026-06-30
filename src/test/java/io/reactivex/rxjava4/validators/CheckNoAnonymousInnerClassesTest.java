@@ -18,8 +18,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.RxJavaTest;
-import org.junit.Test;
 
 public class CheckNoAnonymousInnerClassesTest extends RxJavaTest {
 

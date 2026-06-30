@@ -13,9 +13,9 @@
 
 package io.reactivex.rxjava4.core;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.exceptions.TestException;
 
@@ -26,7 +26,7 @@ public class NotificationTest extends RxJavaTest {
         Notification<Integer> notification = Notification.createOnError(new TestException());
 
         assertNull(notification.getValue());
-        assertTrue(notification.getError().toString(), notification.getError() instanceof TestException);
+        assertTrue(notification.getError() instanceof TestException, notification.getError().toString());
     }
 
     @Test

@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
 import io.reactivex.rxjava4.core.*;
@@ -107,7 +107,7 @@ public class MaybeFromSupplierTest extends RxJavaTest {
             return 0;
         });
 
-        assertTrue(m.getClass().toString(), m instanceof Supplier);
+        assertTrue(m instanceof Supplier, m.getClass().toString());
 
         assertEquals(0, ((Supplier<Void>)m).get());
 

@@ -13,25 +13,24 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.flowables.ConnectableFlowable;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
-import io.reactivex.rxjava4.operators.ConditionalSubscriber;
-import io.reactivex.rxjava4.operators.QueueFuseable;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.UnicastProcessor;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -42,7 +41,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
     Subscriber<String> subscribedSubscriber;
     Subscriber<String> sideEffectSubscriber;
 
-    @Before
+    @BeforeEach
     public void before() {
         subscribedSubscriber = TestHelper.mockSubscriber();
         sideEffectSubscriber = TestHelper.mockSubscriber();
@@ -163,8 +162,8 @@ public class FlowableDoOnEachTest extends RxJavaTest {
 
         List<Throwable> exceptions = ex.getExceptions();
         assertEquals(2, exceptions.size());
-        Assert.assertTrue(exceptions.get(0) instanceof TestException);
-        Assert.assertTrue(exceptions.get(1) instanceof TestException);
+        assertTrue(exceptions.get(0) instanceof TestException);
+        assertTrue(exceptions.get(1) instanceof TestException);
     }
 
     @Test

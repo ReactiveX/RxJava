@@ -17,17 +17,19 @@ import java.io.Serial;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.Scheduler;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
-import io.reactivex.rxjava4.internal.functions.Functions;
+import io.reactivex.rxjava4.internal.functions.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
+import io.reactivex.rxjava4.schedulers.SchedulerRunnableIntrospection;
 
 /**
  * Scheduler with a configurable fixed amount of thread-pools.
  * @since 4.0.0
  */
-public final class ParallelScheduler extends Scheduler {
+public final class ParallelScheduler extends Scheduler implements SchedulerMultiWorkerSupport {
 
     static final ScheduledExecutorService[] SHUTDOWN;
 
@@ -41,6 +43,10 @@ public final class ParallelScheduler extends Scheduler {
 
     final AtomicReference<ScheduledExecutorService[]> pool;
 
+    static final TrackingParallelWorker SHUTDOWN_TRACKING_WORKER;
+
+    static final NonTrackingParallelWorker SHUTDOWN_NON_TRACKING_WORKER;
+
     int n;
 
     /**
@@ -53,6 +59,9 @@ public final class ParallelScheduler extends Scheduler {
 
         REJECTING = Executors.newSingleThreadScheduledExecutor();
         REJECTING.shutdownNow();
+
+        SHUTDOWN_TRACKING_WORKER = new TrackingParallelWorker(REJECTING);
+        SHUTDOWN_NON_TRACKING_WORKER = new NonTrackingParallelWorker(REJECTING);
     }
 
     public ParallelScheduler(int parallelism, boolean tracking, ThreadFactory factory) {
@@ -129,13 +138,43 @@ public final class ParallelScheduler extends Scheduler {
     }
 
     @Override
+    public void createWorkers(int number, WorkerCallback callback) {
+        ObjectHelper.verifyPositive(number, "number > 0 required");
+        ScheduledExecutorService[] current = pool.get();
+        int c = current.length;
+        if (c == 0) {
+            for (int i = 0; i < number; i++) {
+                if (tracking) {
+                    callback.onWorker(i, SHUTDOWN_TRACKING_WORKER);
+                } else {
+                    callback.onWorker(i, SHUTDOWN_NON_TRACKING_WORKER);
+                }
+            }
+        } else {
+            int index = n % c;
+            for (int i = 0; i < number; i++) {
+                if (tracking) {
+                    callback.onWorker(i, new TrackingParallelWorker(current[index]));
+                } else {
+                    callback.onWorker(i, new NonTrackingParallelWorker(current[index]));
+                }
+                if (++index == c) {
+                    index = 0;
+                }
+            }
+            n = index;
+        }
+    }
+
+    @Override
     public Disposable scheduleDirect(Runnable run) {
         ScheduledExecutorService exec = pick();
         if (exec == REJECTING) {
             return Disposable.disposed();
         }
         try {
-            return Disposable.fromFuture(exec.submit(RxJavaPlugins.onSchedule(run)));
+            var decoratedRun = RxJavaPlugins.onSchedule(run);
+            return createWrapper(exec.submit(decoratedRun), decoratedRun);
         } catch (RejectedExecutionException ex) {
             return Disposable.disposed();
         }
@@ -148,7 +187,8 @@ public final class ParallelScheduler extends Scheduler {
             return Disposable.disposed();
         }
         try {
-            return Disposable.fromFuture(exec.schedule(RxJavaPlugins.onSchedule(run), delay, unit));
+            var decoratedRun = RxJavaPlugins.onSchedule(run);
+            return createWrapper(exec.schedule(decoratedRun, delay, unit), decoratedRun);
         } catch (RejectedExecutionException ex) {
             return Disposable.disposed();
         }
@@ -160,8 +200,12 @@ public final class ParallelScheduler extends Scheduler {
         if (exec == REJECTING) {
             return Disposable.disposed();
         }
+        if (period <= 0) {
+            return super.schedulePeriodicallyDirect(run, initialDelay, period, unit);
+        }
         try {
-            return Disposable.fromFuture(exec.scheduleAtFixedRate(RxJavaPlugins.onSchedule(run), initialDelay, period, unit));
+            var decoratedRun = RxJavaPlugins.onSchedule(run);
+            return createWrapper(exec.scheduleAtFixedRate(decoratedRun, initialDelay, period, unit), decoratedRun);
         } catch (RejectedExecutionException ex) {
             return Disposable.disposed();
         }
@@ -217,7 +261,7 @@ public final class ParallelScheduler extends Scheduler {
 
         // Not implementing a custom schedulePeriodically as it would require tracking the Future.
 
-        final class NonTrackingTask implements Callable<Object>, Disposable {
+        final class NonTrackingTask implements Callable<Object>, Disposable, SchedulerRunnableIntrospection {
 
             final Runnable actual;
 
@@ -249,6 +293,41 @@ public final class ParallelScheduler extends Scheduler {
             public boolean isDisposed() {
                 return disposed;
             }
+
+            @Override
+            public @NonNull Runnable getWrappedRunnable() {
+                return actual;
+            }
+        }
+    }
+
+    static DirectTaskWrapper createWrapper(Future<?> future, Runnable run) {
+        return new DirectTaskWrapper(run, future);
+    }
+
+    static final class DirectTaskWrapper implements Disposable, SchedulerRunnableIntrospection {
+        final Runnable actual;
+        final Future<?> future;
+        volatile boolean disposed;
+        DirectTaskWrapper(Runnable actual, Future<?> future) {
+            this.actual = actual;
+            this.future = future;
+        }
+
+        @Override
+        public void dispose() {
+            disposed = true;
+            future.cancel(true);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+
+        @Override
+        public @NonNull Runnable getWrappedRunnable() {
+            return actual;
         }
     }
 
@@ -309,7 +388,7 @@ public final class ParallelScheduler extends Scheduler {
 
         static final class TrackedAction
         extends AtomicReference<DisposableContainer>
-        implements Callable<Object>, Disposable {
+        implements Callable<Object>, Disposable, SchedulerRunnableIntrospection {
 
             static final Future<?> FINISHED;
 
@@ -393,6 +472,11 @@ public final class ParallelScheduler extends Scheduler {
                         }
                     }
                 }
+            }
+
+            @Override
+            public @NonNull Runnable getWrappedRunnable() {
+                return actual;
             }
         }
     }

@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.subscribers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.internal.util.EndConsumerHelper;
@@ -69,10 +69,12 @@ public class ResourceSubscriberTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullResource() {
-        TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<>();
-        ro.add(null);
+        assertThrows(NullPointerException.class, () -> {
+            TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<>();
+            ro.add(null);
+        });
     }
 
     @Test

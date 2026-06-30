@@ -14,18 +14,18 @@
 package io.reactivex.rxjava4.internal.operators.observable;
 
 import static io.reactivex.rxjava4.internal.util.ExceptionHelper.timeoutMessage;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -40,7 +40,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
     private static final long TIMEOUT = 3;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         underlyingSubject = PublishSubject.create();
@@ -480,7 +480,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
                 int c = to.values().size();
                 if (c == 1) {
                     int v = to.values().getFirst();
-                    assertTrue("" + v, v == 1 || v == 2);
+                    assertTrue(v == 1 || v == 2, "" + v);
                 } else {
                     to.assertResult(1, 2);
                 }

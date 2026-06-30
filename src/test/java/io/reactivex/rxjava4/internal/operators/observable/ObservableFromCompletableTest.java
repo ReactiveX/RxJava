@@ -13,18 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.*;
-import io.reactivex.rxjava4.internal.fuseable.*;
+import io.reactivex.rxjava4.functions.Action;
+import io.reactivex.rxjava4.internal.fuseable.HasUpstreamCompletableSource;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.operators.QueueFuseable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;

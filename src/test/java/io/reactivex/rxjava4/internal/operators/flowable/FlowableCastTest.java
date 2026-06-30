@@ -13,11 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import java.util.concurrent.Flow.Subscriber;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.processors.PublishProcessor;
@@ -62,11 +64,11 @@ public class FlowableCastTest extends RxJavaTest {
 
         pp.cast(String.class).subscribe(ts);
 
-        Assert.assertTrue("Not subscribed?", pp.hasSubscribers());
+        assertTrue(pp.hasSubscribers(), "Not subscribed?");
 
         pp.onNext(1);
 
-        Assert.assertFalse("Subscribed?", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Subscribed?");
 
         ts.assertError(ClassCastException.class);
     }

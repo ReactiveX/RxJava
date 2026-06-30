@@ -13,19 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.LockSupport;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -43,7 +42,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
     private TestScheduler scheduler;
 
-    @Before
+    @BeforeEach
     public void before() {
         subscriber = TestHelper.mockSubscriber();
         subscriber2 = TestHelper.mockSubscriber();
@@ -760,7 +759,7 @@ public class FlowableDelayTest extends RxJavaTest {
         interrupt.onNext(9000);
         delayUntil.onNext(1);
 
-        Assert.assertFalse(subscribed.get());
+        assertFalse(subscribed.get());
     }
 
     @Test

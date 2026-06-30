@@ -13,23 +13,23 @@
 
 package io.reactivex.rxjava4.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.flowables.ConnectableFlowable;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Predicate;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -48,7 +48,7 @@ public class FlowableTests extends RxJavaTest {
 
     private static final Predicate<Integer> IS_EVEN = v -> v % 2 == 0;
 
-    @Before
+    @BeforeEach
     public void before() {
         w = TestHelper.mockSubscriber();
         wo = TestHelper.mockSingleObserver();

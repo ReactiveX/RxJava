@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.reactivex.rxjava4.core.*;
@@ -1035,7 +1035,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
 
-            assertFalse("Round " + i, ps.hasObservers());
+            assertFalse(ps.hasObservers(), "Round " + i);
         }
     }
 

@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.parallel;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
@@ -166,13 +166,13 @@ public class ParallelFromPublisherTest extends RxJavaTest {
 
         TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-        assertEquals(between.toString(), 1, between.size());
-        assertTrue(between.toString(), between.iterator().next().contains("RxSingleScheduler"));
+        assertEquals(1, between.size(), between.toString());
+        assertTrue(between.iterator().next().contains("RxSingleScheduler"), between.toString());
 
         Map<String, String> map = processing; // AnimalSniffer: CHM.keySet() in Java 8 returns KeySetView
 
         for (String e : map.keySet()) {
-            assertTrue(map.toString(), e.contains("RxComputationThreadPool"));
+            assertTrue(e.contains("RxComputationThreadPool"), map.toString());
         }
     }
 

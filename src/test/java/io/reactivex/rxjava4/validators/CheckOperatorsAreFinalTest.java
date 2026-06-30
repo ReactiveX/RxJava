@@ -16,9 +16,9 @@ package io.reactivex.rxjava4.validators;
 import java.io.File;
 import java.lang.reflect.Modifier;
 
-import io.reactivex.rxjava4.core.RxJavaTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class CheckOperatorsAreFinalTest extends RxJavaTest {

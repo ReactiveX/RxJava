@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
@@ -325,8 +325,8 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
         source.onNext(1);
 
-        assertFalse("source not disposed", source.hasObservers());
-        assertFalse("boundary not disposed", boundary.hasObservers());
+        assertFalse(source.hasObservers(), "source not disposed");
+        assertFalse(boundary.hasObservers(), "boundary not disposed");
 
         to.assertResult(1);
     }
@@ -588,7 +588,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
     }
 
     @Test
@@ -618,7 +618,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
         .assertNoErrors()
         .assertNotComplete();
 
-        assertFalse("Subject still has observers!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Subject still has observers!");
 
         inner.get().test().assertResult();
     }

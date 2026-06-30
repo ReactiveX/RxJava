@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.exceptions.*;
@@ -51,7 +51,7 @@ public class ObservableOnErrorCompleteTest {
             .test()
             .assertResult();
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -63,7 +63,7 @@ public class ObservableOnErrorCompleteTest {
             .test()
             .assertResult();
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -75,7 +75,7 @@ public class ObservableOnErrorCompleteTest {
             .test()
             .assertFailure(IOException.class);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -90,7 +90,7 @@ public class ObservableOnErrorCompleteTest {
             TestHelper.assertError(to, 0, IOException.class);
             TestHelper.assertError(to, 1, TestException.class);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -103,7 +103,7 @@ public class ObservableOnErrorCompleteTest {
             .test()
             .assertResult(2, 4);
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         });
     }
 
@@ -115,11 +115,11 @@ public class ObservableOnErrorCompleteTest {
                 .onErrorComplete()
                 .test();
 
-        assertTrue("No subscribers?!", ps.hasObservers());
+        assertTrue(ps.hasObservers(), "No subscribers?!");
 
         to.dispose();
 
-        assertFalse("Still subscribers?!", ps.hasObservers());
+        assertFalse(ps.hasObservers(), "Still subscribers?!");
     }
 
     @Test

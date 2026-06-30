@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -39,7 +39,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
 
-    @Before
+    @BeforeEach
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
@@ -258,9 +258,9 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
         ts.assertFailure(TestException.class);
 
-        assertFalse("Source has observers!", source.hasSubscribers());
-        assertFalse("Start has observers!", start.hasSubscribers());
-        assertFalse("End has observers!", end.hasSubscribers());
+        assertFalse(source.hasSubscribers(), "Source has observers!");
+        assertFalse(start.hasSubscribers(), "Start has observers!");
+        assertFalse(end.hasSubscribers(), "End has observers!");
     }
 
     @Test
@@ -279,9 +279,9 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
         ts.assertFailure(TestException.class);
 
-        assertFalse("Source has observers!", source.hasSubscribers());
-        assertFalse("Start has observers!", start.hasSubscribers());
-        assertFalse("End has observers!", end.hasSubscribers());
+        assertFalse(source.hasSubscribers(), "Source has observers!");
+        assertFalse(start.hasSubscribers(), "Start has observers!");
+        assertFalse(end.hasSubscribers(), "End has observers!");
     }
 
     @Test
@@ -384,7 +384,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         ts
         .assertResult(1);
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
     }
 
     @Test
@@ -415,7 +415,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         .assertNoErrors()
         .assertNotComplete();
 
-        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+        assertFalse(pp.hasSubscribers(), "Processor still has subscribers!");
 
         inner.get().test().assertResult();
     }

@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.single;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -269,7 +269,7 @@ public class SingleAmbTest extends RxJavaTest {
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
-            assertFalse("Interrupted!", interrupted.get());
+            assertFalse(interrupted.get(), "Interrupted!");
         }
     }
 
@@ -294,7 +294,7 @@ public class SingleAmbTest extends RxJavaTest {
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
-            assertFalse("Interrupted!", interrupted.get());
+            assertFalse(interrupted.get(), "Interrupted!");
         }
     }
 

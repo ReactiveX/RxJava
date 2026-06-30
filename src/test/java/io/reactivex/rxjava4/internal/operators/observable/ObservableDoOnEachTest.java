@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -21,10 +21,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observers.TestObserver;
@@ -38,7 +38,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     Observer<String> subscribedObserver;
     Observer<String> sideEffectObserver;
 
-    @Before
+    @BeforeEach
     public void before() {
         subscribedObserver = TestHelper.mockObserver();
         sideEffectObserver = TestHelper.mockObserver();
@@ -159,8 +159,8 @@ public class ObservableDoOnEachTest extends RxJavaTest {
 
         List<Throwable> exceptions = ex.getExceptions();
         assertEquals(2, exceptions.size());
-        Assert.assertTrue(exceptions.get(0) instanceof TestException);
-        Assert.assertTrue(exceptions.get(1) instanceof TestException);
+        assertTrue(exceptions.get(0) instanceof TestException);
+        assertTrue(exceptions.get(1) instanceof TestException);
     }
 
     @Test
@@ -353,7 +353,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     }
 
     @Test
-    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    @Disabled("Fusion not supported yet") // TODO decide/implement fusion
     public void fused() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
@@ -373,7 +373,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     }
 
     @Test
-    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    @Disabled("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedOnErrorCrash() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
@@ -394,7 +394,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     }
 
     @Test
-    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    @Disabled("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedConditional() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
@@ -415,7 +415,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     }
 
     @Test
-    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    @Disabled("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedOnErrorCrashConditional() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
@@ -437,7 +437,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     }
 
     @Test
-    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    @Disabled("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedAsync() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
@@ -461,7 +461,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     }
 
     @Test
-    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    @Disabled("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedAsyncConditional() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
@@ -486,7 +486,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     }
 
     @Test
-    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    @Disabled("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedAsyncConditional2() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 

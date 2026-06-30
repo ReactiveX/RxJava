@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
@@ -37,7 +37,7 @@ public class ObservableSampleTest extends RxJavaTest {
     private Observer<Long> observer;
     private Observer<Object> observer2;
 
-    @Before
+    @BeforeEach
     // due to mocking
     public void before() {
         scheduler = new TestScheduler();

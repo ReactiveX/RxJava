@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
@@ -127,10 +127,12 @@ public class MaybeZipArrayTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void zipArrayOneIsNull() {
-        Maybe.zipArray((Function<Object[], Object>) _ -> 1, Maybe.just(1), null)
-        .blockingGet();
+        assertThrows(NullPointerException.class, () -> {
+            Maybe.zipArray((Function<Object[], Object>) _ -> 1, Maybe.just(1), null)
+            .blockingGet();
+        });
     }
 
     @Test

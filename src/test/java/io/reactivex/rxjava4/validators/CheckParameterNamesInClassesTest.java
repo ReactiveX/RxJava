@@ -13,10 +13,11 @@
 
 package io.reactivex.rxjava4.validators;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
-import org.junit.Test;
 
 public class CheckParameterNamesInClassesTest extends RxJavaTest {
 
@@ -27,10 +28,11 @@ public class CheckParameterNamesInClassesTest extends RxJavaTest {
 
     @Test
     public void javacParametersEnabled() throws Exception {
-        assertEquals("Please enable saving parameter names via the -parameters javac argument",
+        assertEquals(
                 "paramName",
                 getClass()
                 .getDeclaredMethod("method", Integer.TYPE)
-                .getParameters()[0].getName());
+                .getParameters()[0].getName(),
+                "Please enable saving parameter names via the -parameters javac argument");
     }
 }

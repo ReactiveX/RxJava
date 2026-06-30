@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.*;
@@ -92,7 +92,7 @@ public class FlowableFromActionTest extends RxJavaTest {
 
         Flowable<Void> m = Flowable.fromAction(() -> counter[0]++);
 
-        assertTrue(m.getClass().toString(), m instanceof Supplier);
+        assertTrue(m instanceof Supplier, m.getClass().toString());
 
         assertNull(((Supplier<Void>)m).get());
 

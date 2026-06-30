@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.internal.functions;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -83,49 +83,65 @@ public class FunctionsTest extends RxJavaTest {
         assertFalse(Functions.predicateReverseFor(s).test(1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void toFunction2() throws Throwable {
-        Functions.toFunction((BiFunction<Integer, Integer, Integer>) (_, _) -> null).apply(new Object[20]);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Functions.toFunction((BiFunction<Integer, Integer, Integer>) (_, _) -> null).apply(new Object[20]);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void toFunction3() throws Throwable {
-        Functions.toFunction((Function3<Integer, Integer, Integer, Integer>) (_, _, _) -> null).apply(new Object[20]);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Functions.toFunction((Function3<Integer, Integer, Integer, Integer>) (_, _, _) -> null).apply(new Object[20]);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void toFunction4() throws Throwable {
-        Functions.toFunction((Function4<Integer, Integer, Integer, Integer, Integer>) (_, _, _, _) -> null).apply(new Object[20]);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Functions.toFunction((Function4<Integer, Integer, Integer, Integer, Integer>) (_, _, _, _) -> null).apply(new Object[20]);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void toFunction5() throws Throwable {
-        Functions.toFunction((Function5<Integer, Integer, Integer, Integer, Integer, Integer>) (_, _, _, _,
-                _) -> null).apply(new Object[20]);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Functions.toFunction((Function5<Integer, Integer, Integer, Integer, Integer, Integer>) (_, _, _, _,
+                    _) -> null).apply(new Object[20]);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void toFunction6() throws Throwable {
-        Functions.toFunction((Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_, _, _, _,
-                _, _) -> null).apply(new Object[20]);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Functions.toFunction((Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_, _, _, _,
+                    _, _) -> null).apply(new Object[20]);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void toFunction7() throws Throwable {
-        Functions.toFunction((Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_, _, _,
-                _, _, _, _) -> null).apply(new Object[20]);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Functions.toFunction((Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_, _, _,
+                    _, _, _, _) -> null).apply(new Object[20]);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void toFunction8() throws Throwable {
-        Functions.toFunction((Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_, _,
-                _, _, _, _, _, _) -> null).apply(new Object[20]);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Functions.toFunction((Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_, _,
+                    _, _, _, _, _, _) -> null).apply(new Object[20]);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void toFunction9() throws Throwable {
-        Functions.toFunction((Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_,
-                _, _, _, _, _, _, _, _) -> null).apply(new Object[20]);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Functions.toFunction((Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_,
+                    _, _, _, _, _, _, _, _) -> null).apply(new Object[20]);
+        });
     }
 
     @Test
@@ -155,7 +171,7 @@ public class FunctionsTest extends RxJavaTest {
             Functions.ERROR_CONSUMER.accept(new TestException());
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
-            assertEquals(errors.toString(), 1, errors.size());
+            assertEquals(1, errors.size(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }

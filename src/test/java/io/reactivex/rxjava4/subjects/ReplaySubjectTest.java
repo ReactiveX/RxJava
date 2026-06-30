@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.subjects;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -22,13 +22,13 @@ import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.*;
 import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.subjects.ReplaySubject.*;
@@ -1260,7 +1260,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after.get() / 1024.0 / 1024.0);
 
         if (initial + 100 * 1024 * 1024 < after.get()) {
-            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+            fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after.get() / 1024.0 / 1024.0);
         }
     }

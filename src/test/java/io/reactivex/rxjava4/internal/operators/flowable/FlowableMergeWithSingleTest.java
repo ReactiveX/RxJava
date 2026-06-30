@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -378,8 +378,8 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
 
         ts.assertFailure(TestException.class);
 
-        assertFalse("main has observers!", pp.hasSubscribers());
-        assertFalse("other has observers", ss.hasObservers());
+        assertFalse(pp.hasSubscribers(), "main has observers!");
+        assertFalse(ss.hasObservers(), "other has observers");
     }
 
     @Test
@@ -396,8 +396,8 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
 
         ts.assertFailure(TestException.class);
 
-        assertFalse("main has observers!", pp.hasSubscribers());
-        assertFalse("other has observers", ss.hasObservers());
+        assertFalse(pp.hasSubscribers(), "main has observers!");
+        assertFalse(ss.hasObservers(), "other has observers");
     }
 
     @Test

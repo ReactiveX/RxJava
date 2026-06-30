@@ -15,10 +15,10 @@ package io.reactivex.rxjava4.observable;
 
 import java.util.HashMap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.BiFunction;
 import io.reactivex.rxjava4.observable.ObservableEventStream.Event;
 
 public class ObservableScanTests extends RxJavaTest {

@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
@@ -179,13 +179,13 @@ public class CompletableAmbTest extends RxJavaTest {
 
         TestObserver<Void> to = main.ambWith(other).test();
 
-        assertTrue("Main no observers?", main.hasObservers());
-        assertTrue("Other no observers?", other.hasObservers());
+        assertTrue(main.hasObservers(), "Main no observers?");
+        assertTrue(other.hasObservers(), "Other no observers?");
 
         main.onComplete();
 
-        assertFalse("Main has observers?", main.hasObservers());
-        assertFalse("Other has observers?", other.hasObservers());
+        assertFalse(main.hasObservers(), "Main has observers?");
+        assertFalse(other.hasObservers(), "Other has observers?");
 
         to.assertResult();
     }
@@ -197,13 +197,13 @@ public class CompletableAmbTest extends RxJavaTest {
 
         TestObserver<Void> to = main.ambWith(other).test();
 
-        assertTrue("Main no observers?", main.hasObservers());
-        assertTrue("Other no observers?", other.hasObservers());
+        assertTrue(main.hasObservers(), "Main no observers?");
+        assertTrue(other.hasObservers(), "Other no observers?");
 
         main.onError(new TestException());
 
-        assertFalse("Main has observers?", main.hasObservers());
-        assertFalse("Other has observers?", other.hasObservers());
+        assertFalse(main.hasObservers(), "Main has observers?");
+        assertFalse(other.hasObservers(), "Other has observers?");
 
         to.assertFailure(TestException.class);
     }
@@ -215,13 +215,13 @@ public class CompletableAmbTest extends RxJavaTest {
 
         TestObserver<Void> to = main.ambWith(other).test();
 
-        assertTrue("Main no observers?", main.hasObservers());
-        assertTrue("Other no observers?", other.hasObservers());
+        assertTrue(main.hasObservers(), "Main no observers?");
+        assertTrue(other.hasObservers(), "Other no observers?");
 
         other.onComplete();
 
-        assertFalse("Main has observers?", main.hasObservers());
-        assertFalse("Other has observers?", other.hasObservers());
+        assertFalse(main.hasObservers(), "Main has observers?");
+        assertFalse(other.hasObservers(), "Other has observers?");
 
         to.assertResult();
     }
@@ -233,13 +233,13 @@ public class CompletableAmbTest extends RxJavaTest {
 
         TestObserver<Void> to = main.ambWith(other).test();
 
-        assertTrue("Main no observers?", main.hasObservers());
-        assertTrue("Other no observers?", other.hasObservers());
+        assertTrue(main.hasObservers(), "Main no observers?");
+        assertTrue(other.hasObservers(), "Other no observers?");
 
         other.onError(new TestException());
 
-        assertFalse("Main has observers?", main.hasObservers());
-        assertFalse("Other has observers?", other.hasObservers());
+        assertFalse(main.hasObservers(), "Main has observers?");
+        assertFalse(other.hasObservers(), "Other has observers?");
 
         to.assertFailure(TestException.class);
     }
@@ -263,7 +263,7 @@ public class CompletableAmbTest extends RxJavaTest {
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
-            assertFalse("Interrupted!", interrupted.get());
+            assertFalse(interrupted.get(), "Interrupted!");
         }
     }
 
@@ -285,7 +285,7 @@ public class CompletableAmbTest extends RxJavaTest {
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
-            assertFalse("Interrupted!", interrupted.get());
+            assertFalse(interrupted.get(), "Interrupted!");
         }
     }
 

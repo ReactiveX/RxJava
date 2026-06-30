@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 import java.util.stream.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
@@ -41,32 +41,32 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
  */
 public class CheckParamValidationTest extends RxJavaTest {
 
-    @Test(timeout = 30000)
+    @Test @Timeout(value = 30000, unit = TimeUnit.MILLISECONDS)
     public void checkFlowable() {
         checkClass(Flowable.class);
     }
 
-    @Test(timeout = 30000)
+    @Test @Timeout(value = 30000, unit = TimeUnit.MILLISECONDS)
     public void checkObservable() {
         checkClass(Observable.class);
     }
 
-    @Test(timeout = 30000)
+    @Test @Timeout(value = 30000, unit = TimeUnit.MILLISECONDS)
     public void checkSingle() {
         checkClass(Single.class);
     }
 
-    @Test(timeout = 30000)
+    @Test @Timeout(value = 30000, unit = TimeUnit.MILLISECONDS)
     public void checkMaybe() {
         checkClass(Maybe.class);
     }
 
-    @Test(timeout = 30000)
+    @Test @Timeout(value = 30000, unit = TimeUnit.MILLISECONDS)
     public void checkCompletable() {
         checkClass(Completable.class);
     }
 
-    @Test(timeout = 30000)
+    @Test @Timeout(value = 30000, unit = TimeUnit.MILLISECONDS)
     public void checkParallelFlowable() {
         checkClass(ParallelFlowable.class);
     }

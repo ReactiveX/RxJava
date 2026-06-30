@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.concurrent.Flow.Subscriber;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.Action;
@@ -34,7 +34,7 @@ public class FlowableDoAfterTerminateTest extends RxJavaTest {
     private Action aAction0;
     private Subscriber<String> subscriber;
 
-    @Before
+    @BeforeEach
     public void before() {
         aAction0 = Mockito.mock(Action.class);
         subscriber = TestHelper.mockSubscriber();

@@ -18,12 +18,12 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Predicate;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.subjects.PublishSubject;

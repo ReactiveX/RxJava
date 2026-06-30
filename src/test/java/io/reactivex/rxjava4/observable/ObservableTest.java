@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -21,13 +21,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observables.ConnectableObservable;
@@ -44,7 +44,7 @@ public class ObservableTest extends RxJavaTest {
 
     private static final Predicate<Integer> IS_EVEN = v -> v % 2 == 0;
 
-    @Before
+    @BeforeEach
     public void before() {
         w = TestHelper.mockObserver();
         wo = TestHelper.mockSingleObserver();
@@ -460,7 +460,7 @@ public class ObservableTest extends RxJavaTest {
         // subscribe once
         final CountDownLatch latch = new CountDownLatch(1);
         connectable.subscribe(value -> {
-            Assert.assertEquals("last", value);
+            assertEquals("last", value);
             latch.countDown();
         });
 
@@ -494,13 +494,13 @@ public class ObservableTest extends RxJavaTest {
 
             // subscribe once
             o.subscribe(v -> {
-                Assert.assertEquals("one", v);
+                assertEquals("one", v);
                 latch.countDown();
             });
 
             // subscribe again
             o.subscribe(v -> {
-                Assert.assertEquals("one", v);
+                assertEquals("one", v);
                 latch.countDown();
             });
 
@@ -530,13 +530,13 @@ public class ObservableTest extends RxJavaTest {
 
         // subscribe once
         o.subscribe(v -> {
-            Assert.assertEquals("one", v);
+            assertEquals("one", v);
             latch.countDown();
         });
 
         // subscribe again
         o.subscribe(v -> {
-            Assert.assertEquals("one", v);
+            assertEquals("one", v);
             latch.countDown();
         });
 
@@ -563,13 +563,13 @@ public class ObservableTest extends RxJavaTest {
 
         // subscribe once
         o.subscribe(v -> {
-            Assert.assertEquals("one", v);
+            assertEquals("one", v);
             latch.countDown();
         });
 
         // subscribe again
         o.subscribe(v -> {
-            Assert.assertEquals("one", v);
+            assertEquals("one", v);
             latch.countDown();
         });
 
@@ -940,7 +940,7 @@ public class ObservableTest extends RxJavaTest {
     public void flatMap() {
         List<Integer> list = Observable.range(1, 5).flatMap((Function<Integer, Observable<Integer>>) v -> Observable.range(v, 2)).toList().blockingGet();
 
-        Assert.assertEquals(Arrays.asList(1, 2, 2, 3, 3, 4, 4, 5, 5, 6), list);
+        assertEquals(Arrays.asList(1, 2, 2, 3, 3, 4, 4, 5, 5, 6), list);
     }
 
     @Test

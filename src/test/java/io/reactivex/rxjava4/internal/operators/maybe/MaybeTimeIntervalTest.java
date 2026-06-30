@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.operators.maybe;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Maybe;
 import io.reactivex.rxjava4.exceptions.TestException;

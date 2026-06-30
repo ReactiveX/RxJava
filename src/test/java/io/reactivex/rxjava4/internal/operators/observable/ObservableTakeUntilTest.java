@@ -13,10 +13,10 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -206,8 +206,8 @@ public class ObservableTakeUntilTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertTerminated();
 
-        assertFalse("Source still has observers", source.hasObservers());
-        assertFalse("Until still has observers", until.hasObservers());
+        assertFalse(source.hasObservers(), "Source still has observers");
+        assertFalse(until.hasObservers(), "Until still has observers");
         // 2.0.2 - not anymore
 //        assertTrue("Not cancelled!", ts.isCancelled());
     }
@@ -231,8 +231,8 @@ public class ObservableTakeUntilTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertTerminated();
 
-        assertFalse("Source still has observers", source.hasObservers());
-        assertFalse("Until still has observers", until.hasObservers());
+        assertFalse(source.hasObservers(), "Source still has observers");
+        assertFalse(until.hasObservers(), "Until still has observers");
         // 2.0.2 - not anymore
 //        assertTrue("Not cancelled!", ts.isCancelled());
     }
@@ -255,8 +255,8 @@ public class ObservableTakeUntilTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertTerminated();
 
-        assertFalse("Source still has observers", source.hasObservers());
-        assertFalse("Until still has observers", until.hasObservers());
+        assertFalse(source.hasObservers(), "Source still has observers");
+        assertFalse(until.hasObservers(), "Until still has observers");
         // 2.0.2 - not anymore
 //        assertTrue("Not cancelled!", ts.isCancelled());
     }
@@ -278,15 +278,15 @@ public class ObservableTakeUntilTest extends RxJavaTest {
 
         TestObserver<Integer> to = main.takeUntil(other).test();
 
-        assertTrue("Main no observers?", main.hasObservers());
-        assertTrue("Other no observers?", other.hasObservers());
+        assertTrue(main.hasObservers(), "Main no observers?");
+        assertTrue(other.hasObservers(), "Other no observers?");
 
         main.onNext(1);
         main.onNext(2);
         main.onComplete();
 
-        assertFalse("Main has observers?", main.hasObservers());
-        assertFalse("Other has observers?", other.hasObservers());
+        assertFalse(main.hasObservers(), "Main has observers?");
+        assertFalse(other.hasObservers(), "Other has observers?");
 
         to.assertResult(1, 2);
     }
@@ -298,13 +298,13 @@ public class ObservableTakeUntilTest extends RxJavaTest {
 
         TestObserver<Integer> to = main.takeUntil(other).test();
 
-        assertTrue("Main no observers?", main.hasObservers());
-        assertTrue("Other no observers?", other.hasObservers());
+        assertTrue(main.hasObservers(), "Main no observers?");
+        assertTrue(other.hasObservers(), "Other no observers?");
 
         main.onComplete();
 
-        assertFalse("Main has observers?", main.hasObservers());
-        assertFalse("Other has observers?", other.hasObservers());
+        assertFalse(main.hasObservers(), "Main has observers?");
+        assertFalse(other.hasObservers(), "Other has observers?");
 
         to.assertResult();
     }
@@ -316,13 +316,13 @@ public class ObservableTakeUntilTest extends RxJavaTest {
 
         TestObserver<Integer> to = main.takeUntil(other).test();
 
-        assertTrue("Main no observers?", main.hasObservers());
-        assertTrue("Other no observers?", other.hasObservers());
+        assertTrue(main.hasObservers(), "Main no observers?");
+        assertTrue(other.hasObservers(), "Other no observers?");
 
         main.onError(new TestException());
 
-        assertFalse("Main has observers?", main.hasObservers());
-        assertFalse("Other has observers?", other.hasObservers());
+        assertFalse(main.hasObservers(), "Main has observers?");
+        assertFalse(other.hasObservers(), "Other has observers?");
 
         to.assertFailure(TestException.class);
     }
@@ -334,13 +334,13 @@ public class ObservableTakeUntilTest extends RxJavaTest {
 
         TestObserver<Integer> to = main.takeUntil(other).test();
 
-        assertTrue("Main no observers?", main.hasObservers());
-        assertTrue("Other no observers?", other.hasObservers());
+        assertTrue(main.hasObservers(), "Main no observers?");
+        assertTrue(other.hasObservers(), "Other no observers?");
 
         other.onNext(1);
 
-        assertFalse("Main has observers?", main.hasObservers());
-        assertFalse("Other has observers?", other.hasObservers());
+        assertFalse(main.hasObservers(), "Main has observers?");
+        assertFalse(other.hasObservers(), "Other has observers?");
 
         to.assertResult();
     }
@@ -352,13 +352,13 @@ public class ObservableTakeUntilTest extends RxJavaTest {
 
         TestObserver<Integer> to = main.takeUntil(other).test();
 
-        assertTrue("Main no observers?", main.hasObservers());
-        assertTrue("Other no observers?", other.hasObservers());
+        assertTrue(main.hasObservers(), "Main no observers?");
+        assertTrue(other.hasObservers(), "Other no observers?");
 
         other.onComplete();
 
-        assertFalse("Main has observers?", main.hasObservers());
-        assertFalse("Other has observers?", other.hasObservers());
+        assertFalse(main.hasObservers(), "Main has observers?");
+        assertFalse(other.hasObservers(), "Other has observers?");
 
         to.assertResult();
     }
@@ -370,13 +370,13 @@ public class ObservableTakeUntilTest extends RxJavaTest {
 
         TestObserver<Integer> to = main.takeUntil(other).test();
 
-        assertTrue("Main no observers?", main.hasObservers());
-        assertTrue("Other no observers?", other.hasObservers());
+        assertTrue(main.hasObservers(), "Main no observers?");
+        assertTrue(other.hasObservers(), "Other no observers?");
 
         other.onError(new TestException());
 
-        assertFalse("Main has observers?", main.hasObservers());
-        assertFalse("Other has observers?", other.hasObservers());
+        assertFalse(main.hasObservers(), "Main has observers?");
+        assertFalse(other.hasObservers(), "Other has observers?");
 
         to.assertFailure(TestException.class);
     }
@@ -388,13 +388,13 @@ public class ObservableTakeUntilTest extends RxJavaTest {
 
         TestObserver<Integer> to = main.takeUntil(other).test();
 
-        assertTrue("Main no observers?", main.hasObservers());
-        assertTrue("Other no observers?", other.hasObservers());
+        assertTrue(main.hasObservers(), "Main no observers?");
+        assertTrue(other.hasObservers(), "Other no observers?");
 
         to.dispose();
 
-        assertFalse("Main has observers?", main.hasObservers());
-        assertFalse("Other has observers?", other.hasObservers());
+        assertFalse(main.hasObservers(), "Main has observers?");
+        assertFalse(other.hasObservers(), "Other has observers?");
 
         to.assertEmpty();
     }

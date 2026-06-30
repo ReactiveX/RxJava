@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -272,7 +272,7 @@ public class ParallelCollectorTest extends RxJavaTest {
 
             assertFalse(errors.isEmpty());
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                assertTrue(ex.getCause() instanceof TestException, ex.toString());
             }
         } finally {
             RxJavaPlugins.reset();

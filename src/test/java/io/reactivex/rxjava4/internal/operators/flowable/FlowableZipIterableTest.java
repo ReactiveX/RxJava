@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -42,7 +42,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
     Subscriber<String> subscriber;
     InOrder inOrder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         concat2Strings = (t1, t2) -> t1 + "-" + t2;
 

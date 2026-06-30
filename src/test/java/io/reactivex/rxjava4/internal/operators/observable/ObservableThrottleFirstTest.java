@@ -18,13 +18,13 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.rxjava4.functions.Action;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
+import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.schedulers.TestScheduler;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -35,7 +35,7 @@ public class ObservableThrottleFirstTest extends RxJavaTest {
     private Scheduler.Worker innerScheduler;
     private Observer<String> observer;
 
-    @Before
+    @BeforeEach
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();

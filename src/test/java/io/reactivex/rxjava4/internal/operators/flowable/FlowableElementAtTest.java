@@ -13,19 +13,19 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.Subscriber;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
@@ -39,9 +39,11 @@ public class FlowableElementAtTest extends RxJavaTest {
                 .intValue());
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void elementAtWithMinusIndexFlowable() {
-        Flowable.fromArray(1, 2).elementAt(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            Flowable.fromArray(1, 2).elementAt(-1);
+        });
     }
 
     @Test
@@ -59,9 +61,11 @@ public class FlowableElementAtTest extends RxJavaTest {
         assertEquals(0, Flowable.fromArray(1, 2).elementAt(2, 0).toFlowable().blockingSingle().intValue());
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void elementAtOrDefaultWithMinusIndexFlowable() {
-        Flowable.fromArray(1, 2).elementAt(-1, 0);
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            Flowable.fromArray(1, 2).elementAt(-1, 0);
+        });
     }
 
     @Test
@@ -90,9 +94,11 @@ public class FlowableElementAtTest extends RxJavaTest {
         assertEquals(List.of(3L), requests);
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void elementAtWithMinusIndex() {
-        Flowable.fromArray(1, 2).elementAt(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            Flowable.fromArray(1, 2).elementAt(-1);
+        });
     }
 
     @Test
@@ -110,15 +116,19 @@ public class FlowableElementAtTest extends RxJavaTest {
         assertEquals(0, Flowable.fromArray(1, 2).elementAt(2, 0).blockingGet().intValue());
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void elementAtOrDefaultWithMinusIndex() {
-        Flowable.fromArray(1, 2).elementAt(-1, 0);
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            Flowable.fromArray(1, 2).elementAt(-1, 0);
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void elementAtOrErrorNegativeIndex() {
-        Flowable.empty()
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            Flowable.empty()
             .elementAtOrError(-1);
+        });
     }
 
     @Test

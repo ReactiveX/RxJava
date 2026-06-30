@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.*;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -61,7 +61,7 @@ public class StrictSubscriberTest extends RxJavaTest {
             }
         }.subscribe(sub);
 
-        assertTrue(list.toString(), list.getFirst() instanceof StrictSubscriber);
+        assertTrue(list.getFirst() instanceof StrictSubscriber, list.toString());
     }
 
     record SubscriberWrapper<T>(TestSubscriberEx<T> tester) implements Subscriber<T> {
@@ -184,8 +184,8 @@ public class StrictSubscriberTest extends RxJavaTest {
 
         Flowable.range(1, 5).subscribe(sub);
 
-        assertTrue(list.toString(), list.getFirst() instanceof IllegalArgumentException);
-        assertTrue(list.toString(), list.getFirst().toString().contains("3.9"));
+        assertTrue(list.getFirst() instanceof IllegalArgumentException, list.toString());
+        assertTrue(list.getFirst().toString().contains("3.9"), list.toString());
     }
 
     @Test
@@ -216,8 +216,8 @@ public class StrictSubscriberTest extends RxJavaTest {
 
         Flowable.range(1, 5).subscribe(sub);
 
-        assertTrue(list.toString(), list.getFirst() instanceof IllegalArgumentException);
-        assertTrue(list.toString(), list.getFirst().toString().contains("3.9"));
+        assertTrue(list.getFirst() instanceof IllegalArgumentException, list.toString());
+        assertTrue(list.getFirst().toString().contains("3.9"), list.toString());
     }
 
     @Test
@@ -325,6 +325,6 @@ public class StrictSubscriberTest extends RxJavaTest {
         }.subscribe(wrapper);
 
         ts.assertFailure(IllegalStateException.class);
-        assertTrue(ts.errors().toString(), ts.errors().getFirst().getMessage().contains("2.12"));
+        assertTrue(ts.errors().getFirst().getMessage().contains("2.12"), ts.errors().toString());
     }
 }

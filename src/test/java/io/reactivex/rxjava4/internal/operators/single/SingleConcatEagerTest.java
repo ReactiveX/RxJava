@@ -15,10 +15,9 @@ package io.reactivex.rxjava4.internal.operators.single;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Flowable;
-import io.reactivex.rxjava4.core.Single;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 

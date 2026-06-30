@@ -13,7 +13,9 @@
 
 package io.reactivex.rxjava4.internal.observers;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.core.RxJavaTest;
@@ -54,13 +56,17 @@ public class BasicQueueDisposableTest extends RxJavaTest {
         }
     };
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void offer() {
-        q.offer(1);
+        assertThrows(UnsupportedOperationException.class, () -> {
+            q.offer(1);
+        });
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void offer2() {
-        q.offer(1, 2);
+        assertThrows(UnsupportedOperationException.class, () -> {
+            q.offer(1, 2);
+        });
     }
 }

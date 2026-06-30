@@ -13,17 +13,17 @@
 
 package io.reactivex.rxjava4.subjects;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Observable;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observers.TestObserver;
@@ -197,19 +197,25 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         assertTrue(didRunOnTerminate.get());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullOnTerminate() {
-        UnicastSubject.create(5, null);
+        assertThrows(NullPointerException.class, () -> {
+            UnicastSubject.create(5, null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void negativeCapacityHint() {
-        UnicastSubject.create(-1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            UnicastSubject.create(-1);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void zeroCapacityHint() {
-        UnicastSubject.create(0);
+        assertThrows(IllegalArgumentException.class, () -> {
+            UnicastSubject.create(0);
+        });
     }
 
     @Test

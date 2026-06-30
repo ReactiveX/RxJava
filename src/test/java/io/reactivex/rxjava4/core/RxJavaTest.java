@@ -15,23 +15,42 @@ package io.reactivex.rxjava4.core;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import org.junit.rules.Timeout;
+import org.junit.jupiter.api.*;
 
-import io.reactivex.rxjava4.testsupport.SuppressUndeliverableRule;
+import io.reactivex.rxjava4.exceptions.UndeliverableException;
+import io.reactivex.rxjava4.plugins.RxJavaPlugins;
+import io.reactivex.rxjava4.testsupport.*;
 
-@SuppressWarnings("exports")
+@Timeout(value = 5, unit = TimeUnit.MINUTES)
 public abstract class RxJavaTest {
-    @Rule
-    public Timeout globalTimeout = new Timeout(5, TimeUnit.MINUTES);
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
-
     /**
      * Announce creates a log print preventing Travis CI from killing the build.
      */
     @Test
-    @Ignore
+    @Disabled
     public final void announce() {
     }
+
+    @SuppressWarnings("exports")
+    @BeforeEach
+    public void beforeEach(TestInfo info) {
+        info.getTestMethod().ifPresent(description -> {
+            if (description.getAnnotation(SuppressUndeliverable.class) != null) {
+                RxJavaPlugins.setErrorHandler(throwable -> {
+                    if (!(throwable instanceof UndeliverableException)) {
+                        throwable.printStackTrace();
+                        Thread currentThread = Thread.currentThread();
+                        currentThread.getUncaughtExceptionHandler().uncaughtException(currentThread, throwable);
+                    }
+                });
+            }
+        });
+    }
+
+    @SuppressWarnings("exports")
+    @AfterEach
+    public void afterEach(TestInfo info) {
+        RxJavaPlugins.setErrorHandler(null);
+    }
+
 }

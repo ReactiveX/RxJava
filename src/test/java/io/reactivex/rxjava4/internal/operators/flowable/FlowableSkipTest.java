@@ -13,36 +13,37 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.*;
 
 public class FlowableSkipTest extends RxJavaTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void skipNegativeElements() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable<String> skip = Flowable.just("one", "two", "three").skip(-99);
 
-        Flowable<String> skip = Flowable.just("one", "two", "three").skip(-99);
-
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        skip.subscribe(subscriber);
-        verify(subscriber, times(1)).onNext("one");
-        verify(subscriber, times(1)).onNext("two");
-        verify(subscriber, times(1)).onNext("three");
-        verify(subscriber, never()).onError(any(Throwable.class));
-        verify(subscriber, times(1)).onComplete();
+            Subscriber<String> subscriber = TestHelper.mockSubscriber();
+            skip.subscribe(subscriber);
+            verify(subscriber, times(1)).onNext("one");
+            verify(subscriber, times(1)).onNext("two");
+            verify(subscriber, times(1)).onNext("three");
+            verify(subscriber, never()).onError(any(Throwable.class));
+            verify(subscriber, times(1)).onComplete();
+        });
     }
 
     @Test

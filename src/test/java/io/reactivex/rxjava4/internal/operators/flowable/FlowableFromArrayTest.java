@@ -13,7 +13,9 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import org.junit.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -92,13 +94,13 @@ public class FlowableFromArrayTest extends RxJavaTest {
 
     @Test
     public void empty() {
-        Assert.assertSame(Flowable.empty(), Flowable.fromArray(new Object[0]));
+        assertSame(Flowable.empty(), Flowable.fromArray(new Object[0]));
     }
 
     @Test
     public void just() {
         Flowable<Integer> source = Flowable.fromArray(new Integer[] { 1 });
-        Assert.assertTrue(source.getClass().toString(), source instanceof ScalarSupplier);
+        assertTrue(source instanceof ScalarSupplier, source.getClass().toString());
     }
 
     @Test

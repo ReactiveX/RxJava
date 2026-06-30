@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
@@ -165,22 +165,28 @@ public class ObservableBlockingTest extends RxJavaTest {
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, ex), list);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void blockingForEachThrows() {
-        Observable.just(1)
-        .blockingForEach(_ -> {
-            throw new TestException();
+        assertThrows(TestException.class, () -> {
+            Observable.just(1)
+            .blockingForEach(_ -> {
+                throw new TestException();
+            });
         });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void blockingFirstEmpty() {
-        Observable.empty().blockingFirst();
+        assertThrows(NoSuchElementException.class, () -> {
+            Observable.empty().blockingFirst();
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void blockingLastEmpty() {
-        Observable.empty().blockingLast();
+        assertThrows(NoSuchElementException.class, () -> {
+            Observable.empty().blockingLast();
+        });
     }
 
     @Test
@@ -193,9 +199,11 @@ public class ObservableBlockingTest extends RxJavaTest {
         assertEquals(2, Observable.just(1, 2).blockingLast(3).intValue());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void blockingSingleEmpty() {
-        Observable.empty().blockingSingle();
+        assertThrows(NoSuchElementException.class, () -> {
+            Observable.empty().blockingSingle();
+        });
     }
 
     @Test
@@ -273,7 +281,7 @@ public class ObservableBlockingTest extends RxJavaTest {
             o.blockingGet();
             fail("Should have thrown");
         } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+            assertTrue(ex.getCause() instanceof InterruptedException, ex.toString());
         }
 
         Thread.interrupted();

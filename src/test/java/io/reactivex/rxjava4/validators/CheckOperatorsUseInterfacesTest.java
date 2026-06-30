@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.validators;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Flow.Publisher;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
@@ -179,12 +179,12 @@ public class CheckOperatorsUseInterfacesTest extends RxJavaTest {
             checkClass(CheckOperatorsUseInterfacesTest.class);
             throw new RuntimeException("Should have failed");
         } catch (AssertionError expected) {
-            assertTrue(expected.toString(), expected.toString().contains("method1"));
-            assertTrue(expected.toString(), expected.toString().contains("method2"));
-            assertTrue(expected.toString(), expected.toString().contains("method3"));
-            assertTrue(expected.toString(), expected.toString().contains("method4"));
-            assertTrue(expected.toString(), expected.toString().contains("method5"));
-            assertTrue(expected.toString(), expected.toString().contains("method6"));
+            assertTrue(expected.toString().contains("method1"), expected.toString());
+            assertTrue(expected.toString().contains("method2"), expected.toString());
+            assertTrue(expected.toString().contains("method3"), expected.toString());
+            assertTrue(expected.toString().contains("method4"), expected.toString());
+            assertTrue(expected.toString().contains("method5"), expected.toString());
+            assertTrue(expected.toString().contains("method6"), expected.toString());
         }
     }
 

@@ -13,19 +13,19 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.core.RxJavaTest;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -298,9 +298,9 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertComplete();
 
-        assertFalse("ps1 has subscribers?", ps1.hasObservers());
-        assertFalse("ps2 has subscribers?", ps2.hasObservers());
-        assertFalse("ps3 has subscribers?", ps3.hasObservers());
+        assertFalse(ps1.hasObservers(), "ps1 has subscribers?");
+        assertFalse(ps2.hasObservers(), "ps2 has subscribers?");
+        assertFalse(ps3.hasObservers(), "ps3 has subscribers?");
     }
 
     @Test
@@ -345,9 +345,9 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
         to.assertNoErrors();
         to.assertComplete();
 
-        assertFalse("ps1 has subscribers?", ps1.hasObservers());
-        assertFalse("ps2 has subscribers?", ps2.hasObservers());
-        assertFalse("ps3 has subscribers?", ps3.hasObservers());
+        assertFalse(ps1.hasObservers(), "ps1 has subscribers?");
+        assertFalse(ps2.hasObservers(), "ps2 has subscribers?");
+        assertFalse(ps3.hasObservers(), "ps3 has subscribers?");
     }
 
     @Test

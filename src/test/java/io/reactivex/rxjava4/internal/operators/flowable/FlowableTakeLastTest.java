@@ -13,22 +13,22 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -90,9 +90,11 @@ public class FlowableTakeLastTest extends RxJavaTest {
         verify(subscriber, times(1)).onComplete();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void takeLastWithNegativeCount() {
-        Flowable.just("one").takeLast(-1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Flowable.just("one").takeLast(-1);
+        });
     }
 
     @Test

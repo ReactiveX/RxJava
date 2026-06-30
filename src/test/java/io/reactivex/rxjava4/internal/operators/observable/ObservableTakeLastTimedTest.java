@@ -13,12 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
@@ -31,9 +32,11 @@ import io.reactivex.rxjava4.testsupport.*;
 
 public class ObservableTakeLastTimedTest extends RxJavaTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void takeLastTimedWithNegativeCount() {
-        Observable.just("one").takeLast(-1, 1, TimeUnit.SECONDS);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Observable.just("one").takeLast(-1, 1, TimeUnit.SECONDS);
+        });
     }
 
     @Test

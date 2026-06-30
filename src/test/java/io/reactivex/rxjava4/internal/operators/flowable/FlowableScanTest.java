@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -22,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.*;
@@ -122,7 +122,7 @@ public class FlowableScanTest extends RxJavaTest {
 
                     @Override
                     public void onError(Throwable e) {
-                        Assert.fail(e.getMessage());
+                        fail(e.getMessage());
                         e.printStackTrace();
                     }
 
@@ -156,7 +156,7 @@ public class FlowableScanTest extends RxJavaTest {
 
                     @Override
                     public void onError(Throwable e) {
-                        Assert.fail(e.getMessage());
+                        fail(e.getMessage());
                         e.printStackTrace();
                     }
 
@@ -185,7 +185,7 @@ public class FlowableScanTest extends RxJavaTest {
 
                     @Override
                     public void onError(Throwable e) {
-                        Assert.fail(e.getMessage());
+                        fail(e.getMessage());
                         e.printStackTrace();
                     }
 
@@ -374,8 +374,8 @@ public class FlowableScanTest extends RxJavaTest {
             .assertValues(0)
             .assertError(e);
 
-            assertEquals("" + list, 1, list.size());
-            assertTrue("" + list, list.getFirst() instanceof UndeliverableException);
+            assertEquals(1, list.size(), "" + list);
+            assertTrue(list.getFirst() instanceof UndeliverableException, "" + list);
             assertEquals(e2, list.getFirst().getCause());
         } finally {
             RxJavaPlugins.reset();
@@ -447,8 +447,8 @@ public class FlowableScanTest extends RxJavaTest {
             .assertValue(1)
             .assertError(e);
 
-            assertEquals("" + list, 1, list.size());
-            assertTrue("" + list, list.getFirst() instanceof UndeliverableException);
+            assertEquals(1, list.size(), "" + list);
+            assertTrue(list.getFirst() instanceof UndeliverableException, "" + list);
             assertEquals(e2, list.getFirst().getCause());
         } finally {
             RxJavaPlugins.reset();

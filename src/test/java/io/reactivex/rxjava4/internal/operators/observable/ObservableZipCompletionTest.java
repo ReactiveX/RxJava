@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.operators.observable;
 
 import static org.mockito.Mockito.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava4.core.*;
@@ -38,7 +38,7 @@ public class ObservableZipCompletionTest extends RxJavaTest {
     Observer<String> observer;
     InOrder inOrder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         concat2Strings = (t1, t2) -> t1 + "-" + t2;
 

@@ -13,20 +13,20 @@
 
 package io.reactivex.rxjava4.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.core.config.StandardConcurrentBufferedConfig;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.observers.DefaultObserver;
 import io.reactivex.rxjava4.testsupport.*;
@@ -35,7 +35,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
     Observer<String> stringObserver;
 
-    @Before
+    @BeforeEach
     public void before() {
         stringObserver = TestHelper.mockObserver();
     }

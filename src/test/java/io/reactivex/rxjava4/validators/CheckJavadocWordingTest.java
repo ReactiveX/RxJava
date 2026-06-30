@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.validators;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-import io.reactivex.rxjava4.core.RxJavaTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 import io.reactivex.rxjava4.validators.BaseTypeParser.RxMethod;
 

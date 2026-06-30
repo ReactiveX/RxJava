@@ -13,24 +13,23 @@
 
 package io.reactivex.rxjava4.internal.jdk8;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Iterator;
+import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.*;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
-import io.reactivex.rxjava4.operators.QueueFuseable;
-import io.reactivex.rxjava4.operators.QueueSubscription;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.subjects.MaybeSubject;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.*;

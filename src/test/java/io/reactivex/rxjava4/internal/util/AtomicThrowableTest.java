@@ -13,14 +13,14 @@
 
 package io.reactivex.rxjava4.internal.util;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import io.reactivex.rxjava4.disposables.Disposable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.observers.TestObserver;
@@ -49,7 +49,7 @@ public class AtomicThrowableTest extends RxJavaTest {
             AtomicThrowable ex = new AtomicThrowable();
             ex.tryTerminateAndReport();
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -65,7 +65,7 @@ public class AtomicThrowableTest extends RxJavaTest {
 
             ex.tryTerminateAndReport();
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -308,7 +308,7 @@ public class AtomicThrowableTest extends RxJavaTest {
             AtomicThrowable ex = new AtomicThrowable();
             ex.tryAddThrowableOrReport(new TestException());
 
-            assertTrue("" + errors, errors.isEmpty());
+            assertTrue(errors.isEmpty(), "" + errors);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -324,7 +324,7 @@ public class AtomicThrowableTest extends RxJavaTest {
 
             assertFalse(ex.tryAddThrowableOrReport(new TestException()));
 
-            assertFalse("" + errors, errors.isEmpty());
+            assertFalse(errors.isEmpty(), "" + errors);
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();

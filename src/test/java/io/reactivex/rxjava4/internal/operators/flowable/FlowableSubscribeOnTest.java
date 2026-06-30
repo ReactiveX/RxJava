@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
@@ -304,7 +304,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
 
         int c = ts.values().size();
 
-        assertTrue("" + c, c > Flowable.bufferSize());
+        assertTrue(c > Flowable.bufferSize(), "" + c);
     }
 
     @Test
@@ -345,7 +345,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
 
         int c = ts.values().size();
 
-        assertTrue("" + c, c > Flowable.bufferSize());
+        assertTrue(c > Flowable.bufferSize(), "" + c);
     }
 
     @Test

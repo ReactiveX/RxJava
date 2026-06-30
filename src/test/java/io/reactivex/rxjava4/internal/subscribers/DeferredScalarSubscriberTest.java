@@ -13,15 +13,15 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Serial;
 import java.util.List;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -111,7 +111,7 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
 
         pp.subscribe(ds);
 
-        assertTrue("No subscribers?", pp.hasSubscribers());
+        assertTrue(pp.hasSubscribers(), "No subscribers?");
 
         ts.cancel();
 
@@ -124,8 +124,8 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
 
-        assertFalse("Subscribers?", pp.hasSubscribers());
-        assertTrue("Deferred not unsubscribed?", ds.isCancelled());
+        assertFalse(pp.hasSubscribers(), "Subscribers?");
+        assertTrue(ds.isCancelled(), "Deferred not unsubscribed?");
     }
 
     @Test
