@@ -15,20 +15,21 @@ package io.reactivex.rxjava4.internal.schedulers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Arrays;
-import java.util.concurrent.Callable;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Scheduler;
+import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
 public class SchedulerToExecutorServiceTest {
 
     @Test
     public void invokeAnyShouldReturnResultOfCompletedTask() throws Exception {
-        Scheduler scheduler = Schedulers.trampoline();
+        Scheduler scheduler = Schedulers.computation();
         @SuppressWarnings("resource")
         SchedulerToExecutorService executor = new SchedulerToExecutorService(
                 scheduler, new AtomicReference<>(null));
@@ -44,7 +45,7 @@ public class SchedulerToExecutorServiceTest {
 
     @Test
     public void invokeAnyWithSingleTask() throws Exception {
-        Scheduler scheduler = Schedulers.trampoline();
+        Scheduler scheduler = Schedulers.computation();
         @SuppressWarnings("resource")
         SchedulerToExecutorService executor = new SchedulerToExecutorService(
                 scheduler, new AtomicReference<>(null));
@@ -64,10 +65,155 @@ public class SchedulerToExecutorServiceTest {
                 scheduler, new AtomicReference<>(null));
 
         try {
-            executor.invokeAny(Arrays.asList());
+            executor.invokeAny(List.of());
             fail("invokeAny with empty tasks should throw IllegalArgumentException");
         } catch (IllegalArgumentException expected) {
             // expected
+        }
+    }
+
+    @Test
+    public void invokeAnyTimeoutWithEmptyTasksShouldThrow() throws Exception {
+        Scheduler scheduler = Schedulers.trampoline();
+        @SuppressWarnings("resource")
+        SchedulerToExecutorService executor = new SchedulerToExecutorService(
+                scheduler, new AtomicReference<>(null));
+
+        try {
+            executor.invokeAny(List.of(), 5, TimeUnit.SECONDS);
+            fail("invokeAny with empty tasks should throw IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+            // expected
+        }
+    }
+
+    @Test
+    public void invokeAnyAllThrow() {
+        var ex = assertThrows(ExecutionException.class, () -> {
+            Scheduler scheduler = Schedulers.computation();
+            @SuppressWarnings("resource")
+            SchedulerToExecutorService executor = new SchedulerToExecutorService(
+                    scheduler, new AtomicReference<>(null));
+
+            Callable<Object> run = () -> { throw new TestException(); };
+
+            executor.invokeAny(List.of(run, run, run));
+        });
+
+        if (ex.getCause() instanceof CompositeException ce) {
+            assertEquals(3, ce.getExceptions().size());
+        } else {
+            throw new AssertionError("Wrong contents", ex);
+        }
+    }
+
+    @Test
+    public void invokeAnyTimeoutAllSucceed() throws Exception {
+        Scheduler scheduler = Schedulers.computation();
+        @SuppressWarnings("resource")
+        SchedulerToExecutorService executor = new SchedulerToExecutorService(
+                scheduler, new AtomicReference<>(null));
+
+        Callable<String> task1 = () -> "result1";
+        Callable<String> task2 = () -> "result2";
+
+        String result = executor.invokeAny(Arrays.asList(task1, task2), 5, TimeUnit.SECONDS);
+
+        assertNotNull("invokeAny should return a result", result);
+        assertTrue(result.equals("result1") || result.equals("result2"), "result should be one of the task results");
+    }
+
+    @Test
+    public void invokeAnyTimeoutAllThrow() {
+        var ex = assertThrows(ExecutionException.class, () -> {
+            Scheduler scheduler = Schedulers.computation();
+            @SuppressWarnings("resource")
+            SchedulerToExecutorService executor = new SchedulerToExecutorService(
+                    scheduler, new AtomicReference<>(null));
+
+            Callable<Object> run = () -> { throw new TestException(); };
+
+            executor.invokeAny(List.of(run, run, run), 5, TimeUnit.SECONDS);
+        });
+
+        if (ex.getCause() instanceof CompositeException ce) {
+            assertEquals(3, ce.getExceptions().size());
+        } else {
+            throw new AssertionError("Wrong contents", ex);
+        }
+    }
+
+    @Test
+    public void invokeAnyTimeoutHappens() throws Exception {
+        assertThrows(TimeoutException.class, () -> {
+            Scheduler scheduler = Schedulers.computation();
+            @SuppressWarnings("resource")
+            SchedulerToExecutorService executor = new SchedulerToExecutorService(
+                    scheduler, new AtomicReference<>(null));
+
+            Callable<String> task1 = () -> { Thread.sleep(1000); return "result1"; };
+            Callable<String> task2 = () -> { Thread.sleep(1000); return "result2"; };
+
+            String result = executor.invokeAny(Arrays.asList(task1, task2), 100, TimeUnit.MILLISECONDS);
+
+            assertNotNull("invokeAny should return a result", result);
+            assertTrue(result.equals("result1") || result.equals("result2"), "result should be one of the task results");
+        });
+    }
+
+    @Test
+    public void getExceptionNone() throws InterruptedException {
+        var cf = new CompletableFuture<Void>();
+        cf.complete(null);
+        assertNull(SchedulerToExecutorService.getException(cf));
+    }
+
+    @Test
+    public void invokeAll() throws Throwable{
+        Scheduler scheduler = Schedulers.computation();
+        @SuppressWarnings("resource")
+        SchedulerToExecutorService executor = new SchedulerToExecutorService(
+                scheduler, new AtomicReference<>(null));
+
+        Callable<String> task1 = () -> "result1";
+        Callable<String> task2 = () -> "result2";
+
+        var result = executor.invokeAll(List.of(task1, task2));
+
+        assertEquals("result1", result.get(0).resultNow());
+        assertEquals("result2", result.get(1).resultNow());
+    }
+
+    @Test
+    public void invokeAllTimeout() throws Throwable{
+        Scheduler scheduler = Schedulers.computation();
+        @SuppressWarnings("resource")
+        SchedulerToExecutorService executor = new SchedulerToExecutorService(
+                scheduler, new AtomicReference<>(null));
+
+        Callable<String> task1 = () -> "result1";
+        Callable<String> task2 = () -> "result2";
+
+        var result = executor.invokeAll(List.of(task1, task2), 5, TimeUnit.SECONDS);
+
+        assertEquals("result1", result.get(0).resultNow());
+        assertEquals("result2", result.get(1).resultNow());
+    }
+
+    @Test
+    public void invokeAllTimeoutDoesTimeout() throws Throwable {
+        Scheduler scheduler = Schedulers.computation();
+        @SuppressWarnings("resource")
+        SchedulerToExecutorService executor = new SchedulerToExecutorService(
+                scheduler, new AtomicReference<>(null));
+
+        Callable<String> task1 = () -> { Thread.sleep(1000); return "result1"; };
+        Callable<String> task2 = () -> { Thread.sleep(1000); return "result2"; };
+
+        var result = executor.invokeAll(List.of(task1, task2), 100, TimeUnit.MILLISECONDS);
+
+        for (var f : result) {
+            assertTrue(f.isCancelled(), "Task was not cancelled: " + f);
         }
     }
 }

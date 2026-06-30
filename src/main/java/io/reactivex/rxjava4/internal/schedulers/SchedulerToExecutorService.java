@@ -13,14 +13,15 @@
 
 package io.reactivex.rxjava4.internal.schedulers;
 
+import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.Scheduler;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
-import io.reactivex.rxjava4.exceptions.Exceptions;
+import io.reactivex.rxjava4.exceptions.*;
 
 /**
  * Represents the state for a Scheduler -&gt; ExecutorService interface.
@@ -149,28 +150,31 @@ public record SchedulerToExecutorService(@NonNull Scheduler scheduler,
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
             throws InterruptedException {
         var result = new ArrayList<Future<T>>();
+        var signal = new CompletableFuture<Void>();
+        var signaller = new CompletionSignaller(signal);
         for (var task : tasks) {
-            result.add(submit(task));
+            signaller.countUp();
+            result.add(submit(() -> {
+                try {
+                    return task.call();
+                } finally {
+                    signaller.countDown();
+                }
+            }));
         }
 
-        // FIXME how to wait in aggregate without spinning???
-        long totalTime = unit.convert(timeout, TimeUnit.MILLISECONDS);
+        signaller.countDown();
 
-        while (!isTerminated() && totalTime > 0) {
-            totalTime--;
-
-            int done = 0;
+        try {
+            signal.get(timeout, unit);
+            // make sure we have tasks really finished
             for (var f : result) {
-                if (f.isDone()) {
-                    done++;
-                }
+                getException(f);
             }
-
-            if (done == result.size()) {
-                break;
+        } catch (TimeoutException | ExecutionException ex) {
+            for (var f : result) {
+                f.cancel(true);
             }
-
-            Thread.sleep(1);
         }
 
         return result;
@@ -182,27 +186,77 @@ public record SchedulerToExecutorService(@NonNull Scheduler scheduler,
             throw new IllegalArgumentException("The tasks parameter should contain at least one callable!");
         }
 
+        var completionAll = new CompletableFuture<Void>();
+        var signaller = new CompletionSignaller(completionAll);
+        var completionPort = new CompletableFuture<CompletedIndexValue<T>>();
+
         var result = new ArrayList<Future<T>>();
+        var i = 0;
         for (var task : tasks) {
-            result.add(submit(task));
+            signaller.countUp();
+            var j = i;
+            result.add(submit(() -> {
+                try {
+                    var v = task.call();
+                    completionPort.complete(new CompletedIndexValue<>(j, v));
+                    return v;
+                } finally {
+                    signaller.countDown();
+                }
+            }));
+            i++;
         }
 
-        while (!isTerminated()) {
-            for (var f : result) {
-                if (f.state() == Future.State.SUCCESS) {
+        signaller.countDown();
 
-                    var v = f.resultNow();
+        var completionEither = new CompletableFuture<CompletableFuture<?>>();
 
-                    for (var g : result) {
-                        g.cancel(true);
-                    }
+        completionPort.whenComplete((_, _) -> completionEither.complete(completionPort));
+        completionAll.whenComplete((_, _) -> completionEither.complete(completionAll));
 
-                    return v;
+        var resultCompletable = completionEither.get();
+
+        if (resultCompletable == completionPort) {
+            var k = completionPort.getNow(null);
+            for (int j = 0; j < result.size(); j++) {
+                if (j != k.index()) {
+                    result.get(j).cancel(true);
                 }
             }
-            Thread.sleep(1);
+            return k.value();
         }
-        return null; // Practically unreachable
+
+        List<Throwable> errors = new ArrayList<>();
+        for (var f : result) {
+            errors.add(getException(f));
+        }
+        var composite = new CompositeException(errors);
+        throw new ExecutionException(composite);
+    }
+
+    record CompletedIndexValue<T>(int index, T value) {
+    }
+
+    static final class CompletionSignaller extends AtomicInteger {
+        @Serial
+        private static final long serialVersionUID = 4179219399191354619L;
+
+        final CompletableFuture<Void> signal;
+
+        CompletionSignaller(CompletableFuture<Void> signal) {
+            super(1);
+            this.signal = signal;
+        }
+
+        void countUp() {
+            incrementAndGet();
+        }
+
+        void countDown() {
+            if (decrementAndGet() == 0) {
+                signal.complete(null);
+            }
+        }
     }
 
     @Override
@@ -212,31 +266,60 @@ public record SchedulerToExecutorService(@NonNull Scheduler scheduler,
             throw new IllegalArgumentException("The tasks parameter should contain at least one callable!");
         }
 
+        var completionAll = new CompletableFuture<Void>();
+        var signaller = new CompletionSignaller(completionAll);
+        var completionPort = new CompletableFuture<CompletedIndexValue<T>>();
+
         var result = new ArrayList<Future<T>>();
+        var i = 0;
         for (var task : tasks) {
-            result.add(submit(task));
+            signaller.countUp();
+            var j = i;
+            result.add(submit(() -> {
+                try {
+                    var v = task.call();
+                    completionPort.complete(new CompletedIndexValue<>(j, v));
+                    return v;
+                } finally {
+                    signaller.countDown();
+                }
+            }));
+            i++;
         }
 
-        // FIXME how to wait in aggregate without spinning???
-        long totalTime = unit.convert(timeout, TimeUnit.MILLISECONDS);
+        signaller.countDown();
 
-        while (!isTerminated() && totalTime > 0) {
-            totalTime--;
+        var completionEither = new CompletableFuture<CompletableFuture<?>>();
 
-            for (var f : result) {
-                if (f.state() == Future.State.SUCCESS) {
+        completionPort.whenComplete((_, _) -> completionEither.complete(completionPort));
+        completionAll.whenComplete((_, _) -> completionEither.complete(completionAll));
 
-                    var v = f.resultNow();
+        var resultCompletable = completionEither.get(timeout, unit);
 
-                    for (var g : result) {
-                        g.cancel(true);
-                    }
-
-                    return v;
+        if (resultCompletable == completionPort) {
+            var k = completionPort.getNow(null);
+            for (int j = 0; j < result.size(); j++) {
+                if (j != k.index()) {
+                    result.get(j).cancel(true);
                 }
             }
+            return k.value();
         }
-        throw new TimeoutException("None of the tasks produced a clean result in the time allotted.");
+
+        List<Throwable> errors = new ArrayList<>();
+        for (var f : result) {
+            errors.add(getException(f));
+        }
+        var composite = new CompositeException(errors);
+        throw new ExecutionException(composite);
     }
 
+    static Throwable getException(Future<?> f) throws InterruptedException {
+        try {
+            f.get();
+        } catch (ExecutionException ex) {
+            return ex.getCause();
+        }
+        return null;
+    }
 }
