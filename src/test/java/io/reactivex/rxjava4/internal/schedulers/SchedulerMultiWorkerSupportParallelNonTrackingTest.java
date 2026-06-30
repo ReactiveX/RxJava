@@ -35,7 +35,7 @@ public class SchedulerMultiWorkerSupportParallelNonTrackingTest extends RxJavaTe
 
     @BeforeEach
     public void before() {
-        scheduler = Schedulers.createParallel(new ParallelSchedulerConfig(2));
+        scheduler = Schedulers.createParallel(new ParallelSchedulerConfig(2, false));
     }
 
     @AfterEach
@@ -66,7 +66,7 @@ public class SchedulerMultiWorkerSupportParallelNonTrackingTest extends RxJavaTe
         assertEquals(max * 2, list.size());
 
         for (Worker w : list) {
-            assertEquals(ParallelScheduler.SHUTDOWN_TRACKING_WORKER, w);
+            assertEquals(ParallelScheduler.SHUTDOWN_NON_TRACKING_WORKER, w);
         }
     }
 

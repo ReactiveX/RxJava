@@ -35,7 +35,7 @@ public class SchedulerMultiWorkerSupportParallelTest extends RxJavaTest {
 
     @BeforeEach
     public void before() {
-        scheduler = Schedulers.createParallel(new ParallelSchedulerConfig(2, false));
+        scheduler = Schedulers.createParallel(new ParallelSchedulerConfig(2, true));
     }
 
     @AfterEach
@@ -66,7 +66,7 @@ public class SchedulerMultiWorkerSupportParallelTest extends RxJavaTest {
         assertEquals(max * 2, list.size());
 
         for (Worker w : list) {
-            assertEquals(ParallelScheduler.SHUTDOWN_TRACKING_WORKER, w);
+            assertEquals(ParallelScheduler.SHUTDOWN_TRACKING_WORKER, w, w.getClass().toString());
         }
     }
 
