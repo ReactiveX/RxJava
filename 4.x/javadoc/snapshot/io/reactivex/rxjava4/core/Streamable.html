@@ -67,6 +67,7 @@ initTheme();
 <li><a href="#stream(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">stream(DisposableContainer)</a></li>
 <li><a href="#empty()" tabindex="0">empty()</a></li>
 <li><a href="#just(T)" tabindex="0">just(T)</a></li>
+<li><a href="#filter(io.reactivex.rxjava4.functions.Predicate)" tabindex="0">filter(Predicate)</a></li>
 <li><a href="#fromArray(T...)" tabindex="0">fromArray(T...)</a></li>
 <li><a href="#fromIterable(java.lang.Iterable)" tabindex="0">fromIterable(Iterable)</a></li>
 <li><a href="#fromStream(java.util.stream.Stream)" tabindex="0">fromStream(Stream)</a></li>
@@ -86,8 +87,11 @@ initTheme();
 <li><a href="#toFlowable(java.util.concurrent.ExecutorService)" tabindex="0">toFlowable(ExecutorService)</a></li>
 <li><a href="#transform(io.reactivex.rxjava4.core.VirtualTransformer)" tabindex="0">transform(VirtualTransformer)</a></li>
 <li><a href="#hide()" tabindex="0">hide()</a></li>
+<li><a href="#map(io.reactivex.rxjava4.functions.Function)" tabindex="0">map(Function)</a></li>
+<li><a href="#mapOptional(io.reactivex.rxjava4.functions.Function)" tabindex="0">mapOptional(Function)</a></li>
 <li><a href="#transform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)" tabindex="0">transform(VirtualTransformer, ExecutorService)</a></li>
 <li><a href="#take(long)" tabindex="0">take(long)</a></li>
+<li><a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentConfig)" tabindex="0">flatMap(Function, StandardConcurrentConfig)</a></li>
 <li><a href="#forEach(io.reactivex.rxjava4.functions.Consumer)" tabindex="0">forEach(Consumer)</a></li>
 <li><a href="#forEach(io.reactivex.rxjava4.functions.Consumer,io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">forEach(Consumer, DisposableContainer)</a></li>
 <li><a href="#forEach(io.reactivex.rxjava4.functions.Consumer,java.util.concurrent.ExecutorService)" tabindex="0">forEach(Consumer, ExecutorService)</a></li>
@@ -179,6 +183,18 @@ state to be created along with it.</div>
 <div class="block">Creates a <code>Streamable</code> that signals the given <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> immediately when it begins streaming,
 ending the sequence.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#filter(io.reactivex.rxjava4.functions.Predicate)" class="member-name-link">filter</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Predicate.html" title="interface in io.reactivex.rxjava4.functions">Predicate</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;&nbsp;predicate)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Filters out the upstream items that do not pass the given predicate</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;R&gt;&nbsp;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;R&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentConfig)" class="member-name-link">flatMap</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>, ? extends <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/StandardConcurrentConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentConfig</a>&nbsp;config)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Maps each upstream item onto a <code>Streamable</code> and runs them concurrently while
+relaying inner items as first-come-first-served manner.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="CompletionStageDisposable.html" title="class in io.reactivex.rxjava4.core">CompletionStageDisposable</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#forEach(io.reactivex.rxjava4.functions.BiConsumer,io.reactivex.rxjava4.disposables.DisposableContainer,java.util.concurrent.ExecutorService)" class="member-name-link">forEach</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/BiConsumer.html" title="interface in io.reactivex.rxjava4.functions">BiConsumer</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>, ? super <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&gt;&nbsp;consumer,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller,
@@ -251,6 +267,16 @@ ending the sequence.</div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#just(T)" class="member-name-link">just</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&nbsp;item)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Returns a single-element <code>Streamable</code> that produces the constant item and completes.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;R&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#map(io.reactivex.rxjava4.functions.Function)" class="member-name-link">map</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>, ? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&nbsp;mapper)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Maps each upstream item into another item via a mapper function.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;R&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#mapOptional(io.reactivex.rxjava4.functions.Function)" class="member-name-link">mapOptional</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Optional.html" title="class in java.util" class="external-link">Optional</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Maps each upstream item into another, optional item via a mapper function that skips the empty optionals.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;T&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#never()" class="member-name-link">never</a>()</code></div>
@@ -389,6 +415,25 @@ on the provided executor service.</div>
 <dd><code>item</code> - the constant item to produce</dd>
 <dt>Returns:</dt>
 <dd>the <code>Streamable</code> instance</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="filter(io.reactivex.rxjava4.functions.Predicate)">
+<h3>filter</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">filter</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Predicate.html" title="interface in io.reactivex.rxjava4.functions">Predicate</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;&nbsp;predicate)</span></div>
+<div class="block">Filters out the upstream items that do not pass the given predicate</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>predicate</code> - the callback that should return <code>true</code> to let the upstream value pass
+                 or <code>false</code> to ignore it and continue with the next upstream item</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Streamable</code> instance</dd>
 </dl>
 </div>
 </section>
@@ -816,6 +861,48 @@ Use it to break optimizations or hide concrete implementations.</div>
 </section>
 </li>
 <li>
+<section class="detail" id="map(io.reactivex.rxjava4.functions.Function)">
+<h3>map</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">map</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>, ? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&nbsp;mapper)</span></div>
+<div class="block">Maps each upstream item into another item via a mapper function.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="map(io.reactivex.rxjava4.functions.Function)-type-param-R"><code>R</code> - the element type of the mapping</span></dd>
+<dt>Parameters:</dt>
+<dd><code>mapper</code> - the function that takes an upstream item and returns an item to be emitted
+              to the downstream</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Streamable</code> instance</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="mapOptional(io.reactivex.rxjava4.functions.Function)">
+<h3>mapOptional</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">mapOptional</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Optional.html" title="class in java.util" class="external-link">Optional</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&gt;&nbsp;mapper)</span></div>
+<div class="block">Maps each upstream item into another, optional item via a mapper function that skips the empty optionals.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="mapOptional(io.reactivex.rxjava4.functions.Function)-type-param-R"><code>R</code> - the element type of the mapping</span></dd>
+<dt>Parameters:</dt>
+<dd><code>mapper</code> - the function that takes an upstream item and returns an optional item to be emitted / skipped
+              to the downstream</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Streamable</code> instance</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="transform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)">
 <h3>transform</h3>
 <div class="horizontal-scroll">
@@ -852,6 +939,32 @@ then cancels the rest of the sequence.</div>
 <dd><code>n</code> - the maximum number of items to relay</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Streamable</code> instance</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentConfig)">
+<h3>flatMap</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">flatMap</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>, ? extends <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="config/StandardConcurrentConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentConfig</a>&nbsp;config)</span></div>
+<div class="block">Maps each upstream item onto a <code>Streamable</code> and runs them concurrently while
+relaying inner items as first-come-first-served manner.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentConfig)-type-param-R"><code>R</code> - the element type of the output sequence</span></dd>
+<dt>Parameters:</dt>
+<dd><code>mapper</code> - the function that turns an upstream item into a <code>Streamable</code> inner sequence</dd>
+<dd><code>config</code> - the configuration record for this operator</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Streamable</code> instance</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>mapper</code> or <code>config</code> is <code>null</code></dd>
 </dl>
 </div>
 </section>

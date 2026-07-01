@@ -105,6 +105,7 @@ initTheme();
 <li><a href="#assertValueSequence(java.lang.Iterable)" tabindex="0">assertValueSequence(Iterable)</a></li>
 <li><a href="#assertSubscribed()" tabindex="0">assertSubscribed()</a></li>
 <li><a href="#assertResult(T...)" tabindex="0">assertResult(T...)</a></li>
+<li><a href="#assertValueSet(T...)" tabindex="0">assertValueSet(T...)</a></li>
 <li><a href="#assertFailure(java.lang.Class,T...)" tabindex="0">assertFailure(Class, T...)</a></li>
 <li><a href="#awaitDone(long,java.util.concurrent.TimeUnit)" tabindex="0">awaitDone(long, TimeUnit)</a></li>
 <li><a href="#assertEmpty()" tabindex="0">assertEmpty()</a></li>
@@ -338,73 +339,78 @@ which is equal to the given value with respect to <code>null</code>-safe <a href
 <div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> received only the specified sequence of values in the same order.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#assertValuesOnly(T...)" class="member-name-link">assertValuesOnly</a><wbr>(<a href="#type-param-T" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#assertValueSet(T...)" class="member-name-link">assertValueSet</a><wbr>(<a href="#type-param-T" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> received only the specified values in the specified order without terminating.</div>
+<div class="block">Assert that the upstream signaled any of the given values in any order.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#await()" class="member-name-link">await</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#assertValuesOnly(T...)" class="member-name-link">assertValuesOnly</a><wbr>(<a href="#type-param-T" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> received only the specified values in the specified order without terminating.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#await()" class="member-name-link">await</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Wait until this <code>TestObserver</code>/<code>TestSubscriber</code> receives an <code>onError</code> or <code>onComplete</code> events.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#await(long,java.util.concurrent.TimeUnit)" class="member-name-link">await</a><wbr>(long&nbsp;time,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#await(long,java.util.concurrent.TimeUnit)" class="member-name-link">await</a><wbr>(long&nbsp;time,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Awaits the specified amount of time or until this <code>TestObserver</code>/<code>TestSubscriber</code>
 receives an <code>onError</code> or <code>onComplete</code> events, whichever happens first.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitCount(int)" class="member-name-link">awaitCount</a><wbr>(int&nbsp;atLeast)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitCount(int)" class="member-name-link">awaitCount</a><wbr>(int&nbsp;atLeast)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Wait until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
 number of items or terminates by sleeping 10 milliseconds at a time
 up to 5000 milliseconds of timeout.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitDone(long,java.util.concurrent.TimeUnit)" class="member-name-link">awaitDone</a><wbr>(long&nbsp;time,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitDone(long,java.util.concurrent.TimeUnit)" class="member-name-link">awaitDone</a><wbr>(long&nbsp;time,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Wait until the internal latch is counted down.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearTimeout()" class="member-name-link">clearTimeout</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearTimeout()" class="member-name-link">clearTimeout</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Clears the timeout flag set by the await methods when they timed out.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Cancel/dispose this test consumer.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AssertionError.html" title="class in java.lang" class="external-link">AssertionError</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#fail(java.lang.String)" class="member-name-link">fail</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html" title="class in java.lang" class="external-link">String</a>&nbsp;message)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AssertionError.html" title="class in java.lang" class="external-link">AssertionError</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#fail(java.lang.String)" class="member-name-link">fail</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html" title="class in java.lang" class="external-link">String</a>&nbsp;message)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Fail with the given message and add the sequence of errors as suppressed ones.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isDisposed()" class="member-name-link">isDisposed</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isDisposed()" class="member-name-link">isDisposed</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns true if this test consumer was cancelled/disposed.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isTimeout()" class="member-name-link">isTimeout</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isTimeout()" class="member-name-link">isTimeout</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns true if an await timed out.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html" title="class in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#valueAndClass(java.lang.Object)" class="member-name-link">valueAndClass</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html" title="class in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html" title="class in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#valueAndClass(java.lang.Object)" class="member-name-link">valueAndClass</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html" title="class in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Appends the class name to a non-<code>null</code> value or returns <code>"null"</code>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/List.html" title="interface in java.util" class="external-link">List</a><wbr>&lt;<a href="#type-param-T" title="type parameter in BaseTestConsumer">T</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#values()" class="member-name-link">values</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/List.html" title="interface in java.util" class="external-link">List</a><wbr>&lt;<a href="#type-param-T" title="type parameter in BaseTestConsumer">T</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#values()" class="member-name-link">values</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a shared list of received <code>onNext</code> values or the single <code>onSuccess</code> value.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withTag(java.lang.CharSequence)" class="member-name-link">withTag</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/CharSequence.html" title="interface in java.lang" class="external-link">CharSequence</a>&nbsp;tag)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withTag(java.lang.CharSequence)" class="member-name-link">withTag</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/CharSequence.html" title="interface in java.lang" class="external-link">CharSequence</a>&nbsp;tag)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Set the tag displayed along with an assertion failure's
 other state information.</div>
 </div>
@@ -943,6 +949,22 @@ completed normally.</div>
 <li><a href="#assertFailure(java.lang.Class,T...)"><code>assertFailure(Class, Object...)</code></a></li>
 </ul>
 </dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="assertValueSet(T...)">
+<h3 id="assertValueSet(java.lang.Object[])">assertValueSet</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/SafeVarargs.html" title="annotation interface in java.lang" class="external-link">@SafeVarargs</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></span>&nbsp;<span class="element-name">assertValueSet</span><wbr><span class="parameters">(<a href="#type-param-T" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</span></div>
+<div class="block">Assert that the upstream signaled any of the given values in any order.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>values</code> - the values to check in the received values list</dd>
+<dt>Returns:</dt>
+<dd>this</dd>
 </dl>
 </div>
 </section>
