@@ -20,14 +20,18 @@ import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 
-public final class StreamableEmpty<T> implements Streamable<T> {
+public enum StreamableEmpty implements Streamable<Object> {
+
+    INSTANCE;
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
-        return new EmptyStreamer<>();
+    public @NonNull Streamer<Object> stream(@NonNull DisposableContainer cancellation) {
+        return EmptyStreamer.INSTANCE;
     }
 
-    static final class EmptyStreamer<T> implements Streamer<T> {
+    enum EmptyStreamer implements Streamer<Object> {
+
+        INSTANCE;
 
         @Override
         public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
@@ -35,7 +39,7 @@ public final class StreamableEmpty<T> implements Streamable<T> {
         }
 
         @Override
-        public @NonNull T current() {
+        public @NonNull Object current() {
             throw new NoSuchElementException("This Streamable/Streamer never has elements");
         }
 

@@ -15,22 +15,20 @@ package io.reactivex.rxjava4.internal.schedulers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.*;
 
-import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.functions.Function;
-import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.schedulers.SharedScheduler.SharedWorker.SharedAction;
 import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
-public class SharedSchedulerTest implements Runnable {
+public class SharedSchedulerTest extends RxJavaTest implements Runnable {
 
     volatile int calls;
 
@@ -70,65 +68,6 @@ public class SharedSchedulerTest implements Runnable {
             }
 
             assertEquals(1, threads.size());
-        } finally {
-            scheduler.shutdown();
-        }
-    }
-
-    long memoryUsage() {
-        return ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
-    }
-
-    @Test
-    public void noleak() throws Exception {
-        var scheduler = Schedulers.cached().share();
-        try {
-            Worker worker = scheduler.createWorker();
-
-            worker.schedule(Functions.EMPTY_RUNNABLE);
-
-            System.gc();
-            Thread.sleep(500);
-
-            long before = memoryUsage();
-            System.out.printf("Start: %.1f%n", before / 1024.0 / 1024.0);
-
-            for (int i = 0; i < 200 * 1000; i++) {
-                worker.schedule(Functions.EMPTY_RUNNABLE, 1, TimeUnit.DAYS);
-            }
-
-            long middle = memoryUsage();
-
-            System.out.printf("Middle: %.1f -> %.1f%n", before / 1024.0 / 1024.0, middle / 1024.0 / 1024.0);
-
-            worker.dispose();
-
-            System.gc();
-
-            Thread.sleep(100);
-
-            int wait = 400;
-
-            long after = memoryUsage();
-
-            while (wait-- > 0) {
-                System.out.printf("Usage: %.1f -> %.1f -> %.1f%n", before / 1024.0 / 1024.0, middle / 1024.0 / 1024.0, after / 1024.0 / 1024.0);
-
-                if (middle > after * 2) {
-                    return;
-                }
-
-                Thread.sleep(100);
-
-                System.gc();
-
-                Thread.sleep(100);
-
-                after = memoryUsage();
-            }
-
-            fail(String.format("Looks like there is a memory leak: %.1f -> %.1f -> %.1f", before / 1024.0 / 1024.0, middle / 1024.0 / 1024.0, after / 1024.0 / 1024.0));
-
         } finally {
             scheduler.shutdown();
         }

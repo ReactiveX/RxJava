@@ -18,46 +18,31 @@ import java.util.concurrent.CompletionStage;
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 
-public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
+public record StreamableHide<T>(Streamable<T> source)
+implements Streamable<T>, HasUpstreamStreamableSource<T> {
 
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
-        return new JustStreamer<>(item);
+        return new HideStreamer<>(source.stream(cancellation));
     }
 
-    static final class JustStreamer<T> implements Streamer<T> {
-
-        volatile T item;
-
-        volatile int stage;
-
-        JustStreamer(T item) {
-            this.item = item;
-        }
+    record HideStreamer<T>(Streamer<T> streamer) implements Streamer<T> {
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
-            if (stage == 0) {
-                stage = 1;
-                return NEXT_TRUE;
-            }
-            item = null;
-            cancellation = null;
-            stage = 2;
-            return NEXT_FALSE;
+        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+            return streamer.next(cancellation);
         }
 
         @Override
         public @NonNull T current() {
-            return item;
+            return streamer.current();
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(DisposableContainer canceller) {
-            item = null;
-            stage = 2;
-            return FINISHED;
+        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+            return streamer.finish(cancellation);
         }
     }
 }

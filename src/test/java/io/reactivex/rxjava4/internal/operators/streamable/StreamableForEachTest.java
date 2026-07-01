@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.Streamable;
@@ -145,6 +145,7 @@ public class StreamableForEachTest extends StreamableBaseTest {
             .forEach(_ -> {
                 counter.getAndIncrement();
                 cd.dispose();
+                Thread.sleep(10); // The body may fall off faster than the cancel can propagate out, so sleep
             }, cd)
             .await();
         });
@@ -164,6 +165,7 @@ public class StreamableForEachTest extends StreamableBaseTest {
                 .forEach((_, _) -> {
                     counter.getAndIncrement();
                     cd.dispose();
+                    Thread.sleep(10); // The body may fall off faster than the cancel can propagate out, so sleep
                 }, cd, exec)
                 .await();
             });

@@ -13,50 +13,40 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import java.util.concurrent.CompletionStage;
+import java.util.NoSuchElementException;
+import java.util.concurrent.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.*;
 
-public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
+public enum StreamableNever implements Streamable<Object> {
+
+    INSTANCE;
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
-        return new JustStreamer<>(item);
+    public @NonNull Streamer<Object> stream(@NonNull DisposableContainer cancellation) {
+        return NeverStreamer.INSTANCE;
     }
 
-    static final class JustStreamer<T> implements Streamer<T> {
+    enum NeverStreamer implements Streamer<Object> {
 
-        volatile T item;
-
-        volatile int stage;
-
-        JustStreamer(T item) {
-            this.item = item;
-        }
+        INSTANCE;
 
         @Override
         public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
-            if (stage == 0) {
-                stage = 1;
-                return NEXT_TRUE;
-            }
-            item = null;
-            cancellation = null;
-            stage = 2;
-            return NEXT_FALSE;
+            var cf = new CompletableFuture<Boolean>();
+            cancellation.subscribe(Disposable.fromFuture(cf, true));
+            return cf;
         }
 
         @Override
-        public @NonNull T current() {
-            return item;
+        public @NonNull Object current() {
+            throw new NoSuchElementException("This Streamable/Streamer never has elements");
         }
 
         @Override
         public @NonNull CompletionStage<Void> finish(DisposableContainer canceller) {
-            item = null;
-            stage = 2;
             return FINISHED;
         }
     }
