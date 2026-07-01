@@ -29,22 +29,14 @@ import io.reactivex.rxjava4.exceptions.Exceptions;
 public interface AwaitCoordinatorStatic {
 
     /**
-     * The {@code await} keyword for async/await.
-     * @param <T> the type of the returned value if any.
-     * @param stage the stage to await virtual-blockingly
-     * @return the awaited value
-     */
-    @Nullable
-    static <T> T await(@NonNull CompletionStage<T> stage) {
-        return await(stage, null);
-    }
-
-    /**
      * The cancellable {@code await} keyword for async/await.
      * @param <T> the type of the returned value if any.
      * @param stage the stage to await virtual-blockingly
      * @param canceller the container that can trigger a cancellation on demand
      * @return the awaited value
+     * @throws CancellationException if the computation was cancelled
+     * @throws CompletionException if this future completed
+     * exceptionally or a completion computation threw an exception
      */
     @Nullable
     static <T> T await(@NonNull CompletionStage<T> stage, @Nullable DisposableContainer canceller) {

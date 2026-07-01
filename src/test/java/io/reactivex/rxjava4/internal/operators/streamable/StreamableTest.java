@@ -22,7 +22,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.exceptions.TestException;
+import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.subscriptions.EmptySubscription;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 
@@ -266,6 +266,24 @@ public class StreamableTest extends StreamableBaseTest {
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1, 2);
 
+        });
+    }
+
+    @Test
+    public void fromPublisher() throws Throwable {
+        Streamable.fromPublisher(Flowable.range(1, 5))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void fromPublisherExec() throws Throwable {
+        withVirtual(exec -> {
+            Streamable.fromPublisher(Flowable.range(1, 5), exec)
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, 2, 3, 4, 5);
         });
     }
 }

@@ -23,7 +23,7 @@ import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 import io.reactivex.rxjava4.internal.operators.streamable.*;
-import io.reactivex.rxjava4.internal.util.AwaitCoordinatorStatic;
+import io.reactivex.rxjava4.internal.util.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -453,9 +453,9 @@ public interface Streamable<@NonNull T> {
             } catch (final Throwable crash) {
                 Exceptions.throwIfFatal(crash);
                 if (crash instanceof CompletionException ce) {
-                    throw Exceptions.propagate(ce.getCause());
+                    throw ExceptionHelper.wrapOrThrow(ce.getCause());
                 }
-                throw Exceptions.propagate(crash);
+                throw ExceptionHelper.wrapOrThrow(crash);
             }
             return null;
         }, executor);
@@ -497,9 +497,9 @@ public interface Streamable<@NonNull T> {
             } catch (final Throwable crash) {
                 Exceptions.throwIfFatal(crash);
                 if (crash instanceof CompletionException ce) {
-                    throw Exceptions.propagate(ce.getCause());
+                    throw ExceptionHelper.wrapOrThrow(ce.getCause());
                 }
-                throw Exceptions.propagate(crash);
+                throw ExceptionHelper.wrapOrThrow(crash);
             }
             return null;
         });
@@ -515,12 +515,8 @@ public interface Streamable<@NonNull T> {
     default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber, @NonNull ExecutorService executor) {
         final Streamable<T> me = this;
         Flowable.<T>virtualCreate(emitter -> {
-            try {
-                me.forEach(emitter::emit, emitter.canceller().derive(), executor)
-                .await(emitter.canceller());
-            } catch (CompletionException ee) {
-                throw Exceptions.propagate(ee.getCause());
-            }
+            me.forEach(emitter::emit, emitter.canceller().derive(), executor)
+            .await(emitter.canceller());
         }, executor)
         .subscribe(subscriber);
     }
@@ -532,12 +528,7 @@ public interface Streamable<@NonNull T> {
     default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber) {
         final Streamable<T> me = this;
         Flowable.<T>virtualCreate(emitter -> {
-            try {
-                // System.out.println("Emitting " + v);
-                me.forEach(emitter::emit).await(emitter.canceller());
-            } catch (CompletionException ee) {
-                throw Exceptions.propagate(ee.getCause());
-            }
+            me.forEach(emitter::emit).await(emitter.canceller());
         })
         .subscribe(subscriber);
     }
