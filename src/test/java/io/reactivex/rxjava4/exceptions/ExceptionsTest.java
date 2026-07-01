@@ -188,4 +188,11 @@ public class ExceptionsTest extends RxJavaTest {
 
         assertEquals("Forced failure", ex.getCause().getMessage(), "" + ex.getCause());
     }
+
+    @Test
+    public void throwIfFatalLinkageError() {
+        assertThrows(LinkageError.class, () -> {
+            Exceptions.throwIfFatal(new LinkageError());
+        });
+    }
 }

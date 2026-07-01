@@ -15,18 +15,11 @@ package io.reactivex.rxjava4.exceptions;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.internal.util.ExceptionHelper;
-import io.reactivex.rxjava4.plugins.RxJavaPlugins;
-import io.reactivex.rxjava4.subjects.PublishSubject;
-import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class ThrowableWrapperTest extends RxJavaTest {
 
@@ -52,5 +45,26 @@ public class ThrowableWrapperTest extends RxJavaTest {
             assertEquals("You forgot to unwrap me!", ex.getMessage());
             assertTrue(ex.getCause() instanceof NullPointerException, ex.getCause().toString());
         }
+    }
+
+    @Test
+    public void virtualCreateUnwraps() {
+        Flowable.virtualCreate(_ -> {
+            throw new ThrowableWrapper(new TestException());
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void virtualTransformUnwraps() {
+        Flowable.just(1)
+        .virtualTransform((_, _, _) -> {
+            throw new ThrowableWrapper(new TestException());
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
     }
 }
