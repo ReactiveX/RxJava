@@ -31,6 +31,7 @@ import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.TestScheduler.*;
+import io.reactivex.rxjava4.subscribers.TestSubscriber;
 
 public class TestSchedulerTest extends RxJavaTest {
 
@@ -341,5 +342,33 @@ public class TestSchedulerTest extends RxJavaTest {
         ts.advanceTimeBy(1, TimeUnit.SECONDS);
 
         assertEquals(0, run.get());
+    }
+
+    @Test
+    public void timeout() {
+        var ts = new TestSubscriber<>();
+        ts.onSubscribe(new BooleanSubscription());
+
+        assertFalse(ts.isTimeout(), "Has timeout?");
+
+        ts.awaitDone(1, TimeUnit.MICROSECONDS);
+
+        assertTrue(ts.isTimeout(), "Has no timeout?");
+
+        ts.assertTimeout();
+
+        assertThrows(AssertionError.class, () -> {
+            ts.assertNoTimeout();
+        });
+
+        ts.clearTimeout();
+
+        assertFalse(ts.isTimeout(), "Has timeout?");
+        ts.assertNoTimeout();
+
+        assertThrows(AssertionError.class, () -> {
+            ts.assertTimeout();
+        });
+
     }
 }

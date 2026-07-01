@@ -13,32 +13,27 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.DisposableContainer;
 
 public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
 
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
-        return new JustStreamer<>(item, cancellation);
+        return new JustStreamer<>(item);
     }
 
-    static final class JustStreamer<T> implements Streamer<T>, Disposable {
+    static final class JustStreamer<T> implements Streamer<T> {
 
         volatile T item;
 
-        volatile DisposableContainer cancellation;
-
         volatile int stage;
 
-        JustStreamer(T item, DisposableContainer cancellation) {
+        JustStreamer(T item) {
             this.item = item;
-            this.cancellation = cancellation;
-            cancellation.add(this);
         }
 
         @Override
@@ -55,42 +50,14 @@ public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
 
         @Override
         public @NonNull T current() {
-            var item = this.item;
-            if (stage == 0) {
-                throw new NoSuchElementException("Streamable.just not yet started!");
-            }
-            if (stage == 2) {
-                throw new NoSuchElementException("Streamable.just already completed!");
-            }
             return item;
         }
 
         @Override
         public @NonNull CompletionStage<Void> finish(DisposableContainer canceller) {
             item = null;
-            cancellation = null;
             stage = 2;
             return FINISHED;
-        }
-
-        @Override
-        public void close() {
-            Streamer.super.close();
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return stage == 2;
-        }
-
-        @Override
-        public void dispose() {
-            var dc = cancellation;
-            if (dc != null) {
-                if (dc.delete(this)) {
-                    close(); // FIXME not sure about this!
-                }
-            }
         }
     }
 }
