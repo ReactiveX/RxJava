@@ -88,7 +88,6 @@ public class StreamableForEachTest extends StreamableBaseTest {
         });
     }
 
-
     @Test
     public void forEachBiCheckedCrash() throws Throwable {
         withVirtual(exec -> {

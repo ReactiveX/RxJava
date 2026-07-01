@@ -101,7 +101,6 @@ public class StreamableRangeTest extends StreamableBaseTest {
         });
     }
 
-
     @Test
     public void underNoOverflowLong() throws Throwable {
         Streamable.rangeLong(-2, Long.MAX_VALUE);
