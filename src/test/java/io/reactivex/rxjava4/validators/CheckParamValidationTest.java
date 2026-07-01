@@ -30,6 +30,7 @@ import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableNever;
 import io.reactivex.rxjava4.parallel.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -69,6 +70,11 @@ public class CheckParamValidationTest extends RxJavaTest {
     @Test @Timeout(value = 30000, unit = TimeUnit.MILLISECONDS)
     public void checkParallelFlowable() {
         checkClass(ParallelFlowable.class);
+    }
+
+    @Test @Timeout(value = 30000, unit = TimeUnit.MILLISECONDS)
+    public void checkStreamable() {
+        checkClass(Streamable.class);
     }
 
     // ---------------------------------------------------------------------------------------
@@ -519,6 +525,10 @@ public class CheckParamValidationTest extends RxJavaTest {
 
         addIgnore(new ParamIgnore(Completable.class, "unsafeCreate", CompletableSource.class));
 
+        // needs special param validation due to (long)start + end - 1 <= Integer.MAX_VALUE
+        addIgnore(new ParamIgnore(Streamable.class, "range", Integer.TYPE, Integer.TYPE));
+        addIgnore(new ParamIgnore(Streamable.class, "rangeLong", Long.TYPE, Long.TYPE));
+
         // -----------------------------------------------------------------------------------
 
         defaultValues = new HashMap<>();
@@ -537,6 +547,8 @@ public class CheckParamValidationTest extends RxJavaTest {
 
         defaultValues.put(CompletableSource.class, new NeverCompletable());
         defaultValues.put(Completable.class, new NeverCompletable());
+
+        defaultValues.put(Streamable.class, StreamableNever.INSTANCE);
 
         defaultValues.put(Action.class, Functions.EMPTY_ACTION);
         defaultValues.put(Runnable.class, Functions.EMPTY_RUNNABLE);
@@ -668,6 +680,9 @@ public class CheckParamValidationTest extends RxJavaTest {
         addDefaultInstance(Maybe.class, Maybe.just(1).hide(), "Just(1).Hide()");
 
         addDefaultInstance(ParallelFlowable.class, Flowable.just(1).parallel(), "Just(1)");
+
+        addDefaultInstance(Streamable.class, Streamable.just(1), "Just(1)");
+        addDefaultInstance(Streamable.class, Streamable.just(1).hide(), "Just(1).Hide()");
     }
 
     static void addIgnore(ParamIgnore ignore) {
@@ -867,8 +882,11 @@ public class CheckParamValidationTest extends RxJavaTest {
                             Throwable error = null;
                             errors.clear();
                             try {
-                                m.invoke(baseObject, callParams2);
+                                var result = m.invoke(baseObject, callParams2);
                                 success = true;
+                                if (result instanceof CompletionStageDisposable csd) {
+                                    csd.ignore();
+                                }
                             } catch (Throwable ex) {
                                 // let it fail
                                 error = ex;

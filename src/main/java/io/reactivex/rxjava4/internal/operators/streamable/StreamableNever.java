@@ -20,22 +20,24 @@ import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 
-public enum StreamableEmpty implements Streamable<Object> {
+public enum StreamableNever implements Streamable<Object> {
 
     INSTANCE;
 
     @Override
     public @NonNull Streamer<Object> stream(@NonNull DisposableContainer cancellation) {
-        return EmptyStreamer.INSTANCE;
+        return NeverStreamer.INSTANCE;
     }
 
-    enum EmptyStreamer implements Streamer<Object> {
+    enum NeverStreamer implements Streamer<Object> {
 
         INSTANCE;
 
         @Override
         public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
-            return NEXT_FALSE;
+            var cf = new CompletableFuture<Boolean>();
+            cancellation.subscribe(Disposable.fromFuture(cf, true));
+            return cf;
         }
 
         @Override

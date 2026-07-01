@@ -22,10 +22,6 @@ import io.reactivex.rxjava4.disposables.*;
 
 public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
 
-    public StreamableJust {
-        Objects.requireNonNull(item, "item is null");
-    }
-
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
         return new JustStreamer<>(item, cancellation);

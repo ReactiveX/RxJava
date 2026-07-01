@@ -1662,15 +1662,9 @@ public class TestSubscriberTest extends RxJavaTest {
         assertTrue(d.isDisposed(), "d is disposed");
     }
 
-    static final class TestSubscriberImpl<T> extends TestSubscriber<T> {
-        public boolean isTimeout() {
-            return timeout;
-        }
-    }
-
     @Test
     public void awaitCountTimeout() {
-        TestSubscriberImpl<Integer> ts = new TestSubscriberImpl<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
         ts.awaitCount(1);
         assertTrue(ts.isTimeout());

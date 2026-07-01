@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.core;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.disposables.*;
@@ -54,17 +55,6 @@ public interface Streamable<@NonNull T> {
     // HELPERS
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
-    // TODO, why no public final so it is not unnecessarily reimplemented, Java?
-    /**
-     * Realizes the stream and returns an interface that lets one consume it.
-     * @return the Streamer instance to consume.
-     */
-    @CheckReturnValue
-    @NonNull
-    default Streamer<T> stream() {
-        return stream(new CompositeDisposable()); // FIXME, use a practically no-op disposable container instead
-    }
-
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
     // Data sources and wrappers
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
@@ -74,10 +64,11 @@ public interface Streamable<@NonNull T> {
      * @param <T> the element type
      * @return the {@code Streamable} instance
      */
+    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     static <@NonNull T> Streamable<T> empty() {
-        return RxJavaPlugins.onAssembly(new StreamableEmpty<>());
+        return RxJavaPlugins.onAssembly((Streamable<T>)StreamableEmpty.INSTANCE);
     }
 
     /**
@@ -101,17 +92,46 @@ public interface Streamable<@NonNull T> {
      * @throws NullPointerException if {@code items} is {@code null}
      */
     @SafeVarargs
+    @CheckReturnValue
     @NonNull
-    static <@NonNull T> Streamable<T> fromArray(T... items) {
+    static <@NonNull T> Streamable<T> fromArray(@NonNull T... items) {
         Objects.requireNonNull(items, "items is null");
         return RxJavaPlugins.onAssembly(new StreamableFromArray<>(items));
     }
 
     /**
-     * Convert any Flow.Publisher into a Streamable sequence.
+     * Streams all elements of the given {@link Iterable} sequence.
+     * @param <T> the element type of the items
+     * @param items the iterable of items to stream
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code items} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> fromIterable(@NonNull Iterable<? extends T> items) {
+        Objects.requireNonNull(items, "items is null");
+        return RxJavaPlugins.onAssembly(new StreamableFromIterable<>(items));
+    }
+
+    /**
+     * Streams all elements of the given {@link Stream} sequence.
+     * @param <T> the element type of the items
+     * @param items the stream of items to stream
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code items} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> fromStream(@NonNull Stream<? extends T> items) {
+        Objects.requireNonNull(items, "items is null");
+        return RxJavaPlugins.onAssembly(new StreamableFromStream<>(items));
+    }
+
+    /**
+     * Convert any {@link java.util.concurrent.Flow.Publisher} into a {@code Streamable} sequence.
      * @param <T> the element type
      * @param source Flow.Publisher to convert
-     * @return the new Streamable instance
+     * @return the new {@code Streamable} instance
      */
     @CheckReturnValue
     @NonNull
@@ -121,17 +141,30 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
-     * Convert any Flow.Publisher into a Streamable sequence.
+     * Convert any {@link java.util.concurrent.Flow.Publisher} into a {@code Streamable} sequence.
      * @param <T> the element type
      * @param source Flow.Publisher to convert
      * @param executor where the conversion will run
-     * @return the new Streamable instance
+     * @return the new {@code Streamable} instance
      */
     @CheckReturnValue
     @NonNull
     static <T> Streamable<T> fromPublisher(@NonNull Flow.Publisher<T> source, @NonNull ExecutorService executor) {
         Objects.requireNonNull(source, "source is null");
+        Objects.requireNonNull(executor, "executor is null");
         return RxJavaPlugins.onAssembly(new StreamableFromPublisher<>(source, executor));
+    }
+
+    /**
+     * Returns an {@code Streamable} that never produces an item and never terminates.
+     * @param <T> the element type
+     * @return the {@code Streamable} instance
+     */
+    @SuppressWarnings("unchecked")
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> never() {
+        return RxJavaPlugins.onAssembly((Streamable<T>)StreamableNever.INSTANCE);
     }
 
     /**
@@ -139,6 +172,17 @@ public interface Streamable<@NonNull T> {
      * which is free to block and is natively backpressured.
      * <p>
      * Runs on the {@link Schedulers#virtual()} scheduler.
+     * <p>
+     * Example
+     * <pre><code>
+     * Streamable.create(emitter -> {
+     *     emitter.emit(1);
+     *     emitter.emit(2);
+     *     emitter.emit(3);
+     * })
+     * .forEach(System.out::println)
+     * ;
+     * </code></pre>
      * @param <T> the element type
      * @param generator the generator to use
      * @return the streamable instance
@@ -156,6 +200,17 @@ public interface Streamable<@NonNull T> {
      * which is free to block and is natively backpressured.
      * <p>
      * Runs on the given scheduler.
+     * <p>
+     * Example
+     * <pre><code>
+     * Streamable.create(emitter -> {
+     *     emitter.emit(1);
+     *     emitter.emit(2);
+     *     emitter.emit(3);
+     * }, Schedulers.cached())
+     * .forEach(System.out::println)
+     * ;
+     * </code></pre>
      * @param <T> the element type
      * @param generator the generator to use
      * @param scheduler the scheduler to run the virtual generator on
@@ -195,8 +250,12 @@ public interface Streamable<@NonNull T> {
      * @return the new Streamable instance
      */
     @SuppressWarnings("unchecked")
+    @CheckReturnValue
     @NonNull
-    static <@NonNull T> Streamable<CompletionStage<T>> fromStages(@NonNull Iterable<? extends CompletionStage<? extends T>> stages, ExecutorService executor) {
+    static <@NonNull T> Streamable<CompletionStage<T>> fromStages(
+            @NonNull Iterable<? extends CompletionStage<? extends T>> stages, ExecutorService executor) {
+        Objects.requireNonNull(stages, "stages is null");
+        Objects.requireNonNull(executor, "executor is null");
         return create(emitter -> {
             var list = new ArrayList<CompletionStage<? extends T>>();
             for(var stage : stages) {
@@ -217,6 +276,8 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code supplier} is {@code null}
      */
+    @CheckReturnValue
+    @NonNull
     static <@NonNull T> Streamable<T> defer(Supplier<? extends Streamable<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new StreamableDefer<>(supplier));
@@ -230,28 +291,35 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code throwable} is {@code null}
      */
+    @CheckReturnValue
+    @NonNull
     static <@NonNull T> Streamable<T> error(Throwable throwable) {
         Objects.requireNonNull(throwable, "throwable is null");
         return RxJavaPlugins.onAssembly(new StreamableError<>(throwable));
     }
 
     /**
-     * Emits the elements of each inner sequence produced by the outher sequence.
+     * Emits the elements of each inner sequence produced by the outer sequence.
      * @param <T> the common element type
      * @param sources a streamable of inner streamables
-     * @param exec the executorservice where to run the virtual wait
-     * @return the new Streamable instance.
+     * @param executor the executorservice where to run the virtual wait
+     * @return the new {@code Streamable} instance.
+     * @throws NullPointerException if {@code sources} or {@code exec} is {@code null}
      */
-    static <@NonNull T> Streamable<T> concat(Streamable<? extends Streamable<? extends T>> sources, ExecutorService exec) {
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> concat(Streamable<? extends Streamable<? extends T>> sources, ExecutorService executor) {
+        Objects.requireNonNull(sources, "sources is null");
+        Objects.requireNonNull(executor, "executor is null");
         return create(emitter -> {
             try (var mainSource = sources.forEach(item -> {
-                try (var innerSource = item.forEach(emitter::emit, emitter.canceller().derive(), exec)) {
+                try (var innerSource = item.forEach(emitter::emit, emitter.canceller().derive(), executor)) {
                     innerSource.await(emitter.canceller());
                 }
-            }, emitter.canceller(), exec)) {
+            }, emitter.canceller(), executor)) {
                 mainSource.await(emitter.canceller());
             }
-        }, exec);
+        }, executor);
     }
 
     /**
@@ -260,6 +328,8 @@ public interface Streamable<@NonNull T> {
      * @param count the number of elements to emit
      * @return the new {@code Streamable} instance
      */
+    @CheckReturnValue
+    @NonNull
     static Streamable<Integer> range(int start, int count) {
         if (count < 0) {
             throw new IllegalArgumentException("count >= 0 required but it was " + count);
@@ -282,6 +352,8 @@ public interface Streamable<@NonNull T> {
      * @param count the number of elements to emit
      * @return the new {@code Streamable} instance
      */
+    @CheckReturnValue
+    @NonNull
     static Streamable<Long> rangeLong(long start, long count) {
         if (count < 0) {
             throw new IllegalArgumentException("count >= 0 required but it was " + count);
@@ -335,12 +407,24 @@ public interface Streamable<@NonNull T> {
      * Transforms the upstream sequence into zero or more elements for the downstream.
      * @param <R> the result element type
      * @param transformer the interface to implement the transforming logic
-     * @return the new Streamable instance
+     * @return the new {@code Streamable} instance
      */
     @CheckReturnValue
     @NonNull
     default <@NonNull R> Streamable<R> transform(@NonNull VirtualTransformer<T, R> transformer) {
         return transform(transformer, Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    /**
+     * Hides the identity of this {@code Streamable} and its {@link Streamer}.
+     * <p>
+     * Use it to break optimizations or hide concrete implementations.
+     * @return the new {@code Streamable} instance
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> hide() {
+        return RxJavaPlugins.onAssembly(new StreamableHide<>(this));
     }
 
     /**
@@ -370,6 +454,8 @@ public interface Streamable<@NonNull T> {
      * @param n the maximum number of items to relay
      * @return the new {@code Streamable} instance
      */
+    @CheckReturnValue
+    @NonNull
     default Streamable<T> take(long n) {
         ObjectHelper.verifyPositive(n, "n");
         return defer(() -> {

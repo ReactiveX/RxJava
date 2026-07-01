@@ -132,37 +132,6 @@ public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
     }
 
     /**
-     * Hides the identity of this Streamer for debug or deoptimization purposes.
-     * @return the augmented streamer, always unique.
-     */
-    default Streamer<T> hide() {
-        return new HiddenStreamer<>(this);
-    }
-
-    /**
-     * Hides the identity of the Streamer for debug or deoptimization purposes.
-     * @param <T> the element type of the streamer
-     */
-    static record HiddenStreamer<T>(@NonNull Streamer<T> streamer) implements Streamer<T> {
-
-        @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
-            return streamer.next(cancellation);
-        }
-
-        @Override
-        public @NonNull T current() {
-            return streamer.current();
-        }
-
-        @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
-            return streamer.finish(cancellation);
-        }
-
-    }
-
-    /**
      * Moves and awaits the sequence's next element, returns false if there are no more
      * data.
      * @return true if the next element via {@link #current()} can be read, or false if
@@ -212,7 +181,7 @@ public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
 
     /**
      * Use this constant in {@link #finish(DisposableContainer)} to indicate
-     * the cleanupp was done synchronously.
+     * the cleanup was done synchronously.
      */
     CompletionStage<Void> FINISHED = CompletableFuture.completedStage(null);
 }

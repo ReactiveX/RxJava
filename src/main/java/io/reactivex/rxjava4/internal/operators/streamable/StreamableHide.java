@@ -13,58 +13,36 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 
-public record StreamableFromArray<T>(@NonNull T[] items) implements Streamable<T> {
+public record StreamableHide<T>(Streamable<T> source)
+implements Streamable<T>, HasUpstreamStreamableSource<T> {
 
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
-        return new FromArrayStreamer<>(items);
+        return new HideStreamer<>(source.stream(cancellation));
     }
 
-    static final class FromArrayStreamer<T> implements Streamer<T> {
-
-        final T[] items;
-
-        volatile int index;
-
-        volatile T current;
-
-        public FromArrayStreamer(T[] items) {
-            this.items = items;
-        }
+    record HideStreamer<T>(Streamer<T> streamer) implements Streamer<T> {
 
         @Override
         public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
-            var i = index;
-            if (i >= items.length) {
-                return NEXT_FALSE;
-            }
-            var nextItem = items[i];
-            if (nextItem == null) {
-                index = items.length;
-                current = null;
-                return CompletableFuture.failedStage(new NullPointerException("Item at index " + i + " is null."));
-            }
-            current = nextItem;
-            index = i + 1;
-            return NEXT_TRUE;
+            return streamer.next(cancellation);
         }
 
         @Override
         public @NonNull T current() {
-            return current;
+            return streamer.current();
         }
 
         @Override
         public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
-            index = items.length;
-            current = null;
-            return FINISHED;
+            return streamer.finish(cancellation);
         }
     }
 }

@@ -15,15 +15,17 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.exceptions.*;
+import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.subscriptions.EmptySubscription;
+import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 
 @Isolated
@@ -285,5 +287,85 @@ public class StreamableTest extends StreamableBaseTest {
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1, 2, 3, 4, 5);
         });
+    }
+
+    @Test
+    public void emptyCurrentThrows() {
+        assertThrows(NoSuchElementException.class, () -> {
+            StreamableEmpty.EmptyStreamer.INSTANCE.current();
+        });
+    }
+
+    @Test
+    public void neverCurrentThrows() {
+        assertThrows(NoSuchElementException.class, () -> {
+            StreamableNever.NeverStreamer.INSTANCE.current();
+        });
+    }
+
+    @Test
+    public void never() {
+        Streamable.never()
+        .test()
+        .awaitDone(100, TimeUnit.MILLISECONDS)
+        .assertTimeout();
+    }
+
+    @Test
+    public void never2() throws Throwable {
+        withCachedExecutor(exec -> {
+            Streamable.never()
+            .test(exec)
+            .awaitDone(100, TimeUnit.MILLISECONDS)
+            .assertTimeout();
+        });
+    }
+
+    @Test
+    public void fromStages() throws Throwable {
+        withVirtual(exec -> {
+            Streamable.fromStages(List.of(
+                    CompletableFuture.completedFuture(1),
+                    CompletableFuture.completedFuture(2),
+                    CompletableFuture.completedFuture(3)
+                ), exec
+            )
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertValueCount(3)
+            .assertNoErrors()
+            .assertComplete();
+        });
+    }
+
+    @Test
+    public void createPlain() {
+        Streamable.create(emitter -> {
+            emitter.emit(1);
+            emitter.emit(2);
+            emitter.emit(3);
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3);
+    }
+
+    @Test
+    public void createScheduler() {
+        Streamable.create(emitter -> {
+            emitter.emit(1);
+            emitter.emit(2);
+            emitter.emit(3);
+        }, Schedulers.cached())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3);
+    }
+
+    @Test
+    public void hide() {
+        var str = Streamable.empty().hide();
+
+        assertFalse(str instanceof StreamableEmpty, str.getClass().toString());
     }
 }

@@ -13,46 +13,58 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
+import java.util.*;
 import java.util.concurrent.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.exceptions.Exceptions;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableEmpty.EmptyStreamer;
 
-public record StreamableFromArray<T>(@NonNull T[] items) implements Streamable<T> {
+public record StreamableFromIterable<T>(@NonNull Iterable<? extends T> items) implements Streamable<T> {
 
+    @SuppressWarnings("unchecked")
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
-        return new FromArrayStreamer<>(items);
+        Iterator<? extends T> iterator;
+        try {
+            iterator = Objects.requireNonNull(items.iterator(), "iterator is null");
+            if (!iterator.hasNext()) {
+                return (Streamer<T>)EmptyStreamer.INSTANCE;
+            }
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            return StreamableError.createFailed(ex);
+        }
+        return new IteratorStreamer<>(iterator);
     }
 
-    static final class FromArrayStreamer<T> implements Streamer<T> {
+    static final class IteratorStreamer<T> implements Streamer<T> {
 
-        final T[] items;
+        Iterator<? extends T> iterator;
 
-        volatile int index;
+        long index;
 
         volatile T current;
 
-        public FromArrayStreamer(T[] items) {
-            this.items = items;
+        IteratorStreamer(Iterator<? extends T> iterator) {
+            this.iterator = iterator;
         }
 
         @Override
         public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
-            var i = index;
-            if (i >= items.length) {
-                return NEXT_FALSE;
+            if (index == 0L || iterator.hasNext()) {
+                var v = iterator.next();
+                current = v;
+                if (v == null) {
+                    return CompletableFuture.failedStage(new NullPointerException("Item at index " + index + " is null."));
+                }
+                index++;
+                return NEXT_TRUE;
             }
-            var nextItem = items[i];
-            if (nextItem == null) {
-                index = items.length;
-                current = null;
-                return CompletableFuture.failedStage(new NullPointerException("Item at index " + i + " is null."));
-            }
-            current = nextItem;
-            index = i + 1;
-            return NEXT_TRUE;
+            current = null;
+            return NEXT_FALSE;
         }
 
         @Override
@@ -62,7 +74,7 @@ public record StreamableFromArray<T>(@NonNull T[] items) implements Streamable<T
 
         @Override
         public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
-            index = items.length;
+            iterator = null;
             current = null;
             return FINISHED;
         }
