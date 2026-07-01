@@ -128,19 +128,14 @@ implements <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core
 <h2>Nested Class Summary</h2>
 <div class="inherited-list">
 <h3 id="nested-classes-inherited-from-class-io.reactivex.rxjava4.core.Streamer">Nested classes/interfaces inherited from interface&nbsp;<a href="Streamer.html#nested-class-summary" title="interface in io.reactivex.rxjava4.core">Streamer</a></h3>
-<code><a href="Streamer.HiddenStreamer.html" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer</a>&lt;T&gt;, <a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a>&lt;T&gt;</code>
+<code><a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a>&lt;T&gt;</code>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Interface</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final record&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="Streamer.HiddenStreamer.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer</a>&lt;<a href="Streamer.HiddenStreamer.html#type-param-T" title="type parameter in Streamer.HiddenStreamer">T</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a>&lt;<a href="#type-param-T" title="type parameter in Streamer.StreamerFinishViaDisposableContainerCanceller">T</a>&gt;</code></div>
 <div class="col-last even-row-color">
-<div class="block">Hides the identity of the Streamer for debug or deoptimization purposes.</div>
-</div>
-<div class="col-first odd-row-color"><code>static final record&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a>&lt;<a href="#type-param-T" title="type parameter in Streamer.StreamerFinishViaDisposableContainerCanceller">T</a>&gt;</code></div>
-<div class="col-last odd-row-color">
 <div class="block">Augments the base streamer with a canceller so that it can be injected at the various await calls.</div>
 </div>
 </div>
@@ -162,7 +157,7 @@ implements <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core
 <div class="col-second even-row-color"><code><a href="Streamer.html#FINISHED" class="member-name-link">FINISHED</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">Use this constant in <a href="Streamer.html#finish(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>Streamer.finish(DisposableContainer)</code></a> to indicate
-the cleanupp was done synchronously.</div>
+the cleanup was done synchronously.</div>
 </div>
 <div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
 <div class="col-second odd-row-color"><code><a href="Streamer.html#NEXT_FALSE" class="member-name-link">NEXT_FALSE</a></code></div>
@@ -258,7 +253,7 @@ the next value is available, synchronously.</div>
 <code>await, await, runStage, runStage</code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.reactivex.rxjava4.core.Streamer">Methods inherited from interface&nbsp;<a href="Streamer.html#method-summary" title="interface in io.reactivex.rxjava4.core">Streamer</a></h3>
-<code><a href="Streamer.html#awaitFinish()" title="awaitFinish()">awaitFinish</a>, <a href="Streamer.html#awaitFinish(io.reactivex.rxjava4.disposables.DisposableContainer)" title="awaitFinish(DisposableContainer)">awaitFinish</a>, <a href="Streamer.html#awaitNext()" title="awaitNext()">awaitNext</a>, <a href="Streamer.html#awaitNext(io.reactivex.rxjava4.disposables.DisposableContainer)" title="awaitNext(DisposableContainer)">awaitNext</a>, <a href="Streamer.html#close()" title="close()">close</a>, <a href="Streamer.html#finishVia(io.reactivex.rxjava4.disposables.DisposableContainer)" title="finishVia(DisposableContainer)">finishVia</a>, <a href="Streamer.html#hide()" title="hide()">hide</a>, <a href="Streamer.html#next()" title="next()">next</a></code>
+<code><a href="Streamer.html#awaitFinish()" title="awaitFinish()">awaitFinish</a>, <a href="Streamer.html#awaitFinish(io.reactivex.rxjava4.disposables.DisposableContainer)" title="awaitFinish(DisposableContainer)">awaitFinish</a>, <a href="Streamer.html#awaitNext()" title="awaitNext()">awaitNext</a>, <a href="Streamer.html#awaitNext(io.reactivex.rxjava4.disposables.DisposableContainer)" title="awaitNext(DisposableContainer)">awaitNext</a>, <a href="Streamer.html#close()" title="close()">close</a>, <a href="Streamer.html#finishVia(io.reactivex.rxjava4.disposables.DisposableContainer)" title="finishVia(DisposableContainer)">finishVia</a>, <a href="Streamer.html#next()" title="next()">next</a></code>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
@@ -296,14 +291,9 @@ data.</div>
 <div class="block">Augments the streamer so that the given canceller is injected into the various
 lifecycle await calls.</div>
 </div>
-<div class="col-first even-row-color"><code>default <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamer.StreamerFinishViaDisposableContainerCanceller">T</a>&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="Streamer.html#hide()" class="member-name-link">hide</a>()</code></div>
+<div class="col-first even-row-color"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="Streamer.html#next()" class="member-name-link">next</a>()</code></div>
 <div class="col-last even-row-color">
-<div class="block">Hides the identity of this Streamer for debug or deoptimization purposes.</div>
-</div>
-<div class="col-first odd-row-color"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
-<div class="col-second odd-row-color"><code><a href="Streamer.html#next()" class="member-name-link">next</a>()</code></div>
-<div class="col-last odd-row-color">
 <div class="block">Determine if there are more elements available from the source.</div>
 </div>
 </div>

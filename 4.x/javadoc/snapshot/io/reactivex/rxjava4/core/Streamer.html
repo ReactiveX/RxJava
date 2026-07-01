@@ -83,7 +83,6 @@ initTheme();
 <li><a href="#next()" tabindex="0">next()</a></li>
 <li><a href="#close()" tabindex="0">close()</a></li>
 <li><a href="#finishVia(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">finishVia(DisposableContainer)</a></li>
-<li><a href="#hide()" tabindex="0">hide()</a></li>
 <li><a href="#awaitNext()" tabindex="0">awaitNext()</a></li>
 <li><a href="#awaitNext(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">awaitNext(DisposableContainer)</a></li>
 <li><a href="#awaitFinish()" tabindex="0">awaitFinish()</a></li>
@@ -109,7 +108,7 @@ TODO proper docs</span></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="Streamer.HiddenStreamer.html" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer</a>, <a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a></code></dd>
+<dd><code><a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a></code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
@@ -139,13 +138,8 @@ gets stuck, just call clear()/dispose() on the container to get rid of this sequ
 <div class="table-header col-second">Interface</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final record&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="Streamer.HiddenStreamer.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer</a>&lt;<a href="Streamer.HiddenStreamer.html#type-param-T" title="type parameter in Streamer.HiddenStreamer">T</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a>&lt;<a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html#type-param-T" title="type parameter in Streamer.StreamerFinishViaDisposableContainerCanceller">T</a>&gt;</code></div>
 <div class="col-last even-row-color">
-<div class="block">Hides the identity of the Streamer for debug or deoptimization purposes.</div>
-</div>
-<div class="col-first odd-row-color"><code>static final record&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a>&lt;<a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html#type-param-T" title="type parameter in Streamer.StreamerFinishViaDisposableContainerCanceller">T</a>&gt;</code></div>
-<div class="col-last odd-row-color">
 <div class="block">Augments the base streamer with a canceller so that it can be injected at the various await calls.</div>
 </div>
 </div>
@@ -164,7 +158,7 @@ gets stuck, just call clear()/dispose() on the container to get rid of this sequ
 <div class="col-second even-row-color"><code><a href="#FINISHED" class="member-name-link">FINISHED</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">Use this constant in <a href="#finish(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>finish(DisposableContainer)</code></a> to indicate
-the cleanupp was done synchronously.</div>
+the cleanup was done synchronously.</div>
 </div>
 <div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
 <div class="col-second odd-row-color"><code><a href="#NEXT_FALSE" class="member-name-link">NEXT_FALSE</a></code></div>
@@ -235,19 +229,14 @@ data.</div>
 <div class="block">Augments the streamer so that the given canceller is injected into the various
 lifecycle await calls.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamer">T</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#hide()" class="member-name-link">hide</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Hides the identity of this Streamer for debug or deoptimization purposes.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Determine if there are more elements available from the source.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#next(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">next</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#next(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">next</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Determine if there are more elements available from the source.</div>
 </div>
 </div>
@@ -293,7 +282,7 @@ no more values will be available, synchronously.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">FINISHED</span></div>
 <div class="block">Use this constant in <a href="#finish(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>finish(DisposableContainer)</code></a> to indicate
-the cleanupp was done synchronously.</div>
+the cleanup was done synchronously.</div>
 </div>
 </section>
 </li>
@@ -398,19 +387,6 @@ lifecycle await calls.</div>
 <dd><code>canceller</code> - the canceller to inject</dd>
 <dt>Returns:</dt>
 <dd>the augmented streamer</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="hide()">
-<h3>hide</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;<a href="#type-param-T" title="type parameter in Streamer">T</a>&gt;</span>&nbsp;<span class="element-name">hide</span>()</div>
-<div class="block">Hides the identity of this Streamer for debug or deoptimization purposes.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>the augmented streamer, always unique.</dd>
 </dl>
 </div>
 </section>
