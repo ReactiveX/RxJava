@@ -450,6 +450,8 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throw NullPointerException if {@code mapper} is {@code null}
      */
+    @CheckReturnValue
+    @NonNull
     default <@NonNull R> Streamable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new StreamableMap<>(this, mapper));
@@ -463,6 +465,8 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throw NullPointerException if {@code mapper} is {@code null}
      */
+    @CheckReturnValue
+    @NonNull
     default <@NonNull R> Streamable<R> mapOptional(@NonNull Function<? super T, ? extends Optional<? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new StreamableMapOptional<>(this, mapper));
