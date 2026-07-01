@@ -771,6 +771,9 @@ public class CheckParamValidationTest extends RxJavaTest {
                 if (m.getDeclaringClass() != clazz) {
                     continue;
                 }
+                if (Modifier.isAbstract(m.getModifiers())) {
+                    continue;
+                }
 
                 String key = clazz.getName() + " " + m.getName();
 
