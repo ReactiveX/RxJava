@@ -22,8 +22,8 @@ import io.reactivex.rxjava4.disposables.*;
 
 public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
 
-    public StreamableJust(T item) {
-        this.item = Objects.requireNonNull(item, "item is null");
+    public StreamableJust {
+        Objects.requireNonNull(item, "item is null");
     }
 
     @Override
@@ -49,12 +49,12 @@ public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
         public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
             if (stage == 0) {
                 stage = 1;
-                return CompletableFuture.completedStage(true);
+                return NEXT_TRUE;
             }
             item = null;
             cancellation = null;
             stage = 2;
-            return CompletableFuture.completedStage(false); // TODO would constant stages work here or is that contention?
+            return NEXT_FALSE;
         }
 
         @Override
@@ -74,7 +74,7 @@ public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
             item = null;
             cancellation = null;
             stage = 2;
-            return CompletableFuture.completedStage(null); // TODO would constant stages work here or is that contention?
+            return FINISHED;
         }
 
         @Override

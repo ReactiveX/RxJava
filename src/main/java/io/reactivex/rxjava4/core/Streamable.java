@@ -13,16 +13,18 @@
 
 package io.reactivex.rxjava4.core;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 import io.reactivex.rxjava4.internal.operators.streamable.*;
-import io.reactivex.rxjava4.internal.util.AwaitCoordinatorStatic;
+import io.reactivex.rxjava4.internal.util.*;
+import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 
@@ -75,7 +77,7 @@ public interface Streamable<@NonNull T> {
     @CheckReturnValue
     @NonNull
     static <@NonNull T> Streamable<T> empty() {
-        return new StreamableEmpty<>();
+        return RxJavaPlugins.onAssembly(new StreamableEmpty<>());
     }
 
     /**
@@ -88,7 +90,21 @@ public interface Streamable<@NonNull T> {
     @NonNull
     static <@NonNull T> Streamable<T> just(@NonNull T item) {
         Objects.requireNonNull(item, "item is null");
-        return new StreamableJust<>(item);
+        return RxJavaPlugins.onAssembly(new StreamableJust<>(item));
+    }
+
+    /**
+     * Streams all elements of the given items array.
+     * @param <T> the element type of the items
+     * @param items the array of items to stream
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code items} is {@code null}
+     */
+    @SafeVarargs
+    @NonNull
+    static <@NonNull T> Streamable<T> fromArray(T... items) {
+        Objects.requireNonNull(items, "items is null");
+        return RxJavaPlugins.onAssembly(new StreamableFromArray<>(items));
     }
 
     /**
@@ -115,7 +131,7 @@ public interface Streamable<@NonNull T> {
     @NonNull
     static <T> Streamable<T> fromPublisher(@NonNull Flow.Publisher<T> source, @NonNull ExecutorService executor) {
         Objects.requireNonNull(source, "source is null");
-        return new StreamableFromPublisher<>(source, executor);
+        return RxJavaPlugins.onAssembly(new StreamableFromPublisher<>(source, executor));
     }
 
     /**
@@ -194,6 +210,32 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Defers the creation of the actual {@code Streamable}, allowing a per streamer
+     * state to be created along with it.
+     * @param <T> the element type of the {@code Streamable}
+     * @param supplier the callback that returns the actual {@code Streamable} to be streamed
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code supplier} is {@code null}
+     */
+    static <@NonNull T> Streamable<T> defer(Supplier<? extends Streamable<? extends T>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new StreamableDefer<>(supplier));
+    }
+
+    /**
+     * Creates a {@code Streamable} that signals the given {@link Throwable} immediately when it begins streaming,
+     * ending the sequence.
+     * @param <T> the element type of the sequence
+     * @param throwable the {@code Throwable} to signal immediately upon streaming
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code throwable} is {@code null}
+     */
+    static <@NonNull T> Streamable<T> error(Throwable throwable) {
+        Objects.requireNonNull(throwable, "throwable is null");
+        return RxJavaPlugins.onAssembly(new StreamableError<>(throwable));
+    }
+
+    /**
      * Emits the elements of each inner sequence produced by the outher sequence.
      * @param <T> the common element type
      * @param sources a streamable of inner streamables
@@ -210,6 +252,54 @@ public interface Streamable<@NonNull T> {
                 mainSource.await(emitter.canceller());
             }
         }, exec);
+    }
+
+    /**
+     * Emits elements from start up to start + count exclusive.
+     * @param start the start element
+     * @param count the number of elements to emit
+     * @return the new {@code Streamable} instance
+     */
+    static Streamable<Integer> range(int start, int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        } else
+        if (count == 0) {
+            return empty();
+        } else
+        if (count == 1) {
+            return just(start);
+        } else
+        if ((long)start + (count - 1) > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Integer overflow");
+        }
+        return RxJavaPlugins.onAssembly(new StreamableRange(start, count));
+    }
+
+    /**
+     * Emits elements from start up to start + count exclusive.
+     * @param start the start element
+     * @param count the number of elements to emit
+     * @return the new {@code Streamable} instance
+     */
+    static Streamable<Long> rangeLong(long start, long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
+
+        if (count == 0) {
+            return empty();
+        }
+
+        if (count == 1) {
+            return just(start);
+        }
+
+        long end = start + (count - 1);
+        if (start > 0 && end < 0) {
+            throw new IllegalArgumentException("Overflow! start + count is bigger than Long.MAX_VALUE");
+        }
+        return RxJavaPlugins.onAssembly(new StreamableRangeLong(start, count));
     }
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
@@ -274,6 +364,25 @@ public interface Streamable<@NonNull T> {
         .await(emitter.canceller()), executor);
     }
 
+    /**
+     * Takes at most the given number of items from the upstream and relays it to the downstream,
+     * then cancels the rest of the sequence.
+     * @param n the maximum number of items to relay
+     * @return the new {@code Streamable} instance
+     */
+    default Streamable<T> take(long n) {
+        ObjectHelper.verifyPositive(n, "n");
+        return defer(() -> {
+            var countdown = new AtomicLong(n);
+            return transform((item, emitter, stopper) -> {
+                emitter.emit(item);
+                if (countdown.decrementAndGet() <= 0) {
+                    stopper.dispose();
+                }
+            });
+        });
+    }
+
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
     // Consumption methods and outgoing converters
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
@@ -324,13 +433,12 @@ public interface Streamable<@NonNull T> {
      */
     @CheckReturnValue
     @NonNull
-    @SuppressWarnings("unchecked")
     default CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer, @NonNull DisposableContainer canceller, @NonNull ExecutorService executor) {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(canceller, "canceller is null");
         Objects.requireNonNull(executor, "executor is null");
         final Streamable<T> me = this;
-        var future = executor.submit(() -> {
+        var future = CompletableFuture.<Void>supplyAsync(() -> {
             try (var str = me.stream(canceller)) {
                 while (!canceller.isDisposed()) {
                     if (str.awaitNext(canceller)) {
@@ -344,20 +452,15 @@ public interface Streamable<@NonNull T> {
                 // System.out.println("Canceller status after loop: " + canceller.isDisposed());
             } catch (final Throwable crash) {
                 Exceptions.throwIfFatal(crash);
-                // System.out.println("Canceller status in error: " + canceller.isDisposed());
-                crash.printStackTrace();
-                if (crash instanceof RuntimeException ex) {
-                    throw ex;
+                if (crash instanceof CompletionException ce) {
+                    throw ExceptionHelper.wrapOrThrow(ce.getCause());
                 }
-                if (crash instanceof Exception ex) {
-                    throw ex;
-                }
-                throw new InvocationTargetException(crash);
+                throw ExceptionHelper.wrapOrThrow(crash);
             }
             return null;
-        });
+        }, executor);
         canceller.add(Disposable.fromFuture(future));
-        return new CompletionStageDisposable<>(StreamableHelper.toCompletionStage((Future<Void>) (Future<?>) future), canceller);
+        return new CompletionStageDisposable<>(future, canceller);
     }
 
     /**
@@ -369,7 +472,6 @@ public interface Streamable<@NonNull T> {
      */
     @CheckReturnValue
     @NonNull
-    @SuppressWarnings("unchecked")
     default CompletionStageDisposable<Void> forEach(
             @NonNull BiConsumer<? super T, ? super Disposable> consumer,
             @NonNull DisposableContainer canceller,
@@ -378,7 +480,7 @@ public interface Streamable<@NonNull T> {
         Objects.requireNonNull(canceller, "canceller is null");
         Objects.requireNonNull(executor, "executor is null");
         final Streamable<T> me = this;
-        var future = executor.submit(() -> {
+        var future = CompletableFuture.<Void>supplyAsync(() -> {
             try (var str = me.stream(canceller)) {
                 var stopper = Disposable.empty();
                 while (!canceller.isDisposed() && !stopper.isDisposed()) {
@@ -394,21 +496,15 @@ public interface Streamable<@NonNull T> {
                 // System.out.println("Canceller status after loop: " + canceller.isDisposed());
             } catch (final Throwable crash) {
                 Exceptions.throwIfFatal(crash);
-                // System.out.println("Canceller status in error: " + canceller.isDisposed());
-                // crash.printStackTrace();
-                if (crash instanceof RuntimeException ex) {
-                    throw ex;
+                if (crash instanceof CompletionException ce) {
+                    throw ExceptionHelper.wrapOrThrow(ce.getCause());
                 }
-                if (crash instanceof Exception ex) {
-                    throw ex;
-                }
-                throw new InvocationTargetException(crash);
+                throw ExceptionHelper.wrapOrThrow(crash);
             }
             return null;
         });
         canceller.add(Disposable.fromFuture(future));
-        return new CompletionStageDisposable<>(
-                StreamableHelper.toCompletionStage((Future<Void>) (Future<?>) future), canceller);
+        return new CompletionStageDisposable<>(future, canceller);
     }
 
     /**
@@ -419,9 +515,8 @@ public interface Streamable<@NonNull T> {
     default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber, @NonNull ExecutorService executor) {
         final Streamable<T> me = this;
         Flowable.<T>virtualCreate(emitter -> {
-            // System.out.println("subscribe::virtualCreate");
-                    // System.out.println("subscribe::virtualCreate::forEach::emit");
-                    me.forEach(emitter::emit).await(emitter.canceller());
+            me.forEach(emitter::emit, emitter.canceller().derive(), executor)
+            .await(emitter.canceller());
         }, executor)
         .subscribe(subscriber);
     }
@@ -433,8 +528,7 @@ public interface Streamable<@NonNull T> {
     default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber) {
         final Streamable<T> me = this;
         Flowable.<T>virtualCreate(emitter -> {
-                    // System.out.println("Emitting " + v);
-                    me.forEach(emitter::emit).await(emitter.canceller());
+            me.forEach(emitter::emit).await(emitter.canceller());
         })
         .subscribe(subscriber);
     }

@@ -18059,7 +18059,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
         Objects.requireNonNull(transformer, "transformer is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return new FlowableVirtualTransformExecutor<>(this, transformer, null, scheduler, prefetch);
+        return RxJavaPlugins.onAssembly(new FlowableVirtualTransformExecutor<>(this, transformer, null, scheduler, prefetch));
     }
 
     /**
@@ -18097,7 +18097,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
         Objects.requireNonNull(transformer, "transformer is null");
         Objects.requireNonNull(executor, "executor is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return new FlowableVirtualTransformExecutor<>(this, transformer, executor, null, prefetch);
+        return RxJavaPlugins.onAssembly(new FlowableVirtualTransformExecutor<>(this, transformer, executor, null, prefetch));
     }
 
     /**
@@ -18148,6 +18148,6 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @NonNull
     public final Streamable<T> toStreamable(ExecutorService executor) {
         Objects.requireNonNull(executor, "executor is null");
-        return new StreamableFromPublisher<>(this, executor);
+        return RxJavaPlugins.onAssembly(new StreamableFromPublisher<>(this, executor));
     }
 }

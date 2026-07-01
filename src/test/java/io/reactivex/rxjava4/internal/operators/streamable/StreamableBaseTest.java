@@ -18,12 +18,12 @@ import java.util.*;
 
 import org.junit.jupiter.api.*;
 
-import io.reactivex.rxjava4.core.CompletionStageDisposable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.CompositeException;
 import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
-public abstract class StreamableBaseTest {
+public abstract class StreamableBaseTest extends RxJavaTest {
 
     protected java.util.function.Consumer<Cleaner.Cleanable> stageTrackingState;
 
@@ -70,5 +70,4 @@ public abstract class StreamableBaseTest {
     protected final void setUndeliverablesExpected(boolean isExpected) {
         undeliverablesExpected = isExpected;
     }
-
 }

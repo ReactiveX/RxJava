@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.rxjava4.exceptions.CompositeException;
+import io.reactivex.rxjava4.exceptions.*;
 
 /**
  * Terminal atomics for Throwable containers.
@@ -38,13 +38,13 @@ public final class ExceptionHelper {
      * @return the (wrapped) error
      */
     public static RuntimeException wrapOrThrow(Throwable error) {
-        if (error instanceof Error) {
-            throw (Error)error;
+        if (error instanceof Error err) {
+            throw err;
         }
-        if (error instanceof RuntimeException) {
-            return (RuntimeException)error;
+        if (error instanceof RuntimeException rte) {
+            return rte;
         }
-        return new RuntimeException(error);
+        return new ThrowableWrapper(error);
     }
 
     /**

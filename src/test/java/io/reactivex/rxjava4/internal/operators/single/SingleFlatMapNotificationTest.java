@@ -84,7 +84,7 @@ public class SingleFlatMapNotificationTest extends RxJavaTest {
 
     @Test
     public void onErrorSuccess() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Single.error(new TestException())
             .flatMap(_ -> Single.just(2), _ -> Single.just(3))
             .test()
@@ -96,7 +96,7 @@ public class SingleFlatMapNotificationTest extends RxJavaTest {
 
     @Test
     public void onErrorError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Single.error(new TestException())
             .flatMap(_ -> Single.just(2), _ -> Single.<Integer>error(new IOException()))
             .test()

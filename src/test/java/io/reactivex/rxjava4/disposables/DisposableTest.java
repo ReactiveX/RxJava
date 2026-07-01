@@ -192,7 +192,7 @@ public class DisposableTest extends RxJavaTest {
 
     @Test
     public void fromAutoCloseableThrows() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             AutoCloseable ac = () -> { throw new TestException(); };
 
             Disposable d = Disposable.fromAutoCloseable(ac);

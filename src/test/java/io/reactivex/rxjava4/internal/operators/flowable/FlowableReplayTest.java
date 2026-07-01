@@ -1037,7 +1037,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
     @Test
     public void unsafeChildOnErrorThrows() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Flowable<Integer> source = Flowable.<Integer>error(new IOException())
                     .replay()
                     .autoConnect();
@@ -1060,7 +1060,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
     @Test
     public void unsafeChildOnCompleteThrows() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Flowable<Integer> source = Flowable.<Integer>empty()
                     .replay()
                     .autoConnect();
@@ -1896,7 +1896,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
     @Test
     public void unsafeChildOnErrorThrowsSizeBound() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Flowable<Integer> source = Flowable.<Integer>error(new IOException())
                     .replay(1000)
                     .autoConnect();
@@ -1919,7 +1919,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
     @Test
     public void unsafeChildOnCompleteThrowsSizeBound() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Flowable<Integer> source = Flowable.<Integer>empty()
                     .replay(1000)
                     .autoConnect();

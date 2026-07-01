@@ -280,7 +280,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
 
     @Test
     public void streamCloseCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Single.just(1)
             .flattenStreamAsObservable(v -> Stream.of(v).onClose(() -> { throw new TestException(); }))
             .test()

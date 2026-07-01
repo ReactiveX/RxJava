@@ -1288,7 +1288,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void onErrorDisposeDelayErrorRace() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             TestException ex = new TestException();
 
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {

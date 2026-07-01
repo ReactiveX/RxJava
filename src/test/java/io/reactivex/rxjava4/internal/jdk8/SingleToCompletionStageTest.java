@@ -111,7 +111,7 @@ public class SingleToCompletionStageTest extends RxJavaTest {
 
     @Test
     public void sourceIgnoresCancel() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Integer v = new Single<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super Integer> observer) {
@@ -132,7 +132,7 @@ public class SingleToCompletionStageTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Integer v = new Single<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(SingleObserver<? super Integer> observer) {

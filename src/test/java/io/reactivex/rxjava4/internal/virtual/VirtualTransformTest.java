@@ -21,12 +21,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.schedulers.Schedulers;
-import io.reactivex.rxjava4.testsupport.TestHelper;
 
-public class VirtualTransformTest {
+public class VirtualTransformTest extends RxJavaTest {
 
     @Test
     public void checkIsInsideVirtualThread() {
@@ -46,7 +45,7 @@ public class VirtualTransformTest {
 
     @Test
     public void errorUpstream() throws Throwable {
-        TestHelper.withVirtual(exec -> Flowable.error(new IOException())
+        withVirtual(exec -> Flowable.error(new IOException())
         .virtualTransform((v, e, _) -> e.emit(v), exec)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -55,7 +54,7 @@ public class VirtualTransformTest {
 
     @Test
     public void errorTransform() throws Throwable {
-        TestHelper.withVirtual(exec -> Flowable.range(1, 5)
+        withVirtual(exec -> Flowable.range(1, 5)
         .virtualTransform((_, _, _) -> { throw new IOException(); }, exec)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -64,7 +63,7 @@ public class VirtualTransformTest {
 
     @Test
     public void take() throws Throwable {
-        TestHelper.withVirtual(exec -> Flowable.range(1, 5)
+        withVirtual(exec -> Flowable.range(1, 5)
         .virtualTransform((v, e, _) -> e.emit(v), exec)
         .take(2)
         .test()
@@ -74,7 +73,7 @@ public class VirtualTransformTest {
 
     @Test
     public void observeOn() throws Throwable {
-        TestHelper.withVirtual(exec -> Flowable.range(1, 10000)
+        withVirtual(exec -> Flowable.range(1, 10000)
         .virtualTransform((v, e, _) -> e.emit(v), exec)
         .observeOn(Schedulers.single(), new StandardBufferedConfig(false, 2))
         .test()
@@ -85,7 +84,7 @@ public class VirtualTransformTest {
 
     @Test
     public void empty() throws Throwable {
-        TestHelper.withVirtual(exec -> Flowable.empty()
+        withVirtual(exec -> Flowable.empty()
         .virtualTransform((v, e, _) -> e.emit(v), exec)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -94,7 +93,7 @@ public class VirtualTransformTest {
 
     @Test
     public void emptyNever() throws Throwable {
-        TestHelper.withVirtual(exec -> Flowable.just(1).concatWith(Flowable.never())
+        withVirtual(exec -> Flowable.just(1).concatWith(Flowable.never())
         .virtualTransform((v, e, _) -> e.emit(v), exec)
         .test()
         .awaitDone(1, TimeUnit.SECONDS)

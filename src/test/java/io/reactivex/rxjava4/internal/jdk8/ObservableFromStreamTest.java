@@ -277,7 +277,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
 
     @Test
     public void runToEndCloseCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Stream<Integer> stream = Stream.of(1, 2, 3, 4, 5).onClose(() -> { throw new TestException(); });
 
             Observable.fromStream(stream)
@@ -290,7 +290,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
 
     @Test
     public void takeCloseCrash() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Stream<Integer> stream = Stream.of(1, 2, 3, 4, 5).onClose(() -> { throw new TestException(); });
 
             Observable.fromStream(stream)

@@ -58,7 +58,7 @@ public class SchedulerTest extends RxJavaTest {
 
     @Test
     public void periodicDirectThrows() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             TestScheduler scheduler = new TestScheduler();
 
             try {

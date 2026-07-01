@@ -163,7 +163,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
 
     @Test
     public void collectorAccumulatorDropSignals() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             var source = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
@@ -359,7 +359,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
 
     @Test
     public void collectorAccumulatorDropSignalsToFlowable() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             var source = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {

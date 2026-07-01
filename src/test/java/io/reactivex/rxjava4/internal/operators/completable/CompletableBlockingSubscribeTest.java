@@ -21,14 +21,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Completable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
-public class CompletableBlockingSubscribeTest {
+public class CompletableBlockingSubscribeTest extends RxJavaTest {
 
     @Test
     public void noArgComplete() {
@@ -45,7 +45,7 @@ public class CompletableBlockingSubscribeTest {
 
     @Test
     public void noArgError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Completable.error(new TestException())
             .blockingSubscribe();
 
@@ -55,7 +55,7 @@ public class CompletableBlockingSubscribeTest {
 
     @Test
     public void noArgErrorAsync() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Completable.error(new TestException())
             .delay(100, TimeUnit.MILLISECONDS, Schedulers.computation(), true)
             .blockingSubscribe();
@@ -87,7 +87,7 @@ public class CompletableBlockingSubscribeTest {
 
     @Test
     public void oneArgCompleteFails() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action action = mock(Action.class);
             doThrow(new TestException()).when(action).run();
 
@@ -102,7 +102,7 @@ public class CompletableBlockingSubscribeTest {
 
     @Test
     public void oneArgError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action action = mock(Action.class);
 
             Completable.error(new TestException())
@@ -116,7 +116,7 @@ public class CompletableBlockingSubscribeTest {
 
     @Test
     public void oneArgErrorAsync() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action action = mock(Action.class);
 
             Completable.error(new TestException())
@@ -158,7 +158,7 @@ public class CompletableBlockingSubscribeTest {
 
     @Test
     public void twoArgCompleteFails() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action action = mock(Action.class);
             doThrow(new TestException()).when(action).run();
             @SuppressWarnings("unchecked")
@@ -176,7 +176,7 @@ public class CompletableBlockingSubscribeTest {
 
     @Test
     public void twoArgError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action action = mock(Action.class);
             @SuppressWarnings("unchecked")
             Consumer<? super Throwable> consumer = mock(Consumer.class);
@@ -193,7 +193,7 @@ public class CompletableBlockingSubscribeTest {
 
     @Test
     public void twoArgErrorAsync() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action action = mock(Action.class);
             @SuppressWarnings("unchecked")
             Consumer<? super Throwable> consumer = mock(Consumer.class);
@@ -211,7 +211,7 @@ public class CompletableBlockingSubscribeTest {
 
     @Test
     public void twoArgErrorFails() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action action = mock(Action.class);
             @SuppressWarnings("unchecked")
             Consumer<? super Throwable> consumer = mock(Consumer.class);
@@ -230,7 +230,7 @@ public class CompletableBlockingSubscribeTest {
 
     @Test
     public void twoArgInterrupted() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action onDispose = mock(Action.class);
 
             Action action = mock(Action.class);
@@ -311,7 +311,7 @@ public class CompletableBlockingSubscribeTest {
 
     @Test
     public void ovserverInterrupted() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action onDispose = mock(Action.class);
 
             TestObserver<Void> to = new TestObserver<>();

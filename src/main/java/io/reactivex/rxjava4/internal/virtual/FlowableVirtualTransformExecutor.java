@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.disposables.*;
-import io.reactivex.rxjava4.exceptions.Exceptions;
+import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.internal.util.BackpressureHelper;
 import io.reactivex.rxjava4.operators.SpscArrayQueue;
 
@@ -206,7 +206,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
                         if (d && empty) {
                             var ex = error;
                             if (ex != null) {
-                                downstream.onError(ex);
+                                downstream.onError(ThrowableWrapper.unwrap(ex));
                             } else {
                                 downstream.onComplete();
                             }
@@ -234,7 +234,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
                     Exceptions.throwIfFatal(ex);
                     if (ex != STOP && !cancelled) {
                         upstream.cancel();
-                        downstream.onError(ex);
+                        downstream.onError(ThrowableWrapper.unwrap(ex));
                     }
                     return null;
                 }

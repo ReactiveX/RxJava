@@ -428,7 +428,7 @@ public class CheckSourceAnnotationTest extends RxJavaTest {
             }
 
             for (String typeName : TYPES_REQUIRING_NONNULL_TYPE_ARG_ON_FUNC) {
-                if (line.matches(".*Function\\d?<.*, (\\? (extends|super) )?" + typeName + ".*")) {
+                if (line.matches(".*Function\\d?<.*, (\\? (extends|super) )?" + typeName + "[,>].*")) {
                     errorCount++;
                     errors.append("L")
                     .append(j)
@@ -484,7 +484,9 @@ public class CheckSourceAnnotationTest extends RxJavaTest {
             "BackpressureOverflowStrategy", "BackpressureStrategy",
             "Subject", "Processor", "FlowableProcessor",
 
-            "T", "R", "U", "V"
+            "T", "R", "U", "V",
+
+            "Streamable", "Streamer"
     );
 
     static final List<String> TYPES_REQUIRING_NONNULL_TYPE_ARG = Arrays.asList(

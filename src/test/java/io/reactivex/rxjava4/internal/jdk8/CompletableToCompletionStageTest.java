@@ -111,7 +111,7 @@ public class CompletableToCompletionStageTest extends RxJavaTest {
 
     @Test
     public void sourceIgnoresCancel() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Object v = new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
@@ -133,7 +133,7 @@ public class CompletableToCompletionStageTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Object v = new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {

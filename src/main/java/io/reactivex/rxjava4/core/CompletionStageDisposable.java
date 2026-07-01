@@ -16,13 +16,14 @@ package io.reactivex.rxjava4.core;
 import java.io.Serial;
 import java.lang.ref.Cleaner;
 import java.util.Objects;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.disposables.*;
-import io.reactivex.rxjava4.internal.util.AwaitCoordinatorStatic;
+import io.reactivex.rxjava4.exceptions.ThrowableWrapper;
+import io.reactivex.rxjava4.internal.util.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**
@@ -84,19 +85,30 @@ public final class CompletionStageDisposable<T> implements AutoCloseable {
     }
     /**
      * Await the completion of the current stage.
+     * <p>
+     * Rethrows any original unchecked exceptions as is.
+     * @throws CancellationException if the computation was cancelled
+     * @throws ThrowableWrapper if the original exception was a checked exception
      */
     public void await() {
-        state.lazySet(true);
-        AwaitCoordinatorStatic.await(stage);
+        await(null);
     }
 
     /**
      * Await the completion of the current stage.
+     * <p>
+     * Rethrows any original unchecked exceptions as is.
      * @param canceller the canceller link
+     * @throws CancellationException if the computation was cancelled
+     * @throws ThrowableWrapper if the original exception was a checked exception
      */
     public void await(DisposableContainer canceller) {
         state.lazySet(true);
-        AwaitCoordinatorStatic.await(stage, canceller);
+        try {
+            AwaitCoordinatorStatic.await(stage, canceller);
+        } catch (CompletionException ce) {
+            throw ExceptionHelper.wrapOrThrow(ce.getCause());
+        }
     }
 
     /**

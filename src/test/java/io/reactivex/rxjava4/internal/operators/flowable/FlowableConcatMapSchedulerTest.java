@@ -1068,7 +1068,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
     @Test
     public void mainErrorInnerErrorRace() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             TestException ex1 = new TestException();
             TestException ex2 = new TestException();
 

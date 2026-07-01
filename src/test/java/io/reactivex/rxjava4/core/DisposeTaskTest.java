@@ -26,7 +26,7 @@ public class DisposeTaskTest extends RxJavaTest {
 
     @Test
     public void runnableThrows() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
 
             Scheduler.Worker worker = Schedulers.single().createWorker();
 

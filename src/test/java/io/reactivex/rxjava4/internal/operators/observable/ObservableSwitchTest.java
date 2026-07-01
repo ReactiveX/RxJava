@@ -1141,7 +1141,7 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     @Test
     public void innerIgnoresCancelAndErrors() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             PublishSubject<Integer> ps = PublishSubject.create();
 
             TestObserver<Object> to = ps

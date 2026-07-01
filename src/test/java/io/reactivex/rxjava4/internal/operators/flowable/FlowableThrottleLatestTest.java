@@ -673,7 +673,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
      */
     @Test
     public void onDroppedDisposeCrashesDrop() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             PublishProcessor<Integer> pp =PublishProcessor.create();
 
             TestScheduler sch = new TestScheduler();

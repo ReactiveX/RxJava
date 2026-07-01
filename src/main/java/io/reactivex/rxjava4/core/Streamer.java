@@ -14,7 +14,7 @@
 package io.reactivex.rxjava4.core;
 
 import java.util.*;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.disposables.*;
@@ -197,4 +197,22 @@ public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
     default void awaitFinish(@NonNull DisposableContainer cancellation) {
         await(finish(cancellation), cancellation);
     }
+
+    /**
+     * Use this constant in {@link #next(DisposableContainer)} to indicate
+     * the next value is available, synchronously.
+     */
+    CompletionStage<Boolean> NEXT_TRUE = CompletableFuture.completedStage(true);
+
+    /**
+     * Use this constant in {@link #next(DisposableContainer)} to indicate
+     * no more values will be available, synchronously.
+     */
+    CompletionStage<Boolean> NEXT_FALSE = CompletableFuture.completedStage(false);
+
+    /**
+     * Use this constant in {@link #finish(DisposableContainer)} to indicate
+     * the cleanupp was done synchronously.
+     */
+    CompletionStage<Void> FINISHED = CompletableFuture.completedStage(null);
 }

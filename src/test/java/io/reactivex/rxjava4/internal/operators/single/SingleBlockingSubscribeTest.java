@@ -21,14 +21,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Single;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
-public class SingleBlockingSubscribeTest {
+public class SingleBlockingSubscribeTest extends RxJavaTest{
 
     @Test
     public void noArgSuccess() {
@@ -45,7 +45,7 @@ public class SingleBlockingSubscribeTest {
 
     @Test
     public void noArgError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Single.error(new TestException())
             .blockingSubscribe();
 
@@ -55,7 +55,7 @@ public class SingleBlockingSubscribeTest {
 
     @Test
     public void noArgErrorAsync() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Single.error(new TestException())
             .delay(100, TimeUnit.MILLISECONDS, Schedulers.computation(), true)
             .blockingSubscribe();
@@ -89,7 +89,7 @@ public class SingleBlockingSubscribeTest {
 
     @Test
     public void oneArgSuccessFails() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
             doThrow(new TestException()).when(success).accept(any());
@@ -105,7 +105,7 @@ public class SingleBlockingSubscribeTest {
 
     @Test
     public void oneArgError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
 
@@ -120,7 +120,7 @@ public class SingleBlockingSubscribeTest {
 
     @Test
     public void oneArgErrorAsync() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
 
@@ -165,7 +165,7 @@ public class SingleBlockingSubscribeTest {
 
     @Test
     public void twoArgSuccessFails() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
             doThrow(new TestException()).when(success).accept(any());
@@ -184,7 +184,7 @@ public class SingleBlockingSubscribeTest {
 
     @Test
     public void twoArgError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
             @SuppressWarnings("unchecked")
@@ -202,7 +202,7 @@ public class SingleBlockingSubscribeTest {
 
     @Test
     public void twoArgErrorAsync() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
             @SuppressWarnings("unchecked")
@@ -221,7 +221,7 @@ public class SingleBlockingSubscribeTest {
 
     @Test
     public void twoArgErrorFails() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
             @SuppressWarnings("unchecked")
@@ -241,7 +241,7 @@ public class SingleBlockingSubscribeTest {
 
     @Test
     public void twoArgInterrupted() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action onDispose = mock(Action.class);
 
             @SuppressWarnings("unchecked")
@@ -323,7 +323,7 @@ public class SingleBlockingSubscribeTest {
 
     @Test
     public void ovserverInterrupted() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action onDispose = mock(Action.class);
 
             TestObserver<Object> to = new TestObserver<>();

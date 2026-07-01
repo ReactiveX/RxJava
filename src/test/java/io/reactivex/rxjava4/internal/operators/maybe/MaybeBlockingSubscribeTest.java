@@ -21,14 +21,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Maybe;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
-public class MaybeBlockingSubscribeTest {
+public class MaybeBlockingSubscribeTest extends RxJavaTest {
 
     @Test
     public void noArgSuccess() {
@@ -58,7 +58,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void noArgError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Maybe.error(new TestException())
             .blockingSubscribe();
 
@@ -68,7 +68,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void noArgErrorAsync() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Maybe.error(new TestException())
             .delay(100, TimeUnit.MILLISECONDS, Schedulers.computation())
             .blockingSubscribe();
@@ -125,7 +125,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void oneArgSuccessFails() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
             doThrow(new TestException()).when(success).accept(any());
@@ -141,7 +141,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void oneArgError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
 
@@ -156,7 +156,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void oneArgErrorAsync() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
 
@@ -230,7 +230,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void twoArgSuccessFails() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
             doThrow(new TestException()).when(success).accept(any());
@@ -249,7 +249,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void twoArgError() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
             @SuppressWarnings("unchecked")
@@ -267,7 +267,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void twoArgErrorAsync() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
             @SuppressWarnings("unchecked")
@@ -286,7 +286,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void twoArgErrorFails() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
             @SuppressWarnings("unchecked")
@@ -354,7 +354,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void threeArgEmptyFails() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             @SuppressWarnings("unchecked")
             Consumer<Integer> success = mock(Consumer.class);
             @SuppressWarnings("unchecked")
@@ -377,7 +377,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void threeArgInterrupted() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action onDispose = mock(Action.class);
 
             @SuppressWarnings("unchecked")
@@ -482,7 +482,7 @@ public class MaybeBlockingSubscribeTest {
 
     @Test
     public void ovserverInterrupted() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Action onDispose = mock(Action.class);
 
             TestObserver<Object> to = new TestObserver<>();

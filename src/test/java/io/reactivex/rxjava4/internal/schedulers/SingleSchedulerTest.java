@@ -115,7 +115,7 @@ public class SingleSchedulerTest extends AbstractSchedulerTests {
 
     @Test
     public void zeroPeriodRejectedExecution() throws Throwable {
-        TestHelper.withErrorTracking(errors -> {
+        withErrorTracking(errors -> {
             Scheduler s = RxJavaPlugins.createSingleScheduler(new RxThreadFactory("Test"));
             s.shutdown();
             Runnable run = mock(Runnable.class);
