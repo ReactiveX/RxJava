@@ -225,7 +225,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base
 <h3>await</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">await</span>()</div>
-<div class="block">Await the completion of the current stage.</div>
+<div class="block">Await the completion of the current stage.
+<p>
+Rethrows any original unchecked exceptions as is.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class in java.util.concurrent" class="external-link">CancellationException</a></code> - if the computation was cancelled</dd>
+<dd><code><a href="../exceptions/ThrowableWrapper.html" title="class in io.reactivex.rxjava4.exceptions">ThrowableWrapper</a></code> - if the original exception was a checked exception</dd>
+</dl>
 </div>
 </section>
 </li>
@@ -234,10 +241,15 @@ implements <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base
 <h3>await</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">await</span><wbr><span class="parameters">(<a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller)</span></div>
-<div class="block">Await the completion of the current stage.</div>
+<div class="block">Await the completion of the current stage.
+<p>
+Rethrows any original unchecked exceptions as is.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>canceller</code> - the canceller link</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class in java.util.concurrent" class="external-link">CancellationException</a></code> - if the computation was cancelled</dd>
+<dd><code><a href="../exceptions/ThrowableWrapper.html" title="class in io.reactivex.rxjava4.exceptions">ThrowableWrapper</a></code> - if the original exception was a checked exception</dd>
 </dl>
 </div>
 </section>

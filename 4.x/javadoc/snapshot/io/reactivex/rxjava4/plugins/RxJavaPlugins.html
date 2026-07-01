@@ -112,6 +112,7 @@ initTheme();
 <li><a href="#getOnFlowableSubscribe()" tabindex="0">getOnFlowableSubscribe()</a></li>
 <li><a href="#getOnMaybeSubscribe()" tabindex="0">getOnMaybeSubscribe()</a></li>
 <li><a href="#getOnMaybeAssembly()" tabindex="0">getOnMaybeAssembly()</a></li>
+<li><a href="#getOnStreamableAssembly()" tabindex="0">getOnStreamableAssembly()</a></li>
 <li><a href="#getOnSingleAssembly()" tabindex="0">getOnSingleAssembly()</a></li>
 <li><a href="#getOnSingleSubscribe()" tabindex="0">getOnSingleSubscribe()</a></li>
 <li><a href="#getOnObservableAssembly()" tabindex="0">getOnObservableAssembly()</a></li>
@@ -121,6 +122,7 @@ initTheme();
 <li><a href="#setOnCompletableSubscribe(io.reactivex.rxjava4.functions.BiFunction)" tabindex="0">setOnCompletableSubscribe(BiFunction)</a></li>
 <li><a href="#setOnFlowableAssembly(io.reactivex.rxjava4.functions.Function)" tabindex="0">setOnFlowableAssembly(Function)</a></li>
 <li><a href="#setOnMaybeAssembly(io.reactivex.rxjava4.functions.Function)" tabindex="0">setOnMaybeAssembly(Function)</a></li>
+<li><a href="#setOnStreamableAssembly(io.reactivex.rxjava4.functions.Function)" tabindex="0">setOnStreamableAssembly(Function)</a></li>
 <li><a href="#setOnConnectableFlowableAssembly(io.reactivex.rxjava4.functions.Function)" tabindex="0">setOnConnectableFlowableAssembly(Function)</a></li>
 <li><a href="#setOnFlowableSubscribe(io.reactivex.rxjava4.functions.BiFunction)" tabindex="0">setOnFlowableSubscribe(BiFunction)</a></li>
 <li><a href="#setOnMaybeSubscribe(io.reactivex.rxjava4.functions.BiFunction)" tabindex="0">setOnMaybeSubscribe(BiFunction)</a></li>
@@ -137,6 +139,7 @@ initTheme();
 <li><a href="#onSubscribe(io.reactivex.rxjava4.parallel.ParallelFlowable,java.util.concurrent.Flow.Subscriber%5B%5D)" tabindex="0">onSubscribe(ParallelFlowable, Flow.Subscriber[])</a></li>
 <li><a href="#onAssembly(io.reactivex.rxjava4.core.Maybe)" tabindex="0">onAssembly(Maybe)</a></li>
 <li><a href="#onAssembly(io.reactivex.rxjava4.core.Flowable)" tabindex="0">onAssembly(Flowable)</a></li>
+<li><a href="#onAssembly(io.reactivex.rxjava4.core.Streamable)" tabindex="0">onAssembly(Streamable)</a></li>
 <li><a href="#onAssembly(io.reactivex.rxjava4.flowables.ConnectableFlowable)" tabindex="0">onAssembly(ConnectableFlowable)</a></li>
 <li><a href="#onAssembly(io.reactivex.rxjava4.core.Observable)" tabindex="0">onAssembly(Observable)</a></li>
 <li><a href="#onAssembly(io.reactivex.rxjava4.observables.ConnectableObservable)" tabindex="0">onAssembly(ConnectableObservable)</a></li>
@@ -348,85 +351,95 @@ is set.</div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns the current hook function.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a><wbr>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link">Runnable</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link">Runnable</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getScheduleHandler()" class="member-name-link">getScheduleHandler</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a><wbr>&lt;? super <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>, ? extends <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getOnStreamableAssembly()" class="member-name-link">getOnStreamableAssembly</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns the current hook function.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a><wbr>&lt;? super <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>, ? extends <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getSingleSchedulerHandler()" class="member-name-link">getSingleSchedulerHandler</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a><wbr>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link">Runnable</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link">Runnable</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getScheduleHandler()" class="member-name-link">getScheduleHandler</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns the current hook function.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a><wbr>&lt;? super <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>, ? extends <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getVirtualSchedulerHandler()" class="member-name-link">getVirtualSchedulerHandler</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getSingleSchedulerHandler()" class="member-name-link">getSingleSchedulerHandler</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns the current hook function.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a><wbr>&lt;? super <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>, ? extends <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getVirtualSchedulerHandler()" class="member-name-link">getVirtualSchedulerHandler</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns the current hook function.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#initCachedScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initCachedScheduler</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;<a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Calls the associated hook function.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#initCachedScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initCachedScheduler</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;<a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#initComputationScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initComputationScheduler</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;<a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Calls the associated hook function.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#initComputationScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initComputationScheduler</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;<a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#initNewThreadScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initNewThreadScheduler</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;<a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Calls the associated hook function.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#initNewThreadScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initNewThreadScheduler</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;<a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#initSingleScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initSingleScheduler</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;<a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Calls the associated hook function.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#initSingleScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initSingleScheduler</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;<a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#initVirtualScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initVirtualScheduler</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;<a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Calls the associated hook function.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#initVirtualScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initVirtualScheduler</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;<a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isFailOnNonBlockingScheduler()" class="member-name-link">isFailOnNonBlockingScheduler</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Calls the associated hook function.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isFailOnNonBlockingScheduler()" class="member-name-link">isFailOnNonBlockingScheduler</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns true if the blockingX operators fail
 with an IllegalStateException on a non-blocking scheduler
 such as computation or single.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isLockdown()" class="member-name-link">isLockdown</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isLockdown()" class="member-name-link">isLockdown</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns true if the plugins were locked down.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#lockdown()" class="member-name-link">lockdown</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#lockdown()" class="member-name-link">lockdown</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Prevents changing the plugins from then on.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Completable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a>&nbsp;source)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Calls the associated hook function.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Flowable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Completable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a>&nbsp;source)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Calls the associated hook function.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Maybe)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Flowable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Calls the associated hook function.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Observable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Maybe)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Calls the associated hook function.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Single)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Observable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Calls the associated hook function.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Single)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Calls the associated hook function.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Streamable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Calls the associated hook function.</div>
 </div>
@@ -659,18 +672,23 @@ and to signal an IllegalStateException instead.</div>
 <div class="block">Sets the specific hook function.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setScheduleHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setScheduleHandler</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link">Runnable</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link">Runnable</a>&gt;&nbsp;handler)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setOnStreamableAssembly(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setOnStreamableAssembly</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>, ? extends <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&gt;&nbsp;onStreamableAssembly)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Sets the specific hook function.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setSingleSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setSingleSchedulerHandler</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>, ? extends <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;handler)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setScheduleHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setScheduleHandler</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link">Runnable</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link">Runnable</a>&gt;&nbsp;handler)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Sets the specific hook function.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setVirtualSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setVirtualSchedulerHandler</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>, ? extends <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;handler)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setSingleSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setSingleSchedulerHandler</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>, ? extends <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;handler)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Sets the specific hook function.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setVirtualSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setVirtualSchedulerHandler</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>, ? extends <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&gt;&nbsp;handler)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Sets the specific hook function.</div>
 </div>
 </div>
@@ -1426,6 +1444,20 @@ handler via the <a href="#setErrorHandler(io.reactivex.rxjava4.functions.Consume
 </section>
 </li>
 <li>
+<section class="detail" id="getOnStreamableAssembly()">
+<h3>getOnStreamableAssembly</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>, ? extends <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&gt;</span>&nbsp;<span class="element-name">getOnStreamableAssembly</span>()</div>
+<div class="block">Returns the current hook function.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the hook function, may be null</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="getOnSingleAssembly()">
 <h3>getOnSingleAssembly</h3>
 <div class="horizontal-scroll">
@@ -1547,6 +1579,20 @@ handler via the <a href="#setErrorHandler(io.reactivex.rxjava4.functions.Consume
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>onMaybeAssembly</code> - the hook function to set, null allowed</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setOnStreamableAssembly(io.reactivex.rxjava4.functions.Function)">
+<h3>setOnStreamableAssembly</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setOnStreamableAssembly</span><wbr><span class="parameters">(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a>
+ <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>, ? extends <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&gt;&nbsp;onStreamableAssembly)</span></div>
+<div class="block">Sets the specific hook function.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>onStreamableAssembly</code> - the hook function to set, null allowed</dd>
 </dl>
 </div>
 </section>
@@ -1828,6 +1874,25 @@ handler via the <a href="#setErrorHandler(io.reactivex.rxjava4.functions.Consume
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><span id="onAssembly(io.reactivex.rxjava4.core.Flowable)-type-param-T"><code>T</code> - the value type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>source</code> - the hook's input value</dd>
+<dt>Returns:</dt>
+<dd>the value returned by the hook</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="onAssembly(io.reactivex.rxjava4.core.Streamable)">
+<h3>onAssembly</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">onAssembly</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</span></div>
+<div class="block">Calls the associated hook function.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="onAssembly(io.reactivex.rxjava4.core.Streamable)-type-param-T"><code>T</code> - the value type</span></dd>
 <dt>Parameters:</dt>
 <dd><code>source</code> - the hook's input value</dd>
 <dt>Returns:</dt>

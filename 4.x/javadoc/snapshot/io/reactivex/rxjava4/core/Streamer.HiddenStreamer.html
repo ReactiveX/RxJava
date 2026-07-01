@@ -63,6 +63,7 @@ initTheme();
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
 <li><a href="#nested-class-summary" tabindex="0">Nested Class Summary</a></li>
+<li><a href="#field-summary" tabindex="0">Field Summary</a></li>
 <li><a href="#constructor-summary" tabindex="0">Constructor Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
@@ -140,6 +141,39 @@ implements <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core
 <div class="col-second odd-row-color"><code><a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a>&lt;<a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html#type-param-T" title="type parameter in Streamer.StreamerFinishViaDisposableContainerCanceller">T</a>&gt;</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Augments the base streamer with a canceller so that it can be injected at the various await calls.</div>
+</div>
+</div>
+</div>
+</section>
+</li>
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="inherited-list">
+<h3 id="fields-inherited-from-class-io.reactivex.rxjava4.core.Streamer">Fields inherited from interface&nbsp;<a href="Streamer.html#field-summary" title="interface in io.reactivex.rxjava4.core">Streamer</a></h3>
+<code><a href="Streamer.html#FINISHED">FINISHED</a>, <a href="Streamer.html#NEXT_FALSE">NEXT_FALSE</a>, <a href="Streamer.html#NEXT_TRUE">NEXT_TRUE</a></code>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="Streamer.html#FINISHED" class="member-name-link">FINISHED</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Use this constant in <a href="Streamer.html#finish(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>Streamer.finish(DisposableContainer)</code></a> to indicate
+the cleanupp was done synchronously.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="Streamer.html#NEXT_FALSE" class="member-name-link">NEXT_FALSE</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Use this constant in <a href="Streamer.html#next(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>Streamer.next(DisposableContainer)</code></a> to indicate
+no more values will be available, synchronously.</div>
+</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="Streamer.html#NEXT_TRUE" class="member-name-link">NEXT_TRUE</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Use this constant in <a href="Streamer.html#next(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>Streamer.next(DisposableContainer)</code></a> to indicate
+the next value is available, synchronously.</div>
 </div>
 </div>
 </div>

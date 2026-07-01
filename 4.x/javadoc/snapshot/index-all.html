@@ -2594,6 +2594,11 @@ be subscribed to.</div>
 <div class="block">Returns a <code>Flowable</code> that calls a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> factory to create a <code>Publisher</code> for each new <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>
 that subscribes.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#defer(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">defer(Supplier)</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Defers the creation of the actual <code>Streamable</code>, allowing a per streamer
+state to be created along with it.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#delay(long,java.util.concurrent.TimeUnit)" class="member-name-link">delay(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a <code>Completable</code> which delays the emission of the completion event by the given time.</div>
@@ -3523,6 +3528,11 @@ subscriber subscribes to it.</div>
 <div class="block">Returns a <code>Single</code> that invokes a subscriber's <a href="io/reactivex/rxjava4/core/SingleObserver.html#onError(java.lang.Throwable)"><code>onError</code></a> method when the
 subscriber subscribes to it.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#error(java.lang.Throwable)" class="member-name-link">error(Throwable)</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Creates a <code>Streamable</code> that signals the given <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> immediately when it begins streaming,
+ending the sequence.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/annotations/BackpressureKind.html#ERROR" class="member-name-link">ERROR</a> - Enum constant in enum class io.reactivex.rxjava4.annotations.<a href="io/reactivex/rxjava4/annotations/BackpressureKind.html" title="enum class in io.reactivex.rxjava4.annotations">BackpressureKind</a></dt>
 <dd>
 <div class="block">The operator will emit a <a href="io/reactivex/rxjava4/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava4.exceptions"><code>MissingBackpressureException</code></a>
@@ -3632,6 +3642,11 @@ handles errors based on the given <a href="io/reactivex/rxjava4/parallel/Paralle
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.StreamerFinishViaDisposableContainerCanceller.html#finish(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">finish(DisposableContainer)</a> - Method in record class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.StreamerFinishViaDisposableContainerCanceller.html" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamer.html#FINISHED" class="member-name-link">FINISHED</a> - Static variable in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
+<dd>
+<div class="block">Use this constant in <a href="io/reactivex/rxjava4/core/Streamer.html#finish(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>Streamer.finish(DisposableContainer)</code></a> to indicate
+the cleanupp was done synchronously.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.html#finishVia(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">finishVia(DisposableContainer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
 <dd>
 <div class="block">Augments the streamer so that the given canceller is injected into the various
@@ -4182,6 +4197,10 @@ executed exactly once when the <code>Disposable</code> is disposed.</div>
 <div class="block">Wraps multiple <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into a <code>ParallelFlowable</code> which runs them
 in parallel and unordered.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#fromArray(T...)" class="member-name-link">fromArray(T...)</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Streams all elements of the given items array.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#fromArray(T...)" class="member-name-link">fromArray(T...)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Converts an array into a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> that emits the items in the array.</div>
@@ -4712,6 +4731,10 @@ is set.</div>
 <div class="block">Returns the current hook function.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getOnSingleSubscribe()" class="member-name-link">getOnSingleSubscribe()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Returns the current hook function.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getOnStreamableAssembly()" class="member-name-link">getOnStreamableAssembly()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Returns the current hook function.</div>
 </dd>
@@ -6192,6 +6215,16 @@ or takes timing information from it.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.StreamerFinishViaDisposableContainerCanceller.html#next(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">next(DisposableContainer)</a> - Method in record class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.StreamerFinishViaDisposableContainerCanceller.html" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamer.html#NEXT_FALSE" class="member-name-link">NEXT_FALSE</a> - Static variable in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
+<dd>
+<div class="block">Use this constant in <a href="io/reactivex/rxjava4/core/Streamer.html#next(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>Streamer.next(DisposableContainer)</code></a> to indicate
+no more values will be available, synchronously.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamer.html#NEXT_TRUE" class="member-name-link">NEXT_TRUE</a> - Static variable in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
+<dd>
+<div class="block">Use this constant in <a href="io/reactivex/rxjava4/core/Streamer.html#next(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>Streamer.next(DisposableContainer)</code></a> to indicate
+the next value is available, synchronously.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/annotations/BackpressureKind.html#NONE" class="member-name-link">NONE</a> - Enum constant in enum class io.reactivex.rxjava4.annotations.<a href="io/reactivex/rxjava4/annotations/BackpressureKind.html" title="enum class in io.reactivex.rxjava4.annotations">BackpressureKind</a></dt>
 <dd>
 <div class="block">The operator ignores all kinds of backpressure and may overflow the downstream.</div>
@@ -6376,6 +6409,10 @@ is an instance of the supplied <a href="https://docs.oracle.com/en/java/javase/2
 <div class="block">Calls the associated hook function.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#onAssembly(io.reactivex.rxjava4.core.Single)" class="member-name-link">onAssembly(Single)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Calls the associated hook function.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#onAssembly(io.reactivex.rxjava4.core.Streamable)" class="member-name-link">onAssembly(Streamable)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Calls the associated hook function.</div>
 </dd>
@@ -7212,7 +7249,7 @@ the queue is empty.</div>
 <dt><a href="io/reactivex/rxjava4/exceptions/Exceptions.html#propagate(java.lang.Throwable)" class="member-name-link">propagate(Throwable)</a> - Static method in class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/Exceptions.html" title="class in io.reactivex.rxjava4.exceptions">Exceptions</a></dt>
 <dd>
 <div class="block">Convenience method to throw a <code>RuntimeException</code> and <code>Error</code> directly
-or wrap any other exception type into a <code>RuntimeException</code>.</div>
+or wrap any other exception type into a <a href="io/reactivex/rxjava4/exceptions/ThrowableWrapper.html" title="class in io.reactivex.rxjava4.exceptions"><code>ThrowableWrapper</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/exceptions/ProtocolViolationException.html" class="type-name-link" title="class in io.reactivex.rxjava4.exceptions">ProtocolViolationException</a> - Exception Class in <a href="io/reactivex/rxjava4/exceptions/package-summary.html">io.reactivex.rxjava4.exceptions</a></dt>
 <dd>
@@ -7307,6 +7344,10 @@ the fusion mode between subsequent operators of the <a href="io/reactivex/rxjava
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits a sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Integer.html" title="class in java.lang" class="external-link"><code>Integer</code></a>s within a specified range.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#range(int,int)" class="member-name-link">range(int, int)</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Emits elements from start up to start + count exclusive.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#rangeLong(long,long)" class="member-name-link">rangeLong(long, long)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits a sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link"><code>Long</code></a>s within a specified range.</div>
@@ -7314,6 +7355,10 @@ the fusion mode between subsequent operators of the <a href="io/reactivex/rxjava
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#rangeLong(long,long)" class="member-name-link">rangeLong(long, long)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits a sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link"><code>Long</code></a>s within a specified range.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#rangeLong(long,long)" class="member-name-link">rangeLong(long, long)</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Emits elements from start up to start + count exclusive.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#rebatchRequests(int)" class="member-name-link">rebatchRequests(int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -8564,6 +8609,10 @@ and to signal an IllegalStateException instead.</div>
 <dd>
 <div class="block">Sets the specific hook function.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#setOnStreamableAssembly(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setOnStreamableAssembly(Function)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Sets the specific hook function.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#setScheduleHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setScheduleHandler(Function)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Sets the specific hook function.</div>
@@ -9696,6 +9745,11 @@ for an accepted mode.</div>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits only the first <code>count</code> items emitted by the current <code>Observable</code>.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#take(long)" class="member-name-link">take(long)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Takes at most the given number of items from the upstream and relays it to the downstream,
+then cancels the rest of the sequence.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#take(long,java.util.concurrent.TimeUnit)" class="member-name-link">take(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits those items emitted by source <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> before a specified time runs
@@ -10110,6 +10164,14 @@ current <code>Flowable</code> that are followed by newer items before a timeout 
 <div class="block">Returns an <code>Observable</code> that mirrors the current <code>Observable</code>, except that it drops items emitted by the
 current <code>Observable</code> that are followed by newer items before a timeout value expires on a specified
 <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/exceptions/ThrowableWrapper.html" class="type-name-link" title="class in io.reactivex.rxjava4.exceptions">ThrowableWrapper</a> - Exception Class in <a href="io/reactivex/rxjava4/exceptions/package-summary.html">io.reactivex.rxjava4.exceptions</a></dt>
+<dd>
+<div class="block">A runtime exception to sneak around checked exceptions.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/exceptions/ThrowableWrapper.html#%3Cinit%3E(java.lang.Throwable)" class="member-name-link">ThrowableWrapper(Throwable)</a> - Constructor for exception class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/ThrowableWrapper.html" title="class in io.reactivex.rxjava4.exceptions">ThrowableWrapper</a></dt>
+<dd>
+<div class="block">Constructs an instance with the given non-null original Throwable.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/exceptions/Exceptions.html#throwIfFatal(java.lang.Throwable)" class="member-name-link">throwIfFatal(Throwable)</a> - Static method in class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/Exceptions.html" title="class in io.reactivex.rxjava4.exceptions">Exceptions</a></dt>
 <dd>
@@ -11070,6 +11132,11 @@ aimed at the current <code>Observable</code> on the given <a href="io/reactivex/
 <dd>
 <div class="block">Returns a <code>Single</code> which makes sure when a <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> disposes the <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>,
 that call is propagated up on the specified <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/exceptions/ThrowableWrapper.html#unwrap(java.lang.Throwable)" class="member-name-link">unwrap(Throwable)</a> - Static method in exception class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/ThrowableWrapper.html" title="class in io.reactivex.rxjava4.exceptions">ThrowableWrapper</a></dt>
+<dd>
+<div class="block">Checks if the given <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> is of type <code>ThrowableWrapper</code> and
+unwraps it, or returns the provided throwable as is.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#using(io.reactivex.rxjava4.functions.Supplier,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">using(Supplier, Function, Consumer)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>

@@ -62,9 +62,17 @@ initTheme();
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
 <li><a href="#nested-class-summary" tabindex="0">Nested Class Summary</a></li>
+<li><a href="#field-summary" tabindex="0">Field Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a>
 <ol class="toc-list">
 <li><a href="#methods-inherited-from-class-io.reactivex.rxjava4.internal.util.AwaitCoordinator" tabindex="0">Methods inherited from interface&nbsp;io.reactivex.rxjava4.internal.util.AwaitCoordinator</a></li>
+</ol>
+</li>
+<li><a href="#field-detail" tabindex="0">Field Details</a>
+<ol class="toc-list">
+<li><a href="#NEXT_TRUE" tabindex="0">NEXT_TRUE</a></li>
+<li><a href="#NEXT_FALSE" tabindex="0">NEXT_FALSE</a></li>
+<li><a href="#FINISHED" tabindex="0">FINISHED</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
@@ -139,6 +147,36 @@ gets stuck, just call clear()/dispose() on the container to get rid of this sequ
 <div class="col-second odd-row-color"><code><a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a>&lt;<a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html#type-param-T" title="type parameter in Streamer.StreamerFinishViaDisposableContainerCanceller">T</a>&gt;</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Augments the base streamer with a canceller so that it can be injected at the various await calls.</div>
+</div>
+</div>
+</section>
+</li>
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#FINISHED" class="member-name-link">FINISHED</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Use this constant in <a href="#finish(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>finish(DisposableContainer)</code></a> to indicate
+the cleanupp was done synchronously.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#NEXT_FALSE" class="member-name-link">NEXT_FALSE</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Use this constant in <a href="#next(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>next(DisposableContainer)</code></a> to indicate
+no more values will be available, synchronously.</div>
+</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#NEXT_TRUE" class="member-name-link">NEXT_TRUE</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Use this constant in <a href="#next(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>next(DisposableContainer)</code></a> to indicate
+the next value is available, synchronously.</div>
 </div>
 </div>
 </section>
@@ -224,6 +262,44 @@ lifecycle await calls.</div>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="NEXT_TRUE">
+<h3>NEXT_TRUE</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</span>&nbsp;<span class="element-name">NEXT_TRUE</span></div>
+<div class="block">Use this constant in <a href="#next(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>next(DisposableContainer)</code></a> to indicate
+the next value is available, synchronously.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="NEXT_FALSE">
+<h3>NEXT_FALSE</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</span>&nbsp;<span class="element-name">NEXT_FALSE</span></div>
+<div class="block">Use this constant in <a href="#next(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>next(DisposableContainer)</code></a> to indicate
+no more values will be available, synchronously.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="FINISHED">
+<h3>FINISHED</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">FINISHED</span></div>
+<div class="block">Use this constant in <a href="#finish(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>finish(DisposableContainer)</code></a> to indicate
+the cleanupp was done synchronously.</div>
+</div>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ============ METHOD DETAIL ========== -->
 <li>
 <section class="method-details" id="method-detail">
