@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,7 @@ import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableError.ErrorStreamer;
 
 @Isolated
 public class StreamableErrorTest extends StreamableBaseTest {
@@ -40,5 +43,13 @@ public class StreamableErrorTest extends StreamableBaseTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("resource")
+    @Test
+    public void currentThrows() {
+        assertThrows(IllegalStateException.class, () -> {
+            new ErrorStreamer<>(new TestException()).current();
+        });
     }
 }

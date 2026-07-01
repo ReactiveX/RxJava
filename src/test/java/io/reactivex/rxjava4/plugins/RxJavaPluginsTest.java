@@ -39,6 +39,7 @@ import io.reactivex.rxjava4.internal.operators.maybe.MaybeError;
 import io.reactivex.rxjava4.internal.operators.observable.ObservableRange;
 import io.reactivex.rxjava4.internal.operators.parallel.ParallelFromPublisher;
 import io.reactivex.rxjava4.internal.operators.single.SingleJust;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableError;
 import io.reactivex.rxjava4.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava4.internal.subscriptions.ScalarSubscription;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
@@ -924,6 +925,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
             BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> completableObserver2completableObserver
                 = (_, completableObserver) -> completableObserver;
             Function<? super Completable, ? extends Completable> completable2completable = completable -> completable;
+            Function<? super Streamable, ? extends Streamable> streamable2streamable = streamable -> streamable;
 
             RxJavaPlugins.setInitComputationSchedulerHandler(callable2scheduler);
             RxJavaPlugins.setComputationSchedulerHandler(scheduler2scheduler);
@@ -949,6 +951,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
             RxJavaPlugins.setInitNewThreadSchedulerHandler(callable2scheduler);
             RxJavaPlugins.setInitCachedSchedulerHandler(callable2scheduler);
             RxJavaPlugins.setInitVirtualSchedulerHandler(callable2scheduler);
+            RxJavaPlugins.setOnStreamableAssembly(streamable2streamable);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1018,6 +1021,12 @@ public class RxJavaPluginsTest extends RxJavaTest {
             };
 
             assertSame(myb, RxJavaPlugins.onAssembly(myb));
+
+            assertNull(RxJavaPlugins.onAssembly((Streamable)null));
+
+            Streamable str = _ -> null;
+
+            assertSame(str, RxJavaPlugins.onAssembly(str));
 
             Runnable action = Functions.EMPTY_RUNNABLE;
             assertSame(action, RxJavaPlugins.onSchedule(action));
@@ -1360,6 +1369,30 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
         Maybe.empty()
         .test()
+        .assertNoValues()
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void streamableCreate() {
+        try {
+            RxJavaPlugins.setOnStreamableAssembly(_ -> new StreamableError(new TestException()));
+
+            Streamable.empty()
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertNoValues()
+            .assertNotComplete()
+            .assertError(TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+        // make sure the reset worked
+        Streamable.empty()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
         .assertNoValues()
         .assertNoErrors()
         .assertComplete();

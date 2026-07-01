@@ -595,6 +595,8 @@ public final class RxJavaPlugins {
         setOnParallelAssembly(null);
         setOnParallelSubscribe(null);
 
+        setOnStreamableAssembly(null);
+
         setFailOnNonBlockingScheduler(false);
         setOnBeforeBlocking(null);
     }

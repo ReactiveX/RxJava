@@ -32,6 +32,6 @@ public final class ThrowableWrapper extends RuntimeException {
      * @param original the original Throwable
      */
     public ThrowableWrapper(Throwable original) {
-        super(original != null ? original : new NullPointerException("original is null"));
+        super("You forgot to unwrap me!", original != null ? original : new NullPointerException("original is null"));
     }
 }
