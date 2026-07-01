@@ -1683,4 +1683,28 @@ public class TestSubscriberTest extends RxJavaTest {
             }
         });
     }
+
+    @Test
+    public void assertValueSet() {
+        var ts = new TestSubscriber<>();
+        ts.onSubscribe(new BooleanSubscription());
+        ts.onNext(2);
+        ts.onNext(1);
+        ts.onNext(3);
+
+        ts.assertValueSet(1, 2, 3);
+    }
+
+    @Test
+    public void assertValueSetFail() {
+        assertThrows(AssertionError.class, () -> {
+            var ts = new TestSubscriber<>();
+            ts.onSubscribe(new BooleanSubscription());
+            ts.onNext(2);
+            ts.onNext(1);
+            ts.onNext(3);
+
+            ts.assertValueSet(1, 2);
+        });
+    }
 }

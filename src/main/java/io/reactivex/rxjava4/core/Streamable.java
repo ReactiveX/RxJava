@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import io.reactivex.rxjava4.annotations.*;
+import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
@@ -82,6 +83,20 @@ public interface Streamable<@NonNull T> {
     static <@NonNull T> Streamable<T> just(@NonNull T item) {
         Objects.requireNonNull(item, "item is null");
         return RxJavaPlugins.onAssembly(new StreamableJust<>(item));
+    }
+
+    /**
+     * Filters out the upstream items that do not pass the given predicate
+     * @param predicate the callback that should return {@code true} to let the upstream value pass
+     *                  or {@code false} to ignore it and continue with the next upstream item
+     * @return the new {@code Streamable} instance
+     * @throw NullPointerException if {@code predicate} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> filter(@NonNull Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return RxJavaPlugins.onAssembly(new StreamableFilter<>(this, predicate));
     }
 
     /**
@@ -428,6 +443,32 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Maps each upstream item into another item via a mapper function.
+     * @param <R> the element type of the mapping
+     * @param mapper the function that takes an upstream item and returns an item to be emitted
+     *               to the downstream
+     * @return the new {@code Streamable} instance
+     * @throw NullPointerException if {@code mapper} is {@code null}
+     */
+    default <@NonNull R> Streamable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new StreamableMap<>(this, mapper));
+    }
+
+    /**
+     * Maps each upstream item into another, optional item via a mapper function that skips the empty optionals.
+     * @param <R> the element type of the mapping
+     * @param mapper the function that takes an upstream item and returns an optional item to be emitted / skipped
+     *               to the downstream
+     * @return the new {@code Streamable} instance
+     * @throw NullPointerException if {@code mapper} is {@code null}
+     */
+    default <@NonNull R> Streamable<R> mapOptional(@NonNull Function<? super T, ? extends Optional<? extends R>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new StreamableMapOptional<>(this, mapper));
+    }
+
+    /**
      * Transforms the upstream sequence into zero or more elements for the downstream.
      * @param <R> the result element type
      * @param transformer the interface to implement the transforming logic
@@ -467,6 +508,24 @@ public interface Streamable<@NonNull T> {
                 }
             });
         });
+    }
+
+    /**
+     * Maps each upstream item onto a {@code Streamable} and runs them concurrently while
+     * relaying inner items as first-come-first-served manner.
+     * @param <R> the element type of the output sequence
+     * @param mapper the function that turns an upstream item into a {@code Streamable} inner sequence
+     * @param config the configuration record for this operator
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default <R> Streamable<R> flatMap(@NonNull Function<? super T, ? extends Streamable<? extends R>> mapper,
+            @NonNull StandardConcurrentConfig config) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new StreamableFlatMap<>(this, mapper, config.maxConcurrency()));
     }
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
@@ -525,17 +584,21 @@ public interface Streamable<@NonNull T> {
         Objects.requireNonNull(executor, "executor is null");
         final Streamable<T> me = this;
         var future = CompletableFuture.<Void>supplyAsync(() -> {
-            try (var str = me.stream(canceller)) {
-                while (!canceller.isDisposed()) {
-                    if (str.awaitNext(canceller)) {
-                        // System.out.println("Received " + str.current());
-                        consumer.accept(Objects.requireNonNull(str.current(), "The upstream Streamable " + me.getClass() + " produced a null element!"));
-                    } else {
-                        // System.out.println("EOF ");
-                        break;
+            var str = me.stream(canceller);
+            try {
+                try {
+                    while (!canceller.isDisposed()) {
+                        if (str.awaitNext(canceller)) {
+                            // System.out.println("Received " + str.current());
+                            consumer.accept(Objects.requireNonNull(str.current(), "The upstream Streamable " + me.getClass() + " produced a null element!"));
+                        } else {
+                            // System.out.println("EOF ");
+                            break;
+                        }
                     }
+                } finally {
+                    str.awaitFinish(canceller);
                 }
-                // System.out.println("Canceller status after loop: " + canceller.isDisposed());
             } catch (final Throwable crash) {
                 Exceptions.throwIfFatal(crash);
                 if (crash instanceof CompletionException ce) {
@@ -567,19 +630,23 @@ public interface Streamable<@NonNull T> {
         Objects.requireNonNull(executor, "executor is null");
         final Streamable<T> me = this;
         var future = CompletableFuture.<Void>supplyAsync(() -> {
-            try (var str = me.stream(canceller)) {
+            var str = me.stream(canceller);
+            try {
+                try {
                 var stopper = Disposable.empty();
-                while (!canceller.isDisposed() && !stopper.isDisposed()) {
-                    if (str.awaitNext(canceller)) {
-                        // System.out.println("Received " + str.current());
-                        var v = Objects.requireNonNull(str.current(), "The upstream Streamable " + me.getClass() + " produced a null element!");
-                        consumer.accept(v, stopper);
-                    } else {
-                        // System.out.println("EOF ");
-                        break;
+                    while (!canceller.isDisposed() && !stopper.isDisposed()) {
+                        if (str.awaitNext(canceller)) {
+                            // System.out.println("Received " + str.current());
+                            var v = Objects.requireNonNull(str.current(), "The upstream Streamable " + me.getClass() + " produced a null element!");
+                            consumer.accept(v, stopper);
+                        } else {
+                            // System.out.println("EOF ");
+                            break;
+                        }
                     }
+                } finally {
+                    str.awaitFinish(canceller);
                 }
-                // System.out.println("Canceller status after loop: " + canceller.isDisposed());
             } catch (final Throwable crash) {
                 Exceptions.throwIfFatal(crash);
                 if (crash instanceof CompletionException ce) {
