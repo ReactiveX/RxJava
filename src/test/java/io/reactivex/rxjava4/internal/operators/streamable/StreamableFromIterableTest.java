@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.Streamable;
-import io.reactivex.rxjava4.exceptions.TestException;
 
 @Isolated
 public class StreamableFromIterableTest extends StreamableBaseTest {
