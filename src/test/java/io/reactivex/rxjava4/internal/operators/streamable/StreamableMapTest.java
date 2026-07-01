@@ -13,8 +13,6 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
@@ -22,33 +20,35 @@ import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.internal.operators.streamable.StreamableError.ErrorStreamer;
 
 @Isolated
-public class StreamableErrorTest extends StreamableBaseTest {
+public class StreamableMapTest extends StreamableBaseTest {
 
     @Test
-    public void normalSingleExecutor() throws Throwable {
-        withCachedExecutor(exec -> {
-            Streamable.error(new TestException())
-            .test(exec)
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertFailure(TestException.class);
-        });
+    public void basic() {
+        Streamable.range(1, 5)
+        .map(v -> v.toString())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult("1", "2", "3", "4", "5");
     }
 
     @Test
-    public void normal() throws Throwable {
-        Streamable.error(new TestException())
+    public void mapperNull() {
+        Streamable.range(1, 5)
+        .map(_ -> null)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void mapperCrash() {
+        Streamable.range(1, 5)
+        .map(_ -> { throw new TestException(); })
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
     }
 
-    @Test
-    public void currentThrows() {
-        assertThrows(IllegalStateException.class, () -> {
-            new ErrorStreamer<>(new TestException()).current();
-        });
-    }
 }

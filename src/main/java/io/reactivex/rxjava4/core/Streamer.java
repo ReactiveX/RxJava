@@ -31,7 +31,7 @@ import io.reactivex.rxjava4.internal.util.AwaitCoordinator;
  * TODO proper docs
  * @since 4.0.0
  */
-public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
+public interface Streamer<@NonNull T> extends AwaitCoordinator {
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
     // API
@@ -46,10 +46,11 @@ public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
     CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation);
 
     /**
-     * Returns the current element if {@link #next()} yielded {@code true}.
-     * Can be called multiple times between {@link #next()} calls.
+     * Returns the current element if {@link #next(DisposableContainer)} yielded {@code true}.
+     * Can be called multiple times between {@link #next(DisposableContainer)} calls.
      * @return the current element
-     * @throws NoSuchElementException before the very first {@link #next()} or after {@link #next()} returned {@code false}
+     * @throws NoSuchElementException before the very first {@link #next(DisposableContainer)}
+     *  or after {@link #next(DisposableContainer)} returned {@code false}
      */
     @NonNull
     T current();
@@ -68,80 +69,6 @@ public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     /**
-     * Determine if there are more elements available from the source.
-     * Uses a default, individual {@link CompositeDisposable} to manage cancellation.
-     * @return eventually true or false, indicating availability or termination
-     */
-    @NonNull
-    default CompletionStage<Boolean> next() {
-        return next(new CompositeDisposable());
-    }
-
-    /**
-     * Make this Streamer a resource and a Closeable, allowing virtually blocking closing.
-     */
-    @Override
-    default void close() {
-        awaitFinish();
-    }
-
-    /**
-     * Augments the streamer so that the given canceller is injected into the various
-     * lifecycle await calls.
-     * @param canceller the canceller to inject
-     * @return the augmented streamer
-     */
-    default Streamer<T> finishVia(@NonNull DisposableContainer canceller) {
-        Objects.requireNonNull(canceller, "canceller is null");
-        if (this instanceof StreamerFinishViaDisposableContainerCanceller<T>(
-                Streamer<T> streamer, DisposableContainer canceller1
-        )) {
-            if (streamer == this && canceller1 == canceller) {
-                // DO not rewrap!
-                return this;
-            }
-        }
-
-        return new StreamerFinishViaDisposableContainerCanceller<>(this, canceller);
-    }
-
-    /**
-     * Augments the base streamer with a canceller so that it can be injected at the various await calls.
-     * @param <T> the element type of the stream
-     */
-    static record StreamerFinishViaDisposableContainerCanceller<T>(
-            @NonNull Streamer<T> streamer, @NonNull DisposableContainer canceller)
-    implements Streamer<T> {
-
-        @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
-            // TODO Auto-generated method stub
-            return streamer.next(cancellation);
-        }
-
-        @Override
-        public @NonNull T current() {
-            return streamer.current();
-        }
-
-        @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
-            return streamer.finish(cancellation);
-        }
-
-    }
-
-    /**
-     * Moves and awaits the sequence's next element, returns false if there are no more
-     * data.
-     * @return true if the next element via {@link #current()} can be read, or false if
-     * the stream ended.
-     */
-    default boolean awaitNext() {
-        return await(next());
-    }
-
-    /**
      * Moves and awaits the sequence's next element, returns false if there are no more
      * data.
      * @param cancellation to efficiently cancel this await if necessary
@@ -150,13 +77,6 @@ public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
      */
     default boolean awaitNext(@NonNull DisposableContainer cancellation) {
         return await(next(cancellation), cancellation);
-    }
-
-    /**
-     * Finish and cleanup the sequence after its completion or cancellation.
-     */
-    default void awaitFinish() {
-        await(finish(DisposableContainer.NEVER), DisposableContainer.NEVER);
     }
 
     /**

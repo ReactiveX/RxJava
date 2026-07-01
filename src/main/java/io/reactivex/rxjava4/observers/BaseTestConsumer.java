@@ -544,6 +544,23 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
+     * Assert that the upstream signaled any of the given values in any order.
+     * @param values the values to check in the received values list
+     * @return this
+     */
+    @SuppressWarnings("unchecked")
+    @SafeVarargs
+    public final U assertValueSet(T... values) {
+        Set<T> expectedSet = new HashSet<>(Arrays.asList(values));
+        for (T t : this.values) {
+            if (!expectedSet.contains(t)) {
+                throw fail("Item not in the set: " + BaseTestConsumer.valueAndClass(t));
+            }
+        }
+        return (U)this;
+    }
+
+    /**
      * Assert that the upstream signaled the specified values in order
      * and then failed with a specific class or subclass of {@link Throwable}.
      * @param error the expected exception (parent) {@link Class}

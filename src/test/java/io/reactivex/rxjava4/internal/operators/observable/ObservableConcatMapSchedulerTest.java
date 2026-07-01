@@ -39,7 +39,7 @@ import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subjects.*;
 import io.reactivex.rxjava4.testsupport.*;
 
-public class ObservableConcatMapSchedulerTest {
+public class ObservableConcatMapSchedulerTest extends RxJavaTest {
 
     @Test
     public void boundaryFusion() {
