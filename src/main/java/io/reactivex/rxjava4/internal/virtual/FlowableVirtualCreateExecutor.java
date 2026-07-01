@@ -105,11 +105,7 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     if (ex != STOP && !cancelled) {
-                        if (ex instanceof ThrowableWrapper) {
-                            downstream.onError(ex.getCause());
-                        } else {
-                            downstream.onError(ex);
-                        }
+                        downstream.onError(ThrowableWrapper.unwrap(ex));
                     }
                     return null;
                 }

@@ -206,11 +206,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
                         if (d && empty) {
                             var ex = error;
                             if (ex != null) {
-                                if (ex instanceof ThrowableWrapper) {
-                                    downstream.onError(ex.getCause());
-                                } else {
-                                    downstream.onError(ex);
-                                }
+                                downstream.onError(ThrowableWrapper.unwrap(ex));
                             } else {
                                 downstream.onComplete();
                             }
@@ -238,11 +234,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
                     Exceptions.throwIfFatal(ex);
                     if (ex != STOP && !cancelled) {
                         upstream.cancel();
-                        if (ex instanceof ThrowableWrapper) {
-                            downstream.onError(ex.getCause());
-                        } else {
-                            downstream.onError(ex);
-                        }
+                        downstream.onError(ThrowableWrapper.unwrap(ex));
                     }
                     return null;
                 }

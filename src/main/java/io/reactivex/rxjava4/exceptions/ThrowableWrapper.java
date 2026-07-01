@@ -34,4 +34,14 @@ public final class ThrowableWrapper extends RuntimeException {
     public ThrowableWrapper(Throwable original) {
         super("You forgot to unwrap me!", original != null ? original : new NullPointerException("original is null"));
     }
+
+    /**
+     * Checks if the given {@link Throwable} is of type {@code ThrowableWrapper} and
+     * unwraps it, or returns the provided throwable as is.
+     * @param t the throwable to unwrap
+     * @return the possibly unwrapped throwable
+     */
+    public static Throwable unwrap(Throwable t) {
+        return t instanceof ThrowableWrapper ? t.getCause() : t;
+    }
 }

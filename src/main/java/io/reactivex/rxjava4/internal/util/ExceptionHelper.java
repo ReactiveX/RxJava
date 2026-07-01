@@ -38,11 +38,11 @@ public final class ExceptionHelper {
      * @return the (wrapped) error
      */
     public static RuntimeException wrapOrThrow(Throwable error) {
-        if (error instanceof Error) {
-            throw (Error)error;
+        if (error instanceof Error err) {
+            throw err;
         }
-        if (error instanceof RuntimeException) {
-            return (RuntimeException)error;
+        if (error instanceof RuntimeException rte) {
+            return rte;
         }
         return new ThrowableWrapper(error);
     }
