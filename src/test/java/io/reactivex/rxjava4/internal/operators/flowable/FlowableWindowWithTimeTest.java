@@ -482,7 +482,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
             tsInner.assertError(MissingBackpressureException.class);
 
-            assertTrue(errors.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
         } finally {
             RxJavaPlugins.reset();
         }
