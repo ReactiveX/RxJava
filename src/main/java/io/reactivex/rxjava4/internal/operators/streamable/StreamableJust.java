@@ -37,13 +37,12 @@ public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             if (stage == 0) {
                 stage = 1;
                 return NEXT_TRUE;
             }
             item = null;
-            cancellation = null;
             stage = 2;
             return NEXT_FALSE;
         }
@@ -54,7 +53,7 @@ public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(DisposableContainer canceller) {
+        public @NonNull CompletionStage<Void> finish() {
             item = null;
             stage = 2;
             return FINISHED;

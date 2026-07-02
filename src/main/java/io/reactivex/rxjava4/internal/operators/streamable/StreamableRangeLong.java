@@ -40,7 +40,7 @@ public record StreamableRangeLong(long start, long count) implements Streamable<
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             long i = index;
             if (i >= end) {
                 return NEXT_FALSE;
@@ -56,7 +56,7 @@ public record StreamableRangeLong(long start, long count) implements Streamable<
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Void> finish() {
             index = end;
             current = end;
             return FINISHED;

@@ -31,8 +31,8 @@ implements Streamable<T>, HasUpstreamStreamableSource<T> {
     record HideStreamer<T>(Streamer<T> streamer) implements Streamer<T> {
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
-            return streamer.next(cancellation);
+        public @NonNull CompletionStage<Boolean> next() {
+            return streamer.next();
         }
 
         @Override
@@ -41,8 +41,8 @@ implements Streamable<T>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
-            return streamer.finish(cancellation);
+        public @NonNull CompletionStage<Void> finish() {
+            return streamer.finish();
         }
     }
 }

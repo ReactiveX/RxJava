@@ -34,7 +34,7 @@ public enum StreamableEmpty implements Streamable<Object> {
         INSTANCE;
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             return NEXT_FALSE;
         }
 
@@ -44,7 +44,7 @@ public enum StreamableEmpty implements Streamable<Object> {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(DisposableContainer canceller) {
+        public @NonNull CompletionStage<Void> finish() {
             return FINISHED;
         }
     }

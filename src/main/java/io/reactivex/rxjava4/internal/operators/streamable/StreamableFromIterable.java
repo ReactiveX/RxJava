@@ -53,7 +53,7 @@ public record StreamableFromIterable<T>(@NonNull Iterable<? extends T> items) im
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             if (index == 0L || iterator.hasNext()) {
                 var v = iterator.next();
                 current = v;
@@ -73,7 +73,7 @@ public record StreamableFromIterable<T>(@NonNull Iterable<? extends T> items) im
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Void> finish() {
             iterator = null;
             current = null;
             return FINISHED;

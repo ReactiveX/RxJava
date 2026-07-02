@@ -26,15 +26,13 @@ public enum StreamableNever implements Streamable<Object> {
 
     @Override
     public @NonNull Streamer<Object> stream(@NonNull DisposableContainer cancellation) {
-        return NeverStreamer.INSTANCE;
+        return new NeverStreamer(cancellation);
     }
 
-    enum NeverStreamer implements Streamer<Object> {
-
-        INSTANCE;
+    record NeverStreamer(DisposableContainer cancellation) implements Streamer<Object> {
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             var cf = new CompletableFuture<Boolean>();
             cancellation.subscribe(Disposable.fromFuture(cf, true));
             return cf;
@@ -46,7 +44,7 @@ public enum StreamableNever implements Streamable<Object> {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(DisposableContainer canceller) {
+        public @NonNull CompletionStage<Void> finish() {
             return FINISHED;
         }
     }

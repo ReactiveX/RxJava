@@ -30,25 +30,27 @@ implements Streamable<T>, HasUpstreamStreamableSource<T> {
 
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
-        return new FilterStreamer<>(source.stream(cancellation), predicate);
+        return new FilterStreamer<>(source.stream(cancellation), predicate, cancellation);
     }
 
     static final class FilterStreamer<T> implements Streamer<T> {
         final Streamer<T> upstream;
         final Predicate<? super T> predicate;
+        DisposableContainer cancellation;
         volatile T current;
 
         final AtomicInteger wip = new AtomicInteger();
 
-        FilterStreamer(Streamer<T> upstream, Predicate<? super T> predicate) {
+        FilterStreamer(Streamer<T> upstream, Predicate<? super T> predicate, DisposableContainer cancellation) {
             this.upstream = upstream;
+            this.cancellation = cancellation;
             this.predicate = predicate;
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             var cf = new CompletableFuture<Boolean>();
-            drain(cf, cancellation);
+            drain(cf);
             return cf;
         }
 
@@ -58,17 +60,18 @@ implements Streamable<T>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Void> finish() {
             current = null;
-            return upstream.finish(cancellation);
+            cancellation = null;
+            return upstream.finish();
         }
 
-        void drain(CompletableFuture<Boolean> cf, DisposableContainer cancellation) {
+        void drain(CompletableFuture<Boolean> cf) {
             if (wip.getAndIncrement() != 0) {
                 return;
             }
             do {
-                upstream.next(cancellation)
+                upstream.next()
                 .whenComplete((v, e) -> {
                     if (e != null) {
                         cf.completeExceptionally(e);
@@ -80,7 +83,7 @@ implements Streamable<T>, HasUpstreamStreamableSource<T> {
                                     current = w;
                                     cf.complete(true);
                                 } else {
-                                    drain(cf, cancellation);
+                                    drain(cf);
                                 }
                             } catch (Throwable ex) {
                                 Exceptions.throwIfFatal(ex);
