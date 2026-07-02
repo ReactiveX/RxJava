@@ -311,6 +311,14 @@ optionally different element type.</div>
 <dd>
 <div class="block">Applies a function to the child <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> and returns a new parent <code>SingleObserver</code>.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/StreamableConverter.html#apply(io.reactivex.rxjava4.core.Streamable)" class="member-name-link">apply(Streamable)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamableConverter.html" title="interface in io.reactivex.rxjava4.core">StreamableConverter</a></dt>
+<dd>
+<div class="block">Applies a function to the upstream <a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core"><code>Streamable</code></a> and returns a converted value of type <code>R</code>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/StreamableOperator.html#apply(io.reactivex.rxjava4.disposables.DisposableContainer,io.reactivex.rxjava4.core.Streamer)" class="member-name-link">apply(DisposableContainer, Streamer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamableOperator.html" title="interface in io.reactivex.rxjava4.core">StreamableOperator</a></dt>
+<dd>
+<div class="block">Applies a function to the upstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a> and returns a new downstream <code>Streamer</code>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowableConverter.html#apply(io.reactivex.rxjava4.parallel.ParallelFlowable)" class="member-name-link">apply(ParallelFlowable)</a> - Method in interface io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowableConverter.html" title="interface in io.reactivex.rxjava4.parallel">ParallelFlowableConverter</a></dt>
 <dd>
 <div class="block">Applies a function to the upstream ParallelFlowable and returns a converted value of type <code>R</code>.</div>
@@ -3262,6 +3270,10 @@ handles errors based on the returned value by the handler function.</div>
 <div class="block">Call the specified consumer with the current element passing through any 'rail' and
 handles errors based on the given <a href="io/reactivex/rxjava4/parallel/ParallelFailureHandling.html" title="enum class in io.reactivex.rxjava4.parallel"><code>ParallelFailureHandling</code></a> enumeration value.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#doOnNext(io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">doOnNext(Consumer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Calls the given consumer whenever an upstream item becomes available.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#doOnRequest(io.reactivex.rxjava4.functions.LongConsumer)" class="member-name-link">doOnRequest(LongConsumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Calls the given <a href="io/reactivex/rxjava4/functions/LongConsumer.html" title="interface in io.reactivex.rxjava4.functions"><code>LongConsumer</code></a> with the request amount from the downstream before forwarding it
@@ -3450,6 +3462,10 @@ immediately.</div>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardConcurrentConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
@@ -4988,6 +5004,10 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Notification.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core">Notification</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
@@ -5198,6 +5218,11 @@ and signals <code>onComplete</code> instead.</div>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#initVirtualScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initVirtualScheduler(Supplier)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Calls the associated hook function.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#intercept(io.reactivex.rxjava4.core.config.StreamableInterceptConfig)" class="member-name-link">intercept(StreamableInterceptConfig)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Intercepts the lifecycle method calls of <code>Streamable</code> and <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a>
+and allows the modification of them via Function callbacks.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#interval(long,long,java.util.concurrent.TimeUnit)" class="member-name-link">interval(long, long, TimeUnit)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -5727,6 +5752,14 @@ of the provided <a href="io/reactivex/rxjava4/core/SingleOperator.html" title="i
 insertion of a custom operator by accessing the downstream's <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> during this subscription phase
 and providing a new <code>SingleObserver</code>, containing the custom operator's intended business logic, that will be
 used in the subscription process going further upstream.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#lift(io.reactivex.rxjava4.core.StreamableOperator)" class="member-name-link">lift(StreamableOperator)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block"><strong>This method requires advanced knowledge about building operators, please consider
+other standard composition methods first;</strong>
+Returns a <code>Streamable</code> instance which when its <a href="io/reactivex/rxjava4/core/Streamable.html#stream(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>Streamable.stream(DisposableContainer)</code></a> is invoked,
+applies the specified operator callback to the upstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a> to produce
+an actual <code>Streamer</code> instance to be handed downstream.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#lockdown()" class="member-name-link">lockdown()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
@@ -6592,6 +6625,10 @@ should not block but throw an IllegalArgumentException.</div>
 <dd>
 <div class="block">Calls the associated hook function.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#onCurrent()" class="member-name-link">onCurrent()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#param-onCurrent"><code>onCurrent</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#onDropped()" class="member-name-link">onDropped()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#param-onDropped"><code>onDropped</code></a> record component.</div>
@@ -6840,9 +6877,17 @@ fails instead of signaling the error via <code>onError</code>.</div>
 <dd>
 <div class="block">Signals the specified value as success in case the current <code>Single</code> signals an error.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#onFinish()" class="member-name-link">onFinish()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#param-onFinish"><code>onFinish</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#onNewThreadScheduler(io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">onNewThreadScheduler(Scheduler)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Calls the associated hook function.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#onNext()" class="member-name-link">onNext()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#param-onNext"><code>onNext</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/processors/ReplayProcessor.html#onNext(T)" class="member-name-link">onNext(T)</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/ReplayProcessor.html" title="class in io.reactivex.rxjava4.processors">ReplayProcessor</a></dt>
 <dd>&nbsp;</dd>
@@ -6947,6 +6992,10 @@ to perform initialization or issue an initial request.</div>
 <dt><a href="io/reactivex/rxjava4/subscribers/TestSubscriber.html#onStart()" class="member-name-link">onStart()</a> - Method in class io.reactivex.rxjava4.subscribers.<a href="io/reactivex/rxjava4/subscribers/TestSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">TestSubscriber</a></dt>
 <dd>
 <div class="block">Called after the onSubscribe is called and handled.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#onStream()" class="member-name-link">onStream()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#param-onStream"><code>onStream</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#onSubscribe(io.reactivex.rxjava4.core.Completable,io.reactivex.rxjava4.core.CompletableObserver)" class="member-name-link">onSubscribe(Completable, CompletableObserver)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
@@ -9204,6 +9253,31 @@ emitted by the current <code>Observable</code>.</div>
 <dd>
 <div class="block">The holographically emergent <code>IAsyncEnumerable</code> of the Java world.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/StreamableConverter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">StreamableConverter&lt;T,<wbr>R&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
+<dd>
+<div class="block">Convenience interface and callback used by the <a href="io/reactivex/rxjava4/core/Streamable.html#to(io.reactivex.rxjava4.core.StreamableConverter)"><code>Streamable.to(StreamableConverter)</code></a> operator to turn an <a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core"><code>Streamable</code></a> into another
+value fluently.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig&lt;T&gt;</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record the intercept() operator with various lifecylce-stage transforming callbacks</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#%3Cinit%3E(io.reactivex.rxjava4.functions.BiFunction,io.reactivex.rxjava4.functions.BiFunction,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.BiFunction)" class="member-name-link">StreamableInterceptConfig(BiFunction, BiFunction, Function, BiFunction)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
+<dd>
+<div class="block">Constructs a fully configured record.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#%3Cinit%3E(io.reactivex.rxjava4.functions.BiFunction)" class="member-name-link">StreamableInterceptConfig(BiFunction)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration with a custom <code>StreamableInterceptConfig.onNext</code> intercept and everything else is pass-through.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#%3Cinit%3E(io.reactivex.rxjava4.functions.Function)" class="member-name-link">StreamableInterceptConfig(Function)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
+<dd>
+<div class="block">Constructs a configuration with a custom <code>StreamableInterceptConfig.onCurrent</code> intercept and everything else is pass-through.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/StreamableOperator.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">StreamableOperator&lt;T,<wbr>R&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
+<dd>
+<div class="block">Interface to map/wrap an upstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a> to an downstream <code>Streamer</code>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">Streamer&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
 <div class="block">A realized stream which can then be consumed asynchronously in steps.</div>
@@ -10580,6 +10654,10 @@ then signals it as a <a href="io/reactivex/rxjava4/schedulers/Timed.html" title=
 <dd>
 <div class="block">Calls the specified converter function during assembly time and returns its resulting value.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#to(io.reactivex.rxjava4.core.StreamableConverter)" class="member-name-link">to(StreamableConverter)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Calls the specified converter function during assembly time and returns its resulting value.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#to(io.reactivex.rxjava4.parallel.ParallelFlowableConverter)" class="member-name-link">to(ParallelFlowableConverter)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
 <dd>
 <div class="block">Calls the specified converter function during assembly time and returns its resulting value.</div>
@@ -10918,6 +10996,10 @@ transparently relaying signals between the two async representations of a sequen
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StandardConcurrentConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StandardConcurrentConfig.html" title="class in io.reactivex.rxjava4.core.config">StandardConcurrentConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
