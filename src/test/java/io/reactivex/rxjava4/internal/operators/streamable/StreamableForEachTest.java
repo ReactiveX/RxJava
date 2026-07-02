@@ -19,13 +19,10 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.parallel.Isolated;
-
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.disposables.CompositeDisposable;
 import io.reactivex.rxjava4.exceptions.*;
 
-@Isolated
 public class StreamableForEachTest extends StreamableBaseTest {
 
     @Test

@@ -17,11 +17,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Isolated;
-
 import io.reactivex.rxjava4.core.Streamable;
 
-@Isolated
 public class StreamableFromIterableTest extends StreamableBaseTest {
 
     @Test

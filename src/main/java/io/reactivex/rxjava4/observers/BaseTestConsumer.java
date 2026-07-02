@@ -547,6 +547,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * Assert that the upstream signaled any of the given values in any order.
      * @param values the values to check in the received values list
      * @return this
+     * @since 4.0.0
      */
     @SuppressWarnings("unchecked")
     @SafeVarargs
@@ -666,11 +667,10 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     /**
      * Returns true if an await timed out.
      * @return true if one of the timeout-based await methods has timed out.
-     * <p>History: 2.0.7 - experimental
      * @see #clearTimeout()
      * @see #assertTimeout()
      * @see #assertNoTimeout()
-     * @since 2.1
+     * @since 4.0.0
      */
     public final boolean isTimeout() {
         return timeout;
@@ -678,9 +678,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
 
     /**
      * Clears the timeout flag set by the await methods when they timed out.
-     * <p>History: 2.0.7 - experimental
      * @return this
-     * @since 2.1
+     * @since 4.0.0
      * @see #isTimeout()
      */
     @SuppressWarnings("unchecked")
@@ -691,9 +690,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
 
     /**
      * Asserts that some awaitX method has timed out.
-     * <p>History: 2.0.7 - experimental
      * @return this
-     * @since 2.1
+     * @since 4.0.0
      */
     @SuppressWarnings("unchecked")
     public final U assertTimeout() {
@@ -705,9 +703,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
 
     /**
      * Asserts that some awaitX method has not timed out.
-     * <p>History: 2.0.7 - experimental
      * @return this
-     * @since 2.1
+     * @since 4.0.0
      */
     @SuppressWarnings("unchecked")
     public final U assertNoTimeout() {

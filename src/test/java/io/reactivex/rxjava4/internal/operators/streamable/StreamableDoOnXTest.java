@@ -13,36 +13,50 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
 
-public class StreamableDeferTest extends StreamableBaseTest {
+public class StreamableDoOnXTest extends StreamableBaseTest {
 
     @Test
-    public void normal() throws Throwable {
-        var counter = new AtomicInteger();
-
-        var source = Streamable.defer(() -> {
-
-            return Streamable.just(counter.getAndIncrement());
-        });
-
-        for (int i = 0; i < 5; i++) {
-            source.test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertResult(i);
-        }
+    public void passthrough() {
+        Streamable.range(1, 5)
+        .doOnNext(_ -> { })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
-    public void crash() throws Throwable {
-        Streamable.defer(() -> { throw new TestException(); })
+    public void normal() {
+        var onValueCounter = new AtomicInteger();
+
+        Streamable.range(1, 5)
+        .doOnNext(_ -> onValueCounter.incrementAndGet())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(5, onValueCounter.get(), "onValueCounter");
+    }
+
+    @Test
+    public void onCurrentThrows() {
+        var onValueCounter = new AtomicInteger();
+
+        Streamable.range(1, 5)
+        .doOnNext(_ -> { onValueCounter.incrementAndGet(); throw new TestException(); })
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
+
+        assertEquals(1, onValueCounter.get(), "onValueCounter");
     }
 }

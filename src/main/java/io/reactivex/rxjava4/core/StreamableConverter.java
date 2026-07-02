@@ -11,24 +11,24 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava4.internal.fuseable;
+package io.reactivex.rxjava4.core;
 
 import io.reactivex.rxjava4.annotations.NonNull;
-import io.reactivex.rxjava4.core.Streamable;
 
 /**
- * Interface indicating the implementor has an upstream {@link Streamable}-like source available
- * via {@link #source()} method.
- *
- * @param <T> the value type of the sequence
+ * Convenience interface and callback used by the {@link Streamable#to} operator to turn an {@link Streamable} into another
+ * value fluently.
+ * @param <T> the upstream type
+ * @param <R> the output type
  * @since 4.0.0
  */
-public interface HasUpstreamStreamableSource<@NonNull T> {
+@FunctionalInterface
+public interface StreamableConverter<@NonNull T, @NonNull R> {
     /**
-     * Returns the upstream source of this {@link Streamable}.
-     * <p>Allows discovering the chain of streamables.
-     * @return the source {@code Streamable}
+     * Applies a function to the upstream {@link Streamable} and returns a converted value of type {@code R}.
+     *
+     * @param upstream the upstream {@code Streamable} instance
+     * @return the converted value
      */
-    @NonNull
-    Streamable<T> source();
+    R apply(@NonNull Streamable<T> upstream);
 }

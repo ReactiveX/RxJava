@@ -13,39 +13,42 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.internal.operators.streamable.StreamableError.ErrorStreamer;
 
-public class StreamableErrorTest extends StreamableBaseTest {
-
-    @Test
-    public void normalSingleExecutor() throws Throwable {
-        withCachedExecutor(exec -> {
-            Streamable.error(new TestException())
-            .test(exec)
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertFailure(TestException.class);
-        });
-    }
+public class StreamableLiftTest extends StreamableBaseTest {
 
     @Test
-    public void normal() throws Throwable {
-        Streamable.error(new TestException())
+    public void basic() {
+        Streamable.range(1, 5)
+        .lift((_, _) -> StreamableError.createFailed(new TestException("normal")))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+        .assertFailure(TestException.class)
+        .assertError(e -> e.getMessage().equals("normal"));
     }
 
     @Test
-    public void currentThrows() {
-        assertThrows(IllegalStateException.class, () -> {
-            new ErrorStreamer<>(new TestException()).current();
-        });
+    public void lifterNull() {
+        Streamable.range(1, 5)
+        .lift((_, _) -> null)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class)
+        .assertError(e -> e.getMessage().contains("lifter returned a null"));
+    }
+
+    @Test
+    public void lifterThrows() {
+        Streamable.range(1, 5)
+        .lift((_, _) -> { throw new TestException("throws"); })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class)
+        .assertError(e -> e.getMessage().equals("throws"));
     }
 }

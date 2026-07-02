@@ -18,11 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Isolated;
-
 import io.reactivex.rxjava4.core.Streamable;
 
-@Isolated
 public class StreamableRangeTest extends StreamableBaseTest {
 
     @Test

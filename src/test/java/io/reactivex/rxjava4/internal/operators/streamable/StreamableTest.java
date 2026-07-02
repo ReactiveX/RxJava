@@ -20,15 +20,12 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.parallel.Isolated;
-
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.subscriptions.EmptySubscription;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 
-@Isolated
 public class StreamableTest extends StreamableBaseTest {
 
     @Test
@@ -367,5 +364,13 @@ public class StreamableTest extends StreamableBaseTest {
         var str = Streamable.empty().hide();
 
         assertFalse(str instanceof StreamableEmpty, str.getClass().toString());
+    }
+
+    @Test
+    public void to() {
+        Streamable.range(1, 5)
+        .to(s -> s.test())
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
     }
 }

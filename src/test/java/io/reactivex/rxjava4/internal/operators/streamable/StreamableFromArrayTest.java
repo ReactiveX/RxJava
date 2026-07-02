@@ -16,11 +16,8 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Isolated;
-
 import io.reactivex.rxjava4.core.Streamable;
 
-@Isolated
 public class StreamableFromArrayTest extends StreamableBaseTest {
 
     @Test
