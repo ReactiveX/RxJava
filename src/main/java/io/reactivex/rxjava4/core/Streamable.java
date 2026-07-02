@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import io.reactivex.rxjava4.annotations.*;
-import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
@@ -37,6 +37,7 @@ import io.reactivex.rxjava4.subscribers.TestSubscriber;
  * @param <T> the element type of the stream.
  * @since 4.0.0
  */
+@FunctionalInterface
 public interface Streamable<@NonNull T> {
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
@@ -394,6 +395,152 @@ public interface Streamable<@NonNull T> {
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     /**
+     * Calls the given consumer whenever an upstream item becomes available.
+     * @param consumer the callback to invoke with the next item from upstream
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code consumer} is {@code null}
+     */
+    default Streamable<T> doOnNext(Consumer<? super T> consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        return intercept(new StreamableInterceptConfig<>(v -> { consumer.accept(v); return v; } ));
+    }
+
+    /**
+     * Maps each upstream item onto a {@code Streamable} and runs them concurrently while
+     * relaying inner items as first-come-first-served manner.
+     * @param <R> the element type of the output sequence
+     * @param mapper the function that turns an upstream item into a {@code Streamable} inner sequence
+     * @param config the configuration record for this operator
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default <R> Streamable<R> flatMap(@NonNull Function<? super T, ? extends Streamable<? extends R>> mapper,
+            @NonNull StandardConcurrentConfig config) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new StreamableFlatMap<>(this, mapper, config.maxConcurrency()));
+    }
+
+    /**
+     * Hides the identity of this {@code Streamable} and its {@link Streamer}.
+     * <p>
+     * Use it to break optimizations or hide concrete implementations.
+     * @return the new {@code Streamable} instance
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> hide() {
+        return RxJavaPlugins.onAssembly(new StreamableHide<>(this));
+    }
+
+    /**
+     * Intercepts the lifecycle method calls of {@code Streamable} and {@link Streamer}
+     * and allows the modification of them via Function callbacks.
+     * @param config the configuration record for this operator
+     * @return the new {@code Streamable} instance
+     * @thros NullPointerException if {@code config} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> intercept(StreamableInterceptConfig<T> config) {
+        Objects.requireNonNull(config, "config is null");
+        return RxJavaPlugins.onAssembly(new StreamableIntercept<>(this,
+                config.onStream(), config.onNext(), config.onCurrent(), config.onFinish()));
+    }
+
+    /**
+     * <strong>This method requires advanced knowledge about building operators, please consider
+     * other standard composition methods first;</strong>
+     * Returns a {@code Streamable} instance which when its {@link #stream(DisposableContainer)} is invoked,
+     * applies the specified operator callback to the upstream {@link Streamer} to produce
+     * an actual {@code Streamer} instance to be handed downstream.
+     * <p>
+     * Use it to implement operators without creating the surrounding {@code Streamable} class.
+     * <p>
+     * If the {@code lifter} returns {@code null} or throws, the downstream will receive a
+     * standard error streamer.
+     * @param <R> the downstream type of the sequence
+     * @param lifter the callback that will be invoked with the upstream {@code Streamer} and is expected
+     *               to produce a {@code Streamer} for the downstream.
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code lifter} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default <@NonNull R> Streamable<R> lift(@NonNull StreamableOperator<? super T, ? extends R> lifter) {
+        Objects.requireNonNull(lifter, "lifter is null");
+        return RxJavaPlugins.onAssembly(new StreamableLift<T, R>(this, lifter));
+    }
+
+    /**
+     * Maps each upstream item into another item via a mapper function.
+     * @param <R> the element type of the mapping
+     * @param mapper the function that takes an upstream item and returns an item to be emitted
+     *               to the downstream
+     * @return the new {@code Streamable} instance
+     * @throw NullPointerException if {@code mapper} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default <@NonNull R> Streamable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new StreamableMap<>(this, mapper));
+    }
+
+    /**
+     * Maps each upstream item into another, optional item via a mapper function that skips the empty optionals.
+     * @param <R> the element type of the mapping
+     * @param mapper the function that takes an upstream item and returns an optional item to be emitted / skipped
+     *               to the downstream
+     * @return the new {@code Streamable} instance
+     * @throw NullPointerException if {@code mapper} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default <@NonNull R> Streamable<R> mapOptional(@NonNull Function<? super T, ? extends Optional<? extends R>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new StreamableMapOptional<>(this, mapper));
+    }
+
+    /**
+     * Takes at most the given number of items from the upstream and relays it to the downstream,
+     * then cancels the rest of the sequence.
+     * @param n the maximum number of items to relay
+     * @return the new {@code Streamable} instance
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> take(long n) {
+        ObjectHelper.verifyPositive(n, "n");
+        return defer(() -> {
+            var countdown = new AtomicLong(n);
+            return transform((item, emitter, stopper) -> {
+                emitter.emit(item);
+                if (countdown.decrementAndGet() <= 0) {
+                    stopper.dispose();
+                }
+            });
+        });
+    }
+
+    /**
+     * Calls the specified converter function during assembly time and returns its resulting value.
+     * <p>
+     * This allows fluent conversion to any other type.
+     * @param <R> the resulting object type
+     * @param converter the function that receives the current {@code Observable} instance and returns a value
+     * @return the converted value
+     * @throws NullPointerException if {@code converter} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default <@NonNull R> R to(@NonNull StreamableConverter<T, ? extends R> converter) {
+        return Objects.requireNonNull(converter, "converter is null").apply(this);
+    }
+
+    /**
      * Converts the streamable into a Flowable representation, running
      * on the default Executors.newVirtualThreadPerTaskExecutor() virtual thread.
      * @return the new Flowable instance
@@ -431,48 +578,6 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
-     * Hides the identity of this {@code Streamable} and its {@link Streamer}.
-     * <p>
-     * Use it to break optimizations or hide concrete implementations.
-     * @return the new {@code Streamable} instance
-     */
-    @CheckReturnValue
-    @NonNull
-    default Streamable<T> hide() {
-        return RxJavaPlugins.onAssembly(new StreamableHide<>(this));
-    }
-
-    /**
-     * Maps each upstream item into another item via a mapper function.
-     * @param <R> the element type of the mapping
-     * @param mapper the function that takes an upstream item and returns an item to be emitted
-     *               to the downstream
-     * @return the new {@code Streamable} instance
-     * @throw NullPointerException if {@code mapper} is {@code null}
-     */
-    @CheckReturnValue
-    @NonNull
-    default <@NonNull R> Streamable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new StreamableMap<>(this, mapper));
-    }
-
-    /**
-     * Maps each upstream item into another, optional item via a mapper function that skips the empty optionals.
-     * @param <R> the element type of the mapping
-     * @param mapper the function that takes an upstream item and returns an optional item to be emitted / skipped
-     *               to the downstream
-     * @return the new {@code Streamable} instance
-     * @throw NullPointerException if {@code mapper} is {@code null}
-     */
-    @CheckReturnValue
-    @NonNull
-    default <@NonNull R> Streamable<R> mapOptional(@NonNull Function<? super T, ? extends Optional<? extends R>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new StreamableMapOptional<>(this, mapper));
-    }
-
-    /**
      * Transforms the upstream sequence into zero or more elements for the downstream.
      * @param <R> the result element type
      * @param transformer the interface to implement the transforming logic
@@ -491,45 +596,6 @@ public interface Streamable<@NonNull T> {
             transformer.transform(item, emitter, stopper);
         }, emitter.canceller(), executor)
         .await(emitter.canceller()), executor);
-    }
-
-    /**
-     * Takes at most the given number of items from the upstream and relays it to the downstream,
-     * then cancels the rest of the sequence.
-     * @param n the maximum number of items to relay
-     * @return the new {@code Streamable} instance
-     */
-    @CheckReturnValue
-    @NonNull
-    default Streamable<T> take(long n) {
-        ObjectHelper.verifyPositive(n, "n");
-        return defer(() -> {
-            var countdown = new AtomicLong(n);
-            return transform((item, emitter, stopper) -> {
-                emitter.emit(item);
-                if (countdown.decrementAndGet() <= 0) {
-                    stopper.dispose();
-                }
-            });
-        });
-    }
-
-    /**
-     * Maps each upstream item onto a {@code Streamable} and runs them concurrently while
-     * relaying inner items as first-come-first-served manner.
-     * @param <R> the element type of the output sequence
-     * @param mapper the function that turns an upstream item into a {@code Streamable} inner sequence
-     * @param config the configuration record for this operator
-     * @return the new {@code Streamable} instance
-     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
-     */
-    @CheckReturnValue
-    @NonNull
-    default <R> Streamable<R> flatMap(@NonNull Function<? super T, ? extends Streamable<? extends R>> mapper,
-            @NonNull StandardConcurrentConfig config) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        Objects.requireNonNull(config, "config is null");
-        return RxJavaPlugins.onAssembly(new StreamableFlatMap<>(this, mapper, config.maxConcurrency()));
     }
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo

@@ -19,11 +19,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Isolated;
-
 import io.reactivex.rxjava4.core.Flowable;
 
-@Isolated
 public class StreamableTakeTest extends StreamableBaseTest {
 
     @Test

@@ -22,6 +22,7 @@ import java.util.stream.*;
 
 import org.junit.jupiter.api.*;
 
+import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
@@ -610,6 +611,8 @@ public class CheckParamValidationTest extends RxJavaTest {
         defaultValues.put(SampleConfig.class, SampleConfig.DEFAULT);
         defaultValues.put(OnBackpressureBufferConfig.class, OnBackpressureBufferConfig.DEFAULT);
 
+        defaultValues.put(StreamableInterceptConfig.class, new StreamableInterceptConfig<Object>((_, v) -> v));
+
         // TODO insert new config record types here
 
         @SuppressWarnings("rawtypes")
@@ -974,7 +977,7 @@ public class CheckParamValidationTest extends RxJavaTest {
     FlowableTransformer, ObservableTransformer, SingleTransformer, MaybeTransformer, CompletableTransformer,
     FlowableSubscriber, Observer, SingleObserver, MaybeObserver, CompletableObserver,
     FlowableOperator, ObservableOperator, SingleOperator, MaybeOperator, CompletableOperator,
-    Comparator, ParallelTransformer
+    Comparator, ParallelTransformer, StreamableOperator, StreamableConverter
     {
 
         @Override
@@ -1142,6 +1145,17 @@ public class CheckParamValidationTest extends RxJavaTest {
         @Override
         public int compare(Object o1, Object o2) {
             return 0;
+        }
+
+@Override
+        public @NonNull Streamer apply(@NonNull DisposableContainer container, @NonNull Streamer streamer)
+                throws Throwable {
+            return null;
+        }
+
+        @Override
+        public @NonNull Object apply(@NonNull Streamable upstream) {
+            return null;
         }
     }
 

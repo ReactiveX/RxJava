@@ -16,8 +16,6 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 import java.util.concurrent.*;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Isolated;
-
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
@@ -25,7 +23,6 @@ import io.reactivex.rxjava4.disposables.DisposableContainer;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
-@Isolated
 public class StreamableFlatMapTest extends StreamableBaseTest {
 
     @Test
