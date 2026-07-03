@@ -19,6 +19,7 @@ import java.util.concurrent.CompletionStage;
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
@@ -33,7 +34,7 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
         return new MapStreamer<>(source.stream(cancellation), mapper);
     }
 
-    static final class MapStreamer<T, R> implements Streamer<R> {
+    static final class MapStreamer<T, R> implements Streamer<R>, java.util.function.Function<Boolean, Boolean> {
         final Streamer<T> upstream;
         final Function<? super T, ? extends R> mapper;
         volatile R current;
@@ -43,19 +44,22 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
-            return upstream.next(cancellation)
-                    .thenApply(e -> {
-                        if (e) {
-                            try {
-                                current = Objects.requireNonNull(mapper.apply(upstream.current()), "The mapper returned a null value");
-                            } catch (Throwable ex) {
-                                throw ExceptionHelper.wrapOrThrow(ex);
-                            }
-                            return true;
-                        }
-                        return false;
-                    });
+        public @NonNull CompletionStage<Boolean> next() {
+            return upstream.next().thenApply(this);
+        }
+
+        @Override
+        public Boolean apply(Boolean e) {
+            if (e) {
+                try {
+                    current = Objects.requireNonNull(mapper.apply(upstream.current()), "The mapper returned a null value");
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    throw ExceptionHelper.wrapOrThrow(ex);
+                }
+                return true;
+            }
+            return false;
         }
 
         @Override
@@ -64,9 +68,9 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Void> finish() {
             current = null;
-            return upstream.finish(cancellation);
+            return upstream.finish();
         }
     }
 }

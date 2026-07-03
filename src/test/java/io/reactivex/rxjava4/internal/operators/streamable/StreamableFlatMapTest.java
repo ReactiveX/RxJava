@@ -177,7 +177,7 @@ public class StreamableFlatMapTest extends StreamableBaseTest {
     public record FailingFinishStreamer(DisposableContainer canceller) implements Streamer<Object> {
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             return NEXT_FALSE;
         }
 
@@ -187,7 +187,7 @@ public class StreamableFlatMapTest extends StreamableBaseTest {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Void> finish() {
             return CompletableFuture.failedFuture(new TestException());
         }
     }

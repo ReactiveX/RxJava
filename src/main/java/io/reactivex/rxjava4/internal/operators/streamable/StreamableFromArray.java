@@ -39,7 +39,7 @@ public record StreamableFromArray<T>(@NonNull T[] items) implements Streamable<T
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             var i = index;
             if (i >= items.length) {
                 return NEXT_FALSE;
@@ -61,7 +61,7 @@ public record StreamableFromArray<T>(@NonNull T[] items) implements Streamable<T
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Void> finish() {
             index = items.length;
             current = null;
             return FINISHED;

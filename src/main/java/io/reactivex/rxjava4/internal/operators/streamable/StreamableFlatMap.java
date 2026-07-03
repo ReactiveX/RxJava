@@ -84,7 +84,7 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             var cf = new CompletableFuture<Boolean>();
             ready.lazySet(cf);
             drain();
@@ -97,9 +97,9 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(DisposableContainer canceller) {
+        public @NonNull CompletionStage<Void> finish() {
             current = null;
-            return upstream.finish(canceller);
+            return upstream.finish();
         }
 
         void drain() {
@@ -140,7 +140,7 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
 
             do {
                 if (!mainDone) {
-                    upstream.next(mainCanceller).whenComplete(this);
+                    upstream.next().whenComplete(this);
                 } else {
                     drain();
                 }
@@ -207,10 +207,10 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
             }
             do {
                 if (!done) {
-                    inner.next(canceller).whenComplete(this);
+                    inner.next().whenComplete(this);
                 } else {
                     finishing = true;
-                    inner.finish(canceller).whenComplete(this);
+                    inner.finish().whenComplete(this);
                     break;
                 }
             } while (decrementAndGet() != 0);

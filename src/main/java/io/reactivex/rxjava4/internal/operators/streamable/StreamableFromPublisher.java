@@ -19,10 +19,10 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.rxjava4.internal.util.*;
+import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 import io.reactivex.rxjava4.internal.virtual.VirtualResumable;
 
 public record StreamableFromPublisher<T>(@NonNull Publisher<T> source,
@@ -34,7 +34,6 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
 
         var flow = Flowable.fromPublisher(source);
         var streamer = new FlowableStreamer<T>(
-                cancellation,
                 new AtomicReference<>(),
                 new AtomicLong(),
                 new AtomicReference<>(),
@@ -42,19 +41,19 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
                 new VirtualResumable(),
                 executor
                 );
+        cancellation.add(streamer);
         flow.subscribe(streamer);
         return streamer;
     }
 
     record FlowableStreamer<T>(
-            DisposableContainer cancellation,
             AtomicReference<Subscription> upstream,
             AtomicLong requester,
             AtomicReference<T> item,
             AtomicReference<Throwable> error,
             VirtualResumable resumer,
             Executor executor)
-    implements Flow.Subscriber<T>, Streamer<T> {
+    implements Flow.Subscriber<T>, Streamer<T>, Disposable, java.util.function.Supplier<Boolean>, Runnable {
 
         @Override
         public void onSubscribe(Subscription subscription) {
@@ -87,52 +86,41 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer canceller) {
-            // System.out.println("next()");
-            return AwaitCoordinatorStatic.runStage(_ -> {
-                item.lazySet(null);
-                // System.out.println("Requesting the next item");
-                SubscriptionHelper.deferredRequest(upstream, requester, 1);
+        public void dispose() {
+            if (SubscriptionHelper.cancel(upstream)) {
+                resumer.resume();
+            }
+        }
 
-                // System.out.println("waiting for it");
+        @Override
+        public boolean isDisposed() {
+            return SubscriptionHelper.CANCELLED == upstream.get();
+        }
 
-                var e = error.get();
-                var v = item.get();
+        @Override
+        public @NonNull CompletionStage<Boolean> next() {
+            return CompletableFuture.supplyAsync(this, executor);
+        }
 
-                do {
-                    // System.out.println("1");
-                    if (e != null || v != null) {
-                        break;
-                    }
+        @Override
+        public Boolean get() {
+            item.lazySet(null);
+            SubscriptionHelper.deferredRequest(upstream, requester, 1);
+            if (!isDisposed()) {
+                resumer.await();
+            }
 
-                    resumer.await();
-
-                    e = error.get();
-                    v = item.get();
-
-                    // System.out.println("Loop | Value: " + v + ", Error: " + e);
-
-                } while (!canceller.isDisposed());
-
-                // Because Eclipse craps itself when trying to debug virtual threads
-                // FU whoever said debugging in virtual threads is straightforward
-                // System.out.println("Value: " + v + ", Error: " + e);
-                // if (e != null) {
-                //    e.printStackTrace();
-                // }
-
-                if (v == null) {
-                    if (e != null) {
-                        if (e == ExceptionHelper.TERMINATED) {
-                            return false;
-                        }
-                        throw ExceptionHelper.wrapOrThrow(e);
-                    }
-                    throw new IllegalStateException("null current item and null current error? How?");
-                }
-                // System.out.println("Returning true");
+            if (item.get() != null) {
                 return true;
-            }, canceller, executor);
+            }
+            var err = error.get();
+            if (err == ExceptionHelper.TERMINATED) {
+                return false;
+            }
+            if (err == null && isDisposed()) {
+                throw new CancellationException();
+            }
+            throw ExceptionHelper.wrapOrThrow(err);
         }
 
         @Override
@@ -141,12 +129,15 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
-            // new Exception("StreamableFromPublisher::finish").printStackTrace();
-            return AwaitCoordinatorStatic.runStage(_ -> {
-                SubscriptionHelper.cancel(upstream);
-                return null;
-            }, cancellation, executor);
+        public @NonNull CompletionStage<Void> finish() {
+            return CompletableFuture.runAsync(this);
+        }
+
+        @Override
+        public void run() {
+            if (SubscriptionHelper.cancel(upstream)) {
+                item.lazySet(null);
+            }
         }
     }
 }

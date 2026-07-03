@@ -41,7 +41,7 @@ public record StreamableIntercept<T>(
             Exceptions.throwIfFatal(ex);
             return StreamableError.createFailed(ex);
         }
-        return new InterceptStreamer<>(streamer, onNext, onCurrent, onFinish, new AtomicReference<>());
+        return new InterceptStreamer<>(streamer, onNext, onCurrent, onFinish, new AtomicReference<>(), new AtomicReference<>(cancellation));
     }
 
     record InterceptStreamer<T>(
@@ -49,13 +49,14 @@ public record StreamableIntercept<T>(
             @NonNull BiFunction<? super DisposableContainer, ? super CompletionStage<Boolean>, ? extends CompletionStage<Boolean>> onNext,
             @NonNull Function<? super T, ? extends T> onCurrent,
             @NonNull BiFunction<? super DisposableContainer, ? super CompletionStage<Void>, ? extends CompletionStage<Void>> onFinish,
-            @NonNull AtomicReference<T> currentRef
+            @NonNull AtomicReference<T> currentRef,
+            @NonNull AtomicReference<DisposableContainer> cancellation
     ) implements Streamer<T> {
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             CompletionStage<Boolean> result;
             try {
-                result = Objects.requireNonNull(onNext.apply(cancellation, upstream.next(cancellation)), "The onNext returned a null CompletionStage");
+                result = Objects.requireNonNull(onNext.apply(cancellation.get(), upstream.next()), "The onNext returned a null CompletionStage");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 return CompletableFuture.failedStage(ex);
@@ -84,10 +85,10 @@ public record StreamableIntercept<T>(
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Void> finish() {
             CompletionStage<Void> result;
             try {
-                result = Objects.requireNonNull(onFinish.apply(cancellation, upstream.finish(cancellation)), "onFinish returned a null CompletionStage");
+                result = Objects.requireNonNull(onFinish.apply(cancellation.get(), upstream.finish()), "onFinish returned a null CompletionStage");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 result = CompletableFuture.failedStage(ex);

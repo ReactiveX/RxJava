@@ -25,18 +25,46 @@ import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 import io.reactivex.rxjava4.internal.operators.streamable.*;
-import io.reactivex.rxjava4.internal.util.*;
+import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 
-/**
- * The holographically emergent {@code IAsyncEnumerable} of the Java world.
- * Runs best with Virtual Threads.
- * TODO proper docs
- * @param <T> the element type of the stream.
- * @since 4.0.0
- */
+/// Represents a virtual-thread capable, multi-valued (a)synchronous sequence of values that
+/// builds upon the Java [CompletionStage]-based concurrency-coordination model.
+///
+/// The lifecycle of the sequence is as follows:
+///
+/// - consumer calls {@link #stream(DisposableContainer)}
+/// - consumer calls {@link Streamer#next()} in a loop and consumer checks if what
+///   the {@link CompletionStage} outcome is:
+///   - if it succeeded with a boolean {@code true}, it is safe to call {@link Streamer#current()}.
+///   - if it succeeded with a boolean {@code false}, no further values are coming.
+///   - if it failed with a {@code Throwable}, no further values are coming and the error can be propagated further
+/// - consumer calls {@link Streamer#finish()}
+///
+/// It is always necessary to have the consumer call {@code finish} because that is responsible for cleaning up
+/// resources of the upstream.
+///
+/// Downstream cancellations are signaled via the [DisposableContainer], where operators can register their own
+/// [Disposable]s that get disposed. Because dispose can happen at any time and asynchronously to the consumption loop,
+/// the sensitive sources must complete their waiting `CompletionStage` returned by `next` exceptionally via a
+/// [CancellationException]. This will unblock the loops and invoke the `finish` method of the lifecycle at
+/// the consumer thread. Depending on the operator, the `CancellationException` may not be propagated further.
+///
+/// If a source wishes to fail, it must signal the [Throwable] via the returned {@code CompletionStage} of {@code next}.
+/// If the `finish` also throws, its `Throwable` should be added as suppressed exception to the original `Throwable`.
+///
+/// The `Streamer` methods must be invoked sequentially and non-overlappingly, similar to the
+/// <a href='https://github.com/reactive-streams/reactive-streams-jvm#1.3'>Reactive Streams rule §1.3</a>.
+///
+/// This reactive type was modeled after the C# `IAsyncEnumerable` and `IAsyncEnumerator` interfaces. Unfortunately,
+/// Java never added any `async`/`await` infrastructure, plus `CompletionStage` doesn't even have any native way to blockingly
+/// join to it. Therefore, when running in a (virtual) blocking fashion, one may use the {@link Streamer#awaitNext()}
+/// or {@link Streamer#awaitFinish()} helper methods.
+///
+/// @param <T> the element type of the {@code Streamable} sequence.
+/// @since 4.0.0
 @FunctionalInterface
 public interface Streamable<@NonNull T> {
 
@@ -259,32 +287,6 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
-     * Generates a sequence in order which the stages complete in any form.
-     * @param <T> the common element type
-     * @param stages the iterable of stages to be relayed in the order they complete
-     * @param executor the executor to run the blocking operator
-     * @return the new Streamable instance
-     */
-    @SuppressWarnings("unchecked")
-    @CheckReturnValue
-    @NonNull
-    static <@NonNull T> Streamable<CompletionStage<T>> fromStages(
-            @NonNull Iterable<? extends CompletionStage<? extends T>> stages, ExecutorService executor) {
-        Objects.requireNonNull(stages, "stages is null");
-        Objects.requireNonNull(executor, "executor is null");
-        return create(emitter -> {
-            var list = new ArrayList<CompletionStage<? extends T>>();
-            for(var stage : stages) {
-                list.add(stage);
-            }
-            while (!list.isEmpty()) {
-                var winner = AwaitCoordinatorStatic.awaitFirstIndex(list, emitter.canceller());
-                emitter.emit((CompletionStage<T>)list.remove(winner));
-            }
-        }, executor);
-    }
-
-    /**
      * Defers the creation of the actual {@code Streamable}, allowing a per streamer
      * state to be created along with it.
      * @param <T> the element type of the {@code Streamable}
@@ -330,10 +332,10 @@ public interface Streamable<@NonNull T> {
         return create(emitter -> {
             try (var mainSource = sources.forEach(item -> {
                 try (var innerSource = item.forEach(emitter::emit, emitter.canceller().derive(), executor)) {
-                    innerSource.await(emitter.canceller());
+                    innerSource.await();
                 }
             }, emitter.canceller(), executor)) {
-                mainSource.await(emitter.canceller());
+                mainSource.await();
             }
         }, executor);
     }
@@ -562,7 +564,7 @@ public interface Streamable<@NonNull T> {
     default Flowable<T> toFlowable(@NonNull ExecutorService executor) {
         Objects.requireNonNull(executor, "executir is null");
         var me = this;
-        return Flowable.virtualCreate(emitter -> me.forEach(emitter::emit).await(emitter.canceller()), executor);
+        return Flowable.virtualCreate(emitter -> me.forEach(emitter::emit).await(), executor);
     }
 
     /**
@@ -595,7 +597,7 @@ public interface Streamable<@NonNull T> {
             // System.out.println("item " + item);
             transformer.transform(item, emitter, stopper);
         }, emitter.canceller(), executor)
-        .await(emitter.canceller()), executor);
+        .await(), executor);
     }
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
@@ -658,7 +660,7 @@ public interface Streamable<@NonNull T> {
             try {
                 try {
                     while (!canceller.isDisposed()) {
-                        if (str.awaitNext(canceller)) {
+                        if (str.awaitNext()) {
                             // System.out.println("Received " + str.current());
                             consumer.accept(Objects.requireNonNull(str.current(), "The upstream Streamable " + me.getClass() + " produced a null element!"));
                         } else {
@@ -667,7 +669,7 @@ public interface Streamable<@NonNull T> {
                         }
                     }
                 } finally {
-                    str.awaitFinish(canceller);
+                    str.awaitFinish();
                 }
             } catch (final Throwable crash) {
                 Exceptions.throwIfFatal(crash);
@@ -705,7 +707,7 @@ public interface Streamable<@NonNull T> {
                 try {
                 var stopper = Disposable.empty();
                     while (!canceller.isDisposed() && !stopper.isDisposed()) {
-                        if (str.awaitNext(canceller)) {
+                        if (str.awaitNext()) {
                             // System.out.println("Received " + str.current());
                             var v = Objects.requireNonNull(str.current(), "The upstream Streamable " + me.getClass() + " produced a null element!");
                             consumer.accept(v, stopper);
@@ -715,7 +717,7 @@ public interface Streamable<@NonNull T> {
                         }
                     }
                 } finally {
-                    str.awaitFinish(canceller);
+                    str.awaitFinish();
                 }
             } catch (final Throwable crash) {
                 Exceptions.throwIfFatal(crash);
@@ -739,7 +741,7 @@ public interface Streamable<@NonNull T> {
         final Streamable<T> me = this;
         Flowable.<T>virtualCreate(emitter -> {
             me.forEach(emitter::emit, emitter.canceller().derive(), executor)
-            .await(emitter.canceller());
+            .await();
         }, executor)
         .subscribe(subscriber);
     }
@@ -751,7 +753,7 @@ public interface Streamable<@NonNull T> {
     default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber) {
         final Streamable<T> me = this;
         Flowable.<T>virtualCreate(emitter -> {
-            me.forEach(emitter::emit).await(emitter.canceller());
+            me.forEach(emitter::emit).await();
         })
         .subscribe(subscriber);
     }

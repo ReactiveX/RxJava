@@ -25,9 +25,9 @@ import io.reactivex.rxjava4.functions.*;
  * Configuration record the intercept() operator with various lifecylce-stage transforming callbacks
  * @param <T> the element type of the sequence
  * @param onStream called when the {@link Streamable#stream(io.reactivex.rxjava4.disposables.DisposableContainer)} is invoked
- * @param onNext called when the {@link Streamer#next(io.reactivex.rxjava4.disposables.DisposableContainer)} is invoked
+ * @param onNext called when the {@link Streamer#next()} is invoked
  * @param onCurrent called when the {@link Streamer#current()} is invoked
- * @param onFinish called when the {@link Streamer#finish(io.reactivex.rxjava4.disposables.DisposableContainer)} is invoked
+ * @param onFinish called when the {@link Streamer#finish()} is invoked
  * @since 4.0.0
  */
 public record StreamableInterceptConfig<T>(
@@ -56,9 +56,9 @@ public record StreamableInterceptConfig<T>(
     /**
      * Constructs a fully configured record.
      * @param onStream called when the {@link Streamable#stream(io.reactivex.rxjava4.disposables.DisposableContainer)} is invoked
-     * @param onNext called when the {@link Streamer#next(io.reactivex.rxjava4.disposables.DisposableContainer)} is invoked
+     * @param onNext called when the {@link Streamer#next()} is invoked
      * @param onCurrent called when the {@link Streamer#current()} is invoked
-     * @param onFinish called when the {@link Streamer#finish(io.reactivex.rxjava4.disposables.DisposableContainer)} is invoked
+     * @param onFinish called when the {@link Streamer#finish()} is invoked
      */
     public StreamableInterceptConfig {
         Objects.requireNonNull(onStream, "onStream is null");

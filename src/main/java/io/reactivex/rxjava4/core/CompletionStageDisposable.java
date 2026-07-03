@@ -91,21 +91,9 @@ public final class CompletionStageDisposable<T> implements AutoCloseable {
      * @throws ThrowableWrapper if the original exception was a checked exception
      */
     public void await() {
-        await(null);
-    }
-
-    /**
-     * Await the completion of the current stage.
-     * <p>
-     * Rethrows any original unchecked exceptions as is.
-     * @param canceller the canceller link
-     * @throws CancellationException if the computation was cancelled
-     * @throws ThrowableWrapper if the original exception was a checked exception
-     */
-    public void await(DisposableContainer canceller) {
         state.lazySet(true);
         try {
-            AwaitCoordinatorStatic.await(stage, canceller);
+            stage.toCompletableFuture().join();
         } catch (CompletionException ce) {
             throw ExceptionHelper.wrapOrThrow(ce.getCause());
         }

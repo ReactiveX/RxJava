@@ -47,9 +47,9 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             var cf = new CompletableFuture<Boolean>();
-            drain(cf, cancellation);
+            drain(cf);
             return cf;
         }
 
@@ -59,17 +59,17 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Void> finish() {
             current = null;
-            return upstream.finish(cancellation);
+            return upstream.finish();
         }
 
-        void drain(CompletableFuture<Boolean> cf, DisposableContainer cancellation) {
+        void drain(CompletableFuture<Boolean> cf) {
             if (wip.getAndIncrement() != 0) {
                 return;
             }
             do {
-                upstream.next(cancellation)
+                upstream.next()
                 .whenComplete((v, e) -> {
                     if (e != null) {
                         cf.completeExceptionally(e);
@@ -81,7 +81,7 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
                                     current = w.get();
                                     cf.complete(true);
                                 } else {
-                                    drain(cf, cancellation);
+                                    drain(cf);
                                 }
                             } catch (Throwable ex) {
                                 Exceptions.throwIfFatal(ex);

@@ -39,7 +39,7 @@ public record StreamableError<T>(@NonNull Throwable throwable) implements Stream
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Boolean> next() {
             return throwable;
         }
 
@@ -49,7 +49,7 @@ public record StreamableError<T>(@NonNull Throwable throwable) implements Stream
         }
 
         @Override
-        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+        public @NonNull CompletionStage<Void> finish() {
             return FINISHED;
         }
     }

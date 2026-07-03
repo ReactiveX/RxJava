@@ -221,15 +221,16 @@ public class StreamableTest extends StreamableBaseTest {
     @Test
     public void rangeTransformFilter() throws Throwable {
         withVirtual(exec -> Flowable.range(1, 10)
-        .toStreamable(exec)
-        .transform((item, emitter, _) -> {
-            if ((item & 1) == 0) {
-                emitter.emit(item);
-            }
-        }, exec)
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(2, 4, 6, 8, 10));
+            .toStreamable(exec)
+            .transform((item, emitter, _) -> {
+                if ((item & 1) == 0) {
+                    emitter.emit(item);
+                }
+            }, exec)
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(2, 4, 6, 8, 10)
+        );
     }
 
     @Test
@@ -296,7 +297,7 @@ public class StreamableTest extends StreamableBaseTest {
     @Test
     public void neverCurrentThrows() {
         assertThrows(NoSuchElementException.class, () -> {
-            StreamableNever.NeverStreamer.INSTANCE.current();
+            new StreamableNever.NeverStreamer(null).current();
         });
     }
 
@@ -315,23 +316,6 @@ public class StreamableTest extends StreamableBaseTest {
             .test(exec)
             .awaitDone(100, TimeUnit.MILLISECONDS)
             .assertTimeout();
-        });
-    }
-
-    @Test
-    public void fromStages() throws Throwable {
-        withVirtual(exec -> {
-            Streamable.fromStages(List.of(
-                    CompletableFuture.completedFuture(1),
-                    CompletableFuture.completedFuture(2),
-                    CompletableFuture.completedFuture(3)
-                ), exec
-            )
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertValueCount(3)
-            .assertNoErrors()
-            .assertComplete();
         });
     }
 
