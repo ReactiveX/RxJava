@@ -33,6 +33,7 @@ import io.reactivex.rxjava4.internal.operators.maybe.*;
 import io.reactivex.rxjava4.internal.operators.mixed.*;
 import io.reactivex.rxjava4.internal.operators.observable.ObservableSingleSingle;
 import io.reactivex.rxjava4.internal.operators.single.*;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromSingle;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.*;
@@ -4885,6 +4886,25 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
             return ((FuseToObservable<T>)this).fuseToObservable();
         }
         return RxJavaPlugins.onAssembly(new SingleToObservable<>(this));
+    }
+
+    /**
+     * Returns an {@link Streamable} which when subscribed to subscribes to this {@code Single} and
+     * relays the terminal events to the downstream {@link Streamer}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toStreamable.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toStreamable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new {@code Streamable} instance
+     * @since 4.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Streamable<T> toStreamable() {
+        return RxJavaPlugins.onAssembly(new StreamableFromSingle<>(this));
     }
 
     /**
