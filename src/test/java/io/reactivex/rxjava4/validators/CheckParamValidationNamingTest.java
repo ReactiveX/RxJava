@@ -177,6 +177,11 @@ public class CheckParamValidationNamingTest extends RxJavaTest {
         processFile(CompositeDisposable.class);
     }
 
+    @Test
+    public void checkStreamable() throws Exception {
+        processFile(Streamable.class);
+    }
+
     static void processFile(Class<?> clazz) throws Exception {
         String baseClassName = clazz.getSimpleName();
         File f = TestHelper.findSource(baseClassName, clazz.getPackage().getName());
@@ -233,9 +238,11 @@ public class CheckParamValidationNamingTest extends RxJavaTest {
                     // find the method declaration
                     for (; midx >= 0; midx--) {
                         String linek = lines.get(midx).trim();
-                        if (linek.startsWith("public") || linek.startsWith("private")
+                        if (linek.startsWith("public")
+                                || linek.startsWith("private")
                                 || linek.startsWith("protected")
                                 || linek.startsWith("static")
+                                || linek.startsWith("default")
                                 || linek.startsWith(baseClassName)) {
                             break;
                         }
@@ -354,8 +361,11 @@ public class CheckParamValidationNamingTest extends RxJavaTest {
                 }
             }
 
-            if (line.startsWith("public") || line.startsWith("protected") || line.startsWith("final") || line.startsWith("private")
-                    || line.startsWith("static")) {
+            if (line.startsWith("public") || line.startsWith("protected")
+                    || line.startsWith("final")
+                    || line.startsWith("private")
+                    || line.startsWith("static")
+                    || line.startsWith("default")) {
                 for (ValidatorStrings validatorStr : TYPICAL_ARGUMENT_STRINGS) {
                     // find the method declaration ending {
                     for (int i = j; i < lines.size(); i++) {

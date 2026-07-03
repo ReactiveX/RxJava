@@ -15,9 +15,10 @@ package io.reactivex.rxjava4.internal.util;
 
 import java.io.Serial;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.exceptions.*;
 
 /**
@@ -180,5 +181,30 @@ public final class ExceptionHelper {
             throw createNullPointerException(prefix);
         }
         return value;
+    }
+
+    /**
+     * Unwraps both throwables if they are wrapped into a {@link CompletionException} or
+     * {@link ThrowableWrapper}, then if both are present, add {@code b} as suppressed to {@code a}
+     * and return a; return b otherwise
+     * @param main the first throwable
+     * @param secondary the second throwable
+     * @return the unwrapped and combined throwable or null if both where
+     */
+    @Nullable
+    public static Throwable unwrapAndCombine(@Nullable Throwable main, @Nullable Throwable secondary) {
+        if (main instanceof CompletionException || main instanceof ThrowableWrapper) {
+            main = main.getCause();
+        }
+        if (secondary instanceof CompletionException || secondary instanceof ThrowableWrapper) {
+            secondary = secondary.getCause();
+        }
+        if (main != null && secondary != null) {
+            main.addSuppressed(secondary);
+        }
+        if (main != null) {
+            return main;
+        }
+        return secondary;
     }
 }

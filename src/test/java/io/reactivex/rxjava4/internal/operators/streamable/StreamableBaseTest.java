@@ -15,7 +15,6 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.lang.ref.Cleaner;
 import java.util.*;
-import java.util.concurrent.*;
 
 import org.junit.jupiter.api.*;
 

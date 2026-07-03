@@ -21,11 +21,9 @@ import java.util.stream.Stream;
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.disposables.*;
-import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 import io.reactivex.rxjava4.internal.operators.streamable.*;
-import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -95,7 +93,7 @@ public interface Streamable<@NonNull T> {
      * @param sources a streamable of inner streamables
      * @param executor the executorservice where to run the virtual wait
      * @return the new {@code Streamable} instance.
-     * @throws NullPointerException if {@code sources} or {@code exec} is {@code null}
+     * @throws NullPointerException if {@code sources} or {@code executor} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -160,7 +158,8 @@ public interface Streamable<@NonNull T> {
      * @param <T> the element type
      * @param generator the generator to use
      * @param scheduler the scheduler to run the virtual generator on
-     * @return the streamable instance
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code generator} or {@code scheduler} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -231,11 +230,11 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
-     * Filters out the upstream items that do not pass the given predicate
+     * Filters out the upstream items that do not pass the given predicate.
      * @param predicate the callback that should return {@code true} to let the upstream value pass
      *                  or {@code false} to ignore it and continue with the next upstream item
      * @return the new {@code Streamable} instance
-     * @throw NullPointerException if {@code predicate} is {@code null}
+     * @throws NullPointerException if {@code predicate} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -260,6 +259,21 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Convert a {@link CompletableSource} into a {@code Streamable} and
+     * relay its terminal events.
+     * <p>
+     * The resulting {@code Streamable} will never produce any items.
+     * @param <T> the target type of the sequence
+     * @param source the source {@code CompletableSource} to convert
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code source} is {@code null}
+     */
+    static <@NonNull T> Streamable<T> fromCompletable(@NonNull CompletableSource source) {
+        Objects.requireNonNull(source, "source is null");
+        return RxJavaPlugins.onAssembly(new StreamableFromCompletable<T>(source));
+    }
+
+    /**
      * Streams all elements of the given {@link Iterable} sequence.
      * @param <T> the element type of the items
      * @param items the iterable of items to stream
@@ -274,10 +288,26 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Convert a {@link MaybeSource} into a {@code Streamable} and
+     * relay its terminal events.
+     * <p>
+     * The resulting {@code Streamable} will never produce any items.
+     * @param <T> the target type of the sequence
+     * @param source the source {@code MaybeSource} to convert
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code source} is {@code null}
+     */
+    static <@NonNull T> Streamable<T> fromMaybe(@NonNull MaybeSource<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        return RxJavaPlugins.onAssembly(new StreamableFromMaybe<T>(source));
+    }
+
+    /**
      * Convert any {@link java.util.concurrent.Flow.Publisher} into a {@code Streamable} sequence.
      * @param <T> the element type
      * @param source Flow.Publisher to convert
      * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code source} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -292,6 +322,7 @@ public interface Streamable<@NonNull T> {
      * @param source Flow.Publisher to convert
      * @param executor where the conversion will run
      * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code source} or {@code executor} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -299,6 +330,21 @@ public interface Streamable<@NonNull T> {
         Objects.requireNonNull(source, "source is null");
         Objects.requireNonNull(executor, "executor is null");
         return RxJavaPlugins.onAssembly(new StreamableFromPublisher<>(source, executor));
+    }
+
+    /**
+     * Convert a {@link SingleSource} into a {@code Streamable} and
+     * relay its terminal events.
+     * <p>
+     * The resulting {@code Streamable} will never produce any items.
+     * @param <T> the target type of the sequence
+     * @param source the source {@code SingleSource} to convert
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code source} is {@code null}
+     */
+    static <@NonNull T> Streamable<T> fromSingle(@NonNull SingleSource<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        return RxJavaPlugins.onAssembly(new StreamableFromSingle<T>(source));
     }
 
     /**
@@ -327,6 +373,8 @@ public interface Streamable<@NonNull T> {
      * @param unit the time unit for both {@code initialDelay} and {@code period}
      * @param scheduler the scheduler to use for the timed waiting
      * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @throws IllegalArgumentException if {@code count} is negative
      */
     static Streamable<Long> intervalRange(long start, long count,
             long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
@@ -360,6 +408,8 @@ public interface Streamable<@NonNull T> {
      * @param unit the time unit for both {@code initialDelay} and {@code period}
      * @param executor the executor to use
      * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code unit} or {@code executor} is {@code null}
+     * @throws IllegalArgumentException if {@code count} is negative
      */
     static Streamable<Long> intervalRange(long start, long count,
             long initialDelay, long period, TimeUnit unit, ExecutorService executor) {
@@ -381,6 +431,7 @@ public interface Streamable<@NonNull T> {
      * @param <T> the element type
      * @param item the constant item to produce
      * @return the {@code Streamable} instance
+     * @throws NullPointerException if {@code item} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -406,6 +457,7 @@ public interface Streamable<@NonNull T> {
      * @param start the start element
      * @param count the number of elements to emit
      * @return the new {@code Streamable} instance
+     * @throws IllegalArgumentException if {@code count} is negative
      */
     @CheckReturnValue
     @NonNull
@@ -430,6 +482,7 @@ public interface Streamable<@NonNull T> {
      * @param start the start element
      * @param count the number of elements to emit
      * @return the new {@code Streamable} instance
+     * @throws IllegalArgumentException if {@code count} is negative
      */
     @CheckReturnValue
     @NonNull
@@ -536,7 +589,7 @@ public interface Streamable<@NonNull T> {
      * and allows the modification of them via Function callbacks.
      * @param config the configuration record for this operator
      * @return the new {@code Streamable} instance
-     * @thros NullPointerException if {@code config} is {@code null}
+     * @throws NullPointerException if {@code config} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -576,7 +629,7 @@ public interface Streamable<@NonNull T> {
      * @param mapper the function that takes an upstream item and returns an item to be emitted
      *               to the downstream
      * @return the new {@code Streamable} instance
-     * @throw NullPointerException if {@code mapper} is {@code null}
+     * @throws NullPointerException if {@code mapper} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -591,7 +644,7 @@ public interface Streamable<@NonNull T> {
      * @param mapper the function that takes an upstream item and returns an optional item to be emitted / skipped
      *               to the downstream
      * @return the new {@code Streamable} instance
-     * @throw NullPointerException if {@code mapper} is {@code null}
+     * @throws NullPointerException if {@code mapper} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -605,6 +658,7 @@ public interface Streamable<@NonNull T> {
      * then cancels the rest of the sequence.
      * @param n the maximum number of items to relay
      * @return the new {@code Streamable} instance
+     * @throws IllegalArgumentException if {@code n} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -619,6 +673,19 @@ public interface Streamable<@NonNull T> {
                 }
             });
         });
+    }
+
+    /**
+     * Relays items from this {@code Streamable} while the predicate returns {@code true}
+     * @param predicate the predicate to test if the sequence should keep going
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> takeWhile(@NonNull Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return RxJavaPlugins.onAssembly(new StreamableTakeWhile<>(this, predicate));
     }
 
     /**
@@ -648,17 +715,31 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
-     * Converts the streamable into a Flowable representation, running
+     * Converts this {@code Streamable} into a {@link Flowable} representation, running
      * on the provided executor service.
      * @param executor the executor to use
-     * @return the new Flowable instance
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code executor} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     default Flowable<T> toFlowable(@NonNull ExecutorService executor) {
-        Objects.requireNonNull(executor, "executir is null");
+        Objects.requireNonNull(executor, "executor is null");
         var me = this;
         return Flowable.virtualCreate(emitter -> me.forEach(emitter::emit).await(), executor);
+    }
+
+    /**
+     * Converts this {@code Streamable} into a {@link Observable} representation,
+     * emitting items on whatever thread produces items in the current {@code Streamable}.
+     * <p>
+     * Unlike {@link #toFlowable(ExecutorService)}, the lack of backpressure doesn't require
+     * any blocking thus any need to run the conversion on any particular {@link Scheduler}
+     * or {@link ExecutorService} on its own.
+     * @return the new {@code Observable} instance
+     */
+    default Observable<T> toObservable() {
+        return RxJavaPlugins.onAssembly(new StreamableToObservable<>(this));
     }
 
     /**
@@ -678,7 +759,8 @@ public interface Streamable<@NonNull T> {
      * @param <R> the result element type
      * @param transformer the interface to implement the transforming logic
      * @param executor where to run the transform and blocking operations
-     * @return the new Streamable instance
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code transformer} or {@code executor} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -740,7 +822,8 @@ public interface Streamable<@NonNull T> {
      * @param consumer the callback that gets the elements until completion
      * @param canceller the container to trigger cancellation of the sequence
      * @param executor the service that hosts the blocking waits.
-     * @return the {@code CompletionStage} that gets notified when the sequence ends
+     * @return the new {@code CompletionStageDisposable} that gets notified when the sequence ends
+     * @throws NullPointerException if {@code consumer} or {@code canceller} or {@code executor} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -748,34 +831,7 @@ public interface Streamable<@NonNull T> {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(canceller, "canceller is null");
         Objects.requireNonNull(executor, "executor is null");
-        final Streamable<T> me = this;
-        var future = CompletableFuture.<Void>supplyAsync(() -> {
-            var str = me.stream(canceller);
-            try {
-                try {
-                    while (!canceller.isDisposed()) {
-                        if (str.awaitNext()) {
-                            // System.out.println("Received " + str.current());
-                            consumer.accept(Objects.requireNonNull(str.current(), "The upstream Streamable " + me.getClass() + " produced a null element!"));
-                        } else {
-                            // System.out.println("EOF ");
-                            break;
-                        }
-                    }
-                } finally {
-                    str.awaitFinish();
-                }
-            } catch (final Throwable crash) {
-                Exceptions.throwIfFatal(crash);
-                if (crash instanceof CompletionException ce) {
-                    throw ExceptionHelper.wrapOrThrow(ce.getCause());
-                }
-                throw ExceptionHelper.wrapOrThrow(crash);
-            }
-            return null;
-        }, executor);
-        canceller.add(Disposable.fromFuture(future));
-        return new CompletionStageDisposable<>(future, canceller);
+        return StreamableForEach.forEach(this, consumer, canceller, executor);
     }
 
     /**
@@ -784,6 +840,7 @@ public interface Streamable<@NonNull T> {
      * @param canceller the container to trigger cancellation of the sequence
      * @param executor the service that hosts the blocking waits.
      * @return the {@code CompletionStage} that gets notified when the sequence ends
+     * @throws NullPointerException if {@code consumer} or {@code canceller} or {@code executor} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -794,36 +851,7 @@ public interface Streamable<@NonNull T> {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(canceller, "canceller is null");
         Objects.requireNonNull(executor, "executor is null");
-        final Streamable<T> me = this;
-        var future = CompletableFuture.<Void>supplyAsync(() -> {
-            var str = me.stream(canceller);
-            try {
-                try {
-                var stopper = Disposable.empty();
-                    while (!canceller.isDisposed() && !stopper.isDisposed()) {
-                        if (str.awaitNext()) {
-                            // System.out.println("Received " + str.current());
-                            var v = Objects.requireNonNull(str.current(), "The upstream Streamable " + me.getClass() + " produced a null element!");
-                            consumer.accept(v, stopper);
-                        } else {
-                            // System.out.println("EOF ");
-                            break;
-                        }
-                    }
-                } finally {
-                    str.awaitFinish();
-                }
-            } catch (final Throwable crash) {
-                Exceptions.throwIfFatal(crash);
-                if (crash instanceof CompletionException ce) {
-                    throw ExceptionHelper.wrapOrThrow(ce.getCause());
-                }
-                throw ExceptionHelper.wrapOrThrow(crash);
-            }
-            return null;
-        });
-        canceller.add(Disposable.fromFuture(future));
-        return new CompletionStageDisposable<>(future, canceller);
+        return StreamableForEach.forEach(this, consumer, canceller, executor);
     }
 
     /**

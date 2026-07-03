@@ -15,12 +15,13 @@ package io.reactivex.rxjava4.internal.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
-import io.reactivex.rxjava4.exceptions.TestException;
+import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class ExceptionHelperTest extends RxJavaTest {
@@ -48,5 +49,54 @@ public class ExceptionHelperTest extends RxJavaTest {
         assertThrows(InternalError.class, () -> {
             ExceptionHelper.<Exception>throwIfThrowable(new InternalError());
         });
+    }
+
+    @Test
+    public void unwrapAndCombine1() {
+        assertNull(ExceptionHelper.unwrapAndCombine(null, null));
+    }
+
+    @Test
+    public void unwrapAndCombine2() {
+        var te = new TestException();
+        assertSame(te, ExceptionHelper.unwrapAndCombine(te, null));
+    }
+
+    @Test
+    public void unwrapAndCombine3() {
+        var te = new TestException();
+        assertSame(te, ExceptionHelper.unwrapAndCombine(null, te));
+    }
+
+    @Test
+    public void unwrapAndCombine4() {
+        var te = new TestException();
+        var te2 = new TestException();
+        assertSame(te, ExceptionHelper.unwrapAndCombine(te, te2));
+        assertSame(te2, te.getSuppressed()[0]);
+    }
+
+    @Test
+    public void unwrapAndCombine5() {
+        var te = new TestException();
+        assertSame(te, ExceptionHelper.unwrapAndCombine(new CompletionException(te), null));
+    }
+
+    @Test
+    public void unwrapAndCombine6() {
+        var te = new TestException();
+        assertSame(te, ExceptionHelper.unwrapAndCombine(null, new CompletionException(te)));
+    }
+
+    @Test
+    public void unwrapAndCombine7() {
+        var te = new TestException();
+        assertSame(te, ExceptionHelper.unwrapAndCombine(new ThrowableWrapper(te), null));
+    }
+
+    @Test
+    public void unwrapAndCombine8() {
+        var te = new TestException();
+        assertSame(te, ExceptionHelper.unwrapAndCombine(null, new ThrowableWrapper(te)));
     }
 }

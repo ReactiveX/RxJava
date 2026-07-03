@@ -30,6 +30,7 @@ import io.reactivex.rxjava4.internal.operators.completable.*;
 import io.reactivex.rxjava4.internal.operators.maybe.*;
 import io.reactivex.rxjava4.internal.operators.mixed.*;
 import io.reactivex.rxjava4.internal.operators.single.SingleDelayWithCompletable;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromCompletable;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -3219,6 +3220,26 @@ public abstract class Completable implements CompletableSource {
     public final <@NonNull T> Single<T> toSingleDefault(T completionValue) {
         Objects.requireNonNull(completionValue, "completionValue is null");
         return RxJavaPlugins.onAssembly(new CompletableToSingle<>(this, null, completionValue));
+    }
+
+    /**
+     * Returns an {@link Streamable} which when subscribed to subscribes to this {@code Completable} and
+     * relays the terminal events to the downstream {@link Streamer}.
+     * <p>
+     * <img width="640" height="293" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toStreamable.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toStreamable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @return the new {@code Streamable} instance
+     * @since 4.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @CheckReturnValue
+    @NonNull
+    public final <@NonNull T> Streamable<T> toStreamable() {
+        return RxJavaPlugins.onAssembly(new StreamableFromCompletable<>(this));
     }
 
     /**
