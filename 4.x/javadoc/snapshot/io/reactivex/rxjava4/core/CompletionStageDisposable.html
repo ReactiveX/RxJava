@@ -71,7 +71,6 @@ initTheme();
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#await()" tabindex="0">await()</a></li>
-<li><a href="#await(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">await(DisposableContainer)</a></li>
 <li><a href="#ignore()" tabindex="0">ignore()</a></li>
 <li><a href="#close()" tabindex="0">close()</a></li>
 <li><a href="#setAllocationTrace(java.util.function.Consumer)" tabindex="0">setAllocationTrace(Consumer)</a></li>
@@ -146,36 +145,31 @@ implements <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base
 <div class="block">Await the completion of the current stage.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#await(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">await</a><wbr>(<a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Await the completion of the current stage.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#disposable()" class="member-name-link">disposable</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#disposable()" class="member-name-link">disposable</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the associated disposable value.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Consumer.html" title="interface in java.util.function" class="external-link">Consumer</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ref/Cleaner.Cleanable.html" title="interface in java.lang.ref" class="external-link">Cleaner.Cleanable</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getAllocationTrace()" class="member-name-link">getAllocationTrace</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Consumer.html" title="interface in java.util.function" class="external-link">Consumer</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ref/Cleaner.Cleanable.html" title="interface in java.lang.ref" class="external-link">Cleaner.Cleanable</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getAllocationTrace()" class="member-name-link">getAllocationTrace</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns the current allocation stacktrace capturing consumer.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#ignore()" class="member-name-link">ignore</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#ignore()" class="member-name-link">ignore</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Indicate this instance is deliberately not awaiting its stage.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setAllocationTrace(java.util.function.Consumer)" class="member-name-link">setAllocationTrace</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Consumer.html" title="interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ref/Cleaner.Cleanable.html" title="interface in java.lang.ref" class="external-link">Cleaner.Cleanable</a>&gt;&nbsp;callback)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setAllocationTrace(java.util.function.Consumer)" class="member-name-link">setAllocationTrace</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Consumer.html" title="interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ref/Cleaner.Cleanable.html" title="interface in java.lang.ref" class="external-link">Cleaner.Cleanable</a>&gt;&nbsp;callback)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Set an allocator tracer callback to track where CompletionStageDisposables are leaking.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="#type-param-T" title="type parameter in CompletionStageDisposable">T</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stage()" class="member-name-link">stage</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="#type-param-T" title="type parameter in CompletionStageDisposable">T</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stage()" class="member-name-link">stage</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the associated completion stage value.</div>
 </div>
 </div>
@@ -229,24 +223,6 @@ implements <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base
 <p>
 Rethrows any original unchecked exceptions as is.</div>
 <dl class="notes">
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class in java.util.concurrent" class="external-link">CancellationException</a></code> - if the computation was cancelled</dd>
-<dd><code><a href="../exceptions/ThrowableWrapper.html" title="class in io.reactivex.rxjava4.exceptions">ThrowableWrapper</a></code> - if the original exception was a checked exception</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="await(io.reactivex.rxjava4.disposables.DisposableContainer)">
-<h3>await</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">await</span><wbr><span class="parameters">(<a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller)</span></div>
-<div class="block">Await the completion of the current stage.
-<p>
-Rethrows any original unchecked exceptions as is.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>canceller</code> - the canceller link</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class in java.util.concurrent" class="external-link">CancellationException</a></code> - if the computation was cancelled</dd>
 <dd><code><a href="../exceptions/ThrowableWrapper.html" title="class in io.reactivex.rxjava4.exceptions">ThrowableWrapper</a></code> - if the original exception was a checked exception</dd>
