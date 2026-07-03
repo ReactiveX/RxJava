@@ -135,9 +135,8 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
 
         @Override
         public void run() {
-            if (SubscriptionHelper.cancel(upstream)) {
-                item.lazySet(null);
-            }
+            item.lazySet(null);
+            SubscriptionHelper.cancel(upstream);
         }
     }
 }

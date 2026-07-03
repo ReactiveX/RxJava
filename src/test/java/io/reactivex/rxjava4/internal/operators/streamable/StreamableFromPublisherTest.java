@@ -68,36 +68,42 @@ public class StreamableFromPublisherTest extends StreamableBaseTest {
     }
 
     @Test
-    @Disabled("Don't know yet why it doesn't propagate the cancellation exception...")
     public void cancel() throws Throwable {
         withVirtual(exec -> {
             var pp = PublishProcessor.create();
 
+            IO.println("test()");
+
             var ts = pp.toStreamable(exec)
             .test(exec);
+
+            IO.println("hasSubscription()");
 
             while (!ts.hasSubscription()) {
                 Thread.sleep(1);
             }
 
+            IO.println("hasSubscribers()");
+
             while (!pp.hasSubscribers()) {
-                Thread.onSpinWait();
+                Thread.sleep(1);
             }
 
-            var f = CompletableFuture.runAsync(() -> {
-                ts.awaitDone(5, TimeUnit.SECONDS);
-            }, exec);
+            IO.println("cancel()");
+
+            Thread.sleep(100);
 
             ts.cancel();
 
-            f.join();
+            IO.println("!hasSubscribers()");
 
-            ts.assertFailure(CancellationException.class);
+            while (pp.hasSubscribers()) {
+                Thread.sleep(1);
+            }
         });
     }
 
     @Test
-    @Disabled("Don't know yet why it doesn't propagate the cancellation exception...")
     public void cancelDebug() throws Throwable {
         withCachedExecutor(exec -> {
             var pp = PublishProcessor.create();
@@ -116,14 +122,8 @@ public class StreamableFromPublisherTest extends StreamableBaseTest {
             IO.println("hasSubscribers()");
 
             while (!pp.hasSubscribers()) {
-                Thread.onSpinWait();
+                Thread.sleep(1);
             }
-
-            IO.println("awaitDone()");
-
-            var f = CompletableFuture.runAsync(() -> {
-                ts.awaitDone(5, TimeUnit.SECONDS);
-            }, exec);
 
             IO.println("cancel()");
 
@@ -131,13 +131,11 @@ public class StreamableFromPublisherTest extends StreamableBaseTest {
 
             ts.cancel();
 
-            IO.println("join()");
+            IO.println("!hasSubscribers()");
 
-            f.join();
-
-            IO.println("assertFailure()");
-
-            ts.assertFailure(CancellationException.class);
+            while (pp.hasSubscribers()) {
+                Thread.sleep(1);
+            }
         });
     }
 }

@@ -90,125 +90,27 @@ public interface Streamable<@NonNull T> {
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     /**
-     * Returns an empty {@code Streamable} that never produces an item and just completes.
-     * @param <T> the element type
-     * @return the {@code Streamable} instance
-     */
-    @SuppressWarnings("unchecked")
-    @CheckReturnValue
-    @NonNull
-    static <@NonNull T> Streamable<T> empty() {
-        return RxJavaPlugins.onAssembly((Streamable<T>)StreamableEmpty.INSTANCE);
-    }
-
-    /**
-     * Returns a single-element {@code Streamable} that produces the constant item and completes.
-     * @param <T> the element type
-     * @param item the constant item to produce
-     * @return the {@code Streamable} instance
+     * Emits the elements of each inner sequence produced by the outer sequence.
+     * @param <T> the common element type
+     * @param sources a streamable of inner streamables
+     * @param executor the executorservice where to run the virtual wait
+     * @return the new {@code Streamable} instance.
+     * @throws NullPointerException if {@code sources} or {@code exec} is {@code null}
      */
     @CheckReturnValue
     @NonNull
-    static <@NonNull T> Streamable<T> just(@NonNull T item) {
-        Objects.requireNonNull(item, "item is null");
-        return RxJavaPlugins.onAssembly(new StreamableJust<>(item));
-    }
-
-    /**
-     * Filters out the upstream items that do not pass the given predicate
-     * @param predicate the callback that should return {@code true} to let the upstream value pass
-     *                  or {@code false} to ignore it and continue with the next upstream item
-     * @return the new {@code Streamable} instance
-     * @throw NullPointerException if {@code predicate} is {@code null}
-     */
-    @CheckReturnValue
-    @NonNull
-    default Streamable<T> filter(@NonNull Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return RxJavaPlugins.onAssembly(new StreamableFilter<>(this, predicate));
-    }
-
-    /**
-     * Streams all elements of the given items array.
-     * @param <T> the element type of the items
-     * @param items the array of items to stream
-     * @return the new {@code Streamable} instance
-     * @throws NullPointerException if {@code items} is {@code null}
-     */
-    @SafeVarargs
-    @CheckReturnValue
-    @NonNull
-    static <@NonNull T> Streamable<T> fromArray(@NonNull T... items) {
-        Objects.requireNonNull(items, "items is null");
-        return RxJavaPlugins.onAssembly(new StreamableFromArray<>(items));
-    }
-
-    /**
-     * Streams all elements of the given {@link Iterable} sequence.
-     * @param <T> the element type of the items
-     * @param items the iterable of items to stream
-     * @return the new {@code Streamable} instance
-     * @throws NullPointerException if {@code items} is {@code null}
-     */
-    @CheckReturnValue
-    @NonNull
-    static <@NonNull T> Streamable<T> fromIterable(@NonNull Iterable<? extends T> items) {
-        Objects.requireNonNull(items, "items is null");
-        return RxJavaPlugins.onAssembly(new StreamableFromIterable<>(items));
-    }
-
-    /**
-     * Streams all elements of the given {@link Stream} sequence.
-     * @param <T> the element type of the items
-     * @param items the stream of items to stream
-     * @return the new {@code Streamable} instance
-     * @throws NullPointerException if {@code items} is {@code null}
-     */
-    @CheckReturnValue
-    @NonNull
-    static <@NonNull T> Streamable<T> fromStream(@NonNull Stream<? extends T> items) {
-        Objects.requireNonNull(items, "items is null");
-        return RxJavaPlugins.onAssembly(new StreamableFromStream<>(items));
-    }
-
-    /**
-     * Convert any {@link java.util.concurrent.Flow.Publisher} into a {@code Streamable} sequence.
-     * @param <T> the element type
-     * @param source Flow.Publisher to convert
-     * @return the new {@code Streamable} instance
-     */
-    @CheckReturnValue
-    @NonNull
-    static <T> Streamable<T> fromPublisher(@NonNull Flow.Publisher<T> source) {
-        Objects.requireNonNull(source, "source is null");
-        return fromPublisher(source, Executors.newVirtualThreadPerTaskExecutor());
-    }
-
-    /**
-     * Convert any {@link java.util.concurrent.Flow.Publisher} into a {@code Streamable} sequence.
-     * @param <T> the element type
-     * @param source Flow.Publisher to convert
-     * @param executor where the conversion will run
-     * @return the new {@code Streamable} instance
-     */
-    @CheckReturnValue
-    @NonNull
-    static <T> Streamable<T> fromPublisher(@NonNull Flow.Publisher<T> source, @NonNull ExecutorService executor) {
-        Objects.requireNonNull(source, "source is null");
+    static <@NonNull T> Streamable<T> concat(Streamable<? extends Streamable<? extends T>> sources, ExecutorService executor) {
+        Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(executor, "executor is null");
-        return RxJavaPlugins.onAssembly(new StreamableFromPublisher<>(source, executor));
-    }
-
-    /**
-     * Returns an {@code Streamable} that never produces an item and never terminates.
-     * @param <T> the element type
-     * @return the {@code Streamable} instance
-     */
-    @SuppressWarnings("unchecked")
-    @CheckReturnValue
-    @NonNull
-    static <@NonNull T> Streamable<T> never() {
-        return RxJavaPlugins.onAssembly((Streamable<T>)StreamableNever.INSTANCE);
+        return create(emitter -> {
+            try (var mainSource = sources.forEach(item -> {
+                try (var innerSource = item.forEach(emitter::emit, emitter.canceller().derive(), executor)) {
+                    innerSource.await();
+                }
+            }, emitter.canceller(), executor)) {
+                mainSource.await();
+            }
+        }, executor);
     }
 
     /**
@@ -317,27 +219,186 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
-     * Emits the elements of each inner sequence produced by the outer sequence.
-     * @param <T> the common element type
-     * @param sources a streamable of inner streamables
-     * @param executor the executorservice where to run the virtual wait
-     * @return the new {@code Streamable} instance.
-     * @throws NullPointerException if {@code sources} or {@code exec} is {@code null}
+     * Returns an empty {@code Streamable} that never produces an item and just completes.
+     * @param <T> the element type
+     * @return the {@code Streamable} instance
+     */
+    @SuppressWarnings("unchecked")
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> empty() {
+        return RxJavaPlugins.onAssembly((Streamable<T>)StreamableEmpty.INSTANCE);
+    }
+
+    /**
+     * Filters out the upstream items that do not pass the given predicate
+     * @param predicate the callback that should return {@code true} to let the upstream value pass
+     *                  or {@code false} to ignore it and continue with the next upstream item
+     * @return the new {@code Streamable} instance
+     * @throw NullPointerException if {@code predicate} is {@code null}
      */
     @CheckReturnValue
     @NonNull
-    static <@NonNull T> Streamable<T> concat(Streamable<? extends Streamable<? extends T>> sources, ExecutorService executor) {
-        Objects.requireNonNull(sources, "sources is null");
+    default Streamable<T> filter(@NonNull Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return RxJavaPlugins.onAssembly(new StreamableFilter<>(this, predicate));
+    }
+
+    /**
+     * Streams all elements of the given items array.
+     * @param <T> the element type of the items
+     * @param items the array of items to stream
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code items} is {@code null}
+     */
+    @SafeVarargs
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> fromArray(@NonNull T... items) {
+        Objects.requireNonNull(items, "items is null");
+        return RxJavaPlugins.onAssembly(new StreamableFromArray<>(items));
+    }
+
+    /**
+     * Streams all elements of the given {@link Iterable} sequence.
+     * @param <T> the element type of the items
+     * @param items the iterable of items to stream
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code items} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> fromIterable(@NonNull Iterable<? extends T> items) {
+        Objects.requireNonNull(items, "items is null");
+        return RxJavaPlugins.onAssembly(new StreamableFromIterable<>(items));
+    }
+
+    /**
+     * Convert any {@link java.util.concurrent.Flow.Publisher} into a {@code Streamable} sequence.
+     * @param <T> the element type
+     * @param source Flow.Publisher to convert
+     * @return the new {@code Streamable} instance
+     */
+    @CheckReturnValue
+    @NonNull
+    static <T> Streamable<T> fromPublisher(@NonNull Flow.Publisher<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        return fromPublisher(source, Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    /**
+     * Convert any {@link java.util.concurrent.Flow.Publisher} into a {@code Streamable} sequence.
+     * @param <T> the element type
+     * @param source Flow.Publisher to convert
+     * @param executor where the conversion will run
+     * @return the new {@code Streamable} instance
+     */
+    @CheckReturnValue
+    @NonNull
+    static <T> Streamable<T> fromPublisher(@NonNull Flow.Publisher<T> source, @NonNull ExecutorService executor) {
+        Objects.requireNonNull(source, "source is null");
         Objects.requireNonNull(executor, "executor is null");
-        return create(emitter -> {
-            try (var mainSource = sources.forEach(item -> {
-                try (var innerSource = item.forEach(emitter::emit, emitter.canceller().derive(), executor)) {
-                    innerSource.await();
-                }
-            }, emitter.canceller(), executor)) {
-                mainSource.await();
-            }
-        }, executor);
+        return RxJavaPlugins.onAssembly(new StreamableFromPublisher<>(source, executor));
+    }
+
+    /**
+     * Streams all elements of the given {@link Stream} sequence.
+     * @param <T> the element type of the items
+     * @param items the stream of items to stream
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code items} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> fromStream(@NonNull Stream<? extends T> items) {
+        Objects.requireNonNull(items, "items is null");
+        return RxJavaPlugins.onAssembly(new StreamableFromStream<>(items));
+    }
+
+    /**
+     * Constructs a {@code Streamable} that after the initial delay, starts emitting an ever increasing
+     * numbers from {@code start} up to {@code start + count} exclusive with the given period.
+     * <p>
+     * If there are processing delays, this source may emit multiple queued up items in a quick succession.
+     * @param start the first long value to emit
+     * @param count the number of items to emit, use {@link Long#MAX_VALUE} for an unlimited range
+     * @param initialDelay the time to delay before the {@code start} item is emitted
+     * @param period the period of how often emit the next item
+     * @param unit the time unit for both {@code initialDelay} and {@code period}
+     * @param scheduler the scheduler to use for the timed waiting
+     * @return the new {@code Streamable} instance
+     */
+    static Streamable<Long> intervalRange(long start, long count,
+            long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
+
+        long end = start + (count - 1);
+        if (start > 0 && end < 0) {
+            throw new IllegalArgumentException("Overflow! start + count is bigger than Long.MAX_VALUE");
+        }
+
+        return RxJavaPlugins.onAssembly(new StreamableIntervalRange(start, count, initialDelay, period, unit, scheduler, null));
+    }
+
+    /**
+     * Constructs a {@code Streamable} that after the initial delay, starts emitting an ever increasing
+     * numbers from {@code start} up to {@code start + count} exclusive with the given period.
+     * <p>
+     * If the provided {@link ExecutorService} is a {@link ScheduledExecutorService}, its
+     * {@link ScheduledExecutorService#scheduleAtFixedRate(Runnable, long, long, TimeUnit)} will be used.
+     * Otherwise, a plain {@code ExecutorService} will be wrapped via {@link Schedulers#from(Executor)}.
+     * <p>
+     * If there are processing delays, this source may emit multiple queued up items in a quick succession.
+     * @param start the first long value to emit
+     * @param count the number of items to emit, use {@link Long#MAX_VALUE} for an unlimited range
+     * @param initialDelay the time to delay before the {@code start} item is emitted
+     * @param period the period of how often emit the next itme
+     * @param unit the time unit for both {@code initialDelay} and {@code period}
+     * @param executor the executor to use
+     * @return the new {@code Streamable} instance
+     */
+    static Streamable<Long> intervalRange(long start, long count,
+            long initialDelay, long period, TimeUnit unit, ExecutorService executor) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(executor, "executor is null");
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
+
+        long end = start + (count - 1);
+        if (start > 0 && end < 0) {
+            throw new IllegalArgumentException("Overflow! start + count is bigger than Long.MAX_VALUE");
+        }
+        return RxJavaPlugins.onAssembly(new StreamableIntervalRange(start, count, initialDelay, period, unit, null, executor));
+    }
+
+    /**
+     * Returns a single-element {@code Streamable} that produces the constant item and completes.
+     * @param <T> the element type
+     * @param item the constant item to produce
+     * @return the {@code Streamable} instance
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> just(@NonNull T item) {
+        Objects.requireNonNull(item, "item is null");
+        return RxJavaPlugins.onAssembly(new StreamableJust<>(item));
+    }
+
+    /**
+     * Returns an {@code Streamable} that never produces an item and never terminates.
+     * @param <T> the element type
+     * @return the {@code Streamable} instance
+     */
+    @SuppressWarnings("unchecked")
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> never() {
+        return RxJavaPlugins.onAssembly((Streamable<T>)StreamableNever.INSTANCE);
     }
 
     /**
@@ -390,6 +451,39 @@ public interface Streamable<@NonNull T> {
             throw new IllegalArgumentException("Overflow! start + count is bigger than Long.MAX_VALUE");
         }
         return RxJavaPlugins.onAssembly(new StreamableRangeLong(start, count));
+    }
+
+    /**
+     * Signals a single 0L and completes after the given delay amount of time.
+     * @param delay the amount to delay the signaling of a single item
+     * @param unit the time unit
+     * @param scheduler where the timed delay should happen
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     */
+    static Streamable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new StreamableTimer(delay, unit, scheduler, null));
+    }
+
+    /**
+     * Signals a single 0L and completes after the given delay amount of time.
+     * <p>
+     * If the {@code executor} is a {@link ScheduledExecutorService}, the operator will use
+     * its {@link ScheduledExecutorService#schedule(Runnable, long, TimeUnit)} method.
+     * Otherwise, the {@link ExecutorService#submit(Callable)} will be invoked with an upfront
+     * {@link TimeUnit#sleep(long)}.
+     * @param delay the amount to delay the signaling of a single item
+     * @param unit the time unit
+     * @param executor where the timed delay should happen
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code unit} or {@code executor} is {@code null}
+     */
+    static Streamable<Long> timer(long delay, TimeUnit unit, ExecutorService executor) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(executor, "executor is null");
+        return RxJavaPlugins.onAssembly(new StreamableTimer(delay, unit, null, executor));
     }
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo

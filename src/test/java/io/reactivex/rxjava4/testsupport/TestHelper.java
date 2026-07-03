@@ -661,6 +661,15 @@ public enum TestHelper {
         }
     }
 
+    /**
+     * Makes sure the given {@link Disposable} is not disposed upfront,
+     * disposes it, checks if it got disposed and then double checks
+     * if disposing it again will not result in errors or no longer being disposed.
+     * <p>
+     * A common use for it is to make sure the {@link Disposable#isDisposed()} gets
+     * covered even though naturally nothing would invoke that method in a normal flow.
+     * @param d the {@code Disposable} to check
+     */
     public static void checkDisposed(Disposable d) {
         assertFalse(d.isDisposed(), "Disposed upfront?!");
 
