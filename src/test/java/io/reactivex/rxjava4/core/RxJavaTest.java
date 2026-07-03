@@ -60,6 +60,7 @@ public abstract class RxJavaTest {
      * that usually depend on Thread.sleep consistency.
      * @param count the number of times to retry
      * @param code the code to run
+     * @since 4.0.0
      */
     public static void withRetry(int count, Action code) {
         AssertionError error = null;
@@ -85,6 +86,7 @@ public abstract class RxJavaTest {
      * Don't forget to {@link ExecutorService#submit(Callable)} your work!
      * @param call the callback to give the VTE.
      * @throws Throwable propagate exceptions
+     * @since 4.0.0
      */
     public static void withVirtual(Consumer<ExecutorService> call) throws Throwable {
         try (var exec = new ExecutorIntercept(Executors.newThreadPerTaskExecutor(Thread.ofVirtual().factory()), false)) {
@@ -96,6 +98,7 @@ public abstract class RxJavaTest {
      * Execute a call within a virtual thread of the standard virtual thread executor.
      * @param call the call to invoke
      * @throws Throwable the exception propagated out
+     * @since 4.0.0
      */
     public static void onVirtual(Consumer<ExecutorService> call) throws Throwable {
         withVirtual(exec -> exec.submit(() -> {
@@ -190,6 +193,7 @@ public abstract class RxJavaTest {
      * Don't forget to {@link ExecutorService#submit(Callable)} your work!
      * @param call the callback to give the VTE.
      * @throws Throwable propagate exceptions
+     * @since 4.0.0
      */
     public static void withSingleExecutor(Consumer<ScheduledExecutorService> call) throws Throwable {
         try (var exec = Executors.newSingleThreadScheduledExecutor()) {
@@ -203,6 +207,7 @@ public abstract class RxJavaTest {
      * Don't forget to {@link ExecutorService#submit(Callable)} your work!
      * @param call the callback to give the VTE.
      * @throws Throwable propagate exceptions
+     * @since 4.0.0
      */
     public static void withCachedExecutor(Consumer<ExecutorService> call) throws Throwable {
         try (var exec = new ExecutorIntercept(Executors.newCachedThreadPool(), false)) {
@@ -211,7 +216,7 @@ public abstract class RxJavaTest {
     }
 
     /**
-     * Enable thracking of the global errors for the duration of the action.
+     * Enable tracking of the global errors for the duration of the action.
      * @param action the action to run with a list of errors encountered
      * @throws Throwable the exception rethrown from the action
      */
@@ -226,5 +231,18 @@ public abstract class RxJavaTest {
 
     public static List<Throwable> trackPluginErrors() {
         return TestHelper.trackPluginErrors();
+    }
+
+    /**
+     * Creates a virtual thread based scheduled executor service for the duration of the call, then
+     * closes it.
+     * @param call the call to handle the virtual scheduled executor service
+     * @throws Throwable in case the callback throws
+     * @since 4.0.0
+     */
+    public static void withVirtualScheduled(Consumer<? super ScheduledExecutorService> call) throws Throwable {
+        try(var exec = Executors.newScheduledThreadPool(1, Thread.ofVirtual().factory())) {
+            call.accept(exec);
+        }
     }
 }

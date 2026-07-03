@@ -496,6 +496,9 @@ public class CheckParamValidationTest extends RxJavaTest {
         addOverride(new ParamOverride(Maybe.class, 0, ParamMode.ANY, "toCompletionStage", Object.class));
         addOverride(new ParamOverride(Completable.class, 0, ParamMode.ANY, "toCompletionStage", Object.class));
 
+        addOverride(new ParamOverride(Streamable.class, 0, ParamMode.ANY, "timer", Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Streamable.class, 0, ParamMode.ANY, "timer", Long.TYPE, TimeUnit.class, ExecutorService.class));
+
         // -----------------------------------------------------------------------------------
 
         ignores = new HashMap<>();
@@ -529,6 +532,8 @@ public class CheckParamValidationTest extends RxJavaTest {
         // needs special param validation due to (long)start + end - 1 <= Integer.MAX_VALUE
         addIgnore(new ParamIgnore(Streamable.class, "range", Integer.TYPE, Integer.TYPE));
         addIgnore(new ParamIgnore(Streamable.class, "rangeLong", Long.TYPE, Long.TYPE));
+        addIgnore(new ParamIgnore(Streamable.class, "intervalRange", Long.TYPE, Long.TYPE, Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
+        addIgnore(new ParamIgnore(Streamable.class, "intervalRange", Long.TYPE, Long.TYPE, Long.TYPE, Long.TYPE, TimeUnit.class, ExecutorService.class));
 
         // -----------------------------------------------------------------------------------
 
