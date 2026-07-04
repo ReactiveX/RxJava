@@ -21,7 +21,6 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.disposables.*;
-import io.reactivex.rxjava4.observables.ConnectableObservable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**

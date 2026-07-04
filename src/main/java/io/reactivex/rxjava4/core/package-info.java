@@ -48,6 +48,14 @@
  * consumers to subscribe to them and receive events.</p>
  * <p>Usage examples can be found on the {@link io.reactivex.rxjava4.core.Flowable}/{@link io.reactivex.rxjava4.core.Observable}
  * and {@link java.util.concurrent.Flow.Subscriber} classes.</p>
+ * <p>
+ * Classes supporting the Flowable base reactive class:
+ * {@link io.reactivex.rxjava4.flowables.ConnectableFlowable} and
+ * {@link io.reactivex.rxjava4.flowables.GroupedFlowable}.
+ * <p>
+ * Classes supporting the Observable base reactive class:
+ * {@link io.reactivex.rxjava4.observables.ConnectableObservable} and
+ * {@link io.reactivex.rxjava4.observables.GroupedObservable}.
  */
 package io.reactivex.rxjava4.core;
 

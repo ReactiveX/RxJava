@@ -11,15 +11,13 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava4.flowables;
+package io.reactivex.rxjava4.core;
 
 import java.util.Objects;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 
-import static java.util.concurrent.Flow.*;
-
 import io.reactivex.rxjava4.annotations.*;
-import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.functions.*;

@@ -23,7 +23,6 @@ import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamObservableSource;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
-import io.reactivex.rxjava4.observables.ConnectableObservable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**

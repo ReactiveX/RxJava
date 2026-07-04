@@ -21,7 +21,6 @@ import java.util.concurrent.Flow.Publisher;
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.flowables.GroupedFlowable;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.testsupport.TestSubscriberEx;
 
