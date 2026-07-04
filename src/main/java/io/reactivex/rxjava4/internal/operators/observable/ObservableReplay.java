@@ -27,7 +27,6 @@ import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.disposables.*;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamObservableSource;
 import io.reactivex.rxjava4.internal.util.*;
-import io.reactivex.rxjava4.observables.ConnectableObservable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Timed;
 

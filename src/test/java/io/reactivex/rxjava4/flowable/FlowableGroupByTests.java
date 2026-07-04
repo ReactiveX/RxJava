@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.flowable.FlowableEventStream.Event;
-import io.reactivex.rxjava4.flowables.GroupedFlowable;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 

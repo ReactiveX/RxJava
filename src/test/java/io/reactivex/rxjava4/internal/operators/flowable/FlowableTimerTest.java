@@ -27,7 +27,6 @@ import org.mockito.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.flowables.ConnectableFlowable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.subscribers.*;

@@ -18,8 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.*;
-import io.reactivex.rxjava4.internal.functions.*;
-import io.reactivex.rxjava4.observables.ConnectableObservable;
+import io.reactivex.rxjava4.internal.functions.Functions;
 
 /**
  * Helper utility class to support Observable with inner classes.

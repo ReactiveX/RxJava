@@ -22,8 +22,6 @@ import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.flowables.ConnectableFlowable;
-import io.reactivex.rxjava4.observables.ConnectableObservable;
 import io.reactivex.rxjava4.parallel.ParallelFlowable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.*;

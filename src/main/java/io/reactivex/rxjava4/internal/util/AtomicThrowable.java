@@ -131,7 +131,7 @@ public final class AtomicThrowable extends AtomicReference<Throwable> {
 
     /**
      * Tries to terminate this atomic throwable (by swapping in the TERMINATED indicator)
-     * and notifies the consumer if there was no error (onComplete) or there was a
+     * and notifies the consumer if there was a
      * non-null, non-indicator exception contained before (onError).
      * If there was a terminated indicator, the consumer is not signaled.
      * @param consumer the consumer to notify

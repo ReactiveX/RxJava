@@ -87,6 +87,30 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
+     * Returns a shared list of received {@code onError} errors or the single {@code onError} value.
+     * <p>
+     * Note that accessing the items via certain methods of the {@link List}
+     * interface while the upstream is still actively emitting
+     * more items may result in a {@code ConcurrentModificationException}.
+     * <p>
+     * The {@link List#size()} method will return the number of items
+     * already received by this {@code TestObserver}/{@code TestSubscriber} in a thread-safe
+     * manner that can be read via {@link List#get(int)}) method
+     * (index range of 0 to {@code List.size() - 1}).
+     * <p>
+     * A view of the returned List can be created via {@link List#subList(int, int)}
+     * by using the bounds 0 (inclusive) to {@link List#size()} (exclusive) which,
+     * when accessed in a read-only fashion, should be also thread-safe and not throw any
+     * {@code ConcurrentModificationException}.
+     * @return a list of received onError values
+     * @since 4.0.0
+     */
+    @NonNull
+    public final List<Throwable> errors() {
+        return errors;
+    }
+
+    /**
      * Fail with the given message and add the sequence of errors as suppressed ones.
      * <p>Note this is deliberately the only fail method. Usually an assertion
      * would fail but it is possible it was due to an exception somewhere. This construct
@@ -97,6 +121,20 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      */
     @NonNull
     protected final AssertionError fail(@NonNull String message) {
+
+        AssertionError ae = new AssertionError(createStateText(message).toString());
+        if (!errors.isEmpty()) {
+            if (errors.size() == 1) {
+                ae.initCause(errors.getFirst());
+            } else {
+                CompositeException ce = new CompositeException(errors);
+                ae.initCause(ce);
+            }
+        }
+        return ae;
+    }
+
+    private StringBuilder createStateText(String message) {
         StringBuilder b = new StringBuilder(64 + message.length());
         b.append(message);
 
@@ -124,17 +162,12 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
         b
         .append(')')
         ;
+        return b;
+    }
 
-        AssertionError ae = new AssertionError(b.toString());
-        if (!errors.isEmpty()) {
-            if (errors.size() == 1) {
-                ae.initCause(errors.getFirst());
-            } else {
-                CompositeException ce = new CompositeException(errors);
-                ae.initCause(ce);
-            }
-        }
-        return ae;
+    @Override
+    public String toString() {
+        return createStateText(getClass().getSimpleName()).toString();
     }
 
     /**

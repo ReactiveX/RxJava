@@ -6,8 +6,8 @@ task javadocCleanup(dependsOn: "javadoc") doLast {
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/core/Maybe.html'))
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/core/Completable.html'))
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/flowables/ConnectableFlowable.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/observables/ConnectableObservable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/core/ConnectableFlowable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/core/ConnectableObservable.html'))
 
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/subjects/ReplaySubject.html'))
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/processors/ReplayProcessor.html'))

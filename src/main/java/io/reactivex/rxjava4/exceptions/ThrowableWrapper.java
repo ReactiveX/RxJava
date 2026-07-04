@@ -14,6 +14,7 @@
 package io.reactivex.rxjava4.exceptions;
 
 import java.io.Serial;
+import java.util.concurrent.CompletionException;
 
 /**
  * A runtime exception to sneak around checked exceptions.
@@ -22,7 +23,7 @@ import java.io.Serial;
  * at the right place.
  * @since 4.0.0
  */
-public final class ThrowableWrapper extends RuntimeException {
+public final class ThrowableWrapper extends CompletionException {
 
     @Serial
     private static final long serialVersionUID = -5280780582536857320L;

@@ -14,14 +14,12 @@
 package io.reactivex.rxjava4.internal.operators.flowable;
 
 import java.util.Objects;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 
-import static java.util.concurrent.Flow.*;
-
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.flowables.ConnectableFlowable;
 import io.reactivex.rxjava4.functions.*;
-import io.reactivex.rxjava4.internal.functions.*;
+import io.reactivex.rxjava4.internal.functions.Functions;
 
 /**
  * Helper utility class to support Flowable with inner classes.

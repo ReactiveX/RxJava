@@ -32,7 +32,8 @@ import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
  *
  * <p>Since 4.0.0, the {@code TestObserver} does implements {@link Disposable}
  * anymore. Use {@link #asDisposable()} to create a wrapper that calls the {@link #dispose()}.
- * @implNote Avoids all the resource warnings because {@code Disposable} implements {@link AutoCloseable} now.
+ * <strong>Implementation note</strong><br>
+ * Avoids all the resource warnings because {@code Disposable} implements {@link AutoCloseable} now.
  *
  * @param <T> the value type
  * @see io.reactivex.rxjava4.subscribers.TestSubscriber

@@ -18,13 +18,12 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.rxjava4.core.ObservableSource;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.disposables.*;
-import io.reactivex.rxjava4.observables.GroupedObservable;
 import io.reactivex.rxjava4.operators.SpscLinkedArrayQueue;
 
 public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpstream<T, GroupedObservable<K, V>> {

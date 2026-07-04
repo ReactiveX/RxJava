@@ -32,7 +32,6 @@ import io.reactivex.rxjava4.internal.operators.mixed.*;
 import io.reactivex.rxjava4.internal.operators.observable.*;
 import io.reactivex.rxjava4.internal.operators.single.SingleToObservable;
 import io.reactivex.rxjava4.internal.util.*;
-import io.reactivex.rxjava4.observables.*;
 import io.reactivex.rxjava4.observers.*;
 import io.reactivex.rxjava4.operators.ScalarSupplier;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;

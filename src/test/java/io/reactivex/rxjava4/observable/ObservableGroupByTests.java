@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observable.ObservableEventStream.Event;
-import io.reactivex.rxjava4.observables.GroupedObservable;
 
 public class ObservableGroupByTests extends RxJavaTest {
 

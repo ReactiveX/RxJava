@@ -14,14 +14,12 @@
 package io.reactivex.rxjava4.internal.operators.flowable;
 
 import java.io.Serial;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import static java.util.concurrent.Flow.*;
-
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.flowables.ConnectableFlowable;
 import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.disposables.*;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;

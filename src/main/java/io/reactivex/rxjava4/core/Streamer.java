@@ -39,7 +39,7 @@ public interface Streamer<@NonNull T> {
      * <ul>
      * <li>`true` indicates there is an item available for consumption via {@link #current()}
      * <li>`false` indicates there are no more items available
-     *< li>`Throwable` indicates there was an upstream error
+     * <li>`Throwable` indicates there was an upstream error
      * </ul>
      */
     @NonNull
@@ -101,17 +101,17 @@ public interface Streamer<@NonNull T> {
      * Use this constant in {@link #next()} to indicate
      * the next value is available, synchronously.
      */
-    CompletionStage<Boolean> NEXT_TRUE = CompletableFuture.completedStage(true);
+    CompletableFuture<Boolean> NEXT_TRUE = CompletableFuture.completedFuture(true);
 
     /**
      * Use this constant in {@link #next()} to indicate
      * no more values will be available, synchronously.
      */
-    CompletionStage<Boolean> NEXT_FALSE = CompletableFuture.completedStage(false);
+    CompletableFuture<Boolean> NEXT_FALSE = CompletableFuture.completedFuture(false);
 
     /**
      * Use this constant in {@link #finish()} to indicate
      * the cleanup was done synchronously.
      */
-    CompletionStage<Void> FINISHED = CompletableFuture.completedStage(null);
+    CompletableFuture<Void> FINISHED = CompletableFuture.completedFuture(null);
 }

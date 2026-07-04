@@ -28,7 +28,6 @@ import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Action;
-import io.reactivex.rxjava4.observables.ConnectableObservable;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subjects.PublishSubject;

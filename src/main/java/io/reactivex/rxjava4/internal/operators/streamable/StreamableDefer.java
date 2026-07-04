@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
+import java.util.Objects;
+
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.DisposableContainer;
@@ -25,7 +27,8 @@ public record StreamableDefer<T>(Supplier<? extends Streamable<? extends T>> sup
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
         try {
-            return (Streamer<T>)(supplier.get().stream(cancellation));
+            return (Streamer<T>)(Objects.requireNonNull(supplier.get(), "The supplier returned a null Streamable")
+                    .stream(cancellation));
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             return StreamableError.createFailed(ex);

@@ -30,7 +30,6 @@ import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
-import io.reactivex.rxjava4.observables.ConnectableObservable;
 import io.reactivex.rxjava4.observers.*;
 import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.subjects.*;

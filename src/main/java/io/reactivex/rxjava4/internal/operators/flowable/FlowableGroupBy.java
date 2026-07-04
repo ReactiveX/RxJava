@@ -16,14 +16,12 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import java.io.Serial;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
-
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.flowables.GroupedFlowable;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.subscriptions.*;
 import io.reactivex.rxjava4.internal.util.*;

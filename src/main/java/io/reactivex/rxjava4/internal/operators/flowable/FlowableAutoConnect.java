@@ -13,13 +13,11 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.concurrent.Flow.*;
-
-import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.flowables.ConnectableFlowable;
 import io.reactivex.rxjava4.functions.Consumer;
 
 /**

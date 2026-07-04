@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.functions.Consumer;
-import io.reactivex.rxjava4.observables.ConnectableObservable;
 
 /**
  * Wraps a ConnectableObservable and calls its connect() method once

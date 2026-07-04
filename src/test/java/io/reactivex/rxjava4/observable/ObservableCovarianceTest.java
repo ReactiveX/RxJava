@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.functions.Function;
-import io.reactivex.rxjava4.observables.GroupedObservable;
 import io.reactivex.rxjava4.testsupport.TestObserverEx;
 
 /**

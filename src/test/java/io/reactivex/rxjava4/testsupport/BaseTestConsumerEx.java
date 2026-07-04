@@ -13,14 +13,12 @@
 
 package io.reactivex.rxjava4.testsupport;
 
-import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.rxjava4.functions.Predicate;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 import io.reactivex.rxjava4.observers.BaseTestConsumer;
 import io.reactivex.rxjava4.operators.QueueFuseable;
-
-import java.util.Objects;
 
 /**
  * Base class with shared infrastructure to support TestSubscriber and TestObserver.
@@ -203,14 +201,6 @@ extends BaseTestConsumer<T, U> {
                 .assertError(error)
                 .assertErrorMessage(message)
                 .assertNotComplete();
-    }
-
-    /**
-     * Returns the internal shared list of errors.
-     * @return Returns the internal shared list of errors.
-     */
-    public final List<Throwable> errors() {
-        return errors;
     }
 
     /**

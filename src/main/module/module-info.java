@@ -17,9 +17,7 @@ module io.reactivex.rxjava4 {
     exports io.reactivex.rxjava4.core.config;
     exports io.reactivex.rxjava4.disposables;
     exports io.reactivex.rxjava4.exceptions;
-    exports io.reactivex.rxjava4.flowables;
     exports io.reactivex.rxjava4.functions;
-    exports io.reactivex.rxjava4.observables;
     exports io.reactivex.rxjava4.observers;
     exports io.reactivex.rxjava4.operators;
     exports io.reactivex.rxjava4.parallel;

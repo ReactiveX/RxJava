@@ -573,6 +573,20 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Maps each upstream item into a {@code GroupedStreamable} group, emits those groups and keeps
+     * relaying the upstream items into those groups.
+     * @param <K> the key type, {@code null}s allowed
+     * @param keySelector the function that receives the upstream item and returns a key that determines
+     *                    which group the item will go into
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code keySelector} is {@code null}
+     */
+    default <@Nullable K> Streamable<GroupedStreamable<K, T>> groupBy(Function<? super T, ? extends K> keySelector) {
+        Objects.requireNonNull(keySelector, "keySelector is null");
+        return RxJavaPlugins.onAssembly(new StreamableGroupBy<>(this, keySelector));
+    }
+
+    /**
      * Hides the identity of this {@code Streamable} and its {@link Streamer}.
      * <p>
      * Use it to break optimizations or hide concrete implementations.
@@ -686,6 +700,21 @@ public interface Streamable<@NonNull T> {
     default Streamable<T> takeWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return RxJavaPlugins.onAssembly(new StreamableTakeWhile<>(this, predicate));
+    }
+
+    /**
+     * Relays items from this {@code Streamable} until the other {@code Streamable} signals
+     * an item or completes.
+     * @param <U> the element type of the other {@code Streamable}
+     * @param other the {@code Streamable} expected to signal when to stop taking items from this {@code Streamable}
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default <U> Streamable<T> takeUntil(@NonNull Streamable<U> other) {
+        Objects.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new StreamableTakeUntil<>(this, other));
     }
 
     /**

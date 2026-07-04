@@ -33,7 +33,6 @@ import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.flowables.ConnectableFlowable;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamPublisher;
