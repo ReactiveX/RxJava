@@ -39,7 +39,7 @@ public interface Streamer<@NonNull T> {
      * <ul>
      * <li>`true` indicates there is an item available for consumption via {@link #current()}
      * <li>`false` indicates there are no more items available
-     *< li>`Throwable` indicates there was an upstream error
+     * <li>`Throwable` indicates there was an upstream error
      * </ul>
      */
     @NonNull

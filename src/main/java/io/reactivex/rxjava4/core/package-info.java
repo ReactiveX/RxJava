@@ -50,12 +50,12 @@
  * and {@link java.util.concurrent.Flow.Subscriber} classes.</p>
  * <p>
  * Classes supporting the Flowable base reactive class:
- * {@link io.reactivex.rxjava4.flowables.ConnectableFlowable} and
- * {@link io.reactivex.rxjava4.flowables.GroupedFlowable}.
+ * {@link io.reactivex.rxjava4.core.ConnectableFlowable} and
+ * {@link io.reactivex.rxjava4.core.GroupedFlowable}.
  * <p>
  * Classes supporting the Observable base reactive class:
- * {@link io.reactivex.rxjava4.observables.ConnectableObservable} and
- * {@link io.reactivex.rxjava4.observables.GroupedObservable}.
+ * {@link io.reactivex.rxjava4.core.ConnectableObservable} and
+ * {@link io.reactivex.rxjava4.core.GroupedObservable}.
  */
 package io.reactivex.rxjava4.core;
 
