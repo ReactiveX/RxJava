@@ -140,9 +140,9 @@ initTheme();
 <li><a href="#onAssembly(io.reactivex.rxjava4.core.Maybe)" tabindex="0">onAssembly(Maybe)</a></li>
 <li><a href="#onAssembly(io.reactivex.rxjava4.core.Flowable)" tabindex="0">onAssembly(Flowable)</a></li>
 <li><a href="#onAssembly(io.reactivex.rxjava4.core.Streamable)" tabindex="0">onAssembly(Streamable)</a></li>
-<li><a href="#onAssembly(io.reactivex.rxjava4.flowables.ConnectableFlowable)" tabindex="0">onAssembly(ConnectableFlowable)</a></li>
+<li><a href="#onAssembly(io.reactivex.rxjava4.core.ConnectableFlowable)" tabindex="0">onAssembly(ConnectableFlowable)</a></li>
 <li><a href="#onAssembly(io.reactivex.rxjava4.core.Observable)" tabindex="0">onAssembly(Observable)</a></li>
-<li><a href="#onAssembly(io.reactivex.rxjava4.observables.ConnectableObservable)" tabindex="0">onAssembly(ConnectableObservable)</a></li>
+<li><a href="#onAssembly(io.reactivex.rxjava4.core.ConnectableObservable)" tabindex="0">onAssembly(ConnectableObservable)</a></li>
 <li><a href="#onAssembly(io.reactivex.rxjava4.core.Single)" tabindex="0">onAssembly(Single)</a></li>
 <li><a href="#onAssembly(io.reactivex.rxjava4.core.Completable)" tabindex="0">onAssembly(Completable)</a></li>
 <li><a href="#setOnParallelAssembly(io.reactivex.rxjava4.functions.Function)" tabindex="0">setOnParallelAssembly(Function)</a></li>
@@ -291,12 +291,12 @@ is set.</div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns the current hook function.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a><wbr>&lt;? super <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a>, ? extends <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a><wbr>&lt;? super <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>, ? extends <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getOnConnectableFlowableAssembly()" class="member-name-link">getOnConnectableFlowableAssembly</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns the current hook function.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a><wbr>&lt;? super <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a>, ? extends <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a>&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a><wbr>&lt;? super <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>, ? extends <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getOnConnectableObservableAssembly()" class="member-name-link">getOnConnectableObservableAssembly</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns the current hook function.</div>
@@ -418,6 +418,16 @@ such as computation or single.</div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Calls the associated hook function.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.ConnectableFlowable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Calls the associated hook function.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.ConnectableObservable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Calls the associated hook function.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Flowable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
@@ -440,16 +450,6 @@ such as computation or single.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;T&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.core.Streamable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Calls the associated hook function.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.flowables.ConnectableFlowable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Calls the associated hook function.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#onAssembly(io.reactivex.rxjava4.observables.ConnectableObservable)" class="member-name-link">onAssembly</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Calls the associated hook function.</div>
 </div>
@@ -612,12 +612,12 @@ and to signal an IllegalStateException instead.</div>
 <div class="block">Sets the specific hook function.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setOnConnectableFlowableAssembly(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setOnConnectableFlowableAssembly</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a>, ? extends <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a>&gt;&nbsp;onConnectableFlowableAssembly)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setOnConnectableFlowableAssembly(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setOnConnectableFlowableAssembly</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>, ? extends <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>&gt;&nbsp;onConnectableFlowableAssembly)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Sets the specific hook function.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setOnConnectableObservableAssembly(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setOnConnectableObservableAssembly</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a>, ? extends <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a>&gt;&nbsp;onConnectableObservableAssembly)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setOnConnectableObservableAssembly(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setOnConnectableObservableAssembly</a><wbr>(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>, ? extends <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>&gt;&nbsp;onConnectableObservableAssembly)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Sets the specific hook function.</div>
 </div>
@@ -1392,7 +1392,7 @@ handler via the <a href="#setErrorHandler(io.reactivex.rxjava4.functions.Consume
 <h3>getOnConnectableFlowableAssembly</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a>, ? extends <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a>&gt;</span>&nbsp;<span class="element-name">getOnConnectableFlowableAssembly</span>()</div>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>, ? extends <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>&gt;</span>&nbsp;<span class="element-name">getOnConnectableFlowableAssembly</span>()</div>
 <div class="block">Returns the current hook function.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -1504,7 +1504,7 @@ handler via the <a href="#setErrorHandler(io.reactivex.rxjava4.functions.Consume
 <h3>getOnConnectableObservableAssembly</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a>, ? extends <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a>&gt;</span>&nbsp;<span class="element-name">getOnConnectableObservableAssembly</span>()</div>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>, ? extends <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>&gt;</span>&nbsp;<span class="element-name">getOnConnectableObservableAssembly</span>()</div>
 <div class="block">Returns the current hook function.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -1602,7 +1602,7 @@ handler via the <a href="#setErrorHandler(io.reactivex.rxjava4.functions.Consume
 <h3>setOnConnectableFlowableAssembly</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setOnConnectableFlowableAssembly</span><wbr><span class="parameters">(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a>
- <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a>, ? extends <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a>&gt;&nbsp;onConnectableFlowableAssembly)</span></div>
+ <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>, ? extends <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>&gt;&nbsp;onConnectableFlowableAssembly)</span></div>
 <div class="block">Sets the specific hook function.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -1658,7 +1658,7 @@ handler via the <a href="#setErrorHandler(io.reactivex.rxjava4.functions.Consume
 <h3>setOnConnectableObservableAssembly</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setOnConnectableObservableAssembly</span><wbr><span class="parameters">(<a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a>
- <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a>, ? extends <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a>&gt;&nbsp;onConnectableObservableAssembly)</span></div>
+ <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>, ? extends <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>&gt;&nbsp;onConnectableObservableAssembly)</span></div>
 <div class="block">Sets the specific hook function.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -1902,17 +1902,17 @@ handler via the <a href="#setErrorHandler(io.reactivex.rxjava4.functions.Consume
 </section>
 </li>
 <li>
-<section class="detail" id="onAssembly(io.reactivex.rxjava4.flowables.ConnectableFlowable)">
+<section class="detail" id="onAssembly(io.reactivex.rxjava4.core.ConnectableFlowable)">
 <h3>onAssembly</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>
-<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">onAssembly</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.flowables">ConnectableFlowable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</span></div>
+<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">onAssembly</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</span></div>
 <div class="block">Calls the associated hook function.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="onAssembly(io.reactivex.rxjava4.flowables.ConnectableFlowable)-type-param-T"><code>T</code> - the value type</span></dd>
+<dd><span id="onAssembly(io.reactivex.rxjava4.core.ConnectableFlowable)-type-param-T"><code>T</code> - the value type</span></dd>
 <dt>Parameters:</dt>
 <dd><code>source</code> - the hook's input value</dd>
 <dt>Returns:</dt>
@@ -1941,17 +1941,17 @@ handler via the <a href="#setErrorHandler(io.reactivex.rxjava4.functions.Consume
 </section>
 </li>
 <li>
-<section class="detail" id="onAssembly(io.reactivex.rxjava4.observables.ConnectableObservable)">
+<section class="detail" id="onAssembly(io.reactivex.rxjava4.core.ConnectableObservable)">
 <h3>onAssembly</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>
-<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">onAssembly</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../observables/ConnectableObservable.html" title="class in io.reactivex.rxjava4.observables">ConnectableObservable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</span></div>
+<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">onAssembly</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;source)</span></div>
 <div class="block">Calls the associated hook function.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="onAssembly(io.reactivex.rxjava4.observables.ConnectableObservable)-type-param-T"><code>T</code> - the value type</span></dd>
+<dd><span id="onAssembly(io.reactivex.rxjava4.core.ConnectableObservable)-type-param-T"><code>T</code> - the value type</span></dd>
 <dt>Parameters:</dt>
 <dd><code>source</code> - the hook's input value</dd>
 <dt>Returns:</dt>

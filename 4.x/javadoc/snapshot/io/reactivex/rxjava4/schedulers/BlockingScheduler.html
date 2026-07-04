@@ -102,7 +102,12 @@ initTheme();
 <div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">BlockingScheduler</span>(io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler&nbsp;backingScheduler)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Record.html" title="class in java.lang" class="external-link">Record</a></span></div>
 <div class="block">Holds onto a blocking scheduler instance and provides access to its <a href="#execute()"><code>execute()</code></a>
-method and a way to obtain a pure <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance to be used as parameter.</div>
+method and a way to obtain a pure <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance to be used as parameter.
+<p>
+<strong>Implementation note</strong><br>
+          No need to instantiate this record by client applications, it serves as a way to
+          give access to the <code>Scheduler</code> interface as well as the blocking-specific
+          <a href="#execute()"><code>execute()</code></a> methods.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>4.0.0</dd>

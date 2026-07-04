@@ -106,7 +106,15 @@ to allow reactive processing and composition can implement the
 <a href="Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a> or <a href="Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a> class which then allow
 consumers to subscribe to them and receive events.</p>
 <p>Usage examples can be found on the <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a>/<a href="Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a>
-and <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> classes.</p></div>
+and <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> classes.</p>
+<p>
+Classes supporting the Flowable base reactive class:
+<a href="ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core"><code>ConnectableFlowable</code></a> and
+<a href="GroupedFlowable.html" title="class in io.reactivex.rxjava4.core"><code>GroupedFlowable</code></a>.
+<p>
+Classes supporting the Observable base reactive class:
+<a href="ConnectableObservable.html" title="class in io.reactivex.rxjava4.core"><code>ConnectableObservable</code></a> and
+<a href="GroupedObservable.html" title="class in io.reactivex.rxjava4.core"><code>GroupedObservable</code></a>.</div>
 </section>
 </div>
 <section class="summary">
@@ -183,6 +191,16 @@ consumable via an <a href="CompletableObserver.html" title="interface in io.reac
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Consist of a terminal stage and a disposable to be able to cancel a sequence.</div>
 </div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ConnectableFlowable.html" title="class in io.reactivex.rxjava4.core">ConnectableFlowable</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">A <code>ConnectableFlowable</code> resembles an ordinary <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a>, except that it does not begin
+emitting items when it is subscribed to, but only when its <a href="ConnectableFlowable.html#connect(io.reactivex.rxjava4.functions.Consumer)"><code>ConnectableFlowable.connect(Consumer)</code></a> method is called.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="ConnectableObservable.html" title="class in io.reactivex.rxjava4.core">ConnectableObservable</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">A <code>ConnectableObservable</code> resembles an ordinary <a href="Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a>, except that it does not begin
+emitting items when it is subscribed to, but only when its <a href="ConnectableObservable.html#connect(io.reactivex.rxjava4.functions.Consumer)"><code>ConnectableObservable.connect(Consumer)</code></a> method is called.</div>
+</div>
 <div class="col-first odd-row-color class-summary class-summary-tab1"><a href="Emitter.html" title="interface in io.reactivex.rxjava4.core">Emitter</a>&lt;T&gt;</div>
 <div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Base interface for emitting signals in a push-fashion in various generator-like source
@@ -229,89 +247,101 @@ for gaining performance.</div>
 <div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Interface to compose <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a>s.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a>&lt;T&gt;</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="GroupedFlowable.html" title="class in io.reactivex.rxjava4.core">GroupedFlowable</a>&lt;K,<wbr>T&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">A <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> that has been grouped by key, the value of which can be obtained with <a href="GroupedFlowable.html#getKey()"><code>GroupedFlowable.getKey()</code></a>.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="GroupedObservable.html" title="class in io.reactivex.rxjava4.core">GroupedObservable</a>&lt;K,<wbr>T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">An <a href="Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> that has been grouped by key, the value of which can be obtained with <a href="GroupedObservable.html#getKey()"><code>GroupedObservable.getKey()</code></a>.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="GroupedStreamable.html" title="class in io.reactivex.rxjava4.core">GroupedStreamable</a>&lt;K,<wbr>T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">An <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core"><code>Streamable</code></a> that has been grouped by key, the value of which can be obtained with <a href="GroupedStreamable.html#getKey()"><code>GroupedStreamable.getKey()</code></a>.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">The <code>Maybe</code> class represents a deferred computation and emission of a single value, no value at all or an exception.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="MaybeConverter.html" title="interface in io.reactivex.rxjava4.core">MaybeConverter</a>&lt;T,<wbr>R&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="MaybeConverter.html" title="interface in io.reactivex.rxjava4.core">MaybeConverter</a>&lt;T,<wbr>R&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Convenience interface and callback used by the <a href="Maybe.html#to(io.reactivex.rxjava4.core.MaybeConverter)"><code>Maybe.to(MaybeConverter)</code></a> operator to turn a <a href="Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a> into another
 value fluently.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="MaybeEmitter.html" title="interface in io.reactivex.rxjava4.core">MaybeEmitter</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="MaybeEmitter.html" title="interface in io.reactivex.rxjava4.core">MaybeEmitter</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Abstraction over an RxJava <a href="MaybeObserver.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeObserver</code></a> that allows associating
 a resource with it.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="MaybeObserver.html" title="interface in io.reactivex.rxjava4.core">MaybeObserver</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="MaybeObserver.html" title="interface in io.reactivex.rxjava4.core">MaybeObserver</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Provides a mechanism for receiving push-based notification of a single value, an error or completion without any value.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="MaybeOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">MaybeOnSubscribe</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="MaybeOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">MaybeOnSubscribe</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A functional interface that has a <code>subscribe()</code> method that receives
 a <a href="MaybeEmitter.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeEmitter</code></a> instance that allows pushing
 an event in a cancellation-safe manner.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="MaybeOperator.html" title="interface in io.reactivex.rxjava4.core">MaybeOperator</a>&lt;Downstream, Upstream&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="MaybeOperator.html" title="interface in io.reactivex.rxjava4.core">MaybeOperator</a>&lt;Downstream, Upstream&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Interface to map/wrap a downstream <a href="MaybeObserver.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeObserver</code></a> to an upstream <code>MaybeObserver</code>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="MaybeSource.html" title="interface in io.reactivex.rxjava4.core">MaybeSource</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="MaybeSource.html" title="interface in io.reactivex.rxjava4.core">MaybeSource</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Represents a basic <a href="Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a> source base interface,
 consumable via an <a href="MaybeObserver.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeObserver</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="MaybeTransformer.html" title="interface in io.reactivex.rxjava4.core">MaybeTransformer</a>&lt;Upstream, Downstream&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="MaybeTransformer.html" title="interface in io.reactivex.rxjava4.core">MaybeTransformer</a>&lt;Upstream, Downstream&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Interface to compose <a href="Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a>s.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="Notification.html" title="class in io.reactivex.rxjava4.core">Notification</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="Notification.html" title="class in io.reactivex.rxjava4.core">Notification</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Represents the reactive signal types: <code>onNext</code>, <code>onError</code> and <code>onComplete</code> and
 holds their parameter values (a value, a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a>, nothing).</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">The <code>Observable</code> class is the non-backpressured, optionally multi-valued base reactive class that
 offers factory methods, intermediate operators and the ability to consume synchronous
 and/or asynchronous reactive dataflows.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ObservableConverter.html" title="interface in io.reactivex.rxjava4.core">ObservableConverter</a>&lt;T,<wbr>R&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ObservableConverter.html" title="interface in io.reactivex.rxjava4.core">ObservableConverter</a>&lt;T,<wbr>R&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Convenience interface and callback used by the <a href="Observable.html#to(io.reactivex.rxjava4.core.ObservableConverter)"><code>Observable.to(ObservableConverter)</code></a> operator to turn an <a href="Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> into another
 value fluently.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ObservableEmitter.html" title="interface in io.reactivex.rxjava4.core">ObservableEmitter</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ObservableEmitter.html" title="interface in io.reactivex.rxjava4.core">ObservableEmitter</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Abstraction over an RxJava <a href="Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> that allows associating
 a resource with it.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ObservableOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">ObservableOnSubscribe</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ObservableOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">ObservableOnSubscribe</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A functional interface that has a <code>subscribe()</code> method that receives
 an <a href="ObservableEmitter.html" title="interface in io.reactivex.rxjava4.core"><code>ObservableEmitter</code></a> instance that allows pushing
 events in a cancellation-safe manner.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ObservableOperator.html" title="interface in io.reactivex.rxjava4.core">ObservableOperator</a>&lt;Downstream, Upstream&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ObservableOperator.html" title="interface in io.reactivex.rxjava4.core">ObservableOperator</a>&lt;Downstream, Upstream&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Interface to map/wrap a downstream <a href="Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> to an upstream <code>Observer</code>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ObservableSource.html" title="interface in io.reactivex.rxjava4.core">ObservableSource</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Represents a basic, non-backpressured <a href="Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> source base interface,
 consumable via an <a href="Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ObservableTransformer.html" title="interface in io.reactivex.rxjava4.core">ObservableTransformer</a>&lt;Upstream, Downstream&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ObservableTransformer.html" title="interface in io.reactivex.rxjava4.core">ObservableTransformer</a>&lt;Upstream, Downstream&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Interface to compose <a href="Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a>s.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="Observer.html" title="interface in io.reactivex.rxjava4.core">Observer</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="Observer.html" title="interface in io.reactivex.rxjava4.core">Observer</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Provides a mechanism for receiving push-based notifications.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">A <code>Scheduler</code> is an object that specifies an API for scheduling
 units of work provided in the form of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link"><code>Runnable</code></a>s to be
 executed without delay (effectively as soon as possible), after a specified time delay or periodically
@@ -321,77 +351,77 @@ these units of work get executed by some underlying task-execution scheme
 with some uniform properties and guarantees regardless of the particular underlying
 scheme.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core">Scheduler.Worker</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core">Scheduler.Worker</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Represents an isolated, sequential worker of a parent Scheduler for executing <code>Runnable</code> tasks on
 an underlying task-execution scheme (such as custom Threads, event loop, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link"><code>Executor</code></a> or Actor system).</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="Single.html" title="class in io.reactivex.rxjava4.core">Single</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="Single.html" title="class in io.reactivex.rxjava4.core">Single</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">The <code>Single</code> class implements the Reactive Pattern for a single value response.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="SingleConverter.html" title="interface in io.reactivex.rxjava4.core">SingleConverter</a>&lt;T,<wbr>R&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="SingleConverter.html" title="interface in io.reactivex.rxjava4.core">SingleConverter</a>&lt;T,<wbr>R&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Convenience interface and callback used by the <a href="Single.html#to(io.reactivex.rxjava4.core.SingleConverter)"><code>Single.to(SingleConverter)</code></a> operator to turn a <a href="Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> into another
 value fluently.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="SingleEmitter.html" title="interface in io.reactivex.rxjava4.core">SingleEmitter</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="SingleEmitter.html" title="interface in io.reactivex.rxjava4.core">SingleEmitter</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Abstraction over an RxJava <a href="SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> that allows associating
 a resource with it.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="SingleObserver.html" title="interface in io.reactivex.rxjava4.core">SingleObserver</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="SingleObserver.html" title="interface in io.reactivex.rxjava4.core">SingleObserver</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Provides a mechanism for receiving push-based notification of a single value or an error.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="SingleOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">SingleOnSubscribe</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="SingleOnSubscribe.html" title="interface in io.reactivex.rxjava4.core">SingleOnSubscribe</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A functional interface that has a <code>subscribe()</code> method that receives
 a <a href="SingleEmitter.html" title="interface in io.reactivex.rxjava4.core"><code>SingleEmitter</code></a> instance that allows pushing
 an event in a cancellation-safe manner.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="SingleOperator.html" title="interface in io.reactivex.rxjava4.core">SingleOperator</a>&lt;Downstream, Upstream&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="SingleOperator.html" title="interface in io.reactivex.rxjava4.core">SingleOperator</a>&lt;Downstream, Upstream&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Interface to map/wrap a downstream <a href="SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> to an upstream <code>SingleObserver</code>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="SingleSource.html" title="interface in io.reactivex.rxjava4.core">SingleSource</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Represents a basic <a href="Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> source base interface,
 consumable via an <a href="SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="SingleTransformer.html" title="interface in io.reactivex.rxjava4.core">SingleTransformer</a>&lt;Upstream, Downstream&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="SingleTransformer.html" title="interface in io.reactivex.rxjava4.core">SingleTransformer</a>&lt;Upstream, Downstream&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Interface to compose <a href="Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a>s.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Represents a virtual-thread capable, multi-valued (a)synchronous sequence of values that
 builds upon the Java <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a>-based concurrency-coordination model.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="StreamableConverter.html" title="interface in io.reactivex.rxjava4.core">StreamableConverter</a>&lt;T,<wbr>R&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="StreamableConverter.html" title="interface in io.reactivex.rxjava4.core">StreamableConverter</a>&lt;T,<wbr>R&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Convenience interface and callback used by the <a href="Streamable.html#to(io.reactivex.rxjava4.core.StreamableConverter)"><code>Streamable.to(StreamableConverter)</code></a> operator to turn an <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core"><code>Streamable</code></a> into another
 value fluently.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="StreamableOperator.html" title="interface in io.reactivex.rxjava4.core">StreamableOperator</a>&lt;T,<wbr>R&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="StreamableOperator.html" title="interface in io.reactivex.rxjava4.core">StreamableOperator</a>&lt;T,<wbr>R&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Interface to map/wrap an upstream <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a> to an downstream <code>Streamer</code>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A realized stream which can then be consumed asynchronously in steps.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Interface handed to user code in <a href="Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)"><code>Flowable.virtualCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></a> callback.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Interface to implement to produce elements when asked by
 <a href="Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)"><code>Flowable.virtualCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer</a>&lt;T,<wbr>R&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer</a>&lt;T,<wbr>R&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Interface called by the <a href="Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)"><code>Flowable.virtualTransform(VirtualTransformer, java.util.concurrent.ExecutorService)</code></a>
 operator to generate any number of output values based of the current input of the upstream.</div>
 </div>
