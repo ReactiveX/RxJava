@@ -1707,4 +1707,16 @@ public class TestSubscriberTest extends RxJavaTest {
             ts.assertValueSet(1, 2);
         });
     }
+
+    @Test
+    public void toStringValue() {
+        var ts = new TestSubscriber<>();
+        ts.onSubscribe(new BooleanSubscription());
+        ts.onNext(2);
+        ts.onNext(1);
+        ts.onNext(3);
+        ts.onComplete();
+
+        assertEquals("TestSubscriber (latch = 0, values = 3, errors = 0, completions = 1)", ts.toString());
+    }
 }

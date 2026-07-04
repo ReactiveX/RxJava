@@ -20,7 +20,7 @@ import java.util.function.BiConsumer;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
@@ -37,7 +37,7 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
 
     static final class GroupByStreamer<K, T>
     implements Streamer<GroupedStreamable<K, T>>,
-    BiConsumer<Object, Throwable>, java.util.function.Function<K, BasicGroupedStreamable<K, T>> {
+    BiConsumer<Object, Throwable>, java.util.function.Function<Boolean, Boolean> {
 
         final Streamer<T> upstream;
 
@@ -47,32 +47,52 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
 
         final Map<K, BasicGroupedStreamable<K, T>> groups;
 
+        final CompletableFuture<Void> onFinish;
+
         volatile boolean done;
 
-        volatile GroupedStreamable<K, T> current;
+        volatile GroupedStreamable<K, T> currentGroup;
+
+        volatile GroupedStreamable<K, T> currentNext;
+
+        final StageResumable<Boolean> mainNext;
 
         GroupByStreamer(Streamer<T> upstream, Function<? super T, ? extends K> keySelector) {
             this.upstream = upstream;
             this.keySelector = keySelector;
             this.wip = new AtomicInteger();
             this.groups = new ConcurrentHashMap<>();
+            this.mainNext = new StageResumable<>();
+            this.onFinish = new CompletableFuture<>();
         }
 
         @Override
         public @NonNull CompletionStage<Boolean> next() {
-            // TODO Auto-generated method stub
-            return null;
+            var cs = mainNext.await().thenApply(this);
+            return cs;
+        }
+
+        @Override
+        public Boolean apply(Boolean v) {
+            if (v) {
+                currentNext = currentGroup;
+            } else {
+                currentNext = null;
+            }
+            currentGroup = null;
+            return v;
         }
 
         @Override
         public @NonNull GroupedStreamable<K, T> current() {
-            return current;
+            return currentNext;
         }
 
         @Override
         public @NonNull CompletionStage<Void> finish() {
-            current = null;
-            return upstream.finish();
+            done = true;
+            drain();
+            return onFinish;
         }
 
         void drain() {
@@ -91,49 +111,67 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        public BasicGroupedStreamable<K, T> apply(K t) {
-            var g = new AsyncGroup<>(t, this);
-            current = g;
-            // TODO signal group is ready
-            return g;
-        }
-
-        @Override
         public void accept(Object t, Throwable u) {
             if (done) {
-                // TODO
+                upstream.finish().whenComplete((v, e) -> {
+                    currentNext = null;
+                    currentGroup = null;
+                    if (e != null) {
+                        onFinish.completeExceptionally(e);
+                    } else {
+                        onFinish.complete(v);
+                    }
+                });
             } else {
                 if (u != null) {
+                    done = true;
                     for (var g : groups.values()) {
                         g.terminate(u); // TODO whenComplete
                     }
                     groups.clear();
-                    done = true;
+                    mainNext.ready().completeExceptionally(u);
                 } else
                 if ((Boolean)t) {
                     try {
                         var c = upstream.current();
                         var key = keySelector.apply(c);
 
-                        var g = groups.computeIfAbsent(key, this);
+                        var g = groups.get(key);
+                        if (g == null) {
+                            g = new AsyncGroup<>(key, this);
+                            groups.put(key, g);
+                            currentGroup = g;
+                            mainNext.ready().complete(true);
+                        }
                         g.send(c).whenComplete((_, _) -> drain());
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
+                        done = true;
                         for (var g : groups.values()) {
                             g.terminate(ex);
                         }
                         groups.clear();
-                        done = true;
+                        mainNext.ready().completeExceptionally(ex);
                     }
                 } else {
+                    done = true;
                     for (var g : groups.values()) {
                         g.terminate(null);
                     }
                     groups.clear();
-                    done = true;
+                    mainNext.ready().complete(false);
                 }
-                drain();
             }
+        }
+
+        @SuppressWarnings("unchecked")
+        void delete(K key) {
+            groups.replace(key, (BasicGroupedStreamable<K, T>)TombstoneGroup.INSTANCE);
+        }
+
+        boolean isDeleted(K key) {
+            var e = groups.get(key);
+            return e == null || e == TombstoneGroup.INSTANCE;
         }
     }
 
@@ -147,37 +185,93 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
         abstract CompletionStage<Void> terminate(@Nullable Throwable throwable);
     }
 
-    static final class AsyncGroup<K, T> extends BasicGroupedStreamable<K, T> {
+    static final class AsyncGroup<K, T> extends BasicGroupedStreamable<K, T>
+    implements Streamer<T>, Disposable, java.util.function.Function<Boolean, Boolean> {
 
         final AtomicBoolean once;
 
         final GroupByStreamer<K, T> parent;
 
+        final StageResumable<Boolean> sendCanProgress;
+
+        final StageResumable<Boolean> nextCanProgress;
+
+        volatile T item;
+
+        volatile T current;
+
+        DisposableContainer cancellation;
+
         AsyncGroup(K key, GroupByStreamer<K, T> parent) {
             super(key);
             this.once = new AtomicBoolean();
             this.parent = parent;
+            this.sendCanProgress = new StageResumable<>();
+            this.nextCanProgress = new StageResumable<>();
         }
 
         @Override
         public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
-            // TODO Auto-generated method stub
             if (once.compareAndSet(false, true)) {
-                return null;
+                this.cancellation = cancellation;
+                cancellation.add(this);
+                return this;
             }
             return StreamableError.createFailed(new IllegalStateException("Only one streamer is allowed!"));
         }
 
         @Override
         CompletionStage<Void> send(T value) {
-            // TODO Auto-generated method stub
-            return null;
+            return sendCanProgress.await().thenAccept(_ -> {
+                item = value;
+                nextCanProgress.ready().complete(true);
+            });
         }
 
         @Override
         CompletionStage<Void> terminate(@Nullable Throwable throwable) {
+            return sendCanProgress.await().thenAccept(_ -> {
+                if (throwable == null) {
+                    nextCanProgress.ready().complete(false);
+                } else {
+                    nextCanProgress.ready().completeExceptionally(throwable);
+                }
+            });
+        }
+
+        @Override
+        public @NonNull CompletionStage<Boolean> next() {
+            sendCanProgress.ready().complete(true);
+            return nextCanProgress.await().thenApply(this);
+        }
+
+        @Override
+        public @NonNull Boolean apply(@NonNull Boolean b) {
+            current = item;
+            item = null;
+            return b;
+        }
+
+        @Override
+        public @NonNull T current() {
+            return current;
+        }
+
+        @Override
+        public @NonNull CompletionStage<Void> finish() {
+            this.cancellation.remove(this);
+            return FINISHED;
+        }
+
+        @Override
+        public void dispose() {
+            parent.delete(getKey());
+        }
+
+        @Override
+        public boolean isDisposed() {
             // TODO Auto-generated method stub
-            return null;
+            return parent.isDeleted(getKey());
         }
     }
 
