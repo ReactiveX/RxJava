@@ -36,7 +36,7 @@ public record StreamableTakeUntil<T, U>(
 
         var streamer = new TakeUntilMainStreamer<>(
                 mainStreamer, otherStreamer, mainCancellation, otherCancellation,
-                suppressValueAndCancel(otherStreamer.next(), otherCancellation, false)
+                suppressValueAndCancel(otherStreamer.next(), false)
             );
 
         return streamer;

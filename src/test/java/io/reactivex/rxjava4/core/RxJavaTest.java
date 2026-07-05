@@ -74,6 +74,11 @@ public abstract class RxJavaTest {
                 }
                 error.addSuppressed(ex);
             }
+            try {
+                Thread.sleep(10 * new Random().nextInt(10));
+            } catch (InterruptedException ex) {
+                throw new AssertionError(ex);
+            }
         }
         if (error != null) {
             throw error;

@@ -19,9 +19,8 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -138,8 +137,8 @@ public class StreamableGroupByTest extends StreamableBaseTest {
 
     @Test
     public void tombstone2() {
-        assertSame(Streamer.FINISHED, StreamableGroupBy.TombstoneGroup.INSTANCE.send(true), "send");
-        assertSame(Streamer.FINISHED, StreamableGroupBy.TombstoneGroup.INSTANCE.terminate(null), "terminate");
+        assertSame(Streamer.NEXT_TRUE, StreamableGroupBy.TombstoneGroup.INSTANCE.next(true), "send");
+        assertSame(Streamer.FINISHED, StreamableGroupBy.TombstoneGroup.INSTANCE.finish(null), "terminate");
     }
 
     @Test
@@ -256,28 +255,34 @@ public class StreamableGroupByTest extends StreamableBaseTest {
 
     @Test
     public void finishFails() {
-        Streamable<Integer> str = _ -> new Streamer<>() /* NFI */ {
-            @Override
-            public @NonNull CompletionStage<Boolean> next() {
-                return NEXT_FALSE;
-            }
-
-            @Override
-            public @NonNull Integer current() {
-                return null;
-            }
-
-            @Override
-            public @NonNull CompletionStage<Void> finish() {
-                return CompletableFuture.failedFuture(new TestException());
-            }
-        };
-
-        str
+        StreamableFailingFinish.MAIN_COMPLETES
         .groupBy(v -> v)
         .flatMap(v -> v, StandardConcurrentConfig.DEFAULT)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void finishFailsDebug() throws Throwable {
+        withCachedExecutor(exec -> {
+            StreamableFailingFinish.MAIN_COMPLETES
+            .groupBy(v -> v)
+            .flatMap(v -> v, StandardConcurrentConfig.DEFAULT)
+            .test(exec)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertFailure(TestException.class);
+        });
+    }
+
+    @Test
+    public void finishFails2Debug() throws Throwable {
+        withCachedExecutor(exec -> {
+            StreamableFailingFinish.MAIN_COMPLETES
+            .groupBy(v -> v)
+            .test(exec)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertFailure(TestException.class);
+        });
     }
 }

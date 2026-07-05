@@ -35,7 +35,7 @@ import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.operators.completable.CompletableToFlowable;
 import io.reactivex.rxjava4.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.rxjava4.internal.operators.single.SingleToFlowable;
@@ -3517,7 +3517,7 @@ public enum TestHelper {
             return f;
         }
 
-        System.out.println("Can't read " + p);
+        new Exception("Can't read " + p).printStackTrace(System.out);
         return null;
     }
 

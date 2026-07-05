@@ -126,7 +126,7 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
                 if (u != null) {
                     done = true;
                     for (var g : groups.values()) {
-                        g.terminate(u); // TODO whenComplete
+                        g.finish(u); // TODO whenComplete
                     }
                     groups.clear();
                     mainNext.ready().completeExceptionally(u);
@@ -143,12 +143,12 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
                             currentGroup = g;
                             mainNext.ready().complete(true);
                         }
-                        g.send(c).whenComplete((_, _) -> drain());
+                        g.next(c).whenComplete((_, _) -> drain());
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         done = true;
                         for (var g : groups.values()) {
-                            g.terminate(ex);
+                            g.finish(ex);
                         }
                         groups.clear();
                         mainNext.ready().completeExceptionally(ex);
@@ -156,7 +156,7 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
                 } else {
                     done = true;
                     for (var g : groups.values()) {
-                        g.terminate(null);
+                        g.finish(null);
                     }
                     groups.clear();
                     mainNext.ready().complete(false);
@@ -175,14 +175,15 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
         }
     }
 
-    static abstract class BasicGroupedStreamable<K, T> extends GroupedStreamable<K, T> {
+    static abstract class BasicGroupedStreamable<K, T> extends GroupedStreamable<K, T>
+    implements StreamerInput<T> {
         BasicGroupedStreamable(K key) {
             super(key);
         }
 
-        abstract CompletionStage<Void> send(@NonNull T value);
+        public abstract CompletionStage<Boolean> next(@NonNull T value);
 
-        abstract CompletionStage<Void> terminate(@Nullable Throwable throwable);
+        public abstract CompletionStage<Void> finish(@Nullable Throwable throwable);
     }
 
     static final class AsyncGroup<K, T> extends BasicGroupedStreamable<K, T>
@@ -221,15 +222,16 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        CompletionStage<Void> send(T value) {
-            return sendCanProgress.await().thenAccept(_ -> {
+        public CompletionStage<Boolean> next(T value) {
+            return sendCanProgress.await().thenApply(_ -> {
                 item = value;
                 nextCanProgress.ready().complete(true);
+                return true;
             });
         }
 
         @Override
-        CompletionStage<Void> terminate(@Nullable Throwable throwable) {
+        public CompletionStage<Void> finish(@Nullable Throwable throwable) {
             return sendCanProgress.await().thenAccept(_ -> {
                 if (throwable == null) {
                     nextCanProgress.ready().complete(false);
@@ -291,12 +293,12 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        CompletionStage<Void> send(Object value) {
-            return Streamer.FINISHED;
+        public CompletionStage<Boolean> next(Object value) {
+            return Streamer.NEXT_TRUE;
         }
 
         @Override
-        CompletionStage<Void> terminate(@Nullable Throwable throwable) {
+        public CompletionStage<Void> finish(@Nullable Throwable throwable) {
             return Streamer.FINISHED;
         }
     }
