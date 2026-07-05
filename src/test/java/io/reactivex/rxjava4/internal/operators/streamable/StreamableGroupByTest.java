@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
@@ -218,39 +218,53 @@ public class StreamableGroupByTest extends StreamableBaseTest {
 
     @Test
     public void groupDisposeTest() throws Throwable {
-        var pp = PublishProcessor.<Integer>create();
-        var gr = new AtomicReference<GroupedStreamable<Integer, Integer>>();
+        withCachedExecutor(exec -> {
+            var pp = PublishProcessor.<Integer>create();
+            var gr = new AtomicReference<GroupedStreamable<Integer, Integer>>();
 
-        var ts = pp.toStreamable()
-        .groupBy(v -> v)
-        .map(g -> {
-            gr.lazySet(g);
-            return g.test();
-        })
-        .test();
+            var ts = pp.toStreamable()
+            .groupBy(v -> v)
+            .map(g -> {
+                gr.lazySet(g);
+                return g.test(exec);
+            })
+            .test(exec);
 
-        while (!ts.hasSubscription()) {
-            Thread.sleep(1);
-        }
+            int n = 1000;
+            while (!ts.hasSubscription()) {
+                Thread.sleep(1);
+                if (n-- < 0) {
+                    throw new TimeoutException("hasSubscription");
+                }
+            }
 
-        while (!pp.hasSubscribers()) {
-            Thread.sleep(1);
-        }
+            n = 1000;
+            while (!pp.hasSubscribers()) {
+                Thread.sleep(1);
+                if (n-- < 0) {
+                    throw new TimeoutException("hasSubscribers");
+                }
+            }
 
-        pp.onNext(1);
+            pp.onNext(1);
 
-        while (gr.get() == null) {
-            Thread.sleep(1);
-        }
+            n = 1000;
+            while (gr.get() == null) {
+                Thread.sleep(1);
+                if (n-- < 0) {
+                    throw new TimeoutException("gr.get");
+                }
+            }
 
-        assertFalse(((Disposable)gr.get()).isDisposed(), "Group already disposed?");
+            assertFalse(((Disposable)gr.get()).isDisposed(), "Group already disposed?");
 
-        pp.onComplete();
+            pp.onComplete();
 
-        ts.awaitDone(5, TimeUnit.SECONDS)
-        .assertValueCount(1);
+            ts.awaitDone(5, TimeUnit.SECONDS)
+            .assertValueCount(1);
 
-        assertTrue(((Disposable)gr.get()).isDisposed(), "Group not disposed");
+            assertTrue(((Disposable)gr.get()).isDisposed(), "Group not disposed");
+        });
     }
 
     @Test
