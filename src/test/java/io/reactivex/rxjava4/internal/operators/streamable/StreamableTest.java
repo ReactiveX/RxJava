@@ -357,4 +357,14 @@ public class StreamableTest extends StreamableBaseTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5);
     }
+
+    @Test
+    public void finishFails2Debug() throws Throwable {
+        withCachedExecutor(exec -> {
+            StreamableFailingFinish.MAIN_COMPLETES
+            .test(exec)
+            .awaitDone(5, TimeUnit.MINUTES)
+            .assertFailure(TestException.class);
+        });
+    }
 }

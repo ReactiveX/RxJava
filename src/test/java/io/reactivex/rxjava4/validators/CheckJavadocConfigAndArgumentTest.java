@@ -68,12 +68,12 @@ public class CheckJavadocConfigAndArgumentTest extends RxJavaTest {
 
     @Test
     public void checkConnectableFlowable() throws Exception {
-        checkSource("ConnectableFlowable", "io.reactivex.rxjava4.flowables");
+        checkSource("ConnectableFlowable", "io.reactivex.rxjava4.core");
     }
 
     @Test
     public void checkConnectableObservable() throws Exception {
-        checkSource("ConnectableObservable", "io.reactivex.rxjava4.observables");
+        checkSource("ConnectableObservable", "io.reactivex.rxjava4.core");
     }
 
     @Test

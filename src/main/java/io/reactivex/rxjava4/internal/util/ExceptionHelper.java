@@ -199,12 +199,24 @@ public final class ExceptionHelper {
         if (secondary instanceof CompletionException || secondary instanceof ThrowableWrapper) {
             secondary = secondary.getCause();
         }
-        if (main != null && secondary != null) {
+        if (main != null && secondary != null && main != secondary) {
             main.addSuppressed(secondary);
         }
         if (main != null) {
             return main;
         }
         return secondary;
+    }
+
+    /**
+     * Unwraps the given {@link CompletionException} or {@link ThrowableWrapper}
+     * @param t the possible throwable to unwrap
+     * @return the unwrapped Throwable
+     */
+    public static Throwable unwrap(@Nullable Throwable t) {
+        if (t instanceof CompletionException || t instanceof ThrowableWrapper) {
+            t = t.getCause();
+        }
+        return t;
     }
 }

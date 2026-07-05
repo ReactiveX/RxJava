@@ -35,7 +35,7 @@ public enum StreamableHelper {
      * then terminates the resulting {@link CompletableFuture} with said terminal event.
      * <p>
      * Use the {@code thenAcceptor} to do something about the winner and/or loser before the terminal
-     * signal is propagated further
+     * signal is propagated further.
      * @param <T> the common element type of the stages
      * @param first the first stage to wait for
      * @param second the second stage to wait for
@@ -69,6 +69,42 @@ public enum StreamableHelper {
         });
 
         return result;
+    }
+
+    /**
+     * Checks which source completes first, calls the given acceptor with 1 or 2 indicating the winner.
+     * <p>
+     * Use the {@code thenAcceptor} to do something about the winner and/or loser.
+     * @param <T> the common element type of the stages
+     * @param first the first stage to wait for
+     * @param second the second stage to wait for
+     * @param thenAcceptor the callback that receives who won
+     */
+    @CheckReturnValue
+    @NonNull
+    public static <T> void whenEither(CompletionStage<T> first, CompletionStage<T> second, IntConsumer thenAcceptor) {
+        var result = new CompletableFuture<T>();
+        var winner = new AtomicInteger();
+        first.whenComplete((v, e) -> {
+            if (winner.compareAndSet(0, 1)) {
+                thenAcceptor.accept(1);
+                if (e != null) {
+                    result.completeExceptionally(e);
+                } else {
+                    result.complete(v);
+                }
+            }
+        });
+        second.whenComplete((v, e) -> {
+            if (winner.compareAndSet(0, 2)) {
+                thenAcceptor.accept(2);
+                if (e != null) {
+                    result.completeExceptionally(e);
+                } else {
+                    result.complete(v);
+                }
+            }
+        });
     }
 
     /**
@@ -186,18 +222,16 @@ public enum StreamableHelper {
      * Use it to suppress expected cancellation errors and any source value.
      * @param <T> the element type of the stage
      * @param stage the original stage to gate the cancellation exception of
-     * @param disposable the {@code Disposable} to check
      * @param defaultValue to signal if the cancellation exception was gated
      * @return the new {@code CompletableFuture} instance
      */
     @CheckReturnValue
     @NonNull
     public static <T> CompletableFuture<T> suppressValueAndCancel(
-            @NonNull CompletionStage<T> stage,
-            @NonNull Disposable disposable, T defaultValue) {
+            @NonNull CompletionStage<T> stage, T defaultValue) {
         var result = new CompletableFuture<T>();
         stage.whenComplete((_, e) -> {
-            if (disposable.isDisposed() && isCancellation(e)) { // FIXME coverage possible even?
+            if (isCancellation(e)) { // FIXME coverage possible even?
                 result.complete(defaultValue);
             } else
             if (e != null) {
@@ -207,5 +241,21 @@ public enum StreamableHelper {
             }
         });
         return result;
+    }
+
+    /**
+     * When the stage completes, the future is completed with the very same value or exception.
+     * @param <T> the element type
+     * @param stage the stage to forward its completion signals
+     * @param future the future to receive the completion signals
+     */
+    public static <T> void forward(CompletionStage<T> stage, CompletableFuture<T> future) {
+        stage.whenComplete((u, e) -> {
+            if (e != null) {
+                future.completeExceptionally(e);
+            } else {
+                future.complete(u);
+            }
+        });
     }
 }

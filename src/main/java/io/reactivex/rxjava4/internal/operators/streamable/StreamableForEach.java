@@ -34,6 +34,7 @@ public record StreamableForEach() {
             @NonNull DisposableContainer canceller,
             @NonNull ExecutorService executor) {
         var future = CompletableFuture.<Void>supplyAsync(() -> {
+            Throwable finallyCrash = null;
             var str = me.stream(canceller);
             try {
                 try {
@@ -47,14 +48,19 @@ public record StreamableForEach() {
                         }
                     }
                 } finally {
-                    str.awaitFinish();
+                    try {
+                        str.awaitFinish();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        finallyCrash = ex;
+                    }
                 }
-            } catch (final Throwable crash) {
+            } catch (Throwable crash) {
                 Exceptions.throwIfFatal(crash);
-                if (crash instanceof CompletionException ce) {
-                    throw ExceptionHelper.wrapOrThrow(ce.getCause());
-                }
-                throw ExceptionHelper.wrapOrThrow(crash);
+                finallyCrash = ExceptionHelper.unwrapAndCombine(crash, finallyCrash);
+            }
+            if (finallyCrash != null) {
+                throw ExceptionHelper.wrapOrThrow(finallyCrash);
             }
             return null;
         }, executor);
@@ -69,9 +75,10 @@ public record StreamableForEach() {
             @NonNull ExecutorService executor) {
         var future = CompletableFuture.<Void>supplyAsync(() -> {
             var str = me.stream(canceller);
+            Throwable finallyCrash = null;
             try {
                 try {
-                var stopper = Disposable.empty();
+                    var stopper = Disposable.empty();
                     while (!canceller.isDisposed() && !stopper.isDisposed()) {
                         if (str.awaitNext()) {
                             // System.out.println("Received " + str.current());
@@ -83,14 +90,19 @@ public record StreamableForEach() {
                         }
                     }
                 } finally {
-                    str.awaitFinish();
+                    try {
+                        str.awaitFinish();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        finallyCrash = ex;
+                    }
                 }
             } catch (final Throwable crash) {
                 Exceptions.throwIfFatal(crash);
-                if (crash instanceof CompletionException ce) {
-                    throw ExceptionHelper.wrapOrThrow(ce.getCause());
-                }
-                throw ExceptionHelper.wrapOrThrow(crash);
+                throw ExceptionHelper.wrapOrThrow(ExceptionHelper.unwrapAndCombine(crash, finallyCrash));
+            }
+            if (finallyCrash != null) {
+                throw ExceptionHelper.wrapOrThrow(ExceptionHelper.unwrap(finallyCrash));
             }
             return null;
         });

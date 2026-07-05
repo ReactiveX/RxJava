@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.core;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.config.*;
@@ -539,9 +539,55 @@ public interface Streamable<@NonNull T> {
         return RxJavaPlugins.onAssembly(new StreamableTimer(delay, unit, null, executor));
     }
 
+    /**
+     * Takes the next element from each source {@code Streamable} and emits them a a single
+     * row of {@link List}.
+     * <p>
+     * If any of the sources is shorter than the rest or any of them fails, the
+     * sequence is completed early normally or with an exception, respectively.
+     * @param <T> the common element type of the sequences
+     * @param sources the iterable sequence of the source {@code Streamable}s
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code sources} is {@&ode null}
+     */
+    static <T> Streamable<List<T>> zip(Iterable<? extends Streamable<? extends T>> sources) {
+        Objects.requireNonNull(sources, "sources is null");
+        return RxJavaPlugins.onAssembly(new StreamableZip<>(sources));
+    }
+
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
     // Operators
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
+    /**
+     * Collects all upstream values via the use of a {@link Collector} configuration
+     * and emits its resulting value as a single item of the returned {@code Streamable}.
+     * <p>
+     * See {@link Collectors} for the most typical collector standard implementations.
+     * @param <A> the accumulator type of the collector
+     * @param <R> the result type of the collector and the returned {@code Streamamble}
+     * @param collector the Java collector instance to use
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code collector} is {@code null}
+     */
+    default <A, R> Streamable<R> collect(Collector<T, A, R> collector) {
+        Objects.requireNonNull(collector, "collector is null");
+        return RxJavaPlugins.onAssembly(new StreamableCollector<>(this, collector));
+    }
+
+    /**
+     * Delays the delivery of each upstream item by the given time amount.
+     * @param time the delay time
+     * @param unit the time unit
+     * @param scheduler the scheduler where the timed wait is happening
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     */
+    default Streamable<T> delay(long time, TimeUnit unit, Scheduler scheduler) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new StreamableDelay<>(this, time, unit, scheduler));
+    }
 
     /**
      * Calls the given consumer whenever an upstream item becomes available.
@@ -668,6 +714,19 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * When the upstream fails, the sequence is resumed by the {@code Streamable} that is returned for the
+     * failure {@link Throwable}.
+     * @param fallbackMapper the function that receives the upstream error and should return a
+     *                       {@code Streamable} to resume the sequence with
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code fallbackMapper} is {@code null}
+     */
+    default Streamable<T> onErrorResumeNext(Function<? super Throwable, ? extends Streamable<? extends T>> fallbackMapper) {
+        Objects.requireNonNull(fallbackMapper, "fallbackMapper is null");
+        return RxJavaPlugins.onAssembly(new StreamableOnErrorResumeNext<>(this, fallbackMapper));
+    }
+
+    /**
      * Takes at most the given number of items from the upstream and relays it to the downstream,
      * then cancels the rest of the sequence.
      * @param n the maximum number of items to relay
@@ -690,6 +749,21 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Relays items from this {@code Streamable} until the other {@code Streamable} signals
+     * an item or completes.
+     * @param <U> the element type of the other {@code Streamable}
+     * @param other the {@code Streamable} expected to signal when to stop taking items from this {@code Streamable}
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default <U> Streamable<T> takeUntil(@NonNull Streamable<U> other) {
+        Objects.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new StreamableTakeUntil<>(this, other));
+    }
+
+    /**
      * Relays items from this {@code Streamable} while the predicate returns {@code true}
      * @param predicate the predicate to test if the sequence should keep going
      * @return the new {@code Streamable} instance
@@ -703,18 +777,21 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
-     * Relays items from this {@code Streamable} until the other {@code Streamable} signals
-     * an item or completes.
-     * @param <U> the element type of the other {@code Streamable}
-     * @param other the {@code Streamable} expected to signal when to stop taking items from this {@code Streamable}
+     * Applies a timeout to each upstream item and switches to the fallback {@code Streamable}
+     * if the upstream doesn't produce an item within the given timeout period.
+     * @param timeout the time to wait for each upstream item
+     * @param unit the time unit
+     * @param scheduler the scheduler where to wait for the next upstream item
+     * @param fallback the {@code Streamable} to switch to if the upstream doesn't produce an item
+     *                 within the time limit
      * @return the new {@code Streamable} instance
-     * @throws NullPointerException if {@code other} is {@code null}
+     * @throws NullPointerException if {@code unit} or {@code scheduler} or {@code fallback} is {@code null}
      */
-    @CheckReturnValue
-    @NonNull
-    default <U> Streamable<T> takeUntil(@NonNull Streamable<U> other) {
-        Objects.requireNonNull(other, "other is null");
-        return RxJavaPlugins.onAssembly(new StreamableTakeUntil<>(this, other));
+    default Streamable<T> timeout(long timeout, TimeUnit unit, Scheduler scheduler, Streamable<T> fallback) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        Objects.requireNonNull(fallback, "fallback is null");
+        return RxJavaPlugins.onAssembly(new StreamableTimeout<>(this, timeout, unit, scheduler, fallback));
     }
 
     /**
@@ -891,8 +968,8 @@ public interface Streamable<@NonNull T> {
     default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber, @NonNull ExecutorService executor) {
         final Streamable<T> me = this;
         Flowable.<T>virtualCreate(emitter -> {
-            me.forEach(emitter::emit, emitter.canceller().derive(), executor)
-            .await();
+            var cf = me.forEach(emitter::emit, emitter.canceller().derive(), executor);
+            cf.await();
         }, executor)
         .subscribe(subscriber);
     }

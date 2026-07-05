@@ -47,5 +47,10 @@ public enum StreamableEmpty implements Streamable<Object> {
         public @NonNull CompletionStage<Void> finish() {
             return FINISHED;
         }
+
+        @SuppressWarnings("unchecked")
+        public static <T> Streamer<T> cast() {
+            return (Streamer<T>)INSTANCE;
+        }
     }
 }
