@@ -756,6 +756,17 @@ value fluently.</div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A realized stream which can then be consumed asynchronously in steps.</div>
 </div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/StreamerInput.html" title="interface in io.reactivex.rxjava4.core">StreamerInput&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">An interface to submit items and terminal events to a consumer that indacates when the processing of
+said item or terminal event has completed, similar to how <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> can receive events.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/StreamProcessor.html" title="interface in io.reactivex.rxjava4.core">StreamProcessor&lt;In,<wbr>Out&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="block">A <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Processor.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Processor</code></a>-like interface combining the <code>Streamable</code> interface and the
+<a href="io/reactivex/rxjava4/core/StreamerInput.html" title="interface in io.reactivex.rxjava4.core"><code>StreamerInput</code></a> interface to establish a push-pull bridge based on <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a>-based
+asynchronous processing and dispatching of values and errors.</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/Subject.html" title="class in io.reactivex.rxjava4.subjects">Subject&lt;T&gt;</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Represents an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> and an <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> at the same time, allowing
