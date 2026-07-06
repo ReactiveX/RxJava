@@ -21,8 +21,10 @@ import java.util.function.*;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StreamableInterceptConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.exceptions.CompositeException;
+import io.reactivex.rxjava4.exceptions.*;
+import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.util.*;
 
 /**
@@ -373,4 +375,30 @@ public enum StreamableHelper {
             }
         }
     }
-}
+
+    /**
+     * Create a {@link StreamableInterceptConfig} that can consume the {@link Streamer#next()} errors.
+     * @param <T> the element type of the {@link Streamable}
+     * @param consumer the consumer to be called with the error
+     * @return the new {@code StreamableInterceptConfig} instance
+     */
+    public static <T> StreamableInterceptConfig<T> createOnError(Consumer<? super Throwable> consumer) {
+        return new StreamableInterceptConfig<>((_, v) -> v, (_, v) -> {
+            var cf = new CompletableFuture<Boolean>();
+            v.whenComplete((u, e) -> {
+                if (e != null) {
+                    try {
+                        consumer.accept(e);
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        ex.addSuppressed(e);
+                        e = ex;
+                    }
+                    cf.completeExceptionally(e);
+                } else {
+                    cf.complete(u);
+                }
+            });
+            return cf;
+        }, v -> v, (_, v) -> v);
+    }}

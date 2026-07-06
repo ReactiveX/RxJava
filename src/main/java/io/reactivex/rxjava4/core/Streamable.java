@@ -590,6 +590,17 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Calls the specific {@link Consumer} if there is an error from the upstream.
+     * @param consumer the consumer to call with the Throwable
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code consumer} is {@code null}
+     */
+    default Streamable<T> doOnError(Consumer<? super Throwable> consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        return intercept(StreamableHelper.createOnError(consumer));
+    }
+
+    /**
      * Calls the given consumer whenever an upstream item becomes available.
      * @param consumer the callback to invoke with the next item from upstream
      * @return the new {@code Streamable} instance
@@ -981,6 +992,27 @@ public interface Streamable<@NonNull T> {
      */
     default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber) {
         subscribe(subscriber, Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    /**
+     * Relays the events of the upstream into a {@link StreamerInput} consumer.
+     * @param consumer the consumer to relay events into
+     * @throws NullPointerException if {@code consumer} or {@code executor} is {@code null}
+     */
+    default void subscribe(@NonNull StreamerInput<? super T> consumer) {
+        subscribe(consumer, Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    /**
+     * Relays the events of the upstream into a {@link StreamerInput} consumer.
+     * @param consumer the consumer to relay events into
+     * @param executor the {@link ExecutorService} to run the blocking consume and emissions
+     * @throws NullPointerException if {@code consumer} or {@code executor} is {@code null}
+     */
+    default void subscribe(@NonNull StreamerInput<? super T> consumer, ExecutorService executor) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        Objects.requireNonNull(executor, "executor is null");
+        StreamableForEach.forEach(this, consumer, executor);
     }
 
     /**

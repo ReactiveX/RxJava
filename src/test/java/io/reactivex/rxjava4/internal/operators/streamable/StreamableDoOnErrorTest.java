@@ -13,50 +13,55 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
 
-public class StreamableDoOnNextTest extends StreamableBaseTest {
-
-    @Test
-    public void passthrough() {
-        Streamable.range(1, 5)
-        .doOnNext(_ -> { })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2, 3, 4, 5);
-    }
+public class StreamableDoOnErrorTest extends StreamableBaseTest {
 
     @Test
     public void normal() {
-        var onValueCounter = new AtomicInteger();
-
+        AtomicReference<Throwable> error = new AtomicReference<>();
         Streamable.range(1, 5)
-        .doOnNext(_ -> onValueCounter.incrementAndGet())
+        .doOnError(error::set)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2, 3, 4, 5);
+        .assertResult(1, 2, 3, 4, 5)
+        ;
 
-        assertEquals(5, onValueCounter.get(), "onValueCounter");
+        assertNull(error.get(), "error is not empty?");
     }
 
     @Test
-    public void onCurrentThrows() {
-        var onValueCounter = new AtomicInteger();
-
-        Streamable.range(1, 5)
-        .doOnNext(_ -> { onValueCounter.incrementAndGet(); throw new TestException(); })
+    public void hasError() {
+        AtomicReference<Throwable> error = new AtomicReference<>();
+        var te = new TestException();
+        Streamable.error(te)
+        .doOnError(error::set)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+        .assertFailure(TestException.class)
+        ;
 
-        assertEquals(1, onValueCounter.get(), "onValueCounter");
+        assertSame(te, error.get(), "doOnError differs from TestSubscriber.onError?");
+    }
+
+    @Test
+    public void consumerCrash() {
+        var te = new TestException();
+        Streamable.error(te)
+        .doOnError(_ -> { throw new IOException(); })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(IOException.class)
+        .assertError(e -> e.getSuppressed()[0] == te)
+        ;
     }
 }

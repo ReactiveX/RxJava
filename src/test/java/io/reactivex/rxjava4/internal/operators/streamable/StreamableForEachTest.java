@@ -15,13 +15,15 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.concurrent.CancellationException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.disposables.CompositeDisposable;
 import io.reactivex.rxjava4.exceptions.*;
+import io.reactivex.rxjava4.processors.DispatchStreamProcessor;
 
 public class StreamableForEachTest extends StreamableBaseTest {
 
@@ -188,5 +190,61 @@ public class StreamableForEachTest extends StreamableBaseTest {
             assertFalse(cd.isDisposed(), "cd was disposed");
             assertEquals(1, counter.get());
         });
+    }
+
+    @Test
+    public void forEachInput() throws Throwable {
+        var dsp = new DispatchStreamProcessor<>();
+        var ts = dsp.test();
+
+        ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
+
+        while (!dsp.hasStreamers()) {
+            Thread.sleep(0, 1000);
+        }
+
+        Streamable.range(1, 5)
+        .subscribe(dsp);
+
+        ts.awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void forEachInputDebug() throws Throwable {
+        withCachedExecutor(exec -> {
+            var dsp = new DispatchStreamProcessor<>();
+            var ts = dsp.test(exec);
+
+            ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
+
+            while (!dsp.hasStreamers()) {
+                Thread.sleep(0, 1000);
+            }
+
+            Streamable.range(1, 5)
+            .subscribe(dsp);
+
+            ts.awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, 2, 3, 4, 5);
+        });
+    }
+
+    @Test
+    public void forEachInputError() throws Throwable {
+        var dsp = new DispatchStreamProcessor<>();
+        var ts = dsp.test();
+
+        ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
+
+        while (!dsp.hasStreamers()) {
+            Thread.sleep(0, 1000);
+        }
+
+        Streamable.error(new TestException())
+        .subscribe(dsp);
+
+        ts.awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
     }
 }

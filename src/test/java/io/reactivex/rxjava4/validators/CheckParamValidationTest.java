@@ -34,6 +34,7 @@ import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.operators.streamable.StreamableNever;
 import io.reactivex.rxjava4.parallel.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
+import io.reactivex.rxjava4.processors.DispatchStreamProcessor;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -619,6 +620,8 @@ public class CheckParamValidationTest extends RxJavaTest {
         defaultValues.put(OnBackpressureBufferConfig.class, OnBackpressureBufferConfig.DEFAULT);
 
         defaultValues.put(StreamableInterceptConfig.class, new StreamableInterceptConfig<Object>((_, v) -> v));
+
+        defaultValues.put(StreamerInput.class, new DispatchStreamProcessor<>());
 
         // TODO insert new config record types here
 

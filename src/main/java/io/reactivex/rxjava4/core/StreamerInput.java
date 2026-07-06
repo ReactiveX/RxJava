@@ -17,6 +17,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Flow.Subscriber;
 
 import io.reactivex.rxjava4.annotations.*;
+import io.reactivex.rxjava4.disposables.*;
 
 /**
  * An interface to submit items and terminal events to a consumer that indacates when the processing of
@@ -45,4 +46,13 @@ public interface StreamerInput<@NonNull T> {
      *         or exceptionally on error
      */
     CompletionStage<Void> finish(@Nullable Throwable throwable);
+
+    /**
+     * Returns the {@link DisposableContainer} to use to detect if the consumer has indicated no more
+     * items it is willing to accept.
+     * @return the {@code DisposableContainer}
+     */
+    default DisposableContainer cancellation() {
+        return new CompositeDisposable();
+    }
 }

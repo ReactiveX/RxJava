@@ -22,6 +22,7 @@ import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
+import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**
  * ForEach implementation to unclutter the {@link Streamable} type.
@@ -108,5 +109,44 @@ public record StreamableForEach() {
         });
         canceller.add(Disposable.fromFuture(future));
         return new CompletionStageDisposable<>(future, canceller);
+    }
+
+    public static <T> void forEach(Streamable<T> me, StreamerInput<? super T> consumer, ExecutorService executor) {
+        CompletableFuture.runAsync(() -> {
+            Throwable error = null;
+            var cancellation = consumer.cancellation();
+            var streamer = me.stream(cancellation);
+            try {
+                try {
+                    while (!cancellation.isDisposed()) {
+                        if (streamer.awaitNext()) {
+                            Streamer.awaitBoolean(consumer.next(streamer.current()));
+                        } else {
+                            break;
+                        }
+                    }
+                } finally {
+                    try {
+                        streamer.awaitFinish();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        error = ExceptionHelper.unwrap(ex);
+                    }
+                }
+            } catch (Throwable crash) {
+                Exceptions.throwIfFatal(crash);
+                crash = ExceptionHelper.unwrap(crash);
+                if (error != null) {
+                    crash.addSuppressed(error);
+                }
+                error = crash;
+            }
+            try {
+                Streamer.awaitVoid(consumer.finish(error));
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                RxJavaPlugins.onError(ex);
+            }
+        }, executor);
     }
 }
