@@ -80,7 +80,7 @@ public class StreamableToObservableTest extends StreamableBaseTest {
     @Test
     public void subject() throws Throwable {
         var pp = PublishProcessor.create();
-        var ts = pp.toStreamable()
+        var to = pp.toStreamable()
         .toObservable()
         .test();
 
@@ -88,11 +88,9 @@ public class StreamableToObservableTest extends StreamableBaseTest {
             Thread.sleep(1);
         }
 
-        while (!ts.hasSubscription()) {
-            Thread.sleep(1);
-        }
+        to.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        ts.dispose();
+        to.dispose();
 
         while (pp.hasSubscribers()) {
             Thread.sleep(1);

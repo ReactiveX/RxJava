@@ -13,15 +13,17 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
+import java.io.Serial;
+import java.util.Collection;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
 import io.reactivex.rxjava4.annotations.*;
-import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.CompositeException;
-import io.reactivex.rxjava4.internal.util.AtomicThrowable;
+import io.reactivex.rxjava4.internal.util.*;
 
 /**
  * Helper static methods for {@link Streamable}s, {@link CompletableFuture}s and {@link CompletionStage}s.
@@ -257,5 +259,118 @@ public enum StreamableHelper {
                 future.complete(u);
             }
         });
+    }
+
+    /**
+     * Awaits all the stages to complete in any form, then completes the returned {@link CompletableFuture} normally,
+     * or via the possible {@link CompositeException}s of all the failed stages.
+     * @param stages the collection of {@link CompletionStage}s to await
+     * @return the new {@code CompletableFuture} that gets completed
+     */
+    public static CompletableFuture<Void> awaitAllVoid(Collection<? extends CompletionStage<?>> stages) {
+        int size = stages.size();
+        if (size == 0) {
+            return Streamer.FINISHED;
+        }
+        var cf = new CompletableFuture<Void>();
+        var wip = new AtomicIntegerCompleter(cf, size);
+
+        for (var stage : stages) {
+            stage.whenComplete(wip);
+        }
+
+        return cf;
+    }
+
+    public static CompletableFuture<Boolean> awaitAllBoolean(Collection<? extends CompletionStage<Boolean>> stages) {
+        int size = stages.size();
+        if (size == 0) {
+            return Streamer.NEXT_FALSE;
+        }
+        var cf = new CompletableFuture<Boolean>();
+        var wip = new AtomicIntegerBooleanCompleter(cf, size);
+
+        for (var stage : stages) {
+            stage.whenComplete(wip);
+        }
+
+        return cf;
+    }
+
+    /**
+     * A counter and callback composite to save on allocation cost for awaiting many stages via
+     * {@link #awaitAll}.
+     */
+    static final class AtomicIntegerCompleter extends AtomicInteger implements BiConsumer<Object, Throwable> {
+
+        @Serial
+        private static final long serialVersionUID = 1598649149973711008L;
+
+        final CompletableFuture<Void> future;
+
+        final AtomicThrowable errors;
+
+        public AtomicIntegerCompleter(CompletableFuture<Void> future, int count) {
+            super(count);
+            this.future = future;
+            this.errors = new AtomicThrowable();
+        }
+
+        @Override
+        public void accept(Object t, Throwable u) {
+            if (u != null && !isCancellation(u)) {
+                errors.tryAddThrowable(ExceptionHelper.unwrap(u));
+            }
+            if (decrementAndGet() == 0) {
+                var err = errors.terminate();
+                if (err != null) {
+                    future.completeExceptionally(err);
+                } else {
+                    future.complete(null);
+                }
+            }
+        }
+    }
+    /**
+     * A counter and callback composite to save on allocation cost for awaiting many stages via
+     * {@link #awaitAll}.
+     */
+    static final class AtomicIntegerBooleanCompleter extends AtomicInteger implements BiConsumer<Boolean, Throwable> {
+
+        @Serial
+        private static final long serialVersionUID = 1598649149973711008L;
+
+        final CompletableFuture<Boolean> future;
+
+        final AtomicThrowable errors;
+
+        final AtomicBoolean outcome;
+
+        public AtomicIntegerBooleanCompleter(CompletableFuture<Boolean> future, int count) {
+            super(count);
+            this.future = future;
+            this.errors = new AtomicThrowable();
+            this.outcome = new AtomicBoolean(true);
+        }
+
+        @Override
+        public void accept(Boolean t, Throwable u) {
+            if (u != null && !isCancellation(u)) {
+                errors.tryAddThrowable(ExceptionHelper.unwrap(u));
+            }
+            if (t != null && !t) {
+                if (outcome.get()) {
+                    outcome.getAndSet(false);
+                }
+            }
+            if (decrementAndGet() == 0) {
+                var err = errors.terminate();
+                if (err != null) {
+                    future.completeExceptionally(err);
+                } else {
+                    future.complete(outcome.get());
+                }
+            }
+        }
     }
 }

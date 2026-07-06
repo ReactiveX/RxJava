@@ -29,6 +29,11 @@ public enum StreamableEmpty implements Streamable<Object> {
         return EmptyStreamer.INSTANCE;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> Streamer<T> createEmpty() {
+        return (Streamer<T>)EmptyStreamer.INSTANCE;
+    }
+
     enum EmptyStreamer implements Streamer<Object> {
 
         INSTANCE;
@@ -46,11 +51,6 @@ public enum StreamableEmpty implements Streamable<Object> {
         @Override
         public @NonNull CompletionStage<Void> finish() {
             return FINISHED;
-        }
-
-        @SuppressWarnings("unchecked")
-        public static <T> Streamer<T> cast() {
-            return (Streamer<T>)INSTANCE;
         }
     }
 }

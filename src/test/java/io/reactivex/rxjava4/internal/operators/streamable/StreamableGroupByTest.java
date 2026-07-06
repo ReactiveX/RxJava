@@ -231,15 +231,9 @@ public class StreamableGroupByTest extends StreamableBaseTest {
             })
             .test(exec);
 
-            int n = 1000;
-            while (!ts.hasSubscription()) {
-                Thread.sleep(1);
-                if (n-- < 0) {
-                    throw new TimeoutException("hasSubscription");
-                }
-            }
+            ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-            n = 1000;
+            int n = 1000;
             while (!pp.hasSubscribers()) {
                 Thread.sleep(1);
                 if (n-- < 0) {

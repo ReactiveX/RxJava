@@ -38,7 +38,7 @@ public record StreamableInterceptConfig<T>(
 ) {
 
     /**
-     * Constructs a configuration with a custom {@link #onNext} intercept and everything else is pass-through.
+     * Constructs a configuration with a custom {@link #onNext()} intercept and everything else is pass-through.
      * @param onNext the callback for intercepting the {@code next()} calls
      */
     public StreamableInterceptConfig(@NonNull BiFunction<? super DisposableContainer, ? super CompletionStage<Boolean>, ? extends CompletionStage<Boolean>> onNext) {
@@ -46,7 +46,7 @@ public record StreamableInterceptConfig<T>(
     }
 
     /**
-     * Constructs a configuration with a custom {@link #onCurrent} intercept and everything else is pass-through.
+     * Constructs a configuration with a custom {@link #onCurrent()} intercept and everything else is pass-through.
      * @param onCurrent the callback for when an item is ready
      */
     public StreamableInterceptConfig(@NonNull Function<? super T, ? extends T> onCurrent) {

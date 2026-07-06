@@ -272,7 +272,6 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
 
         @Override
         public boolean isDisposed() {
-            // TODO Auto-generated method stub
             return parent.isDeleted(getKey());
         }
     }

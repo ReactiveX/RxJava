@@ -55,12 +55,19 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     protected boolean timeout;
 
     /**
+     * The latch that indicates the onSubscribe has been called and completed within this test consumer.
+     * @since 4.0.0
+     */
+    protected final CountDownLatch onSubscribeReady;
+
+    /**
      * Constructs a {@code BaseTestConsumer} with {@code CountDownLatch} set to 1.
      */
     public BaseTestConsumer() {
         this.values = new VolatileSizeArrayList<>();
         this.errors = new VolatileSizeArrayList<>();
         this.done = new CountDownLatch(1);
+        this.onSubscribeReady = new CountDownLatch(1);
     }
 
     /**
@@ -671,11 +678,25 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * @return this
      * @since 2.1
      */
-    @SuppressWarnings("unchecked")
     @NonNull
     public final U awaitCount(int atLeast) {
+        return awaitCount(atLeast, 5000, 10);
+    }
+
+    /**
+     * Wait until the {@code TestObserver}/{@code TestSubscriber} receives the given
+     * number of items or terminates by sleeping {@code sleepMillis} at a time
+     * up to a total of {@code timeoutMillis}.
+     * @param atLeast the number of items expected at least
+     * @param timeoutMillis the maximum amount to wait for the count
+     * @param sleepMillis how much to sleep at once when waiting for the items
+     * @return this
+     * @since 4.0.0
+     */
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public final U awaitCount(int atLeast, long timeoutMillis, long sleepMillis) {
         long start = System.currentTimeMillis();
-        long timeoutMillis = 5000;
         for (;;) {
             if (System.currentTimeMillis() - start >= timeoutMillis) {
                 timeout = true;
@@ -689,7 +710,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
             }
 
             try {
-                Thread.sleep(10);
+                Thread.sleep(sleepMillis);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
@@ -743,6 +764,23 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     public final U assertNoTimeout() {
         if (timeout) {
             throw fail("Timeout?!");
+        }
+        return (U)this;
+    }
+
+    /**
+     * Waits at most the given amount of time for the upstream to call {@code #onSubscribe(Subscription)}.
+     * @param timeout the amout to wait for the call
+     * @param unit the time unit
+     * @throws InterruptedException if the wait is interrupted
+     * @throws TimeoutException if the wait timed out on its own
+     * @return this
+     * @since 4.0.0
+     */
+    @SuppressWarnings("unchecked")
+    public final U awaitOnSubscribe(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
+        if (!onSubscribeReady.await(timeout, unit)) {
+            throw new TimeoutException("TestSubscriber.awaitOnSubscribe timed out");
         }
         return (U)this;
     }

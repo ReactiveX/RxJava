@@ -15,10 +15,12 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.lang.ref.Cleaner;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.StreamableInterceptConfig;
 import io.reactivex.rxjava4.exceptions.CompositeException;
 import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -69,5 +71,38 @@ public abstract class StreamableBaseTest extends RxJavaTest {
 
     protected final void setUndeliverablesExpected(boolean isExpected) {
         undeliverablesExpected = isExpected;
+    }
+
+    static final BiConsumer<Object, Throwable> DEBUG_WHEN_COMPLETE_NEXT = (v, e) -> {
+        if (e != null) {
+            IO.println("OnError  : " + e.toString());
+            e.printStackTrace(System.out);
+        } else {
+            IO.println("OnNext   : " + v);
+        }
+    };
+    static final BiConsumer<Object, Throwable> DEBUG_WHEN_COMPLETE_FINISH = (v, e) -> {
+        if (e != null) {
+            IO.println("OnFinish : " + e.toString());
+            e.printStackTrace(System.out);
+        } else {
+            IO.println("OnFinish : " + v);
+        }
+    };
+
+    static final StreamableInterceptConfig<Object> DEBUG_INTERCEPT = new StreamableInterceptConfig<>(
+            (_, v) -> { IO.println("OnStream"); return v; },
+            (_, v) -> { IO.println("OnNext"); return v.whenComplete(DEBUG_WHEN_COMPLETE_NEXT); },
+            (v)    -> { IO.println("OnCurrent: " + v); return v; },
+            (_, v) -> { IO.println("OnFinish"); return v.whenComplete(DEBUG_WHEN_COMPLETE_FINISH); }
+    );
+
+    /**
+     * An intercept config that prints out the lifecycle events, values and completion signals.
+     * @return the type-appropriate {@link StreamableInterceptConfig}
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> StreamableInterceptConfig<T> debugIntercept() {
+        return (StreamableInterceptConfig<T>)DEBUG_INTERCEPT;
     }
 }

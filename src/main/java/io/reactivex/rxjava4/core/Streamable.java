@@ -655,7 +655,7 @@ public interface Streamable<@NonNull T> {
     @NonNull
     default Streamable<T> intercept(StreamableInterceptConfig<T> config) {
         Objects.requireNonNull(config, "config is null");
-        return RxJavaPlugins.onAssembly(new StreamableIntercept<>(this,
+        return RxJavaPlugins.onAssembly(new StreamableIntercept<T>(this,
                 config.onStream(), config.onNext(), config.onCurrent(), config.onFinish()));
     }
 
@@ -975,15 +975,12 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
-     * Consume this {@code Streamable} via the given flow-reactive-streams subscriber.
+     * Consume this {@code Streamable} via the given flow-reactive-streams subscriber
+     * on a virtual thread backed executor service.
      * @param subscriber the subscriber to consume with.
      */
     default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber) {
-        final Streamable<T> me = this;
-        Flowable.<T>virtualCreate(emitter -> {
-            me.forEach(emitter::emit).await();
-        })
-        .subscribe(subscriber);
+        subscribe(subscriber, Executors.newVirtualThreadPerTaskExecutor());
     }
 
     /**
