@@ -19,6 +19,7 @@ import java.util.concurrent.*;
 
 import org.junit.jupiter.api.Test;
 
+import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.processors.DispatchStreamProcessor;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -480,5 +481,29 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         assertFalse(dsp.hasComplete(), "dsp has completed?");
         assertFalse(dsp.hasThrowable(), "dsp has throwable?");
         assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
+    }
+
+    @Test
+    public void isDisposed() {
+        var dsp = new DispatchStreamProcessor<Integer>();
+
+        var str = dsp.stream(new CompositeDisposable());
+
+        assertTrue(str instanceof Disposable, "Does not implement disposable?");
+
+        var d = (Disposable)str;
+
+        assertFalse(d.isDisposed());
+        assertTrue(dsp.hasStreamers());
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+        assertFalse(dsp.hasStreamers());
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+        assertFalse(dsp.hasStreamers());
     }
 }
