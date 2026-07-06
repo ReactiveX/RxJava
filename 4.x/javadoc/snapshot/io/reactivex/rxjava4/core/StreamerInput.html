@@ -84,6 +84,10 @@ initTheme();
 <dt>All Known Subinterfaces:</dt>
 <dd><code><a href="StreamProcessor.html" title="interface in io.reactivex.rxjava4.core">StreamProcessor</a>&lt;In,<wbr>Out&gt;</code></dd>
 </dl>
+<dl class="notes">
+<dt>All Known Implementing Classes:</dt>
+<dd><code><a href="../processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></code></dd>
+</dl>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">StreamerInput&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span></div>
@@ -146,9 +150,8 @@ returned <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/j
 <dt>Parameters:</dt>
 <dd><code>item</code> - the item being offered</dd>
 <dt>Returns:</dt>
-<dd>a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> that should complete with <code>true</code> if the
-        item was accepted, or <code>false</code> if the item could not be accepted at this time,
-        or via a <code>Throwable</code> indicating some error.</dd>
+<dd>a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> that completes with <code>true</code> if the value was successfully consumed,
+        <code>false</code> if the value was rejected or exceptionally on error</dd>
 </dl>
 </div>
 </section>
@@ -164,8 +167,8 @@ returned <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/j
 <dt>Parameters:</dt>
 <dd><code>throwable</code> - the optional throwable to signal error, null to signal normal completion</dd>
 <dt>Returns:</dt>
-<dd>the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> that should complete normally if the terminal event was accepted,
-        or via a <code>Throwable</code> indicating an error</dd>
+<dd>a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> that completes with <code>null</code> if the call succeeded
+        or exceptionally on error</dd>
 </dl>
 </div>
 </section>

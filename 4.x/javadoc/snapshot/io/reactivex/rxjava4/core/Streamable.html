@@ -140,7 +140,7 @@ initTheme();
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="GroupedStreamable.html" title="class in io.reactivex.rxjava4.core">GroupedStreamable</a></code></dd>
+<dd><code><a href="../processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a>, <a href="GroupedStreamable.html" title="class in io.reactivex.rxjava4.core">GroupedStreamable</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>Functional Interface:</dt>
@@ -442,7 +442,8 @@ failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/ja
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#subscribe(java.util.concurrent.Flow.Subscriber)" class="member-name-link">subscribe</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;&nbsp;subscriber)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Consume this <code>Streamable</code> via the given flow-reactive-streams subscriber.</div>
+<div class="block">Consume this <code>Streamable</code> via the given flow-reactive-streams subscriber
+on a virtual thread backed executor service.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#subscribe(java.util.concurrent.Flow.Subscriber,java.util.concurrent.ExecutorService)" class="member-name-link">subscribe</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;&nbsp;subscriber,
@@ -1764,7 +1765,8 @@ or <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/ut
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">subscribe</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;&nbsp;subscriber)</span></div>
-<div class="block">Consume this <code>Streamable</code> via the given flow-reactive-streams subscriber.</div>
+<div class="block">Consume this <code>Streamable</code> via the given flow-reactive-streams subscriber
+on a virtual thread backed executor service.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>subscriber</code> - the subscriber to consume with.</dd>

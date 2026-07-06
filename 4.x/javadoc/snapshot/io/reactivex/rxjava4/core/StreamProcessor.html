@@ -62,6 +62,14 @@ initTheme();
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
+<li><a href="#method-detail" tabindex="0">Method Details</a>
+<ol class="toc-list">
+<li><a href="#hasStreamers()" tabindex="0">hasStreamers()</a></li>
+<li><a href="#hasComplete()" tabindex="0">hasComplete()</a></li>
+<li><a href="#hasThrowable()" tabindex="0">hasThrowable()</a></li>
+<li><a href="#getThrowable()" tabindex="0">getThrowable()</a></li>
+</ol>
+</li>
 </ol>
 <button class="hide-sidebar"><span>Hide sidebar&nbsp;</span><img src="../../../../resource-files/left.svg" alt="Hide sidebar"></button><button class="show-sidebar"><img src="../../../../resource-files/right.svg" alt="Show sidebar"><span>&nbsp;Show sidebar</span></button></nav>
 <main role="main">
@@ -78,6 +86,10 @@ initTheme();
 <dl class="notes">
 <dt>All Superinterfaces:</dt>
 <dd><code><a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;Out&gt;, <a href="StreamerInput.html" title="interface in io.reactivex.rxjava4.core">StreamerInput</a>&lt;In&gt;</code></dd>
+</dl>
+<dl class="notes">
+<dt>All Known Implementing Classes:</dt>
+<dd><code><a href="../processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
@@ -98,6 +110,37 @@ asynchronous processing and dispatching of values and errors.</div>
 <li>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
+<div id="method-summary-table">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
+<div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getThrowable()" class="member-name-link">getThrowable</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns the terminal <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> if this <code>StreamProcessor</code> was completed
+with a <code>Throwable</code> via <a href="StreamerInput.html#finish(java.lang.Throwable)"><code>StreamerInput.finish(Throwable)</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#hasComplete()" class="member-name-link">hasComplete</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns <code>true</code> if this <code>StreamProcessor</code> was completed normally via <a href="StreamerInput.html#finish(java.lang.Throwable)"><code>StreamerInput.finish(Throwable)</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#hasStreamers()" class="member-name-link">hasStreamers</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns <code>true</code> if this <a href="StreamProcessor.html" title="interface in io.reactivex.rxjava4.core"><code>StreamProcessor</code></a> has <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a>s.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#hasThrowable()" class="member-name-link">hasThrowable</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns <code>true</code> if this <code>StreamProcessor</code> was completed with a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> via <a href="StreamerInput.html#finish(java.lang.Throwable)"><code>StreamerInput.finish(Throwable)</code></a>.</div>
+</div>
+</div>
+</div>
+</div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.reactivex.rxjava4.core.Streamable">Methods inherited from interface&nbsp;<a href="Streamable.html#method-summary" title="interface in io.reactivex.rxjava4.core">Streamable</a></h3>
 <code><a href="Streamable.html#collect(java.util.stream.Collector)" title="collect(Collector)">collect</a>, <a href="Streamable.html#delay(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)" title="delay(long, TimeUnit, Scheduler)">delay</a>, <a href="Streamable.html#doOnNext(io.reactivex.rxjava4.functions.Consumer)" title="doOnNext(Consumer)">doOnNext</a>, <a href="Streamable.html#filter(io.reactivex.rxjava4.functions.Predicate)" title="filter(Predicate)">filter</a>, <a href="Streamable.html#flatMap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardConcurrentConfig)" title="flatMap(Function, StandardConcurrentConfig)">flatMap</a>, <a href="Streamable.html#forEach(io.reactivex.rxjava4.functions.BiConsumer,io.reactivex.rxjava4.disposables.DisposableContainer,java.util.concurrent.ExecutorService)" title="forEach(BiConsumer, DisposableContainer, ExecutorService)">forEach</a>, <a href="Streamable.html#forEach(io.reactivex.rxjava4.functions.Consumer)" title="forEach(Consumer)">forEach</a>, <a href="Streamable.html#forEach(io.reactivex.rxjava4.functions.Consumer,io.reactivex.rxjava4.disposables.DisposableContainer)" title="forEach(Consumer, DisposableContainer)">forEach</a>, <a href="Streamable.html#forEach(io.reactivex.rxjava4.functions.Consumer,io.reactivex.rxjava4.disposables.DisposableContainer,java.util.concurrent.ExecutorService)" title="forEach(Consumer, DisposableContainer, ExecutorService)">forEach</a>, <a href="Streamable.html#forEach(io.reactivex.rxjava4.functions.Consumer,java.util.concurrent.ExecutorService)" title="forEach(Consumer, ExecutorService)">forEach</a>, <a href="Streamable.html#groupBy(io.reactivex.rxjava4.functions.Function)" title="groupBy(Function)">groupBy</a>, <a href="Streamable.html#hide()" title="hide()">hide</a>, <a href="Streamable.html#intercept(io.reactivex.rxjava4.core.config.StreamableInterceptConfig)" title="intercept(StreamableInterceptConfig)">intercept</a>, <a href="Streamable.html#lift(io.reactivex.rxjava4.core.StreamableOperator)" title="lift(StreamableOperator)">lift</a>, <a href="Streamable.html#map(io.reactivex.rxjava4.functions.Function)" title="map(Function)">map</a>, <a href="Streamable.html#mapOptional(io.reactivex.rxjava4.functions.Function)" title="mapOptional(Function)">mapOptional</a>, <a href="Streamable.html#onErrorResumeNext(io.reactivex.rxjava4.functions.Function)" title="onErrorResumeNext(Function)">onErrorResumeNext</a>, <a href="Streamable.html#stream(io.reactivex.rxjava4.disposables.DisposableContainer)" title="stream(DisposableContainer)">stream</a>, <a href="Streamable.html#subscribe(java.util.concurrent.Flow.Subscriber)" title="subscribe(Flow.Subscriber)">subscribe</a>, <a href="Streamable.html#subscribe(java.util.concurrent.Flow.Subscriber,java.util.concurrent.ExecutorService)" title="subscribe(Flow.Subscriber, ExecutorService)">subscribe</a>, <a href="Streamable.html#take(long)" title="take(long)">take</a>, <a href="Streamable.html#takeUntil(io.reactivex.rxjava4.core.Streamable)" title="takeUntil(Streamable)">takeUntil</a>, <a href="Streamable.html#takeWhile(io.reactivex.rxjava4.functions.Predicate)" title="takeWhile(Predicate)">takeWhile</a>, <a href="Streamable.html#test()" title="test()">test</a>, <a href="Streamable.html#test(java.util.concurrent.ExecutorService)" title="test(ExecutorService)">test</a>, <a href="Streamable.html#timeout(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.Streamable)" title="timeout(long, TimeUnit, Scheduler, Streamable)">timeout</a>, <a href="Streamable.html#to(io.reactivex.rxjava4.core.StreamableConverter)" title="to(StreamableConverter)">to</a>, <a href="Streamable.html#toFlowable()" title="toFlowable()">toFlowable</a>, <a href="Streamable.html#toFlowable(java.util.concurrent.ExecutorService)" title="toFlowable(ExecutorService)">toFlowable</a>, <a href="Streamable.html#toObservable()" title="toObservable()">toObservable</a>, <a href="Streamable.html#transform(io.reactivex.rxjava4.core.VirtualTransformer)" title="transform(VirtualTransformer)">transform</a>, <a href="Streamable.html#transform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)" title="transform(VirtualTransformer, ExecutorService)">transform</a></code>
@@ -216,7 +259,8 @@ failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/ja
 <div class="col-first even-row-color"><code>default void</code></div>
 <div class="col-second even-row-color"><code><a href="Streamable.html#subscribe(java.util.concurrent.Flow.Subscriber)" class="member-name-link">subscribe</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-Out" title="type parameter in StreamProcessor">Out</a>&gt;&nbsp;subscriber)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Consume this <code>Streamable</code> via the given flow-reactive-streams subscriber.</div>
+<div class="block">Consume this <code>Streamable</code> via the given flow-reactive-streams subscriber
+on a virtual thread backed executor service.</div>
 </div>
 <div class="col-first odd-row-color"><code>default void</code></div>
 <div class="col-second odd-row-color"><code><a href="Streamable.html#subscribe(java.util.concurrent.Flow.Subscriber,java.util.concurrent.ExecutorService)" class="member-name-link">subscribe</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-Out" title="type parameter in StreamProcessor">Out</a>&gt;&nbsp;subscriber,
@@ -315,6 +359,72 @@ emitting items on whatever thread produces items in the current <code>Streamable
 </div>
 </div>
 </div>
+</section>
+</li>
+</ul>
+</section>
+<section class="details">
+<ul class="details-list">
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method-detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="hasStreamers()">
+<h3>hasStreamers</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">hasStreamers</span>()</div>
+<div class="block">Returns <code>true</code> if this <a href="StreamProcessor.html" title="interface in io.reactivex.rxjava4.core"><code>StreamProcessor</code></a> has <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a>s.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd><code>true</code> if this <a href="StreamProcessor.html" title="interface in io.reactivex.rxjava4.core"><code>StreamProcessor</code></a> has <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a>s.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="hasComplete()">
+<h3>hasComplete</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">hasComplete</span>()</div>
+<div class="block">Returns <code>true</code> if this <code>StreamProcessor</code> was completed normally via <a href="StreamerInput.html#finish(java.lang.Throwable)"><code>StreamerInput.finish(Throwable)</code></a>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd><code>true</code> if this <code>StreamProcessor</code> was completed normally via <a href="StreamerInput.html#finish(java.lang.Throwable)"><code>StreamerInput.finish(Throwable)</code></a>.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="hasThrowable()">
+<h3>hasThrowable</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">hasThrowable</span>()</div>
+<div class="block">Returns <code>true</code> if this <code>StreamProcessor</code> was completed with a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> via <a href="StreamerInput.html#finish(java.lang.Throwable)"><code>StreamerInput.finish(Throwable)</code></a>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd><code>true</code> if this <code>StreamProcessor</code> was completed with a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> via <a href="StreamerInput.html#finish(java.lang.Throwable)"><code>StreamerInput.finish(Throwable)</code></a>.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getThrowable()">
+<h3>getThrowable</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a>
+</span><span class="return-type"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a></span>&nbsp;<span class="element-name">getThrowable</span>()</div>
+<div class="block">Returns the terminal <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> if this <code>StreamProcessor</code> was completed
+with a <code>Throwable</code> via <a href="StreamerInput.html#finish(java.lang.Throwable)"><code>StreamerInput.finish(Throwable)</code></a>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> if any</dd>
+</dl>
+</div>
+</section>
+</li>
+</ul>
 </section>
 </li>
 </ul>

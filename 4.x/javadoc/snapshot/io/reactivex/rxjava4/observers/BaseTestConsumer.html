@@ -74,6 +74,7 @@ initTheme();
 <li><a href="#checkSubscriptionOnce" tabindex="0">checkSubscriptionOnce</a></li>
 <li><a href="#tag" tabindex="0">tag</a></li>
 <li><a href="#timeout" tabindex="0">timeout</a></li>
+<li><a href="#onSubscribeReady" tabindex="0">onSubscribeReady</a></li>
 </ol>
 </li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
@@ -113,10 +114,12 @@ initTheme();
 <li><a href="#assertEmpty()" tabindex="0">assertEmpty()</a></li>
 <li><a href="#withTag(java.lang.CharSequence)" tabindex="0">withTag(CharSequence)</a></li>
 <li><a href="#awaitCount(int)" tabindex="0">awaitCount(int)</a></li>
+<li><a href="#awaitCount(int,long,long)" tabindex="0">awaitCount(int, long, long)</a></li>
 <li><a href="#isTimeout()" tabindex="0">isTimeout()</a></li>
 <li><a href="#clearTimeout()" tabindex="0">clearTimeout()</a></li>
 <li><a href="#assertTimeout()" tabindex="0">assertTimeout()</a></li>
 <li><a href="#assertNoTimeout()" tabindex="0">assertNoTimeout()</a></li>
+<li><a href="#awaitOnSubscribe(long,java.util.concurrent.TimeUnit)" tabindex="0">awaitOnSubscribe(long, TimeUnit)</a></li>
 <li><a href="#isDisposed()" tabindex="0">isDisposed()</a></li>
 <li><a href="#dispose()" tabindex="0">dispose()</a></li>
 </ol>
@@ -183,19 +186,24 @@ initTheme();
 <div class="col-last even-row-color">
 <div class="block">The last thread seen by the observer.</div>
 </div>
-<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/CharSequence.html" title="interface in java.lang" class="external-link">CharSequence</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#tag" class="member-name-link">tag</a></code></div>
+<div class="col-first odd-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CountDownLatch.html" title="class in java.util.concurrent" class="external-link">CountDownLatch</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#onSubscribeReady" class="member-name-link">onSubscribeReady</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">The latch that indicates the onSubscribe has been called and completed within this test consumer.</div>
+</div>
+<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/CharSequence.html" title="interface in java.lang" class="external-link">CharSequence</a></code></div>
+<div class="col-second even-row-color"><code><a href="#tag" class="member-name-link">tag</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The optional tag associated with this test consumer.</div>
 </div>
-<div class="col-first even-row-color"><code>protected boolean</code></div>
-<div class="col-second even-row-color"><code><a href="#timeout" class="member-name-link">timeout</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>protected boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#timeout" class="member-name-link">timeout</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Indicates that one of the <code>awaitX</code> method has timed out.</div>
 </div>
-<div class="col-first odd-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/List.html" title="interface in java.util" class="external-link">List</a><wbr>&lt;<a href="#type-param-T" title="type parameter in BaseTestConsumer">T</a>&gt;</code></div>
-<div class="col-second odd-row-color"><code><a href="#values" class="member-name-link">values</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/List.html" title="interface in java.util" class="external-link">List</a><wbr>&lt;<a href="#type-param-T" title="type parameter in BaseTestConsumer">T</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#values" class="member-name-link">values</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The list of values received.</div>
 </div>
 </div>
@@ -370,10 +378,25 @@ number of items or terminates by sleeping 10 milliseconds at a time
 up to 5000 milliseconds of timeout.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitDone(long,java.util.concurrent.TimeUnit)" class="member-name-link">awaitDone</a><wbr>(long&nbsp;time,
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitCount(int,long,long)" class="member-name-link">awaitCount</a><wbr>(int&nbsp;atLeast,
+ long&nbsp;timeoutMillis,
+ long&nbsp;sleepMillis)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Wait until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
+number of items or terminates by sleeping <code>sleepMillis</code> at a time
+up to a total of <code>timeoutMillis</code>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitDone(long,java.util.concurrent.TimeUnit)" class="member-name-link">awaitDone</a><wbr>(long&nbsp;time,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Wait until the internal latch is counted down.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitOnSubscribe(long,java.util.concurrent.TimeUnit)" class="member-name-link">awaitOnSubscribe</a><wbr>(long&nbsp;timeout,
+ <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Waits at most the given amount of time for the upstream to call <code>#onSubscribe(Subscription)</code>.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearTimeout()" class="member-name-link">clearTimeout</a>()</code></div>
@@ -516,6 +539,19 @@ other state information.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>2.0.7</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="onSubscribeReady">
+<h3>onSubscribeReady</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CountDownLatch.html" title="class in java.util.concurrent" class="external-link">CountDownLatch</a></span>&nbsp;<span class="element-name">onSubscribeReady</span></div>
+<div class="block">The latch that indicates the onSubscribe has been called and completed within this test consumer.</div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>4.0.0</dd>
 </dl>
 </div>
 </section>
@@ -1126,6 +1162,30 @@ up to 5000 milliseconds of timeout.
 </section>
 </li>
 <li>
+<section class="detail" id="awaitCount(int,long,long)">
+<h3>awaitCount</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></span>&nbsp;<span class="element-name">awaitCount</span><wbr><span class="parameters">(int&nbsp;atLeast,
+ long&nbsp;timeoutMillis,
+ long&nbsp;sleepMillis)</span></div>
+<div class="block">Wait until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
+number of items or terminates by sleeping <code>sleepMillis</code> at a time
+up to a total of <code>timeoutMillis</code>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>atLeast</code> - the number of items expected at least</dd>
+<dd><code>timeoutMillis</code> - the maximum amount to wait for the count</dd>
+<dd><code>sleepMillis</code> - how much to sleep at once when waiting for the items</dd>
+<dt>Returns:</dt>
+<dd>this</dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="isTimeout()">
 <h3>isTimeout</h3>
 <div class="horizontal-scroll">
@@ -1193,6 +1253,30 @@ up to 5000 milliseconds of timeout.
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>this</dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="awaitOnSubscribe(long,java.util.concurrent.TimeUnit)">
+<h3>awaitOnSubscribe</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="#type-param-U" title="type parameter in BaseTestConsumer">U</a></span>&nbsp;<span class="element-name">awaitOnSubscribe</span><wbr><span class="parameters">(long&nbsp;timeout,
+ <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</span>
+                         throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/InterruptedException.html" title="class in java.lang" class="external-link">InterruptedException</a>,
+<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeoutException.html" title="class in java.util.concurrent" class="external-link">TimeoutException</a></span></div>
+<div class="block">Waits at most the given amount of time for the upstream to call <code>#onSubscribe(Subscription)</code>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>timeout</code> - the amout to wait for the call</dd>
+<dd><code>unit</code> - the time unit</dd>
+<dt>Returns:</dt>
+<dd>this</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/InterruptedException.html" title="class in java.lang" class="external-link">InterruptedException</a></code> - if the wait is interrupted</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeoutException.html" title="class in java.util.concurrent" class="external-link">TimeoutException</a></code> - if the wait timed out on its own</dd>
 <dt>Since:</dt>
 <dd>4.0.0</dd>
 </dl>

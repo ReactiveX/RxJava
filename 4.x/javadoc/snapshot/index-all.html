@@ -554,6 +554,12 @@ receives an <code>onError</code> or <code>onComplete</code> events, whichever ha
 number of items or terminates by sleeping 10 milliseconds at a time
 up to 5000 milliseconds of timeout.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#awaitCount(int,long,long)" class="member-name-link">awaitCount(int, long, long)</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
+<dd>
+<div class="block">Wait until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
+number of items or terminates by sleeping <code>sleepMillis</code> at a time
+up to a total of <code>timeoutMillis</code>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#awaitDone(long,java.util.concurrent.TimeUnit)" class="member-name-link">awaitDone(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
 <dd>
 <div class="block">Wait until the internal latch is counted down.</div>
@@ -565,6 +571,10 @@ up to 5000 milliseconds of timeout.</div>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.html#awaitNext()" class="member-name-link">awaitNext()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
 <dd>
 <div class="block">Convenience method to blockingly await the CompletionStage returned by the <a href="io/reactivex/rxjava4/core/Streamer.html#next()"><code>Streamer.next()</code></a> method.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#awaitOnSubscribe(long,java.util.concurrent.TimeUnit)" class="member-name-link">awaitOnSubscribe(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
+<dd>
+<div class="block">Waits at most the given amount of time for the upstream to call <code>#onSubscribe(Subscription)</code>.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:B">B</h2>
@@ -2864,6 +2874,13 @@ but cancelling the subcontainer does not cancel this container.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#derive()" class="member-name-link">derive()</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" class="type-name-link" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor&lt;T&gt;</a> - Class in <a href="io/reactivex/rxjava4/processors/package-summary.html">io.reactivex.rxjava4.processors</a></dt>
+<dd>
+<div class="block">Signals the various <a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#next(T)"><code>DispatchStreamProcessor.next(Object)</code></a> and <a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#finish(java.lang.Throwable)"><code>DispatchStreamProcessor.finish(Throwable)</code></a> events to one or more
+downstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a>s.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#%3Cinit%3E()" class="member-name-link">DispatchStreamProcessor()</a> - Constructor for class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/CompletionStageDisposable.html#disposable()" class="member-name-link">disposable()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/CompletionStageDisposable.html" title="class in io.reactivex.rxjava4.core">CompletionStageDisposable</a></dt>
 <dd>
 <div class="block">Returns the associated disposable value.</div>
@@ -3657,6 +3674,8 @@ handles errors based on the given <a href="io/reactivex/rxjava4/parallel/Paralle
 <dd>
 <div class="block">Offer the final, terminal event.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#finish(java.lang.Throwable)" class="member-name-link">finish(Throwable)</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.html#FINISHED" class="member-name-link">FINISHED</a> - Static variable in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
 <dd>
 <div class="block">Use this constant in <a href="io/reactivex/rxjava4/core/Streamer.html#finish()"><code>Streamer.finish()</code></a> to indicate
@@ -4784,9 +4803,16 @@ is set.</div>
 <dd>
 <div class="block">Returns the current hook function.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/StreamProcessor.html#getThrowable()" class="member-name-link">getThrowable()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamProcessor.html" title="interface in io.reactivex.rxjava4.core">StreamProcessor</a></dt>
+<dd>
+<div class="block">Returns the terminal <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> if this <code>StreamProcessor</code> was completed
+with a <code>Throwable</code> via <a href="io/reactivex/rxjava4/core/StreamerInput.html#finish(java.lang.Throwable)"><code>StreamerInput.finish(Throwable)</code></a>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/processors/AsyncProcessor.html#getThrowable()" class="member-name-link">getThrowable()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/AsyncProcessor.html" title="class in io.reactivex.rxjava4.processors">AsyncProcessor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/processors/BehaviorProcessor.html#getThrowable()" class="member-name-link">getThrowable()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/BehaviorProcessor.html" title="class in io.reactivex.rxjava4.processors">BehaviorProcessor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#getThrowable()" class="member-name-link">getThrowable()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/processors/FlowableProcessor.html#getThrowable()" class="member-name-link">getThrowable()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors">FlowableProcessor</a></dt>
 <dd>
@@ -4974,9 +5000,15 @@ relaying the upstream items into those groups.</div>
 </dl>
 <h2 class="title" id="I:H">H</h2>
 <dl class="index">
+<dt><a href="io/reactivex/rxjava4/core/StreamProcessor.html#hasComplete()" class="member-name-link">hasComplete()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamProcessor.html" title="interface in io.reactivex.rxjava4.core">StreamProcessor</a></dt>
+<dd>
+<div class="block">Returns <code>true</code> if this <code>StreamProcessor</code> was completed normally via <a href="io/reactivex/rxjava4/core/StreamerInput.html#finish(java.lang.Throwable)"><code>StreamerInput.finish(Throwable)</code></a>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/processors/AsyncProcessor.html#hasComplete()" class="member-name-link">hasComplete()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/AsyncProcessor.html" title="class in io.reactivex.rxjava4.processors">AsyncProcessor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/processors/BehaviorProcessor.html#hasComplete()" class="member-name-link">hasComplete()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/BehaviorProcessor.html" title="class in io.reactivex.rxjava4.processors">BehaviorProcessor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#hasComplete()" class="member-name-link">hasComplete()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/processors/FlowableProcessor.html#hasComplete()" class="member-name-link">hasComplete()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors">FlowableProcessor</a></dt>
 <dd>
@@ -5088,6 +5120,12 @@ relaying the upstream items into those groups.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/subjects/UnicastSubject.html#hasObservers()" class="member-name-link">hasObservers()</a> - Method in class io.reactivex.rxjava4.subjects.<a href="io/reactivex/rxjava4/subjects/UnicastSubject.html" title="class in io.reactivex.rxjava4.subjects">UnicastSubject</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/core/StreamProcessor.html#hasStreamers()" class="member-name-link">hasStreamers()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamProcessor.html" title="interface in io.reactivex.rxjava4.core">StreamProcessor</a></dt>
+<dd>
+<div class="block">Returns <code>true</code> if this <a href="io/reactivex/rxjava4/core/StreamProcessor.html" title="interface in io.reactivex.rxjava4.core"><code>StreamProcessor</code></a> has <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a>s.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#hasStreamers()" class="member-name-link">hasStreamers()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/processors/AsyncProcessor.html#hasSubscribers()" class="member-name-link">hasSubscribers()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/AsyncProcessor.html" title="class in io.reactivex.rxjava4.processors">AsyncProcessor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/processors/BehaviorProcessor.html#hasSubscribers()" class="member-name-link">hasSubscribers()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/BehaviorProcessor.html" title="class in io.reactivex.rxjava4.processors">BehaviorProcessor</a></dt>
@@ -5112,9 +5150,15 @@ relaying the upstream items into those groups.</div>
 <dd>
 <div class="block">Returns true if this <code>TestSubscriber</code> received a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscription</code></a> via <a href="io/reactivex/rxjava4/subscribers/TestSubscriber.html#onSubscribe(java.util.concurrent.Flow.Subscription)"><code>TestSubscriber.onSubscribe(Subscription)</code></a>.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/StreamProcessor.html#hasThrowable()" class="member-name-link">hasThrowable()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamProcessor.html" title="interface in io.reactivex.rxjava4.core">StreamProcessor</a></dt>
+<dd>
+<div class="block">Returns <code>true</code> if this <code>StreamProcessor</code> was completed with a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> via <a href="io/reactivex/rxjava4/core/StreamerInput.html#finish(java.lang.Throwable)"><code>StreamerInput.finish(Throwable)</code></a>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/processors/AsyncProcessor.html#hasThrowable()" class="member-name-link">hasThrowable()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/AsyncProcessor.html" title="class in io.reactivex.rxjava4.processors">AsyncProcessor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/processors/BehaviorProcessor.html#hasThrowable()" class="member-name-link">hasThrowable()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/BehaviorProcessor.html" title="class in io.reactivex.rxjava4.processors">BehaviorProcessor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#hasThrowable()" class="member-name-link">hasThrowable()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/processors/FlowableProcessor.html#hasThrowable()" class="member-name-link">hasThrowable()</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors">FlowableProcessor</a></dt>
 <dd>
@@ -6281,6 +6325,8 @@ or takes timing information from it.</div>
 <dd>
 <div class="block">Offer the next item.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#next(T)" class="member-name-link">next(T)</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.html#NEXT_FALSE" class="member-name-link">NEXT_FALSE</a> - Static variable in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
 <dd>
 <div class="block">Use this constant in <a href="io/reactivex/rxjava4/core/Streamer.html#next()"><code>Streamer.next()</code></a> to indicate
@@ -7161,6 +7207,10 @@ calling <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/ja
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/subscribers/ResourceSubscriber.html#onSubscribe(java.util.concurrent.Flow.Subscription)" class="member-name-link">onSubscribe(Flow.Subscription)</a> - Method in class io.reactivex.rxjava4.subscribers.<a href="io/reactivex/rxjava4/subscribers/ResourceSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">ResourceSubscriber</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#onSubscribeReady" class="member-name-link">onSubscribeReady</a> - Variable in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
+<dd>
+<div class="block">The latch that indicates the onSubscribe has been called and completed within this test consumer.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/subjects/MaybeSubject.html#onSuccess(T)" class="member-name-link">onSuccess(T)</a> - Method in class io.reactivex.rxjava4.subjects.<a href="io/reactivex/rxjava4/subjects/MaybeSubject.html" title="class in io.reactivex.rxjava4.subjects">MaybeSubject</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/MaybeEmitter.html#onSuccess(T)" class="member-name-link">onSuccess(T)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/MaybeEmitter.html" title="interface in io.reactivex.rxjava4.core">MaybeEmitter</a></dt>
@@ -9296,6 +9346,8 @@ emitted by the current <code>Observable</code>.</div>
 <dd>
 <div class="block">Realizes the stream and returns an interface that lets one consume it.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#stream(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">stream(DisposableContainer)</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">Streamable&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
 <div class="block">Represents a virtual-thread capable, multi-valued (a)synchronous sequence of values that
@@ -9316,11 +9368,11 @@ value fluently.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#%3Cinit%3E(io.reactivex.rxjava4.functions.BiFunction)" class="member-name-link">StreamableInterceptConfig(BiFunction)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
 <dd>
-<div class="block">Constructs a configuration with a custom <code>StreamableInterceptConfig.onNext</code> intercept and everything else is pass-through.</div>
+<div class="block">Constructs a configuration with a custom <a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#onNext()"><code>StreamableInterceptConfig.onNext()</code></a> intercept and everything else is pass-through.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#%3Cinit%3E(io.reactivex.rxjava4.functions.Function)" class="member-name-link">StreamableInterceptConfig(Function)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html" title="class in io.reactivex.rxjava4.core.config">StreamableInterceptConfig</a></dt>
 <dd>
-<div class="block">Constructs a configuration with a custom <code>StreamableInterceptConfig.onCurrent</code> intercept and everything else is pass-through.</div>
+<div class="block">Constructs a configuration with a custom <a href="io/reactivex/rxjava4/core/config/StreamableInterceptConfig.html#onCurrent()"><code>StreamableInterceptConfig.onCurrent()</code></a> intercept and everything else is pass-through.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/StreamableOperator.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">StreamableOperator&lt;T,<wbr>R&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -9532,7 +9584,8 @@ the execution chain for all 'rails'.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#subscribe(java.util.concurrent.Flow.Subscriber)" class="member-name-link">subscribe(Flow.Subscriber)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
-<div class="block">Consume this <code>Streamable</code> via the given flow-reactive-streams subscriber.</div>
+<div class="block">Consume this <code>Streamable</code> via the given flow-reactive-streams subscriber
+on a virtual thread backed executor service.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#subscribe(java.util.concurrent.Flow.Subscriber,java.util.concurrent.ExecutorService)" class="member-name-link">subscribe(Flow.Subscriber, ExecutorService)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>

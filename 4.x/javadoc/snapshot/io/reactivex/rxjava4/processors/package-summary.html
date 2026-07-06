@@ -118,27 +118,32 @@ to <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/ut
 <div class="block">Processor that emits the most recent item it has observed and all subsequent observed items to each subscribed
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors">FlowableProcessor</a>&lt;T&gt;</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a>&lt;T&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">Signals the various <a href="DispatchStreamProcessor.html#next(T)"><code>DispatchStreamProcessor.next(Object)</code></a> and <a href="DispatchStreamProcessor.html#finish(java.lang.Throwable)"><code>DispatchStreamProcessor.finish(Throwable)</code></a> events to one or more
+downstream <a href="../core/Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a>s.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors">FlowableProcessor</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Represents a Subscriber and a Flowable (Publisher) at the same time, allowing
 multicasting events from a single source to multiple child Subscribers.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="MulticastProcessor.html" title="class in io.reactivex.rxjava4.processors">MulticastProcessor</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="MulticastProcessor.html" title="class in io.reactivex.rxjava4.processors">MulticastProcessor</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">A <a href="FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors"><code>FlowableProcessor</code></a> implementation that coordinates downstream requests through
 a front-buffer and stable-prefetching, optionally canceling the upstream if all
 subscribers have cancelled.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="PublishProcessor.html" title="class in io.reactivex.rxjava4.processors">PublishProcessor</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="PublishProcessor.html" title="class in io.reactivex.rxjava4.processors">PublishProcessor</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Processor that multicasts all subsequently observed items to its current <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>s.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ReplayProcessor.html" title="class in io.reactivex.rxjava4.processors">ReplayProcessor</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="ReplayProcessor.html" title="class in io.reactivex.rxjava4.processors">ReplayProcessor</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Replays events to Subscribers.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="UnicastProcessor.html" title="class in io.reactivex.rxjava4.processors">UnicastProcessor</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="UnicastProcessor.html" title="class in io.reactivex.rxjava4.processors">UnicastProcessor</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">A <a href="FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors"><code>FlowableProcessor</code></a> variant that queues up events until a single <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> subscribes to it, replays
 those events to it until the <code>Subscriber</code> catches up and then switches to relaying events live to
 this single <code>Subscriber</code> until this <code>UnicastProcessor</code> terminates or the <code>Subscriber</code> cancels
