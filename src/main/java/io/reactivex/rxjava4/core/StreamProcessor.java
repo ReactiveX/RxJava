@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.core;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Flow.Processor;
 
-import io.reactivex.rxjava4.annotations.NonNull;
+import io.reactivex.rxjava4.annotations.*;
 
 /**
  * A {@link Processor}-like interface combining the {@code Streamable} interface and the
@@ -28,4 +28,29 @@ import io.reactivex.rxjava4.annotations.NonNull;
  */
 public interface StreamProcessor<@NonNull In, @NonNull Out> extends Streamable<Out>, StreamerInput<In> {
 
+    /**
+     * Returns {@code true} if this {@link StreamProcessor} has {@link Streamer}s.
+     * @return {@code true} if this {@link StreamProcessor} has {@link Streamer}s.
+     */
+    boolean hasStreamers();
+
+    /**
+     * Returns {@code true} if this {@code StreamProcessor} was completed normally via {@link #finish(Throwable)}.
+     * @return {@code true} if this {@code StreamProcessor} was completed normally via {@link #finish(Throwable)}.
+     */
+    boolean hasComplete();
+
+    /**
+     * Returns {@code true} if this {@code StreamProcessor} was completed with a {@link Throwable} via {@link #finish(Throwable)}.
+     * @return {@code true} if this {@code StreamProcessor} was completed with a {@link Throwable} via {@link #finish(Throwable)}.
+     */
+    boolean hasThrowable();
+
+    /**
+     * Returns the terminal {@link Throwable} if this {@code StreamProcessor} was completed
+     * with a {@code Throwable} via {@link #finish(Throwable)}.
+     * @return the {@link Throwable} if any
+     */
+    @Nullable
+    Throwable getThrowable();
 }

@@ -77,11 +77,9 @@ public class StreamableFromPublisherTest extends StreamableBaseTest {
             var ts = pp.toStreamable(exec)
             .test(exec);
 
-            IO.println("hasSubscription()");
+            IO.println("awaitOnSubscribe()");
 
-            while (!ts.hasSubscription()) {
-                Thread.sleep(1);
-            }
+            ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
             IO.println("hasSubscribers()");
 
@@ -113,11 +111,9 @@ public class StreamableFromPublisherTest extends StreamableBaseTest {
             var ts = pp.toStreamable(exec)
             .test(exec);
 
-            IO.println("hasSubscription()");
+            IO.println("awaitOnSubscribe()");
 
-            while (!ts.hasSubscription()) {
-                Thread.sleep(1);
-            }
+            ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
             IO.println("hasSubscribers()");
 

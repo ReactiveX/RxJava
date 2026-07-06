@@ -42,7 +42,7 @@ public record StreamableZip<T>(
         }
 
         if (sourcesList.isEmpty()) {
-            return StreamableEmpty.EmptyStreamer.cast();
+            return StreamableEmpty.createEmpty();
         }
         return new ZipStreamer<T>(sourcesList, dc);
     }

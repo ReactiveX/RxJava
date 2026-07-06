@@ -14,9 +14,8 @@
 package io.reactivex.rxjava4.subscribers;
 
 import java.util.Objects;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
-
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.FlowableSubscriber;
@@ -127,28 +126,32 @@ implements FlowableSubscriber<T>, Subscription {
 
     @Override
     public void onSubscribe(@NonNull Subscription s) {
-        lastThread = Thread.currentThread();
+        try {
+            lastThread = Thread.currentThread();
 
-        if (s == null) {
-            errors.add(new NullPointerException("onSubscribe received a null Subscription"));
-            return;
-        }
-        if (!upstream.compareAndSet(null, s)) {
-            s.cancel();
-            if (upstream.get() != SubscriptionHelper.CANCELLED) {
-                errors.add(new IllegalStateException("onSubscribe received multiple subscriptions: " + s));
+            if (s == null) {
+                errors.add(new NullPointerException("onSubscribe received a null Subscription"));
+                return;
             }
-            return;
+            if (!upstream.compareAndSet(null, s)) {
+                s.cancel();
+                if (upstream.get() != SubscriptionHelper.CANCELLED) {
+                    errors.add(new IllegalStateException("onSubscribe received multiple subscriptions: " + s));
+                }
+                return;
+            }
+
+            downstream.onSubscribe(s);
+
+            long mr = missedRequested.getAndSet(0L);
+            if (mr != 0L) {
+                s.request(mr);
+            }
+
+            onStart();
+        } finally {
+            onSubscribeReady.countDown();
         }
-
-        downstream.onSubscribe(s);
-
-        long mr = missedRequested.getAndSet(0L);
-        if (mr != 0L) {
-            s.request(mr);
-        }
-
-        onStart();
     }
 
     /**

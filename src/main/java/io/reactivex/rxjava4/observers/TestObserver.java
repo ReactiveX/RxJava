@@ -85,21 +85,25 @@ implements Observer<T>, MaybeObserver<T>, SingleObserver<T>, CompletableObserver
 
     @Override
     public void onSubscribe(@NonNull Disposable d) {
-        lastThread = Thread.currentThread();
+        try {
+            lastThread = Thread.currentThread();
 
-        if (d == null) {
-            errors.add(new NullPointerException("onSubscribe received a null Subscription"));
-            return;
-        }
-        if (!upstream.compareAndSet(null, d)) {
-            d.dispose();
-            if (upstream.get() != DisposableHelper.DISPOSED) {
-                errors.add(new IllegalStateException("onSubscribe received multiple subscriptions: " + d));
+            if (d == null) {
+                errors.add(new NullPointerException("onSubscribe received a null Subscription"));
+                return;
             }
-            return;
-        }
+            if (!upstream.compareAndSet(null, d)) {
+                d.dispose();
+                if (upstream.get() != DisposableHelper.DISPOSED) {
+                    errors.add(new IllegalStateException("onSubscribe received multiple subscriptions: " + d));
+                }
+                return;
+            }
 
-        downstream.onSubscribe(d);
+            downstream.onSubscribe(d);
+        } finally {
+            onSubscribeReady.countDown();
+        }
     }
 
     @Override

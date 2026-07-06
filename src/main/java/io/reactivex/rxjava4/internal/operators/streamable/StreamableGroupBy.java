@@ -292,6 +292,7 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
             return StreamableError.createFailed(new CancellationException("TOMBSTONE"));
         }
 
+        // This is what happens with generics without co- and contravariance support
         @Override
         public CompletionStage<Boolean> next(Object value) {
             return Streamer.NEXT_TRUE;

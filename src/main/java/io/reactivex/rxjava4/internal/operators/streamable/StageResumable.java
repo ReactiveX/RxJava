@@ -20,6 +20,12 @@ import java.util.function.BiConsumer;
 
 import io.reactivex.rxjava4.annotations.*;
 
+/**
+ * Represents a reusable ping-pong style notification exchange where
+ * one use/thread can signal {@link #ready()} to wake up another use/thread
+ * on a {@link #await()} call.
+ * @param <T> the element type of the notification pass-around
+ */
 public final class StageResumable<T> extends AtomicReference<CompletableFuture<T>>
 implements BiConsumer<T, Throwable> {
 

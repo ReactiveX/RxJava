@@ -33,17 +33,16 @@ public interface StreamerInput<@NonNull T> {
     /**
      * Offer the next item.
      * @param item the item being offered
-     * @return a {@link CompletionStage} that should complete with {@code true} if the
-     *         item was accepted, or {@code false} if the item could not be accepted at this time,
-     *         or via a {@code Throwable} indicating some error.
+     * @return a {@link CompletionStage} that completes with {@code true} if the value was successfully consumed,
+     *         {@code false} if the value was rejected or exceptionally on error
      */
     CompletionStage<Boolean> next(T item);
 
     /**
      * Offer the final, terminal event.
      * @param throwable the optional throwable to signal error, null to signal normal completion
-     * @return the {@link CompletionStage} that should complete normally if the terminal event was accepted,
-     *         or via a {@code Throwable} indicating an error
+     * @return a {@link CompletionStage} that completes with {@code null} if the call succeeded
+     *         or exceptionally on error
      */
     CompletionStage<Void> finish(@Nullable Throwable throwable);
 }

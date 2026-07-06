@@ -18,8 +18,8 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
@@ -1666,7 +1666,7 @@ public class TestSubscriberTest extends RxJavaTest {
     public void awaitCountTimeout() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
-        ts.awaitCount(1);
+        ts.awaitCount(1, 10, 1);
         assertTrue(ts.isTimeout());
     }
 
@@ -1718,5 +1718,45 @@ public class TestSubscriberTest extends RxJavaTest {
         ts.onComplete();
 
         assertEquals("TestSubscriber (latch = 0, values = 3, errors = 0, completions = 1)", ts.toString());
+    }
+
+    @Test
+    public void awaitOnSubscribeSuccess() throws Throwable {
+        var ts = new TestSubscriber<>();
+
+        assertFalse(ts.hasSubscription(), "TestSubscriber has a subscription?");
+
+        ts.onSubscribe(new BooleanSubscription());
+
+        assertTrue(ts.hasSubscription(), "TestSubscriber has no subscription?");
+
+        ts.awaitOnSubscribe(10, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void awaitOnSubscribeTimeout() throws Throwable {
+        assertThrows(TimeoutException.class, () -> {
+            var ts = new TestSubscriber<>();
+
+            assertFalse(ts.hasSubscription(), "TestSubscriber has a subscription?");
+
+            ts.awaitOnSubscribe(10, TimeUnit.MILLISECONDS);
+        });
+    }
+
+    @Test
+    public void awaitOnSubscribeInterrupted() throws Throwable {
+        assertThrows(InterruptedException.class, () -> {
+            var ts = new TestSubscriber<>();
+
+            assertFalse(ts.hasSubscription(), "TestSubscriber has a subscription?");
+
+            var thread = Thread.currentThread();
+
+            CompletableFuture.runAsync(() -> { thread.interrupt(); },
+                    CompletableFuture.delayedExecutor(10, TimeUnit.MILLISECONDS));
+
+            ts.awaitOnSubscribe(10, TimeUnit.SECONDS);
+        });
     }
 }
