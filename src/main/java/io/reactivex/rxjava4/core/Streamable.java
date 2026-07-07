@@ -80,10 +80,6 @@ public interface Streamable<@NonNull T> {
     Streamer<T> stream(@NonNull DisposableContainer cancellation);
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-    // HELPERS
-    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-
-    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
     // Data sources and wrappers
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
@@ -109,6 +105,21 @@ public interface Streamable<@NonNull T> {
                 mainSource.await();
             }
         }, executor);
+    }
+
+    /**
+     * Streams the {@code Streamable}s one after the other from the given iterable sequence
+     * of {@code Streamable}s.
+     * @param <T> the element type of the inner and resulting {@code Streamable}s
+     * @param sources the iterable sequence of {@code Streamable}s.
+     * @return the new {@code Streamable} source
+     * @throws NullPointerException if {@code sources} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> concat(Iterable<? extends Streamable<? extends T>> sources) {
+        Objects.requireNonNull(sources, "sources is null");
+        return RxJavaPlugins.onAssembly(new StreamableConcatIterable<>(sources, ErrorMode.IMMEDIATE)); // TODO implement
     }
 
     /**
@@ -514,6 +525,8 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      */
+    @CheckReturnValue
+    @NonNull
     static Streamable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -533,10 +546,37 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code unit} or {@code executor} is {@code null}
      */
+    @CheckReturnValue
+    @NonNull
     static Streamable<Long> timer(long delay, TimeUnit unit, ExecutorService executor) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(executor, "executor is null");
         return RxJavaPlugins.onAssembly(new StreamableTimer(delay, unit, null, executor));
+    }
+
+    /**
+     * For each incoming streamer, this operator creates a resource, then
+     * uses that resource to create the actual {@code Streamable} instance to
+     * stream value of and then uses a cleaner callback to dissolve the resource
+     * once the {@code Streamable} terminated.
+     * @param <T> the element type of the sequence
+     * @param <R> the resource type
+     * @param resourceSupplier supplies a resource object per {@link #stream(DisposableContainer)} call
+     * @param resourceMapper maps the supplied resource into a {@code Streamable} source
+     * @param resourceCleaner cleans up the supplied resource
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code resourceSupplier} or {@code resourceMapper}
+     *                              or {@code resourceCleaner} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <T, R> Streamable<T> using(Supplier<? extends R> resourceSupplier,
+            Function<? super R, ? extends Streamable<? extends T>> resourceMapper,
+            Consumer<? super R> resourceCleaner) {
+        Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
+        Objects.requireNonNull(resourceMapper, "resourceMapper is null");
+        Objects.requireNonNull(resourceCleaner, "resourceCleaner is null");
+        return RxJavaPlugins.onAssembly(new StreamableUsing<>(resourceSupplier, resourceMapper, resourceCleaner));
     }
 
     /**
@@ -550,6 +590,8 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code sources} is {@&ode null}
      */
+    @CheckReturnValue
+    @NonNull
     static <T> Streamable<List<T>> zip(Iterable<? extends Streamable<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new StreamableZip<>(sources));
@@ -570,7 +612,9 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code collector} is {@code null}
      */
-    default <A, R> Streamable<R> collect(Collector<T, A, R> collector) {
+    @CheckReturnValue
+    @NonNull
+    default <A, R> Streamable<R> collect(@NonNull Collector<T, A, R> collector) {
         Objects.requireNonNull(collector, "collector is null");
         return RxJavaPlugins.onAssembly(new StreamableCollector<>(this, collector));
     }
@@ -583,7 +627,9 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      */
-    default Streamable<T> delay(long time, TimeUnit unit, Scheduler scheduler) {
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> delay(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new StreamableDelay<>(this, time, unit, scheduler));
@@ -595,7 +641,9 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code consumer} is {@code null}
      */
-    default Streamable<T> doOnError(Consumer<? super Throwable> consumer) {
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> doOnError(@NonNull Consumer<? super Throwable> consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
         return intercept(StreamableHelper.createOnError(consumer));
     }
@@ -606,7 +654,9 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code consumer} is {@code null}
      */
-    default Streamable<T> doOnNext(Consumer<? super T> consumer) {
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> doOnNext(@NonNull Consumer<? super T> consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
         return intercept(new StreamableInterceptConfig<>(v -> { consumer.accept(v); return v; } ));
     }
@@ -638,7 +688,9 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code keySelector} is {@code null}
      */
-    default <@Nullable K> Streamable<GroupedStreamable<K, T>> groupBy(Function<? super T, ? extends K> keySelector) {
+    @CheckReturnValue
+    @NonNull
+    default <@Nullable K> Streamable<GroupedStreamable<K, T>> groupBy(@NonNull Function<? super T, ? extends K> keySelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         return RxJavaPlugins.onAssembly(new StreamableGroupBy<>(this, keySelector));
     }
@@ -732,7 +784,9 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code fallbackMapper} is {@code null}
      */
-    default Streamable<T> onErrorResumeNext(Function<? super Throwable, ? extends Streamable<? extends T>> fallbackMapper) {
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> onErrorResumeNext(@NonNull Function<? super Throwable, ? extends Streamable<? extends T>> fallbackMapper) {
         Objects.requireNonNull(fallbackMapper, "fallbackMapper is null");
         return RxJavaPlugins.onAssembly(new StreamableOnErrorResumeNext<>(this, fallbackMapper));
     }
@@ -798,7 +852,9 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code unit} or {@code scheduler} or {@code fallback} is {@code null}
      */
-    default Streamable<T> timeout(long timeout, TimeUnit unit, Scheduler scheduler, Streamable<T> fallback) {
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Streamable<T> fallback) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         Objects.requireNonNull(fallback, "fallback is null");
@@ -855,6 +911,8 @@ public interface Streamable<@NonNull T> {
      * or {@link ExecutorService} on its own.
      * @return the new {@code Observable} instance
      */
+    @CheckReturnValue
+    @NonNull
     default Observable<T> toObservable() {
         return RxJavaPlugins.onAssembly(new StreamableToObservable<>(this));
     }
@@ -1003,6 +1061,7 @@ public interface Streamable<@NonNull T> {
      *         {@code Streamable} terminates
      * @throws NullPointerException if {@code consumer} is {@code null}
      */
+    @NonNull
     default CompletionStage<Void> subscribe(@NonNull StreamSink<? super T> consumer) {
         return subscribe(consumer, Executors.newVirtualThreadPerTaskExecutor());
     }
@@ -1016,6 +1075,7 @@ public interface Streamable<@NonNull T> {
      *         {@code Streamable} terminates
      * @throws NullPointerException if {@code consumer} or {@code executor} is {@code null}
      */
+    @NonNull
     default CompletionStage<Void> subscribe(@NonNull StreamSink<? super T> consumer, ExecutorService executor) {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(executor, "executor is null");
