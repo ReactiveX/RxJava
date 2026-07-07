@@ -29,7 +29,7 @@ public class StreamableForEachTest extends StreamableBaseTest {
 
     @Test
     public void forEachCheckedCrash() {
-        var ex = assertThrows(ThrowableWrapper.class, () -> {
+        var ex = assertThrows(CompletionException.class, () -> {
             Streamable.just(1)
             .forEach(_ -> {
                 throw new Exception("test");
@@ -58,7 +58,7 @@ public class StreamableForEachTest extends StreamableBaseTest {
     @Test
     public void forEachExecCheckedCrash() throws Throwable {
         withCachedExecutor(exec -> {
-            var ex = assertThrows(ThrowableWrapper.class, () -> {
+            var ex = assertThrows(CompletionException.class, () -> {
                 Streamable.just(1)
                 .forEach(_ -> {
                     throw new Exception("test");
@@ -90,7 +90,7 @@ public class StreamableForEachTest extends StreamableBaseTest {
     @Test
     public void forEachBiCheckedCrash() throws Throwable {
         withVirtual(exec -> {
-            var ex = assertThrows(ThrowableWrapper.class, () -> {
+            var ex = assertThrows(CompletionException.class, () -> {
                 Streamable.just(1)
                 .forEach((_, _) -> {
                     throw new Exception("test");

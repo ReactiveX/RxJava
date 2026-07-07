@@ -21,9 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import io.reactivex.rxjava4.annotations.NonNull;
-import io.reactivex.rxjava4.disposables.*;
-import io.reactivex.rxjava4.exceptions.ThrowableWrapper;
-import io.reactivex.rxjava4.internal.util.*;
+import io.reactivex.rxjava4.disposables.Disposable;
+import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**
@@ -88,14 +87,14 @@ public final class CompletionStageDisposable<T> implements AutoCloseable {
      * <p>
      * Rethrows any original unchecked exceptions as is.
      * @throws CancellationException if the computation was cancelled
-     * @throws ThrowableWrapper if the original exception was a checked exception
+     * @throws CompletionException if the original exception was a checked exception
      */
     public void await() {
         state.lazySet(true);
         try {
             stage.toCompletableFuture().join();
         } catch (CompletionException ce) {
-            throw ExceptionHelper.wrapOrThrow(ce.getCause());
+            throw ExceptionHelper.unwrapOrThrow(ce);
         }
     }
 

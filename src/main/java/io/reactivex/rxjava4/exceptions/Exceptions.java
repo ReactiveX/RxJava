@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava4.exceptions;
 
+import java.util.concurrent.CompletionException;
+
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 
@@ -28,7 +30,7 @@ public final class Exceptions {
     }
     /**
      * Convenience method to throw a {@code RuntimeException} and {@code Error} directly
-     * or wrap any other exception type into a {@link ThrowableWrapper}.
+     * or wrap any other exception type into a {@link CompletionException}.
      * @param t the exception to throw directly or wrapped
      * @return because {@code propagate} itself throws an exception or error, this is a sort of phantom return
      *         value; {@code propagate} does not actually return anything

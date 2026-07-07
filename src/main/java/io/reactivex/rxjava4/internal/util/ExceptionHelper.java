@@ -18,8 +18,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.rxjava4.annotations.Nullable;
-import io.reactivex.rxjava4.exceptions.*;
+import io.reactivex.rxjava4.annotations.*;
+import io.reactivex.rxjava4.exceptions.CompositeException;
 
 /**
  * Terminal atomics for Throwable containers.
@@ -33,19 +33,39 @@ public final class ExceptionHelper {
 
     /**
      * If the provided Throwable is an Error this method
-     * throws it, otherwise returns a RuntimeException wrapping the error
+     * throws it, otherwise returns a CompletionException wrapping the error
      * if that error is a checked exception.
      * @param error the error to wrap or throw
      * @return the (wrapped) error
      */
-    public static RuntimeException wrapOrThrow(Throwable error) {
+    @NonNull
+    public static RuntimeException wrapOrThrow(@NonNull Throwable error) {
         if (error instanceof Error err) {
             throw err;
         }
         if (error instanceof RuntimeException rte) {
             return rte;
         }
-        return new ThrowableWrapper(error);
+        return new CompletionException("You forgot to unwrap me!", error);
+    }
+    /**
+     * Unwraps a {@link CompletionException} and rethrows its {@link Error}
+     * or {@link RuntimeException} inside it, or returns it as is if
+     * the {@code CompletionException} holds a checked exception.
+     * @param error the error to unwrap and rethrow its cause if possible
+     * @return the {@code error} if it has a checked exception cause
+     * @since 4.0.0
+     */
+    @NonNull
+    public static RuntimeException unwrapOrThrow(@NonNull CompletionException error) {
+        var cause = error.getCause();
+        if (cause instanceof Error err) {
+            throw err;
+        }
+        if (cause instanceof RuntimeException rte) {
+            return rte;
+        }
+        return error;
     }
 
     /**
@@ -184,8 +204,8 @@ public final class ExceptionHelper {
     }
 
     /**
-     * Unwraps both throwables if they are wrapped into a {@link CompletionException} or
-     * {@link ThrowableWrapper}, then if both are present, add {@code b} as suppressed to {@code a}
+     * Unwraps both throwables if they are wrapped into a {@link CompletionException},
+     * then if both are present, add {@code b} as suppressed to {@code a}
      * and return a; return b otherwise
      * @param main the first throwable
      * @param secondary the second throwable
@@ -193,10 +213,10 @@ public final class ExceptionHelper {
      */
     @Nullable
     public static Throwable unwrapAndCombine(@Nullable Throwable main, @Nullable Throwable secondary) {
-        if (main instanceof CompletionException || main instanceof ThrowableWrapper) {
+        if (main instanceof CompletionException) {
             main = main.getCause();
         }
-        if (secondary instanceof CompletionException || secondary instanceof ThrowableWrapper) {
+        if (secondary instanceof CompletionException) {
             secondary = secondary.getCause();
         }
         if (main != null && secondary != null && main != secondary) {
@@ -209,12 +229,12 @@ public final class ExceptionHelper {
     }
 
     /**
-     * Unwraps the given {@link CompletionException} or {@link ThrowableWrapper}
+     * Unwraps the given {@link CompletionException}.
      * @param t the possible throwable to unwrap
      * @return the unwrapped Throwable
      */
     public static Throwable unwrap(@Nullable Throwable t) {
-        if (t instanceof CompletionException || t instanceof ThrowableWrapper) {
+        if (t instanceof CompletionException) {
             t = t.getCause();
         }
         return t;
