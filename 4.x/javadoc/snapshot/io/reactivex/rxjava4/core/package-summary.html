@@ -411,16 +411,16 @@ value fluently.</div>
 <div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A realized stream which can then be consumed asynchronously in steps.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="StreamerInput.html" title="interface in io.reactivex.rxjava4.core">StreamerInput</a>&lt;T&gt;</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="StreamProcessor.html" title="interface in io.reactivex.rxjava4.core">StreamProcessor</a>&lt;In,<wbr>Out&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">A <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Processor.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Processor</code></a>-like interface combining the <code>Streamable</code> interface and the
+<a href="StreamSink.html" title="interface in io.reactivex.rxjava4.core"><code>StreamSink</code></a> interface to establish a push-pull bridge based on <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a>-based
+asynchronous processing and dispatching of values and errors.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="StreamSink.html" title="interface in io.reactivex.rxjava4.core">StreamSink</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">An interface to submit items and terminal events to a consumer that indacates when the processing of
 said item or terminal event has completed, similar to how <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> can receive events.</div>
-</div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="StreamProcessor.html" title="interface in io.reactivex.rxjava4.core">StreamProcessor</a>&lt;In,<wbr>Out&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
-<div class="block">A <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Processor.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Processor</code></a>-like interface combining the <code>Streamable</code> interface and the
-<a href="StreamerInput.html" title="interface in io.reactivex.rxjava4.core"><code>StreamerInput</code></a> interface to establish a push-pull bridge based on <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a>-based
-asynchronous processing and dispatching of values and errors.</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab1"><a href="VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter</a>&lt;T&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab1">
