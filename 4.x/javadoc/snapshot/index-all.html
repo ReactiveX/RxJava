@@ -85,6 +85,11 @@ initTheme();
 <div class="block">Adds a <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> to this container or disposes it if the
 container has been disposed.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html#add(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">add(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></dt>
+<dd>
+<div class="block">Adds a disposable to this container or disposes it if the
+container has been disposed.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/observers/ResourceCompletableObserver.html#add(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">add(Disposable)</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/ResourceCompletableObserver.html" title="class in io.reactivex.rxjava4.observers">ResourceCompletableObserver</a></dt>
 <dd>
 <div class="block">Adds a resource to this <code>ResourceCompletableObserver</code>.</div>
@@ -101,13 +106,6 @@ container has been disposed.</div>
 <dd>
 <div class="block">Adds a resource to this <code>ResourceSingleObserver</code>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#add(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">add(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
-<dd>
-<div class="block">Adds a disposable to this container or disposes it if the
-container has been disposed.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#add(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">add(Disposable)</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/subscribers/ResourceSubscriber.html#add(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">add(Disposable)</a> - Method in class io.reactivex.rxjava4.subscribers.<a href="io/reactivex/rxjava4/subscribers/ResourceSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">ResourceSubscriber</a></dt>
 <dd>
 <div class="block">Adds a resource to this <code>ResourceSubscriber</code>.</div>
@@ -315,7 +313,7 @@ optionally different element type.</div>
 <dd>
 <div class="block">Applies a function to the upstream <a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core"><code>Streamable</code></a> and returns a converted value of type <code>R</code>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/StreamableOperator.html#apply(io.reactivex.rxjava4.disposables.DisposableContainer,io.reactivex.rxjava4.core.Streamer)" class="member-name-link">apply(DisposableContainer, Streamer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamableOperator.html" title="interface in io.reactivex.rxjava4.core">StreamableOperator</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/StreamableOperator.html#apply(io.reactivex.rxjava4.disposables.StreamerCancellation,io.reactivex.rxjava4.core.Streamer)" class="member-name-link">apply(StreamerCancellation, Streamer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamableOperator.html" title="interface in io.reactivex.rxjava4.core">StreamableOperator</a></dt>
 <dd>
 <div class="block">Applies a function to the upstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a> and returns a new downstream <code>Streamer</code>.</div>
 </dd>
@@ -1264,8 +1262,6 @@ ReplaySubject is released (as it is never part of a replay).</div>
 <div class="block">Removes and disposes all contained <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>s, making this container fresh
 without disposing the entire container.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#clear()" class="member-name-link">clear()</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/operators/SimpleQueue.html#clear()" class="member-name-link">clear()</a> - Method in interface io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators">SimpleQueue</a></dt>
 <dd>
 <div class="block">Removes all enqueued items from this queue.</div>
@@ -2860,13 +2856,11 @@ signals its first value or completes.</div>
 <div class="block">Removes (but does not dispose) the given <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> if it is part of this
 container.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#delete(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">delete(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
+<dt><a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html#delete(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">delete(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></dt>
 <dd>
 <div class="block">Removes but does not dispose the given disposable if it is part of this
 container.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#delete(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">delete(Disposable)</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#dematerialize(io.reactivex.rxjava4.functions.Function)" class="member-name-link">dematerialize(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
 <div class="block">Maps the <a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core"><code>Notification</code></a> success value of the current <code>Maybe</code> back into normal
@@ -2892,13 +2886,11 @@ into their respective <a href="https://docs.oracle.com/en/java/javase/26/docs/ap
 </dd>
 <dt><a href="io/reactivex/rxjava4/disposables/CompositeDisposable.html#derive()" class="member-name-link">derive()</a> - Method in class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/CompositeDisposable.html" title="class in io.reactivex.rxjava4.disposables">CompositeDisposable</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#derive()" class="member-name-link">derive()</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
+<dt><a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html#derive()" class="member-name-link">derive()</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></dt>
 <dd>
-<div class="block">Create a derived sub container that can get cancelled by this container,
-but cancelling the subcontainer does not cancel this container.</div>
+<div class="block">Create a derived sub-container that can get cancelled by this container,
+but disposing the sub-container does not dispose this container.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#derive()" class="member-name-link">derive()</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" class="type-name-link" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor&lt;T&gt;</a> - Class in <a href="io/reactivex/rxjava4/processors/package-summary.html">io.reactivex.rxjava4.processors</a></dt>
 <dd>
 <div class="block">Signals the various <a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#next(T)"><code>DispatchStreamProcessor.next(Object)</code></a> and <a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#finish(java.lang.Throwable)"><code>DispatchStreamProcessor.finish(Throwable)</code></a> events to one or more
@@ -2922,11 +2914,7 @@ downstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" class="type-name-link" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a> - Interface in <a href="io/reactivex/rxjava4/disposables/package-summary.html">io.reactivex.rxjava4.disposables</a></dt>
 <dd>
-<div class="block">Common interface to add and remove disposables from a container.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" class="type-name-link" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a> - Record Class in <a href="io/reactivex/rxjava4/disposables/package-summary.html">io.reactivex.rxjava4.disposables</a></dt>
-<dd>
-<div class="block">Implementation of a never disposable container.</div>
+<div class="block">Common interface to add and remove <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>s from a container.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/observers/DisposableMaybeObserver.html" class="type-name-link" title="class in io.reactivex.rxjava4.observers">DisposableMaybeObserver&lt;T&gt;</a> - Class in <a href="io/reactivex/rxjava4/observers/package-summary.html">io.reactivex.rxjava4.observers</a></dt>
 <dd>
@@ -2958,8 +2946,6 @@ downstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in
 <dd>
 <div class="block">Dispose the resource, the operation should be idempotent.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#dispose()" class="member-name-link">dispose()</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/SerialDisposable.html#dispose()" class="member-name-link">dispose()</a> - Method in class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/SerialDisposable.html" title="class in io.reactivex.rxjava4.disposables">SerialDisposable</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#dispose()" class="member-name-link">dispose()</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
@@ -3521,10 +3507,6 @@ immediately.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Notification.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core">Notification</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
-<dd>
-<div class="block">Indicates whether some other object is "equal to" this one.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
@@ -5111,10 +5093,6 @@ grouped items as <a href="io/reactivex/rxjava4/core/GroupedObservable.html" titl
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Notification.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core">Notification</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
-<dd>
-<div class="block">Returns a hash code value for this object.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
@@ -5546,10 +5524,12 @@ or a successful <a href="io/reactivex/rxjava4/core/SingleEmitter.html#tryOnError
 <dd>
 <div class="block">Returns true if this resource has been disposed.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#isDisposed()" class="member-name-link">isDisposed()</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/SerialDisposable.html#isDisposed()" class="member-name-link">isDisposed()</a> - Method in class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/SerialDisposable.html" title="class in io.reactivex.rxjava4.disposables">SerialDisposable</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html#isDisposed()" class="member-name-link">isDisposed()</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></dt>
+<dd>
+<div class="block">Returns true if this resource has been disposed.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#isDisposed()" class="member-name-link">isDisposed()</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
 <dd>
 <div class="block">Returns true if this test consumer was cancelled/disposed.</div>
@@ -5868,7 +5848,7 @@ used in the subscription process going further upstream.</div>
 <dd>
 <div class="block"><strong>This method requires advanced knowledge about building operators, please consider
 other standard composition methods first;</strong>
-Returns a <code>Streamable</code> instance which when its <a href="io/reactivex/rxjava4/core/Streamable.html#stream(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>Streamable.stream(DisposableContainer)</code></a> is invoked,
+Returns a <code>Streamable</code> instance which when its <a href="io/reactivex/rxjava4/core/Streamable.html#stream(io.reactivex.rxjava4.disposables.StreamerCancellation)"><code>Streamable.stream(StreamerCancellation)</code></a> is invoked,
 applies the specified operator callback to the upstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a> to produce
 an actual <code>Streamer</code> instance to be handed downstream.</div>
 </dd>
@@ -6327,15 +6307,6 @@ subscribers have cancelled.</div>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#never()" class="member-name-link">never()</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
 <div class="block">Returns an <code>Streamable</code> that never produces an item and never terminates.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#NEVER" class="member-name-link">NEVER</a> - Static variable in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
-<dd>
-<div class="block">The container implementation that just ignores everything, for
-cases where the dispose signal has no side effects to work with.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#%3Cinit%3E()" class="member-name-link">NeverDisposableContainer()</a> - Constructor for record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
-<dd>
-<div class="block">Creates an instance of a <code>NeverDisposableContainer</code> record class.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html#NEW_THREAD" class="member-name-link">NEW_THREAD</a> - Static variable in annotation interface io.reactivex.rxjava4.annotations.<a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">SchedulerSupport</a></dt>
 <dd>
@@ -7653,19 +7624,12 @@ timeout if all subscribers have unsubscribed.</div>
 observers reaches 1 and disconnect after the specified
 timeout if all <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a>s have unsubscribed.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#register(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">register(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
-<dd>
-<div class="block">Registers a <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> with this container so that it can be removed and disposed
-via a simple <a href="io/reactivex/rxjava4/disposables/Disposable.html#dispose()"><code>Disposable.dispose()</code></a> call to the returned Disposable.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/CompositeDisposable.html#remove(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">remove(Disposable)</a> - Method in class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/CompositeDisposable.html" title="class in io.reactivex.rxjava4.disposables">CompositeDisposable</a></dt>
 <dd>
 <div class="block">Removes and disposes the given <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> if it is part of this
 container.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#remove(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">remove(Disposable)</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#remove(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">remove(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
+<dt><a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html#remove(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">remove(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></dt>
 <dd>
 <div class="block">Removes and disposes the given disposable if it is part of this
 container.</div>
@@ -8014,8 +7978,6 @@ onSubscribe already.</div>
 or has been disposed.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/disposables/CompositeDisposable.html#reset()" class="member-name-link">reset()</a> - Method in class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/CompositeDisposable.html" title="class in io.reactivex.rxjava4.disposables">CompositeDisposable</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#reset()" class="member-name-link">reset()</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#reset()" class="member-name-link">reset()</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
 <dd>
@@ -9371,11 +9333,11 @@ emitted by the current <code>Observable</code>.</div>
 <dd>
 <div class="block">The current rail is stopped and the error is dropped.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Streamable.html#stream(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">stream(DisposableContainer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#stream(io.reactivex.rxjava4.disposables.StreamerCancellation)" class="member-name-link">stream(StreamerCancellation)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
 <div class="block">Realizes the stream and returns an interface that lets one consume it.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#stream(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">stream(DisposableContainer)</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></dt>
+<dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#stream(io.reactivex.rxjava4.disposables.StreamerCancellation)" class="member-name-link">stream(StreamerCancellation)</a> - Method in class io.reactivex.rxjava4.processors.<a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">Streamable&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -9410,6 +9372,13 @@ value fluently.</div>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">Streamer&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
 <div class="block">A realized stream which can then be consumed asynchronously in steps.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" class="type-name-link" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a> - Interface in <a href="io/reactivex/rxjava4/disposables/package-summary.html">io.reactivex.rxjava4.disposables</a></dt>
+<dd>
+<div class="block">Represents non-disposable view of a <a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a>
+that allows synchronous testing for disposed state as well as allow
+adding and removing <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> resources to be
+cleaned up when the full container is disposed.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/StreamProcessor.html#streamerCount()" class="member-name-link">streamerCount()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamProcessor.html" title="interface in io.reactivex.rxjava4.core">StreamProcessor</a></dt>
 <dd>
@@ -9515,11 +9484,6 @@ via the help of the standard <a href="https://docs.oracle.com/en/java/javase/26/
 <dd>
 <div class="block">Relays the events of the upstream into a <a href="io/reactivex/rxjava4/core/StreamSink.html" title="interface in io.reactivex.rxjava4.core"><code>StreamSink</code></a> consumer
 via the help of the given <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="interface in java.util.concurrent" class="external-link"><code>ExecutorService</code></a> as a mediator for pull-to-push.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#subscribe(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">subscribe(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
-<dd>
-<div class="block">Registers a <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> with this container so that it can be deleted, not disposed
-via a simple <a href="io/reactivex/rxjava4/disposables/Disposable.html#dispose()"><code>Disposable.dispose()</code></a> call to the returned Disposable.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#subscribe(io.reactivex.rxjava4.functions.Action)" class="member-name-link">subscribe(Action)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -11197,10 +11161,6 @@ transparently relaying signals between the two async representations of a sequen
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Notification.html#toString()" class="member-name-link">toString()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core">Notification</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
-<dd>
-<div class="block">Returns a string representation of this record class.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#toString()" class="member-name-link">toString()</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>

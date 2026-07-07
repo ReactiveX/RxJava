@@ -64,7 +64,7 @@ initTheme();
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#apply(io.reactivex.rxjava4.disposables.DisposableContainer,io.reactivex.rxjava4.core.Streamer)" tabindex="0">apply(DisposableContainer, Streamer)</a></li>
+<li><a href="#apply(io.reactivex.rxjava4.disposables.StreamerCancellation,io.reactivex.rxjava4.core.Streamer)" tabindex="0">apply(StreamerCancellation, Streamer)</a></li>
 </ol>
 </li>
 </ol>
@@ -109,7 +109,7 @@ initTheme();
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a><wbr>&lt;? extends <a href="#type-param-R" title="type parameter in StreamableOperator">R</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#apply(io.reactivex.rxjava4.disposables.DisposableContainer,io.reactivex.rxjava4.core.Streamer)" class="member-name-link">apply</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;container,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#apply(io.reactivex.rxjava4.disposables.StreamerCancellation,io.reactivex.rxjava4.core.Streamer)" class="member-name-link">apply</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a>&nbsp;container,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in StreamableOperator">T</a>&gt;&nbsp;streamer)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Applies a function to the upstream <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a> and returns a new downstream <code>Streamer</code>.</div>
@@ -129,19 +129,19 @@ initTheme();
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="apply(io.reactivex.rxjava4.disposables.DisposableContainer,io.reactivex.rxjava4.core.Streamer)">
+<section class="detail" id="apply(io.reactivex.rxjava4.disposables.StreamerCancellation,io.reactivex.rxjava4.core.Streamer)">
 <h3>apply</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;? extends <a href="#type-param-R" title="type parameter in StreamableOperator">R</a>&gt;</span>&nbsp;<span class="element-name">apply</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;container,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a>&nbsp;container,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in StreamableOperator">T</a>&gt;&nbsp;streamer)</span>
                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a></span></div>
 <div class="block">Applies a function to the upstream <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a> and returns a new downstream <code>Streamer</code>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>container</code> - the <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a> handling the cancellation propagation for the downstream</dd>
+<dd><code>container</code> - the <a href="../disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>StreamerCancellation</code></a> handling the cancellation propagation for the downstream</dd>
 <dd><code>streamer</code> - the upstream <code>Streamer</code> instance</dd>
 <dt>Returns:</dt>
 <dd>the downstream <code>Streamer</code> instance</dd>

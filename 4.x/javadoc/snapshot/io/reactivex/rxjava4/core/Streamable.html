@@ -64,7 +64,7 @@ initTheme();
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#stream(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">stream(DisposableContainer)</a></li>
+<li><a href="#stream(io.reactivex.rxjava4.disposables.StreamerCancellation)" tabindex="0">stream(StreamerCancellation)</a></li>
 <li><a href="#concat(io.reactivex.rxjava4.core.Streamable,java.util.concurrent.ExecutorService)" tabindex="0">concat(Streamable, ExecutorService)</a></li>
 <li><a href="#concat(java.lang.Iterable)" tabindex="0">concat(Iterable)</a></li>
 <li><a href="#create(io.reactivex.rxjava4.core.VirtualGenerator)" tabindex="0">create(VirtualGenerator)</a></li>
@@ -159,7 +159,7 @@ initTheme();
 builds upon the Java <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a>-based concurrency-coordination model.</p>
 <p>The lifecycle of the sequence is as follows:</p>
 <ul>
-<li>consumer calls <a href="#stream(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>stream(DisposableContainer)</code></a></li>
+<li>consumer calls <a href="#stream(io.reactivex.rxjava4.disposables.StreamerCancellation)"><code>stream(StreamerCancellation)</code></a></li>
 <li>consumer calls <a href="Streamer.html#next()"><code>Streamer.next()</code></a> in a loop and consumer checks if what
 the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> outcome is:
 <ul>
@@ -172,7 +172,7 @@ the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/u
 </ul>
 <p>It is always necessary to have the consumer call <code>finish</code> because that is responsible for cleaning up
 resources of the upstream.</p>
-<p>Downstream cancellations are signaled via the <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a>, where operators can register their own
+<p>Downstream cancellations are signaled via the <a href="../disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>StreamerCancellation</code></a>, where operators can register their own
 <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>s that get disposed. Because dispose can happen at any time and asynchronously to the consumption loop,
 the sensitive sources must complete their waiting <code>CompletionStage</code> returned by <code>next</code> exceptionally via a
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class in java.util.concurrent" class="external-link"><code>CancellationException</code></a>. This will unblock the loops and invoke the <code>finish</code> method of the lifecycle at
@@ -413,7 +413,7 @@ numbers from <code>start</code> up to <code>start + count</code> exclusive with 
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block"><strong>This method requires advanced knowledge about building operators, please consider
 other standard composition methods first;</strong>
-Returns a <code>Streamable</code> instance which when its <a href="#stream(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>stream(DisposableContainer)</code></a> is invoked,
+Returns a <code>Streamable</code> instance which when its <a href="#stream(io.reactivex.rxjava4.disposables.StreamerCancellation)"><code>stream(StreamerCancellation)</code></a> is invoked,
 applies the specified operator callback to the upstream <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a> to produce
 an actual <code>Streamer</code> instance to be handed downstream.</div>
 </div>
@@ -451,7 +451,7 @@ failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/ja
 <div class="block">Emits elements from start up to start + count exclusive.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#stream(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">stream</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#stream(io.reactivex.rxjava4.disposables.StreamerCancellation)" class="member-name-link">stream</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a>&nbsp;cancellation)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Realizes the stream and returns an interface that lets one consume it.</div>
 </div>
@@ -596,17 +596,29 @@ row of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/jav
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="stream(io.reactivex.rxjava4.disposables.DisposableContainer)">
+<section class="detail" id="stream(io.reactivex.rxjava4.disposables.StreamerCancellation)">
 <h3>stream</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">stream</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</span></div>
-<div class="block">Realizes the stream and returns an interface that lets one consume it.</div>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a>&nbsp;cancellation)</span></div>
+<div class="block">Realizes the stream and returns an interface that lets one consume it.
+<p>
+Implementations are not meant to dispose the <code>cancellation</code> as it is the
+privilege of whatever calls the <code>stream</code> method. If you need to talk to other
+<code>Streamable</code>s, use the <a href="../disposables/StreamerCancellation.html#derive()"><code>StreamerCancellation.derive()</code></a> to gain access to
+a fully fledged <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a> where you can dispose it without disposing
+the parent <code>cancellation</code> instance by accident.
+<p>
+It is recommened you <a href="../disposables/StreamerCancellation.html#remove(io.reactivex.rxjava4.disposables.Disposable)"><code>StreamerCancellation.remove(Disposable)</code></a> or
+<a href="../disposables/StreamerCancellation.html#delete(io.reactivex.rxjava4.disposables.Disposable)"><code>StreamerCancellation.delete(Disposable)</code></a> any extra resources you added
+via <a href="../disposables/StreamerCancellation.html#add(io.reactivex.rxjava4.disposables.Disposable)"><code>StreamerCancellation.add(Disposable)</code></a> when your operator
+reaches the <a href="Streamer.html#finish()"><code>Streamer.finish()</code></a> call.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>cancellation</code> - where to register and listen for cancellation calls.</dd>
+<dd><code>cancellation</code> - where to register, check and listen for cancellation calls via
+                    its <a href="../disposables/StreamerCancellation.html#isDisposed()"><code>StreamerCancellation.isDisposed()</code></a></dd>
 <dt>Returns:</dt>
 <dd>the Streamer instance to consume.</dd>
 </dl>
@@ -1236,7 +1248,7 @@ once the <code>Streamable</code> terminated.</div>
 <dd><span id="using(io.reactivex.rxjava4.functions.Supplier,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Consumer)-type-param-T"><code>T</code> - the element type of the sequence</span></dd>
 <dd><span id="using(io.reactivex.rxjava4.functions.Supplier,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Consumer)-type-param-R"><code>R</code> - the resource type</span></dd>
 <dt>Parameters:</dt>
-<dd><code>resourceSupplier</code> - supplies a resource object per <a href="#stream(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>stream(DisposableContainer)</code></a> call</dd>
+<dd><code>resourceSupplier</code> - supplies a resource object per <a href="#stream(io.reactivex.rxjava4.disposables.StreamerCancellation)"><code>stream(StreamerCancellation)</code></a> call</dd>
 <dd><code>resourceMapper</code> - maps the supplied resource into a <code>Streamable</code> source</dd>
 <dd><code>resourceCleaner</code> - cleans up the supplied resource</dd>
 <dt>Returns:</dt>
@@ -1462,7 +1474,7 @@ and allows the modification of them via Function callbacks.</div>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="StreamableOperator.html" title="interface in io.reactivex.rxjava4.core">StreamableOperator</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Streamable">T</a>, ? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&nbsp;lifter)</span></div>
 <div class="block"><strong>This method requires advanced knowledge about building operators, please consider
 other standard composition methods first;</strong>
-Returns a <code>Streamable</code> instance which when its <a href="#stream(io.reactivex.rxjava4.disposables.DisposableContainer)"><code>stream(DisposableContainer)</code></a> is invoked,
+Returns a <code>Streamable</code> instance which when its <a href="#stream(io.reactivex.rxjava4.disposables.StreamerCancellation)"><code>stream(StreamerCancellation)</code></a> is invoked,
 applies the specified operator callback to the upstream <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a> to produce
 an actual <code>Streamer</code> instance to be handed downstream.
 <p>
