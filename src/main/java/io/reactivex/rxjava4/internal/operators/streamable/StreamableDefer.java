@@ -17,7 +17,7 @@ import java.util.Objects;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Supplier;
 
@@ -25,7 +25,7 @@ public record StreamableDefer<T>(Supplier<? extends Streamable<? extends T>> sup
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         try {
             return (Streamer<T>)(Objects.requireNonNull(supplier.get(), "The supplier returned a null Streamable")
                     .stream(cancellation));

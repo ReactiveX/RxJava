@@ -15,11 +15,11 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import static io.reactivex.rxjava4.internal.operators.streamable.StreamableHelper.*;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 
 public record StreamableTakeUntil<T, U>(
@@ -28,7 +28,7 @@ public record StreamableTakeUntil<T, U>(
 ) implements Streamable<T>, HasUpstreamStreamableSource<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         var otherCancellation = cancellation.derive();
         var otherStreamer = other.stream(otherCancellation);
         var mainCancellation = cancellation.derive();

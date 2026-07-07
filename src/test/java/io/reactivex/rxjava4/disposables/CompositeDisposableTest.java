@@ -656,45 +656,4 @@ public class CompositeDisposableTest extends RxJavaTest {
         assertTrue(d1.isDisposed());
     }
 
-    @Test
-    public void register() {
-        var cd = new CompositeDisposable();
-
-        var d = Disposable.empty();
-
-        var e = cd.register(d);
-
-        assertFalse(d.isDisposed(), "d is disposed");
-        assertFalse(e.isDisposed(), "e is disposed");
-        assertFalse(cd.isDisposed(), "cd is disposed");
-
-        e.dispose();
-
-        assertTrue(d.isDisposed(), "d is not is disposed");
-        assertTrue(e.isDisposed(), "e not is disposed");
-        assertFalse(cd.isDisposed(), "cd is disposed");
-
-        assertEquals(0, cd.size());
-    }
-
-    @Test
-    public void subscribe() {
-        var cd = new CompositeDisposable();
-
-        var d = Disposable.empty();
-
-        var e = cd.subscribe(d);
-
-        assertFalse(d.isDisposed(), "d is disposed");
-        assertFalse(e.isDisposed(), "e is disposed");
-        assertFalse(cd.isDisposed(), "cd is disposed");
-
-        e.dispose();
-
-        assertFalse(d.isDisposed(), "d is disposed");
-        assertTrue(e.isDisposed(), "e not is disposed");
-        assertFalse(cd.isDisposed(), "cd is disposed");
-
-        assertEquals(0, cd.size());
-    }
 }

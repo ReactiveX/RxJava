@@ -27,7 +27,7 @@ public record StreamableTimeout<T>(
 implements Streamable<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         var worker = scheduler.createWorker();
         cancellation.add(worker);
         var dc = cancellation.derive();
@@ -49,14 +49,14 @@ implements Streamable<T> {
 
         final Disposable mainDisposable;
 
-        final DisposableContainer downstreamDisposable;
+        final StreamerCancellation downstreamDisposable;
 
         Streamer<T> mainStreamer;
 
         Streamer<T> fallbackStreamer;
 
         TimeoutStreamer(
-                Streamer<T> mainStreamer, Disposable mainDisposable, DisposableContainer downstreamDisposable,
+                Streamer<T> mainStreamer, Disposable mainDisposable, StreamerCancellation downstreamDisposable,
                 long timeout, TimeUnit unit, Worker worker, Streamable<T> fallback) {
             this.timeout = timeout;
             this.unit = unit;

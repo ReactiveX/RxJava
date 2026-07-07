@@ -16,10 +16,10 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 import java.util.concurrent.*;
 
 import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
@@ -166,7 +166,7 @@ public class StreamableFlatMapTest extends StreamableBaseTest {
     public void mapperFailingFinisher() throws Throwable {
         withCachedExecutor(exec -> {
             Streamable.just(1)
-            .flatMap(_ -> (Streamable<Object>)c -> new FailingFinishStreamer(c), new StandardConcurrentConfig(1))
+            .flatMap(_ -> (Streamable<Object>)_ -> new FailingFinishStreamer(), new StandardConcurrentConfig(1))
             .test(exec)
             .awaitDone(5, TimeUnit.MINUTES)
             .assertFailure(TestException.class)
@@ -174,7 +174,7 @@ public class StreamableFlatMapTest extends StreamableBaseTest {
         });
     }
 
-    public record FailingFinishStreamer(DisposableContainer canceller) implements Streamer<Object> {
+    public record FailingFinishStreamer() implements Streamer<Object> {
 
         @Override
         public @NonNull CompletionStage<Boolean> next() {

@@ -27,8 +27,8 @@ public record StreamableFromMaybe<T>(MaybeSource<T> source)
 implements Streamable<T>, HasUpstreamMaybeSource<T> {
 
     @Override
-    public @NonNull Streamer<T> stream(@NonNull DisposableContainer cancellation) {
-        var streamer = new MaybeStreamer<T>();
+    public @NonNull Streamer<T> stream(@NonNull StreamerCancellation cancellation) {
+        var streamer = new MaybeStreamer<T>(cancellation);
         cancellation.add(streamer);
         source.subscribe(streamer);
         return streamer;
@@ -41,11 +41,17 @@ implements Streamable<T>, HasUpstreamMaybeSource<T> {
         @Serial
         private static final long serialVersionUID = -4580514428263096178L;
 
+        final StreamerCancellation cancellation;
+
         final CompletableFuture<Boolean> waiter = new CompletableFuture<>();
 
         int stage;
 
         volatile T current;
+
+        MaybeStreamer(StreamerCancellation cancellation) {
+            this.cancellation = cancellation;
+        }
 
         @Override
         public void onSubscribe(@NonNull Disposable d) {
@@ -84,7 +90,7 @@ implements Streamable<T>, HasUpstreamMaybeSource<T> {
         @Override
         public @NonNull CompletionStage<Void> finish() {
             current = null;
-            DisposableHelper.dispose(this);
+            cancellation.delete(this);
             return FINISHED;
         }
 

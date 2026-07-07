@@ -28,7 +28,7 @@ public record StreamableDelay<T>(
 ) implements Streamable<T>, HasUpstreamStreamableSource<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         var worker = scheduler.createWorker();
         cancellation.add(worker);
         return new DelayStreamer<>(source.stream(cancellation), delay, unit, worker, cancellation);
@@ -44,13 +44,13 @@ public record StreamableDelay<T>(
 
         final TimeUnit unit;
 
-        final DisposableContainer cancellation;
+        final StreamerCancellation cancellation;
 
         CompletableFuture<Boolean> nextReady;
 
         Disposable onDisposed;
 
-        DelayStreamer(Streamer<T> upstream, long delay, TimeUnit unit, Worker worker, DisposableContainer cancellation) {
+        DelayStreamer(Streamer<T> upstream, long delay, TimeUnit unit, Worker worker, StreamerCancellation cancellation) {
             this.upstream = upstream;
             this.delay = delay;
             this.unit = unit;

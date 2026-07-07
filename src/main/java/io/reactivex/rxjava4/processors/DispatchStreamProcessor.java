@@ -44,7 +44,7 @@ public final class DispatchStreamProcessor<T> implements StreamProcessor<T, T> {
     volatile Throwable terminalEvent;
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         var result = new DispatchStreamer<T>(this);
         cancellation.add(result);
         if (add(result)) {

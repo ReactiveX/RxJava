@@ -22,7 +22,7 @@ import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 /**
  * A disposable container that can hold onto multiple other disposables.
  */
-public final class ListCompositeDisposable implements Disposable, DisposableContainer {
+public final class ListCompositeDisposable implements Disposable, DisposableContainer, StreamerCancellation {
 
     List<Disposable> resources;
 

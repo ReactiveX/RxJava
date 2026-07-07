@@ -274,8 +274,21 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         var result = new CompositeDisposable();
 
         add(result);
-        result.add(Disposable.fromRunnable(() -> delete(result)));
+        result.add(new DerivedCleaner(this, result));
 
         return result;
+    }
+
+    record DerivedCleaner(DisposableContainer parent, Disposable child) implements Disposable {
+
+        @Override
+        public void dispose() {
+            parent.delete(child);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return child.isDisposed();
+        }
     }
 }

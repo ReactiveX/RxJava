@@ -17,7 +17,7 @@ import java.util.Objects;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 
@@ -28,7 +28,7 @@ public record StreamableLift<T, R>(
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NonNull Streamer<@NonNull R> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull R> stream(@NonNull StreamerCancellation cancellation) {
         var upstream = source.stream(cancellation);
         try {
             return (Streamer<R>)Objects.requireNonNull(lifter.apply(cancellation, upstream),

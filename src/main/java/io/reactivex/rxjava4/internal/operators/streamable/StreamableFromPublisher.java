@@ -30,7 +30,7 @@ public record StreamableFromPublisher<T>(@NonNull Publisher<T> source,
 implements Streamable<T>, HasUpstreamPublisher<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
 
         var flow = Flowable.fromPublisher(source);
         var streamer = new FlowableStreamer<T>(
@@ -39,7 +39,8 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
                 new AtomicReference<>(),
                 new AtomicReference<>(),
                 new VirtualResumable(),
-                executor
+                executor,
+                cancellation
                 );
         cancellation.add(streamer);
         flow.subscribe(streamer);
@@ -52,7 +53,8 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
             AtomicReference<T> item,
             AtomicReference<Throwable> error,
             VirtualResumable resumer,
-            Executor executor)
+            Executor executor,
+            StreamerCancellation cancellation)
     implements Flow.Subscriber<T>, Streamer<T>, Disposable, java.util.function.Supplier<Boolean>, Runnable {
 
         @Override
@@ -137,6 +139,7 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
         public void run() {
             item.lazySet(null);
             SubscriptionHelper.cancel(upstream);
+            cancellation.delete(this);
         }
     }
 }

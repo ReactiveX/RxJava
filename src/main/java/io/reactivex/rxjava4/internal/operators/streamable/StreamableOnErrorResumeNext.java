@@ -28,13 +28,13 @@ public record StreamableOnErrorResumeNext<T>(
 ) implements Streamable<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         return new OnErrorResumeNextStreamer<>(source.stream(cancellation), fallbackMapper, cancellation);
     }
 
     static final class OnErrorResumeNextStreamer<T> implements Streamer<T> {
 
-        final DisposableContainer downstreamDisposable;
+        final StreamerCancellation downstreamDisposable;
 
         final Function<? super Throwable, ? extends Streamable<? extends T>> fallbackMapper;
 
@@ -44,7 +44,7 @@ public record StreamableOnErrorResumeNext<T>(
 
         public OnErrorResumeNextStreamer(Streamer<T> mainStreamer,
                 Function<? super Throwable, ? extends Streamable<? extends T>> fallbackMapper,
-                        DisposableContainer downstreamDisposable) {
+                        StreamerCancellation downstreamDisposable) {
             this.mainStreamer = mainStreamer;
             this.fallbackMapper = fallbackMapper;
             this.downstreamDisposable = downstreamDisposable;

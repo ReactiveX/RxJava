@@ -17,16 +17,16 @@ import java.util.concurrent.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.exceptions.Exceptions;
-import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.functions.Predicate;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 
 public record StreamableTakeWhile<T>(Streamable<T> source, Predicate<? super T> predicate)
 implements Streamable<T>, HasUpstreamStreamableSource<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         return new TakeWhileStreamer<>(source.stream(cancellation), predicate);
     }
 

@@ -18,7 +18,7 @@ import java.util.concurrent.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.internal.operators.streamable.StreamableEmpty.EmptyStreamer;
 
@@ -26,7 +26,7 @@ public record StreamableFromIterable<T>(@NonNull Iterable<? extends T> items) im
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         Iterator<? extends T> iterator;
         try {
             iterator = Objects.requireNonNull(items.iterator(), "iterator is null");

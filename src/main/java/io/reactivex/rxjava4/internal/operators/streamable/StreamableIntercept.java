@@ -19,21 +19,21 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 
 public record StreamableIntercept<T>(
         Streamable<T> source,
-        @NonNull BiFunction<? super DisposableContainer, ? super Streamer<? extends T>, ? extends Streamer<? extends T>> onStream,
-        @NonNull BiFunction<? super DisposableContainer, ? super CompletionStage<Boolean>, ? extends CompletionStage<Boolean>> onNext,
+        @NonNull BiFunction<? super StreamerCancellation, ? super Streamer<? extends T>, ? extends Streamer<? extends T>> onStream,
+        @NonNull BiFunction<? super StreamerCancellation, ? super CompletionStage<Boolean>, ? extends CompletionStage<Boolean>> onNext,
         @NonNull Function<? super T, ? extends T> onCurrent,
-        @NonNull BiFunction<? super DisposableContainer, ? super CompletionStage<Void>, ? extends CompletionStage<Void>> onFinish
+        @NonNull BiFunction<? super StreamerCancellation, ? super CompletionStage<Void>, ? extends CompletionStage<Void>> onFinish
 ) implements Streamable<T>, HasUpstreamStreamableSource<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         Streamer<? extends T> streamer;
         try {
             streamer = Objects.requireNonNull(onStream.apply(cancellation, source.stream(cancellation)), "onStream returned a null Streaner");
@@ -46,11 +46,11 @@ public record StreamableIntercept<T>(
 
     record InterceptStreamer<T>(
             @NonNull Streamer<? extends T> upstream,
-            @NonNull BiFunction<? super DisposableContainer, ? super CompletionStage<Boolean>, ? extends CompletionStage<Boolean>> onNext,
+            @NonNull BiFunction<? super StreamerCancellation, ? super CompletionStage<Boolean>, ? extends CompletionStage<Boolean>> onNext,
             @NonNull Function<? super T, ? extends T> onCurrent,
-            @NonNull BiFunction<? super DisposableContainer, ? super CompletionStage<Void>, ? extends CompletionStage<Void>> onFinish,
+            @NonNull BiFunction<? super StreamerCancellation, ? super CompletionStage<Void>, ? extends CompletionStage<Void>> onFinish,
             @NonNull AtomicReference<T> currentRef,
-            @NonNull AtomicReference<DisposableContainer> cancellation
+            @NonNull AtomicReference<StreamerCancellation> cancellation
     ) implements Streamer<T> {
         @Override
         public @NonNull CompletionStage<Boolean> next() {

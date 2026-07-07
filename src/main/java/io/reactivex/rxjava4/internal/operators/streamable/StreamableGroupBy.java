@@ -29,7 +29,7 @@ public record StreamableGroupBy<K, T>(Streamable<T> source, Function<? super T, 
 implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
 
     @Override
-    public @NonNull Streamer<GroupedStreamable<K, T>> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<GroupedStreamable<K, T>> stream(@NonNull StreamerCancellation cancellation) {
         var streamer = new GroupByStreamer<K, T>(source.stream(cancellation), keySelector);
         streamer.drain();
         return streamer;
@@ -201,7 +201,7 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
 
         volatile T current;
 
-        DisposableContainer cancellation;
+        StreamerCancellation cancellation;
 
         AsyncGroup(K key, GroupByStreamer<K, T> parent) {
             super(key);
@@ -212,7 +212,7 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+        public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
             if (once.compareAndSet(false, true)) {
                 this.cancellation = cancellation;
                 cancellation.add(this);
@@ -287,7 +287,7 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
         }
 
         @Override
-        public @NonNull Streamer<@NonNull Object> stream(@NonNull DisposableContainer cancellation) {
+        public @NonNull Streamer<@NonNull Object> stream(@NonNull StreamerCancellation cancellation) {
             return StreamableError.createFailed(new CancellationException("TOMBSTONE"));
         }
 

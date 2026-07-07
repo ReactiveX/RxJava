@@ -25,7 +25,7 @@ public enum StreamableEmpty implements Streamable<Object> {
     INSTANCE;
 
     @Override
-    public @NonNull Streamer<Object> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<Object> stream(@NonNull StreamerCancellation cancellation) {
         return EmptyStreamer.INSTANCE;
     }
 

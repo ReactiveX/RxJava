@@ -33,7 +33,7 @@ public record StreamableTimer(long delay, @NonNull TimeUnit unit,
     }
 
     @Override
-    public @NonNull Streamer<Long> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<Long> stream(@NonNull StreamerCancellation cancellation) {
         var streamer = new TimerStreamer();
         cancellation.add(streamer);
         if (scheduler != null) {

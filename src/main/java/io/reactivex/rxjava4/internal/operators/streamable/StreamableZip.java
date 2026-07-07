@@ -20,7 +20,7 @@ import java.util.function.BiConsumer;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.internal.util.AtomicThrowable;
 
 public record StreamableZip<T>(
@@ -28,7 +28,7 @@ public record StreamableZip<T>(
 ) implements Streamable<List<T>> {
 
     @Override
-    public @NonNull Streamer<@NonNull List<T>> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull List<T>> stream(@NonNull StreamerCancellation cancellation) {
         var dc = cancellation.derive();
 
         var sourcesList = new ArrayList<Streamer<? extends T>>();
