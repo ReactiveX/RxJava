@@ -18,11 +18,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.CompositeDisposable;
-import io.reactivex.rxjava4.exceptions.*;
+import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.processors.DispatchStreamProcessor;
 
 public class StreamableForEachTest extends StreamableBaseTest {
@@ -259,7 +259,9 @@ public class StreamableForEachTest extends StreamableBaseTest {
 
         awaitNoStreamers(dsp0, 1000);
 
-        assertFalse(dsp.hasComplete(), "dsp completes: error = " + dsp.hasThrowable());
+        awaitNoStreamers(dsp, 1000);
+
+        assertTrue(dsp.hasComplete(), "dsp completes: error = " + dsp.hasThrowable());
     }
 
     @Test
