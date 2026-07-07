@@ -22,7 +22,7 @@ import io.reactivex.rxjava4.disposables.*;
 public record StreamableError<T>(@NonNull Throwable throwable) implements Streamable<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         return createFailed(throwable);
     }
 

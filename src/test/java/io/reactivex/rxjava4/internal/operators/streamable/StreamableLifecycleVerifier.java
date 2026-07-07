@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StreamableInterceptConfig;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 
 /**
  * Tracks the calls to the various lifecycle events and allows verifying the call patterns.
@@ -56,7 +56,7 @@ public final class StreamableLifecycleVerifier<T> {
     }
 
     /**
-     * Verify the intercept registered only one {@link Streamable#stream(DisposableContainer)}
+     * Verify the intercept registered only one {@link Streamable#stream(StreamerCancellation)}
      * call and only one {@link Streamer#finish()} call.
      */
     public void verify() {
@@ -67,7 +67,7 @@ public final class StreamableLifecycleVerifier<T> {
     }
 
     /**
-     * Verify the intercept registered only one {@link Streamable#stream(DisposableContainer)}
+     * Verify the intercept registered only one {@link Streamable#stream(StreamerCancellation)}
      * call and only one {@link Streamer#finish()} call and one more
      * {@link Streamer#next()} calls than {@link Streamer#current()} calls
      */

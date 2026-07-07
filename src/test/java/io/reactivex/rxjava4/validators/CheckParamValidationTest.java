@@ -1158,7 +1158,7 @@ public class CheckParamValidationTest extends RxJavaTest {
         }
 
 @Override
-        public @NonNull Streamer apply(@NonNull DisposableContainer container, @NonNull Streamer streamer)
+        public @NonNull Streamer apply(@NonNull StreamerCancellation container, @NonNull Streamer streamer)
                 throws Throwable {
             return null;
         }

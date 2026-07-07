@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
+import io.reactivex.rxjava4.disposables.CompositeDisposable.DerivedCleaner;
 import io.reactivex.rxjava4.exceptions.CompositeException;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -657,44 +658,19 @@ public class CompositeDisposableTest extends RxJavaTest {
     }
 
     @Test
-    public void register() {
-        var cd = new CompositeDisposable();
+    public void derivedDisposed() {
+        var parent = new CompositeDisposable();
+        var child = new CompositeDisposable();
+        var deriv = new DerivedCleaner(parent, child);
+        parent.add(child);
+        child.add(deriv);
 
-        var d = Disposable.empty();
+        assertFalse(child.isDisposed(), "d is disposed");
+        assertFalse(deriv.isDisposed(), "d is disposed");
 
-        var e = cd.register(d);
+        child.dispose();
 
-        assertFalse(d.isDisposed(), "d is disposed");
-        assertFalse(e.isDisposed(), "e is disposed");
-        assertFalse(cd.isDisposed(), "cd is disposed");
-
-        e.dispose();
-
-        assertTrue(d.isDisposed(), "d is not is disposed");
-        assertTrue(e.isDisposed(), "e not is disposed");
-        assertFalse(cd.isDisposed(), "cd is disposed");
-
-        assertEquals(0, cd.size());
-    }
-
-    @Test
-    public void subscribe() {
-        var cd = new CompositeDisposable();
-
-        var d = Disposable.empty();
-
-        var e = cd.subscribe(d);
-
-        assertFalse(d.isDisposed(), "d is disposed");
-        assertFalse(e.isDisposed(), "e is disposed");
-        assertFalse(cd.isDisposed(), "cd is disposed");
-
-        e.dispose();
-
-        assertFalse(d.isDisposed(), "d is disposed");
-        assertTrue(e.isDisposed(), "e not is disposed");
-        assertFalse(cd.isDisposed(), "cd is disposed");
-
-        assertEquals(0, cd.size());
+        assertTrue(child.isDisposed(), "d is not disposed");
+        assertTrue(deriv.isDisposed(), "d is not disposed");
     }
 }

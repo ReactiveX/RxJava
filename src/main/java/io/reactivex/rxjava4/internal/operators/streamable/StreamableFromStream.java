@@ -18,14 +18,14 @@ import java.util.stream.Stream;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.internal.operators.streamable.StreamableEmpty.EmptyStreamer;
 
 public record StreamableFromStream<T>(@NonNull Stream<? extends T> items) implements Streamable<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         var iterator = Objects.requireNonNull(items.iterator(), "iterator is null");
         if (!iterator.hasNext()) {
             return (Streamer<T>)EmptyStreamer.INSTANCE;

@@ -18,30 +18,31 @@ import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.functions.*;
 
 /**
  * Configuration record the intercept() operator with various lifecylce-stage transforming callbacks
  * @param <T> the element type of the sequence
- * @param onStream called when the {@link Streamable#stream(io.reactivex.rxjava4.disposables.DisposableContainer)} is invoked
+ * @param onStream called when the {@link Streamable#stream(StreamerCancellation)} is invoked
  * @param onNext called when the {@link Streamer#next()} is invoked
  * @param onCurrent called when the {@link Streamer#current()} is invoked
  * @param onFinish called when the {@link Streamer#finish()} is invoked
  * @since 4.0.0
  */
 public record StreamableInterceptConfig<T>(
-        @NonNull BiFunction<? super DisposableContainer, ? super Streamer<? extends T>, ? extends Streamer<? extends T>> onStream,
-        @NonNull BiFunction<? super DisposableContainer, ? super CompletionStage<Boolean>, ? extends CompletionStage<Boolean>> onNext,
+        @NonNull BiFunction<? super StreamerCancellation, ? super Streamer<? extends T>, ? extends Streamer<? extends T>> onStream,
+        @NonNull BiFunction<? super StreamerCancellation, ? super CompletionStage<Boolean>, ? extends CompletionStage<Boolean>> onNext,
         @NonNull Function<? super T, ? extends T> onCurrent,
-        @NonNull BiFunction<? super DisposableContainer, ? super CompletionStage<Void>, ? extends CompletionStage<Void>> onFinish
+        @NonNull BiFunction<? super StreamerCancellation, ? super CompletionStage<Void>, ? extends CompletionStage<Void>> onFinish
 ) {
 
     /**
      * Constructs a configuration with a custom {@link #onNext()} intercept and everything else is pass-through.
      * @param onNext the callback for intercepting the {@code next()} calls
      */
-    public StreamableInterceptConfig(@NonNull BiFunction<? super DisposableContainer, ? super CompletionStage<Boolean>, ? extends CompletionStage<Boolean>> onNext) {
+    public StreamableInterceptConfig(
+            @NonNull BiFunction<? super StreamerCancellation, ? super CompletionStage<Boolean>, ? extends CompletionStage<Boolean>> onNext) {
         this((_, v) -> v, onNext, v -> v, (_, v) -> v);
     }
 
@@ -55,7 +56,7 @@ public record StreamableInterceptConfig<T>(
 
     /**
      * Constructs a fully configured record.
-     * @param onStream called when the {@link Streamable#stream(io.reactivex.rxjava4.disposables.DisposableContainer)} is invoked
+     * @param onStream called when the {@link Streamable#stream(StreamerCancellation)} is invoked
      * @param onNext called when the {@link Streamer#next()} is invoked
      * @param onCurrent called when the {@link Streamer#current()} is invoked
      * @param onFinish called when the {@link Streamer#finish()} is invoked

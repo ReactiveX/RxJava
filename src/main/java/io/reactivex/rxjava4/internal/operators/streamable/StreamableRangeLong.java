@@ -17,12 +17,12 @@ import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 
 public record StreamableRangeLong(long start, long count) implements Streamable<Long> {
 
     @Override
-    public @NonNull Streamer<@NonNull Long> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull Long> stream(@NonNull StreamerCancellation cancellation) {
         return new RangeLongStreamer<>(start, start + count);
     }
 

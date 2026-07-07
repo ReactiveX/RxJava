@@ -14,7 +14,7 @@
 package io.reactivex.rxjava4.core;
 
 import io.reactivex.rxjava4.annotations.NonNull;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 
 /**
  * Interface to map/wrap an upstream {@link Streamer} to an downstream {@code Streamer}.
@@ -27,12 +27,12 @@ import io.reactivex.rxjava4.disposables.DisposableContainer;
 public interface StreamableOperator<@NonNull T, @NonNull R> {
     /**
      * Applies a function to the upstream {@link Streamer} and returns a new downstream {@code Streamer}.
-     * @param container the {@link DisposableContainer} handling the cancellation propagation for the downstream
+     * @param container the {@link StreamerCancellation} handling the cancellation propagation for the downstream
      * @param streamer the upstream {@code Streamer} instance
      * @return the downstream {@code Streamer} instance
      * @throws Throwable on failure
      */
     @NonNull
-    Streamer<? extends R> apply(@NonNull DisposableContainer container,
+    Streamer<? extends R> apply(@NonNull StreamerCancellation container,
             @NonNull Streamer<? extends T> streamer) throws Throwable;
 }

@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Predicate;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
@@ -29,19 +29,19 @@ public record StreamableFilter<T>(
 implements Streamable<T>, HasUpstreamStreamableSource<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         return new FilterStreamer<>(source.stream(cancellation), predicate, cancellation);
     }
 
     static final class FilterStreamer<T> implements Streamer<T> {
         final Streamer<T> upstream;
         final Predicate<? super T> predicate;
-        DisposableContainer cancellation;
+        StreamerCancellation cancellation;
         volatile T current;
 
         final AtomicInteger wip = new AtomicInteger();
 
-        FilterStreamer(Streamer<T> upstream, Predicate<? super T> predicate, DisposableContainer cancellation) {
+        FilterStreamer(Streamer<T> upstream, Predicate<? super T> predicate, StreamerCancellation cancellation) {
             this.upstream = upstream;
             this.cancellation = cancellation;
             this.predicate = predicate;

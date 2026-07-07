@@ -14,6 +14,7 @@
 package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.io.Serial;
+import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -27,8 +28,8 @@ public record StreamableFromCompletable<T>(CompletableSource source)
 implements Streamable<T>, HasUpstreamCompletableSource {
 
     @Override
-    public @NonNull Streamer<T> stream(@NonNull DisposableContainer cancellation) {
-        var streamer = new CompletableStreamer<T>();
+    public @NonNull Streamer<T> stream(@NonNull StreamerCancellation cancellation) {
+        var streamer = new CompletableStreamer<T>(cancellation);
         cancellation.add(streamer);
         source.subscribe(streamer);
         return streamer;
@@ -41,7 +42,13 @@ implements Streamable<T>, HasUpstreamCompletableSource {
         @Serial
         private static final long serialVersionUID = -4580514428263096178L;
 
+        final StreamerCancellation cancellation;
+
         final CompletableFuture<Boolean> waiter = new CompletableFuture<>();
+
+        CompletableStreamer(StreamerCancellation cancellation) {
+            this.cancellation = cancellation;
+        }
 
         @Override
         public void onSubscribe(@NonNull Disposable d) {
@@ -65,12 +72,13 @@ implements Streamable<T>, HasUpstreamCompletableSource {
 
         @Override
         public @NonNull T current() {
-            return null; // never has any items
+            throw new NoSuchElementException();
         }
 
         @Override
         public @NonNull CompletionStage<Void> finish() {
             DisposableHelper.dispose(this);
+            cancellation.delete(this);
             return FINISHED;
         }
 

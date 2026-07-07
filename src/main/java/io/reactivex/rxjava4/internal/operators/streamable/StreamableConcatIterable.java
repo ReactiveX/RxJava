@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.*;
 
 public record StreamableConcatIterable<T>(
         Iterable<? extends Streamable<? extends T>> sources,
@@ -28,7 +28,7 @@ public record StreamableConcatIterable<T>(
 ) implements Streamable<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         return new ConcatIteratorStreamer<>(sources.iterator(), cancellation);
     }
 
@@ -39,7 +39,7 @@ public record StreamableConcatIterable<T>(
 
         final Iterator<? extends Streamable<? extends T>> iterator;
 
-        final DisposableContainer cancellation;
+        final StreamerCancellation cancellation;
 
         DisposableContainer currentCancellation;
 
@@ -48,7 +48,7 @@ public record StreamableConcatIterable<T>(
         CompletableFuture<Boolean> nextReady;
 
         ConcatIteratorStreamer(Iterator<? extends Streamable<? extends T>> iterator,
-                DisposableContainer cancellation) {
+                StreamerCancellation cancellation) {
             this.iterator = iterator;
             this.cancellation = cancellation;
         }

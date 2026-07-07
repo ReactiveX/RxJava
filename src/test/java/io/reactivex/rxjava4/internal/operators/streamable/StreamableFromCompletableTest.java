@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,9 @@ public class StreamableFromCompletableTest extends StreamableBaseTest {
         assertFalse((ts instanceof Disposable d) && d.isDisposed(), "Disposed?");
         assertTrue(cs.hasObservers(), "has no observers?");
 
-        assertNull(ts.current());
+        assertThrows(NoSuchElementException.class, () -> {
+            var _ = ts.current();
+        });
 
         cd.dispose();
 

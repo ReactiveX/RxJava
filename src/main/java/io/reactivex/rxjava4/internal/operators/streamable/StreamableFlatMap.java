@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
@@ -36,7 +36,7 @@ public record StreamableFlatMap<T, R>(
 implements Streamable<R>, HasUpstreamStreamableSource<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull R> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull R> stream(@NonNull StreamerCancellation cancellation) {
         var result = new FlatMapMainStreamer<>(source.stream(cancellation), mapper, maxConcurrency, cancellation);
         result.loopMain();
         return result;
@@ -52,7 +52,7 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
 
         final AtomicInteger wip = new AtomicInteger();
 
-        final DisposableContainer mainCanceller;
+        final StreamerCancellation mainCanceller;
 
         final MpscLinkedQueue<InnerStreamer<T, R>> queue;
 
@@ -71,7 +71,7 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
         FlatMapMainStreamer(Streamer<T> upstream,
                 Function<? super T, ? extends Streamable<? extends R>> mapper,
                 int maxConcurrency,
-                DisposableContainer container) {
+                StreamerCancellation container) {
             this.upstream = upstream;
             this.mapper = mapper;
             this.maxConcurrency = maxConcurrency;

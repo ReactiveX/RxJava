@@ -33,7 +33,7 @@ import io.reactivex.rxjava4.subscribers.TestSubscriber;
 ///
 /// The lifecycle of the sequence is as follows:
 ///
-/// - consumer calls {@link #stream(DisposableContainer)}
+/// - consumer calls {@link #stream(StreamerCancellation)}
 /// - consumer calls {@link Streamer#next()} in a loop and consumer checks if what
 ///   the {@link CompletionStage} outcome is:
 ///   - if it succeeded with a boolean {@code true}, it is safe to call {@link Streamer#current()}.
@@ -44,7 +44,7 @@ import io.reactivex.rxjava4.subscribers.TestSubscriber;
 /// It is always necessary to have the consumer call {@code finish} because that is responsible for cleaning up
 /// resources of the upstream.
 ///
-/// Downstream cancellations are signaled via the [DisposableContainer], where operators can register their own
+/// Downstream cancellations are signaled via the [StreamerCancellation], where operators can register their own
 /// [Disposable]s that get disposed. Because dispose can happen at any time and asynchronously to the consumption loop,
 /// the sensitive sources must complete their waiting `CompletionStage` returned by `next` exceptionally via a
 /// [CancellationException]. This will unblock the loops and invoke the `finish` method of the lifecycle at
@@ -72,12 +72,24 @@ public interface Streamable<@NonNull T> {
 
     /**
      * Realizes the stream and returns an interface that lets one consume it.
-     * @param cancellation where to register and listen for cancellation calls.
+     * <p>
+     * Implementations are not meant to dispose the {@code cancellation} as it is the
+     * privilege of whatever calls the {@code stream} method. If you need to talk to other
+     * {@code Streamable}s, use the {@link StreamerCancellation#derive()} to gain access to
+     * a fully fledged {@link DisposableContainer} where you can dispose it without disposing
+     * the parent {@code cancellation} instance by accident.
+     * <p>
+     * It is recommened you {@link StreamerCancellation#remove(Disposable)} or
+     * {@link StreamerCancellation#delete(Disposable)} any extra resources you added
+     * via {@link StreamerCancellation#add(Disposable)} when your operator
+     * reaches the {@link Streamer#finish()} call.
+     * @param cancellation where to register, check and listen for cancellation calls via
+     *                     its {@link StreamerCancellation#isDisposed()}
      * @return the Streamer instance to consume.
      */
     @CheckReturnValue
     @NonNull
-    Streamer<T> stream(@NonNull DisposableContainer cancellation);
+    Streamer<T> stream(@NonNull StreamerCancellation cancellation);
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
     // Data sources and wrappers
@@ -561,7 +573,7 @@ public interface Streamable<@NonNull T> {
      * once the {@code Streamable} terminated.
      * @param <T> the element type of the sequence
      * @param <R> the resource type
-     * @param resourceSupplier supplies a resource object per {@link #stream(DisposableContainer)} call
+     * @param resourceSupplier supplies a resource object per {@link #stream(StreamerCancellation)} call
      * @param resourceMapper maps the supplied resource into a {@code Streamable} source
      * @param resourceCleaner cleans up the supplied resource
      * @return the new {@code Streamable} instance
@@ -725,7 +737,7 @@ public interface Streamable<@NonNull T> {
     /**
      * <strong>This method requires advanced knowledge about building operators, please consider
      * other standard composition methods first;</strong>
-     * Returns a {@code Streamable} instance which when its {@link #stream(DisposableContainer)} is invoked,
+     * Returns a {@code Streamable} instance which when its {@link #stream(StreamerCancellation)} is invoked,
      * applies the specified operator callback to the upstream {@link Streamer} to produce
      * an actual {@code Streamer} instance to be handed downstream.
      * <p>

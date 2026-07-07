@@ -40,7 +40,7 @@ public record StreamableIntervalRange(
     }
 
     @Override
-    public @NonNull Streamer<Long> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<Long> stream(@NonNull StreamerCancellation cancellation) {
         var streamer = new IntervalStreamer(start, start + count);
         if (scheduler != null) {
             var d = scheduler.schedulePeriodicallyDirect(streamer, initialDelay, period, unit);

@@ -20,7 +20,7 @@ import java.util.stream.Collector;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 
 public record StreamableCollector<T, A, R>(
@@ -29,7 +29,7 @@ public record StreamableCollector<T, A, R>(
 ) implements Streamable<R>, HasUpstreamStreamableSource<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull R> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull R> stream(@NonNull StreamerCancellation cancellation) {
         return new CollectorStreamable<>(
                 source.stream(cancellation),
                 collector.supplier().get(),

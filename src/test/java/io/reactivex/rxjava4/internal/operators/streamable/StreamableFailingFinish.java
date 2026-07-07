@@ -28,9 +28,9 @@ public enum StreamableFailingFinish implements Streamable<Integer> {
     ;
 
     private final class StreamableFailingFinishStreamer implements Streamer<Integer> {
-        private final @NonNull DisposableContainer dc;
+        private final @NonNull StreamerCancellation dc;
 
-        private StreamableFailingFinishStreamer(@NonNull DisposableContainer dc) {
+        private StreamableFailingFinishStreamer(@NonNull StreamerCancellation dc) {
             this.dc = dc;
         }
 
@@ -66,7 +66,7 @@ public enum StreamableFailingFinish implements Streamable<Integer> {
     }
 
     @Override
-    public @NonNull Streamer<@NonNull Integer> stream(@NonNull DisposableContainer dc) {
+    public @NonNull Streamer<@NonNull Integer> stream(@NonNull StreamerCancellation dc) {
         return new StreamableFailingFinishStreamer(dc);
     }
 }

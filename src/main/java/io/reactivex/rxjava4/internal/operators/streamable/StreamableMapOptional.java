@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
@@ -30,7 +30,7 @@ public record StreamableMapOptional<T, R>(
 implements Streamable<R>, HasUpstreamStreamableSource<T> {
 
     @Override
-    public @NonNull Streamer<@NonNull R> stream(@NonNull DisposableContainer cancellation) {
+    public @NonNull Streamer<@NonNull R> stream(@NonNull StreamerCancellation cancellation) {
         return new MapStreamer<>(source.stream(cancellation), mapper);
     }
 
