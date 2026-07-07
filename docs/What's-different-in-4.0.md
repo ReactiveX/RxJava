@@ -22,6 +22,7 @@ changes, new types and new ways of using both standard Java feautures with RxJav
 2. Replace `io.reactivex.rxjava3.flowables` with `io.reactivex.rxjava4.core` in imports.
 3. Replace `io.reactivex.rxjava3.observables` with `io.reactivex.rxjava4.core` in imports.
 4. In missing method cases, look for an overload with a `XxxConfig` in its name, and wrap your arguments with it.
+7. Some types no longer implement `Disposable` so look for a `.asDisposable()` methods.
 5. Decide what scheduler to use instead of `Schedulers.io()`, i.e., `cached()` or `virtual()`.
 6. Replace `rx3.` with `rxjava4.` in properties references.
 
@@ -115,13 +116,15 @@ unless looking at their specs.
 
 ##### VirtualEmitter
 
+TBD
 
 ##### VirtualTransformer
 
+TBD
 
 ##### VirtualGenerator
 
-
+TBD
 
 #### Virtual debugging
 
@@ -198,6 +201,82 @@ It has three modes:
 Some operators have no meaning for `BOUNDARY` mode and these treat the mode as if `END` was requested.
 
 Related: [#8175](https://github.com/ReactiveX/RxJava/pull/8175)
+
+### TestSubscriber and TestObserver
+
+They both received new methods to have them work more easily with the almost always async running
+`Streamable` sequences.
+
+#### assertValueSet
+
+TBD
+
+#### awaitOnSubscribe
+
+TBD
+
+#### awaitCount with times
+
+TBD
+
+#### asDisposable
+
+The test consumers no longer implement `Disposable` directly as it ended up causing a lot of ambiguities
+when working with them in code. They can be cancelled manually still, but you cannot add them
+to a disposable container.
+
+```java
+var cd = new CompositeDisposable();
+var ts = new TestSubscriber<>();
+
+// cd.add(ts) // <----------- no longer works
+
+cd.add(ts.asDisposable());
+```
+
+#### errors
+
+TBD
+
+#### timeouts
+
+##### isTimeout
+
+TBD
+
+##### clearTimeout
+
+TBD
+
+##### assertTimeout
+
+TBD
+
+##### assertNoTimeout
+
+TBD
+
+#### toString
+
+When calling `toString`, it will now generate a textual representation of the internal state of the consumer,
+including counts of events and tag.
+
+```java
+var ts = new TestSubscriber<>();
+ts.withTag("Tag");
+
+IO.println(ts);
+```
+
+results in
+
+```
+TestSubscriber (latch = 0, values = 0, errors = 0, completions = 0, tag = Tag)
+```
+
+### DisposableContainer
+
+TBD
 
 ## System properties
 
