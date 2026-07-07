@@ -24,7 +24,7 @@ public enum StreamableFailingFinish implements Streamable<Integer> {
 
     NEVER(0),
     MAIN_FAILS(1),
-    MAIN_COMPLETES(1)
+    MAIN_COMPLETES(2)
     ;
 
     private final class StreamableFailingFinishStreamer implements Streamer<Integer> {

@@ -13,50 +13,30 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
 
-public class StreamableCollectorTest extends StreamableBaseTest {
+public class StreamableHideTest extends StreamableBaseTest {
 
     @Test
     public void normal() throws Throwable {
         Streamable.range(1, 5)
-        .collect(Collectors.toList())
+        .hide()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(List.of(1, 2, 3, 4, 5));
-    }
-
-    @Test
-    public void empty() throws Throwable {
-        Streamable.empty()
-        .collect(Collectors.toList())
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(List.of());
+        .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void crash() throws Throwable {
         Streamable.error(new TestException())
-        .collect(Collectors.toList())
+        .hide()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
-    }
-
-    @Test
-    public void finishCrash() throws Throwable {
-        StreamableFailingFinish.MAIN_COMPLETES
-        .collect(Collectors.toList())
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class, List.of());
     }
 }
