@@ -17,22 +17,22 @@ import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava4.annotations.*;
-import io.reactivex.rxjava4.core.StreamerInput;
+import io.reactivex.rxjava4.core.StreamSink;
 import io.reactivex.rxjava4.disposables.DisposableContainer;
 
 /**
- * Wraps a {@link StreamerInput} and uses the given {@link DisposableContainer} to be
+ * Wraps a {@link StreamSink} and uses the given {@link DisposableContainer} to be
  * returned via {@link #cancellation()}.
  * @param <T> the element type of the stream
- * @param downstream the {@code StreamerInput} to relay events to
+ * @param downstream the {@code StreamSink} to relay events to
  * @param cancellation the {@code DisposableContainer} to be used for indicating cancellation
  * @since 4.0.0
  */
-public record StreamerInputWithCancellation<@NonNull T>(
-        @NonNull StreamerInput<T> downstream, @NonNull DisposableContainer cancellation)
-implements StreamerInput<T> {
+public record StreamSinkWithCancellation<@NonNull T>(
+        @NonNull StreamSink<T> downstream, @NonNull DisposableContainer cancellation)
+implements StreamSink<T> {
 
-    public StreamerInputWithCancellation {
+    public StreamSinkWithCancellation {
         Objects.requireNonNull(downstream, "downstream is null");
     }
 

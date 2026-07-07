@@ -995,7 +995,7 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
-     * Relays the events of the upstream into a {@link StreamerInput} consumer
+     * Relays the events of the upstream into a {@link StreamSink} consumer
      * via the help of the standard {@link Executors#newVirtualThreadPerTaskExecutor()}
      *  as a mediator for pull-to-push.
      * @param consumer the consumer to relay events into
@@ -1003,12 +1003,12 @@ public interface Streamable<@NonNull T> {
      *         {@code Streamable} terminates
      * @throws NullPointerException if {@code consumer} is {@code null}
      */
-    default CompletionStage<Void> subscribe(@NonNull StreamerInput<? super T> consumer) {
+    default CompletionStage<Void> subscribe(@NonNull StreamSink<? super T> consumer) {
         return subscribe(consumer, Executors.newVirtualThreadPerTaskExecutor());
     }
 
     /**
-     * Relays the events of the upstream into a {@link StreamerInput} consumer
+     * Relays the events of the upstream into a {@link StreamSink} consumer
      * via the help of the given {@link ExecutorService} as a mediator for pull-to-push.
      * @param consumer the consumer to relay events into
      * @param executor the {@link ExecutorService} to run the blocking consume and emissions
@@ -1016,7 +1016,7 @@ public interface Streamable<@NonNull T> {
      *         {@code Streamable} terminates
      * @throws NullPointerException if {@code consumer} or {@code executor} is {@code null}
      */
-    default CompletionStage<Void> subscribe(@NonNull StreamerInput<? super T> consumer, ExecutorService executor) {
+    default CompletionStage<Void> subscribe(@NonNull StreamSink<? super T> consumer, ExecutorService executor) {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(executor, "executor is null");
         return StreamableForEach.forEach(this, consumer, executor);

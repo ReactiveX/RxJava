@@ -110,7 +110,7 @@ public record StreamableForEach() {
         return new CompletionStageDisposable<>(future, canceller);
     }
 
-    public static <T> CompletionStage<Void> forEach(Streamable<T> me, StreamerInput<? super T> consumer, ExecutorService executor) {
+    public static <T> CompletionStage<Void> forEach(Streamable<T> me, StreamSink<? super T> consumer, ExecutorService executor) {
         var cf = new CompletableFuture<Void>();
         CompletableFuture.runAsync(() -> {
             Throwable error = null;

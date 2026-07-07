@@ -17,22 +17,22 @@ import java.util.Objects;
 import java.util.concurrent.*;
 
 import io.reactivex.rxjava4.annotations.*;
-import io.reactivex.rxjava4.core.StreamerInput;
+import io.reactivex.rxjava4.core.StreamSink;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Function;
 
 /**
- * Creates a {@link StreamerInput} via lambda callbacks for {@link #next(Object)} and
+ * Creates a {@link StreamSink} via lambda callbacks for {@link #next(Object)} and
  * {@link #finish(Throwable)}.
  * @param <T> the element type of the stream
  * @param onNext the callback for the {@code next} method
  * @param onFinish the callback for the {@code finish} method
  * @since 4.0.0
  */
-public record StreamerInputLambda<@NonNull T>(
+public record StreamSinkLambda<@NonNull T>(
         @NonNull Function<? super T, ? extends CompletionStage<Boolean>> onNext,
         @NonNull Function<? super Throwable, ? extends CompletionStage<Void>> onFinish
-) implements StreamerInput<T> {
+) implements StreamSink<T> {
 
     @Override
     public @NonNull CompletionStage<Boolean> next(@NonNull T item) {

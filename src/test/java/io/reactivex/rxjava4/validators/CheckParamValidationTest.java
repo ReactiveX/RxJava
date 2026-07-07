@@ -621,7 +621,7 @@ public class CheckParamValidationTest extends RxJavaTest {
 
         defaultValues.put(StreamableInterceptConfig.class, new StreamableInterceptConfig<Object>((_, v) -> v));
 
-        defaultValues.put(StreamerInput.class, new DispatchStreamProcessor<>());
+        defaultValues.put(StreamSink.class, new DispatchStreamProcessor<>());
 
         // TODO insert new config record types here
 

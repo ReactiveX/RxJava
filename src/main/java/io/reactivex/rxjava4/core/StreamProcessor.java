@@ -20,13 +20,13 @@ import io.reactivex.rxjava4.annotations.*;
 
 /**
  * A {@link Processor}-like interface combining the {@code Streamable} interface and the
- * {@link StreamerInput} interface to establish a push-pull bridge based on {@link CompletionStage}-based
+ * {@link StreamSink} interface to establish a push-pull bridge based on {@link CompletionStage}-based
  * asynchronous processing and dispatching of values and errors.
  * @param <In> the element type of the input side
  * @param <Out> the element type of the output side
  * @since 4.0.0
  */
-public interface StreamProcessor<@NonNull In, @NonNull Out> extends Streamable<Out>, StreamerInput<In> {
+public interface StreamProcessor<@NonNull In, @NonNull Out> extends Streamable<Out>, StreamSink<In> {
 
     /**
      * Returns {@code true} if this {@link StreamProcessor} has {@link Streamer}s.

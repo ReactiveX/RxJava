@@ -176,7 +176,7 @@ implements Streamable<GroupedStreamable<K, T>>, HasUpstreamStreamableSource<T> {
     }
 
     static abstract class BasicGroupedStreamable<K, T> extends GroupedStreamable<K, T>
-    implements StreamerInput<T> {
+    implements StreamSink<T> {
         BasicGroupedStreamable(K key) {
             super(key);
         }

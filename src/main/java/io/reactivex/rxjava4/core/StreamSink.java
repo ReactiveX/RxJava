@@ -32,7 +32,7 @@ import io.reactivex.rxjava4.internal.operators.streamable.*;
  * @param <T> the item type to be offered
  * @since 4.0.0
  */
-public interface StreamerInput<@NonNull T> {
+public interface StreamSink<@NonNull T> {
 
     /**
      * Offer the next item.
@@ -65,21 +65,21 @@ public interface StreamerInput<@NonNull T> {
     }
 
     /**
-     * Returns a new {@link StreamerInput} that returns the given {@link DisposableContainer}
+     * Returns a new {@link StreamSink} that returns the given {@link DisposableContainer}
      * in its {@link #cancellation()}, allowing overriding the cancellation management
-     * of this {@code StreamerInput}
+     * of this {@code StreamSink}
      * @param cancellation the {@link DisposableContainer} to use as cancellation management
-     * @return the new {@code StreamerInput} instance
+     * @return the new {@code StreamSink} instance
      * @throws NullPointerException if {@code cancellation} is {@code null}
      */
     @NonNull
-    default StreamerInput<T> withCancellation(DisposableContainer cancellation) {
+    default StreamSink<T> withCancellation(DisposableContainer cancellation) {
         Objects.requireNonNull(cancellation, "cancellation is null");
-        return new StreamerInputWithCancellation<>(this, cancellation);
+        return new StreamSinkWithCancellation<>(this, cancellation);
     }
 
     /**
-     * Creates a {@link StreamerInput} via lambda callbacks for {@link #next(Object)} and
+     * Creates a {@link StreamSink} via lambda callbacks for {@link #next(Object)} and
      * {@link #finish(Throwable)}.
      * <p>
      * Non-fatal exceptions thrown by the callbacks are turned into failed
@@ -87,15 +87,15 @@ public interface StreamerInput<@NonNull T> {
      * @param <T> the element type of the stream
      * @param onNext the callback for the {@code next} method
      * @param onFinish the callback for the {@code finish} method
-     * @return the new {@link StreamerInput} instance
+     * @return the new {@link StreamSink} instance
      */
     @NonNull
-    static <T> StreamerInput<T> create(
+    static <T> StreamSink<T> create(
             @NonNull Function<? super T, ? extends CompletionStage<Boolean>> onNext,
             @NonNull Function<? super Throwable, ? extends CompletionStage<Void>> onFinish
     ) {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(onFinish, "onFinish is null");
-        return new StreamerInputLambda<>(onNext, onFinish);
+        return new StreamSinkLambda<>(onNext, onFinish);
     }
 }

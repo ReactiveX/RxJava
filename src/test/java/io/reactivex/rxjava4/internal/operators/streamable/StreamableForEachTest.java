@@ -263,11 +263,36 @@ public class StreamableForEachTest extends StreamableBaseTest {
     }
 
     @Test
+    public void forEachInputWithCancellationOverride() throws Throwable {
+        var dspMain = new DispatchStreamProcessor<>();
+
+        var dspSecondary = new DispatchStreamProcessor<>();
+        var ts = dspSecondary.test();
+
+        ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
+
+        awaitStreamers(dspSecondary, 1000);
+
+        var cd = new CompositeDisposable();
+        dspMain.subscribe(dspSecondary.withCancellation(cd));
+
+        awaitStreamers(dspMain, 1000);
+
+        dspMain.next(1).toCompletableFuture().join();
+        dspMain.finish(null).toCompletableFuture().join();
+
+        ts.awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+
+        assertTrue(dspSecondary.hasComplete(), "dsp completes: error = " + dspSecondary.hasThrowable());
+    }
+
+    @Test
     public void forEachInputSendNull() throws Throwable {
         IO.println("forEachInputSendNull");
         var error = new AtomicReference<Throwable>();
         var dsp = new DispatchStreamProcessor<>();
-        var si = StreamerInput.create(_ -> null, e -> { error.set(e); return Streamer.FINISHED; });
+        var si = StreamSink.create(_ -> null, e -> { error.set(e); return Streamer.FINISHED; });
         var f = dsp.subscribe(si);
 
         IO.println("    hasStreamers()");
@@ -292,7 +317,7 @@ public class StreamableForEachTest extends StreamableBaseTest {
         IO.println("forEachInputSendCrash");
         var error = new AtomicReference<Throwable>();
         var dsp = new DispatchStreamProcessor<>();
-        var si = StreamerInput.create(_ -> { throw new TestException(); }, e -> { error.set(e); return Streamer.FINISHED; });
+        var si = StreamSink.create(_ -> { throw new TestException(); }, e -> { error.set(e); return Streamer.FINISHED; });
         var f = dsp.subscribe(si);
 
         IO.println("    hasStreamers()");
@@ -315,7 +340,7 @@ public class StreamableForEachTest extends StreamableBaseTest {
     public void forEachInputTerminateNull() throws Throwable {
         IO.println("forEachInputTerminateNull");
         var dsp = new DispatchStreamProcessor<>();
-        var si = StreamerInput.create(_ -> Streamer.NEXT_TRUE, _ -> { return null; });
+        var si = StreamSink.create(_ -> Streamer.NEXT_TRUE, _ -> { return null; });
         var f = dsp.subscribe(si);
 
         IO.println("    hasStreamers()");
@@ -343,7 +368,7 @@ public class StreamableForEachTest extends StreamableBaseTest {
     public void forEachInputTerminateCrash() throws Throwable {
         IO.println("forEachInputTerminateNull");
         var dsp = new DispatchStreamProcessor<>();
-        var si = StreamerInput.create(_ -> Streamer.NEXT_TRUE, _ -> { throw new TestException(); });
+        var si = StreamSink.create(_ -> Streamer.NEXT_TRUE, _ -> { throw new TestException(); });
         var f = dsp.subscribe(si);
 
         IO.println("    hasStreamers()");
@@ -371,7 +396,7 @@ public class StreamableForEachTest extends StreamableBaseTest {
     public void forEachInputTerminateBothCrash() throws Throwable {
         IO.println("forEachInputTerminateNull");
         var dsp = new DispatchStreamProcessor<>();
-        var si = StreamerInput.create(_ -> null, _ -> { throw new TestException(); });
+        var si = StreamSink.create(_ -> null, _ -> { throw new TestException(); });
         var f = dsp.subscribe(si);
 
         IO.println("    hasStreamers()");
