@@ -1309,15 +1309,15 @@ it as the success result.</div>
 <div class="block">Collects the finite upstream's values into a container via a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Stream.html" title="interface in java.util.stream" class="external-link"><code>Stream</code></a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Collector.html" title="interface in java.util.stream" class="external-link"><code>Collector</code></a> callback set and emits
 it as the success result as a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#collect(java.util.stream.Collector)" class="member-name-link">collect(Collector)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
-<dd>
-<div class="block">Reduces all values within a 'rail' and across 'rails' with a callbacks
-of the given <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Collector.html" title="interface in java.util.stream" class="external-link"><code>Collector</code></a> into one <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> containing a single value.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#collect(java.util.stream.Collector)" class="member-name-link">collect(Collector)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
 <div class="block">Collects all upstream values via the use of a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Collector.html" title="interface in java.util.stream" class="external-link"><code>Collector</code></a> configuration
 and emits its resulting value as a single item of the returned <code>Streamable</code>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#collect(java.util.stream.Collector)" class="member-name-link">collect(Collector)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
+<dd>
+<div class="block">Reduces all values within a 'rail' and across 'rails' with a callbacks
+of the given <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Collector.html" title="interface in java.util.stream" class="external-link"><code>Collector</code></a> into one <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> containing a single value.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#collectInto(U,io.reactivex.rxjava4.functions.BiConsumer)" class="member-name-link">collectInto(U, BiConsumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -1670,6 +1670,11 @@ of elements without interleaving them.</div>
 <dd>
 <div class="block">Concatenates the <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> sequence of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>s into a single sequence by subscribing to each <code>Publisher</code>,
 one after the other, one at a time and delays any errors till the all inner <code>Publisher</code>s terminate.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#concat(java.lang.Iterable)" class="member-name-link">concat(Iterable)</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Streams the <code>Streamable</code>s one after the other from the given iterable sequence
+of <code>Streamable</code>s.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#concat(java.util.concurrent.Flow.Publisher)" class="member-name-link">concat(Flow.Publisher)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -2679,6 +2684,10 @@ specified delay.</div>
 <dd>
 <div class="block">Delays the emission of the success signal from the current <code>Single</code> by the specified amount.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#delay(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">delay(long, TimeUnit, Scheduler)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Delays the delivery of each upstream item by the given time amount.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#delay(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">delay(long, TimeUnit, Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a <code>Completable</code> which delays the emission of the completion event, and optionally the error as well, by the given time while
@@ -2702,10 +2711,6 @@ specified delay.</div>
 <dt><a href="io/reactivex/rxjava4/core/Single.html#delay(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,boolean)" class="member-name-link">delay(long, TimeUnit, Scheduler, boolean)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
 <dd>
 <div class="block">Delays the emission of the success or error signal from the current <code>Single</code> by the specified amount.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Streamable.html#delay(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">delay(long, TimeUnit, Scheduler)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
-<dd>
-<div class="block">Delays the delivery of each upstream item by the given time amount.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#delay(io.reactivex.rxjava4.core.ObservableSource,io.reactivex.rxjava4.functions.Function)" class="member-name-link">delay(ObservableSource, Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
@@ -3244,13 +3249,13 @@ the downstream.</div>
 <div class="block">Calls the shared consumer with the error sent via <code>onError</code> for each
 <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> that subscribes to the current <code>Single</code>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#doOnError(io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">doOnError(Consumer)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
-<dd>
-<div class="block">Call the specified consumer with the exception passing through any 'rail'.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#doOnError(io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">doOnError(Consumer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
 <div class="block">Calls the specific <a href="io/reactivex/rxjava4/functions/Consumer.html" title="interface in io.reactivex.rxjava4.functions"><code>Consumer</code></a> if there is an error from the upstream.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#doOnError(io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">doOnError(Consumer)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
+<dd>
+<div class="block">Call the specified consumer with the exception passing through any 'rail'.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#doOnEvent(io.reactivex.rxjava4.functions.BiConsumer)" class="member-name-link">doOnEvent(BiConsumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -3301,6 +3306,10 @@ the sequence (subscription, cancellation, requesting).</div>
 <dd>
 <div class="block">Calls the given <a href="io/reactivex/rxjava4/functions/Consumer.html" title="interface in io.reactivex.rxjava4.functions"><code>Consumer</code></a> with the value emitted by the current <code>Observable</code> before forwarding it to the downstream.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#doOnNext(io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">doOnNext(Consumer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Calls the given consumer whenever an upstream item becomes available.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#doOnNext(io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">doOnNext(Consumer)</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
 <dd>
 <div class="block">Call the specified consumer with the current element passing through any 'rail'.</div>
@@ -3314,10 +3323,6 @@ handles errors based on the returned value by the handler function.</div>
 <dd>
 <div class="block">Call the specified consumer with the current element passing through any 'rail' and
 handles errors based on the given <a href="io/reactivex/rxjava4/parallel/ParallelFailureHandling.html" title="enum class in io.reactivex.rxjava4.parallel"><code>ParallelFailureHandling</code></a> enumeration value.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Streamable.html#doOnNext(io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">doOnNext(Consumer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
-<dd>
-<div class="block">Calls the given consumer whenever an upstream item becomes available.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#doOnRequest(io.reactivex.rxjava4.functions.LongConsumer)" class="member-name-link">doOnRequest(LongConsumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -4949,6 +4954,11 @@ grouped items as <a href="io/reactivex/rxjava4/core/GroupedFlowable.html" title=
 <div class="block">Groups the items emitted by the current <code>Observable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/core/GroupedObservable.html" title="class in io.reactivex.rxjava4.core"><code>GroupedObservable</code></a>s.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#groupBy(io.reactivex.rxjava4.functions.Function)" class="member-name-link">groupBy(Function)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Maps each upstream item into a <code>GroupedStreamable</code> group, emits those groups and keeps
+relaying the upstream items into those groups.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#groupBy(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.core.config.StandardBufferedConfig)" class="member-name-link">groupBy(Function, StandardBufferedConfig)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
@@ -4983,11 +4993,6 @@ grouped items as <a href="io/reactivex/rxjava4/core/GroupedFlowable.html" title=
 <dd>
 <div class="block">Groups the items emitted by the current <code>Observable</code> according to a specified criterion, and emits these
 grouped items as <a href="io/reactivex/rxjava4/core/GroupedObservable.html" title="class in io.reactivex.rxjava4.core"><code>GroupedObservable</code></a>s.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Streamable.html#groupBy(io.reactivex.rxjava4.functions.Function)" class="member-name-link">groupBy(Function)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
-<dd>
-<div class="block">Maps each upstream item into a <code>GroupedStreamable</code> group, emits those groups and keeps
-relaying the upstream items into those groups.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/GroupedFlowable.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">GroupedFlowable&lt;K,<wbr>T&gt;</a> - Class in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -6913,15 +6918,15 @@ function instead of signaling the error via <code>onError</code>.</div>
 <div class="block">Resumes the flow with a <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> returned for the failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the current <code>Single</code> by a
 function instead of signaling the error via <code>onError</code>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onErrorResumeNext(io.reactivex.rxjava4.functions.Function)" class="member-name-link">onErrorResumeNext(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
-<dd>
-<div class="block">Resumes the flow with a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> returned for the failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the current <code>Flowable</code> by a
-function instead of signaling the error via <code>onError</code>.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#onErrorResumeNext(io.reactivex.rxjava4.functions.Function)" class="member-name-link">onErrorResumeNext(Function)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
 <div class="block">When the upstream fails, the sequence is resumed by the <code>Streamable</code> that is returned for the
 failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#onErrorResumeNext(io.reactivex.rxjava4.functions.Function)" class="member-name-link">onErrorResumeNext(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Resumes the flow with a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> returned for the failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the current <code>Flowable</code> by a
+function instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#onErrorResumeWith(io.reactivex.rxjava4.core.CompletableSource)" class="member-name-link">onErrorResumeWith(CompletableSource)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -10567,6 +10572,11 @@ item using a specified <a href="io/reactivex/rxjava4/core/Scheduler.html" title=
 <div class="block">Runs the current <code>Single</code> and if it doesn't signal within the specified timeout window, it is
 disposed and the other <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> subscribed to.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#timeout(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.Streamable)" class="member-name-link">timeout(long, TimeUnit, Scheduler, Streamable)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Applies a timeout to each upstream item and switches to the fallback <code>Streamable</code>
+if the upstream doesn't produce an item within the given timeout period.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#timeout(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,java.util.concurrent.Flow.Publisher)" class="member-name-link">timeout(long, TimeUnit, Scheduler, Flow.Publisher)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that mirrors the current <code>Flowable</code> but applies a timeout policy for each emitted
@@ -10581,11 +10591,6 @@ disposed and the other <a href="io/reactivex/rxjava4/core/SingleSource.html" tit
 <dd>
 <div class="block">Returns a <code>Flowable</code> that mirrors the current <code>Flowable</code> but applies a timeout policy for each emitted
 item.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Streamable.html#timeout(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.Streamable)" class="member-name-link">timeout(long, TimeUnit, Scheduler, Streamable)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
-<dd>
-<div class="block">Applies a timeout to each upstream item and switches to the fallback <code>Streamable</code>
-if the upstream doesn't produce an item within the given timeout period.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#timeout(io.reactivex.rxjava4.core.MaybeSource)" class="member-name-link">timeout(MaybeSource)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
@@ -11417,6 +11422,13 @@ that resource (similar to a try-with-resources).</div>
 <dd>
 <div class="block">Allows using and disposing a resource while running a <a href="io/reactivex/rxjava4/core/SingleSource.html" title="interface in io.reactivex.rxjava4.core"><code>SingleSource</code></a> instance generated from
 that resource (similar to a try-with-resources).</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#using(io.reactivex.rxjava4.functions.Supplier,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">using(Supplier, Function, Consumer)</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">For each incoming streamer, this operator creates a resource, then
+uses that resource to create the actual <code>Streamable</code> instance to
+stream value of and then uses a cleaner callback to dissolve the resource
+once the <code>Streamable</code> terminated.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:V">V</h2>
