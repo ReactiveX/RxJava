@@ -32,11 +32,4 @@ public interface DisposableContainer extends Disposable, StreamerCancellation {
      */
     void clear();
 
-    /**
-     * The container implementation that just ignores everything, for
-     * cases where the dispose signal has no side effects to work with.
-     * @since 4.0.0
-     */
-    DisposableContainer NEVER = new NeverDisposableContainer();
-
 }

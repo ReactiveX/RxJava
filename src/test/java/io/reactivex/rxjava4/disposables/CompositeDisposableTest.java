@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
+import io.reactivex.rxjava4.disposables.CompositeDisposable.DerivedCleaner;
 import io.reactivex.rxjava4.exceptions.CompositeException;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -656,4 +657,20 @@ public class CompositeDisposableTest extends RxJavaTest {
         assertTrue(d1.isDisposed());
     }
 
+    @Test
+    public void derivedDisposed() {
+        var parent = new CompositeDisposable();
+        var child = new CompositeDisposable();
+        var deriv = new DerivedCleaner(parent, child);
+        parent.add(child);
+        child.add(deriv);
+
+        assertFalse(child.isDisposed(), "d is disposed");
+        assertFalse(deriv.isDisposed(), "d is disposed");
+
+        child.dispose();
+
+        assertTrue(child.isDisposed(), "d is not disposed");
+        assertTrue(deriv.isDisposed(), "d is not disposed");
+    }
 }
