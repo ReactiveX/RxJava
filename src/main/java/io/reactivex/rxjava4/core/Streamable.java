@@ -598,9 +598,9 @@ public interface Streamable<@NonNull T> {
      * If any of the sources is shorter than the rest or any of them fails, the
      * sequence is completed early normally or with an exception, respectively.
      * @param <T> the common element type of the sequences
-     * @param sources the iterable sequence of the source {@code Streamable}s
+     * @param sources the {@link Iterable} sequence of the source {@code Streamable}s
      * @return the new {@code Streamable} instance
-     * @throws NullPointerException if {@code sources} is {@&ode null}
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @CheckReturnValue
     @NonNull
