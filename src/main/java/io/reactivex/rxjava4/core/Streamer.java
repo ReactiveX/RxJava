@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava4.core;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
@@ -50,6 +51,7 @@ public interface Streamer<@NonNull T> {
      * Calling it during an ongoing [#next()] or [#finish()] call, or beyond the lifecycle of the `Streamer`
      * is an undefined behavior. It may yield `null` or throw.
      * @return the current item
+     * @throws NoSuchElementException if there are no items to return
      */
     @NonNull
     T current();
@@ -76,25 +78,42 @@ public interface Streamer<@NonNull T> {
      * @return true if there are more items, false if no more items are coming, or crashes
      */
     default boolean awaitNext() {
-        var s = next();
-        if (s == NEXT_TRUE) {
-            return true;
-        } else
-        if (s == NEXT_FALSE) {
-            return false;
-        }
-        return s.toCompletableFuture().join();
+        return awaitBoolean(next());
     }
 
     /**
      * Convenience method to blockingly await the CompletionStage returned by the {@link #finish()} method.
      */
     default void awaitFinish() {
-        var s = finish();
-        if (s == FINISHED) {
+        awaitVoid(finish());
+    }
+
+    /**
+     * Convenience method to await the completion of a boolean stage, optimized
+     * for handling {@value #NEXT_TRUE} and {@value #NEXT_FALSE} directly.
+     * @param stage the stage to await
+     * @return the result of the stage
+     */
+    static boolean awaitBoolean(CompletionStage<Boolean> stage) {
+        if (stage == NEXT_TRUE) {
+            return true;
+        } else
+        if (stage == NEXT_FALSE) {
+            return false;
+        }
+        return stage.toCompletableFuture().join();
+    }
+
+    /**
+     * Convenience method to await the completion of a stage, optimized
+     * for handling {@value #FINISHED} directly.
+     * @param stage the stage to await
+     */
+    static void awaitVoid(CompletionStage<Void> stage) {
+        if (stage == FINISHED) {
             return;
         }
-        s.toCompletableFuture().join();
+        stage.toCompletableFuture().join();
     }
 
     /**

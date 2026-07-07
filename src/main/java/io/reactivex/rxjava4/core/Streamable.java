@@ -590,6 +590,17 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Calls the specific {@link Consumer} if there is an error from the upstream.
+     * @param consumer the consumer to call with the Throwable
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code consumer} is {@code null}
+     */
+    default Streamable<T> doOnError(Consumer<? super Throwable> consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        return intercept(StreamableHelper.createOnError(consumer));
+    }
+
+    /**
      * Calls the given consumer whenever an upstream item becomes available.
      * @param consumer the callback to invoke with the next item from upstream
      * @return the new {@code Streamable} instance
@@ -981,6 +992,34 @@ public interface Streamable<@NonNull T> {
      */
     default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber) {
         subscribe(subscriber, Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    /**
+     * Relays the events of the upstream into a {@link StreamSink} consumer
+     * via the help of the standard {@link Executors#newVirtualThreadPerTaskExecutor()}
+     *  as a mediator for pull-to-push.
+     * @param consumer the consumer to relay events into
+     * @return the stage that gets completed normally or with an exception when this
+     *         {@code Streamable} terminates
+     * @throws NullPointerException if {@code consumer} is {@code null}
+     */
+    default CompletionStage<Void> subscribe(@NonNull StreamSink<? super T> consumer) {
+        return subscribe(consumer, Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    /**
+     * Relays the events of the upstream into a {@link StreamSink} consumer
+     * via the help of the given {@link ExecutorService} as a mediator for pull-to-push.
+     * @param consumer the consumer to relay events into
+     * @param executor the {@link ExecutorService} to run the blocking consume and emissions
+     * @return the stage that gets completed normally or with an exception when this
+     *         {@code Streamable} terminates
+     * @throws NullPointerException if {@code consumer} or {@code executor} is {@code null}
+     */
+    default CompletionStage<Void> subscribe(@NonNull StreamSink<? super T> consumer, ExecutorService executor) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        Objects.requireNonNull(executor, "executor is null");
+        return StreamableForEach.forEach(this, consumer, executor);
     }
 
     /**

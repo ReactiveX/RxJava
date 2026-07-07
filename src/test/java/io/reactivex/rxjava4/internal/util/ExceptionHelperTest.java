@@ -91,12 +91,12 @@ public class ExceptionHelperTest extends RxJavaTest {
     @Test
     public void unwrapAndCombine7() {
         var te = new TestException();
-        assertSame(te, ExceptionHelper.unwrapAndCombine(new ThrowableWrapper(te), null));
+        assertSame(te, ExceptionHelper.unwrapAndCombine(new CompletionException(te), null));
     }
 
     @Test
     public void unwrapAndCombine8() {
         var te = new TestException();
-        assertSame(te, ExceptionHelper.unwrapAndCombine(null, new ThrowableWrapper(te)));
+        assertSame(te, ExceptionHelper.unwrapAndCombine(null, new CompletionException(te)));
     }
 }

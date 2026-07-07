@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.lang.ref.Cleaner;
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.*;
@@ -104,5 +105,66 @@ public abstract class StreamableBaseTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     public static <T> StreamableInterceptConfig<T> debugIntercept() {
         return (StreamableInterceptConfig<T>)DEBUG_INTERCEPT;
+    }
+
+    /**
+     * Awaits the given {@link StreamProcessor#hasStreamers()} to register an
+     * incoming consumer.
+     * @param sp the processor
+     * @param timeoutMillis how long to wait for the streamer(s) to arrive
+     * @throws InterruptedException if the sleep is interrupted
+     * @throws TimeoutException if the wait times out
+     */
+    public static void awaitStreamers(StreamProcessor<?, ?> sp, long timeoutMillis)
+    throws InterruptedException, TimeoutException
+    {
+        long timeout = timeoutMillis * 1_000_000L;
+        while (!sp.hasStreamers()) {
+            Thread.sleep(0, 1000);
+            if (--timeout <= 0L) {
+                throw new TimeoutException("hasStreamers still false");
+            }
+        }
+    }
+
+    /**
+     * Awaits the given {@link StreamProcessor#hasStreamers()} to register an
+     * incoming consumer.
+     * @param sp the processor
+     * @param timeoutMillis how long to wait for the streamer(s) to arrive
+     * @param atLeast the minimum number of streamers expected
+     * @throws InterruptedException if the sleep is interrupted
+     * @throws TimeoutException if the wait times out
+     */
+    public static void awaitStreamers(StreamProcessor<?, ?> sp, long timeoutMillis, int atLeast)
+    throws InterruptedException, TimeoutException
+    {
+        long timeout = timeoutMillis * 1_000_000L;
+        while (sp.streamerCount() < atLeast) {
+            Thread.sleep(0, 1000);
+            if (--timeout <= 0L) {
+                throw new TimeoutException("hasStreamers still false");
+            }
+        }
+    }
+
+    /**
+     * Awaits the given {@link StreamProcessor#hasStreamers()} to lose
+     * all of its streamers.
+     * @param sp the processor
+     * @param timeoutMillis how long to wait for the streamer(s) to leave
+     * @throws InterruptedException if the sleep is interrupted
+     * @throws TimeoutException if the wait times out
+     */
+    public static void awaitNoStreamers(StreamProcessor<?, ?> sp, long timeoutMillis)
+    throws InterruptedException, TimeoutException
+    {
+        long timeout = timeoutMillis * 1_000_000L;
+        while (sp.hasStreamers()) {
+            Thread.sleep(0, 1000);
+            if (--timeout <= 0L) {
+                throw new TimeoutException("hasStreamers still false");
+            }
+        }
     }
 }

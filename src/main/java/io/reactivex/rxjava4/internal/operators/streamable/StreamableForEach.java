@@ -99,14 +99,60 @@ public record StreamableForEach() {
                 }
             } catch (final Throwable crash) {
                 Exceptions.throwIfFatal(crash);
-                throw ExceptionHelper.wrapOrThrow(ExceptionHelper.unwrapAndCombine(crash, finallyCrash));
+                finallyCrash = ExceptionHelper.unwrapAndCombine(crash, finallyCrash);
             }
             if (finallyCrash != null) {
-                throw ExceptionHelper.wrapOrThrow(ExceptionHelper.unwrap(finallyCrash));
+                throw ExceptionHelper.wrapOrThrow(finallyCrash);
             }
             return null;
         });
         canceller.add(Disposable.fromFuture(future));
         return new CompletionStageDisposable<>(future, canceller);
+    }
+
+    public static <T> CompletionStage<Void> forEach(Streamable<T> me, StreamSink<? super T> consumer, ExecutorService executor) {
+        var cf = new CompletableFuture<Void>();
+        CompletableFuture.runAsync(() -> {
+            Throwable error = null;
+            var cancellation = consumer.cancellation();
+            var streamer = me.stream(cancellation);
+            try {
+                try {
+                    while (!cancellation.isDisposed()) {
+                        if (streamer.awaitNext()) {
+                            Streamer.awaitBoolean(consumer.next(streamer.current()));
+                        } else {
+                            break;
+                        }
+                    }
+                } finally {
+                    try {
+                        streamer.awaitFinish();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        error = ExceptionHelper.unwrap(ex);
+                    }
+                }
+            } catch (Throwable crash) {
+                Exceptions.throwIfFatal(crash);
+                crash = ExceptionHelper.unwrap(crash);
+                if (error != null) {
+                    crash.addSuppressed(error);
+                }
+                error = crash;
+            }
+            try {
+                Streamer.awaitVoid(consumer.finish(error));
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                if (error != null) {
+                    ex.addSuppressed(error);
+                }
+                cf.completeExceptionally(ex);
+                return;
+            }
+            cf.complete(null);
+        }, executor);
+        return cf;
     }
 }

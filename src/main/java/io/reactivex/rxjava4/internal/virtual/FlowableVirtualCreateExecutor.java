@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.internal.util.BackpressureHelper;
+import io.reactivex.rxjava4.internal.util.*;
 
 /**
  * Runs a generator callback on a virtual thread backed by a Worker of the given scheduler
@@ -105,7 +105,7 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     if (ex != STOP && !cancelled) {
-                        downstream.onError(ThrowableWrapper.unwrap(ex));
+                        downstream.onError(ExceptionHelper.unwrap(ex));
                     }
                     return null;
                 }

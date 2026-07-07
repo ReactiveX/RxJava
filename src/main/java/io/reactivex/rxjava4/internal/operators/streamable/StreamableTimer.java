@@ -74,7 +74,9 @@ public record StreamableTimer(long delay, @NonNull TimeUnit unit,
         }
 
         void interrupedSleep(InterruptedException ex) {
-            waiter.completeExceptionally(ex);
+            if (!isDisposed()) {
+                waiter.completeExceptionally(ex);
+            }
         }
 
         @Override

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
 
-public class StreamableDoOnXTest extends StreamableBaseTest {
+public class StreamableDoOnNextTest extends StreamableBaseTest {
 
     @Test
     public void passthrough() {
