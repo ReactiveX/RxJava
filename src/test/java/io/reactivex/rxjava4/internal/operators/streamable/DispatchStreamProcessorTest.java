@@ -251,13 +251,13 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         assertFalse(dsp.hasThrowable(), "dsp has throwable?");
         assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
 
-        var ts = dsp.test();
-        var ts2 = dsp.test();
+        var ts = dsp.test().withTag("ts");
+        var ts2 = dsp.test().withTag("ts2");
 
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
         ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        awaitStreamers(dsp, 1000);
+        awaitStreamers(dsp, 1000, 2);
 
         for (int i = 1; i < 6; i++) {
             dsp.next(i).toCompletableFuture().join();
@@ -291,7 +291,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
         ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        awaitStreamers(dsp, 1000);
+        awaitStreamers(dsp, 1000, 2);
 
         ts2.cancel();
 
@@ -326,7 +326,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
         ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        awaitStreamers(dsp, 1000);
+        awaitStreamers(dsp, 1000, 2);
 
         ts.cancel();
 

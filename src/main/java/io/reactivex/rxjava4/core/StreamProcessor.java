@@ -35,6 +35,12 @@ public interface StreamProcessor<@NonNull In, @NonNull Out> extends Streamable<O
     boolean hasStreamers();
 
     /**
+     * Returns the current number of {@link Streamer}s subscribed to this {@link StreamProcessor}
+     * @return the current number of {@link Streamer}s subscribed to this {@link StreamProcessor}
+     */
+    int streamerCount();
+
+    /**
      * Returns {@code true} if this {@code StreamProcessor} was completed normally via {@link #finish(Throwable)}.
      * @return {@code true} if this {@code StreamProcessor} was completed normally via {@link #finish(Throwable)}.
      */

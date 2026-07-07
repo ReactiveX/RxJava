@@ -138,6 +138,11 @@ public final class DispatchStreamProcessor<T> implements StreamProcessor<T, T> {
     }
 
     @Override
+    public int streamerCount() {
+        return streamers.get().length;
+    }
+
+    @Override
     public boolean hasComplete() {
         return terminalEvent == ExceptionHelper.TERMINATED;
     }
