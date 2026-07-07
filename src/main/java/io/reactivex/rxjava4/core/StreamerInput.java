@@ -13,11 +13,14 @@
 
 package io.reactivex.rxjava4.core;
 
-import java.util.concurrent.CompletionStage;
+import java.util.Objects;
+import java.util.concurrent.*;
 import java.util.concurrent.Flow.Subscriber;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.functions.Function;
+import io.reactivex.rxjava4.internal.operators.streamable.*;
 
 /**
  * An interface to submit items and terminal events to a consumer that indacates when the processing of
@@ -37,22 +40,62 @@ public interface StreamerInput<@NonNull T> {
      * @return a {@link CompletionStage} that completes with {@code true} if the value was successfully consumed,
      *         {@code false} if the value was rejected or exceptionally on error
      */
+    @NonNull
     CompletionStage<Boolean> next(T item);
 
     /**
      * Offer the final, terminal event.
-     * @param throwable the optional throwable to signal error, null to signal normal completion
+     * @param throwable the optional throwable to signal error, {@code null} to signal normal completion
      * @return a {@link CompletionStage} that completes with {@code null} if the call succeeded
      *         or exceptionally on error
      */
+    @NonNull
     CompletionStage<Void> finish(@Nullable Throwable throwable);
 
     /**
      * Returns the {@link DisposableContainer} to use to detect if the consumer has indicated no more
      * items it is willing to accept.
+     * <p>
+     * The default implementation returns a fresh {@link CompositeDisposable}.
      * @return the {@code DisposableContainer}
      */
+    @NonNull
     default DisposableContainer cancellation() {
         return new CompositeDisposable();
+    }
+
+    /**
+     * Returns a new {@link StreamerInput} that returns the given {@link DisposableContainer}
+     * in its {@link #cancellation()}, allowing overriding the cancellation management
+     * of this {@code StreamerInput}
+     * @param cancellation the {@link DisposableContainer} to use as cancellation management
+     * @return the new {@code StreamerInput} instance
+     * @throws NullPointerException if {@code cancellation} is {@code null}
+     */
+    @NonNull
+    default StreamerInput<T> withCancellation(DisposableContainer cancellation) {
+        Objects.requireNonNull(cancellation, "cancellation is null");
+        return new StreamerInputWithCancellation<>(this, cancellation);
+    }
+
+    /**
+     * Creates a {@link StreamerInput} via lambda callbacks for {@link #next(Object)} and
+     * {@link #finish(Throwable)}.
+     * <p>
+     * Non-fatal exceptions thrown by the callbacks are turned into failed
+     * {@link CompletableFuture#failedFuture(Throwable)}s.
+     * @param <T> the element type of the stream
+     * @param onNext the callback for the {@code next} method
+     * @param onFinish the callback for the {@code finish} method
+     * @return the new {@link StreamerInput} instance
+     */
+    @NonNull
+    static <T> StreamerInput<T> create(
+            @NonNull Function<? super T, ? extends CompletionStage<Boolean>> onNext,
+            @NonNull Function<? super Throwable, ? extends CompletionStage<Void>> onFinish
+    ) {
+        Objects.requireNonNull(onNext, "onNext is null");
+        Objects.requireNonNull(onFinish, "onFinish is null");
+        return new StreamerInputLambda<>(onNext, onFinish);
     }
 }

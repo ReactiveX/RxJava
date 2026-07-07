@@ -16,11 +16,11 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.CompositeDisposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.processors.DispatchStreamProcessor;
@@ -199,9 +199,7 @@ public class StreamableForEachTest extends StreamableBaseTest {
 
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        while (!dsp.hasStreamers()) {
-            Thread.sleep(0, 1000);
-        }
+        awaitStreamers(dsp, 1000);
 
         Streamable.range(1, 5)
         .subscribe(dsp);
@@ -218,9 +216,7 @@ public class StreamableForEachTest extends StreamableBaseTest {
 
             ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-            while (!dsp.hasStreamers()) {
-                Thread.sleep(0, 1000);
-            }
+            awaitStreamers(dsp, 1000);
 
             Streamable.range(1, 5)
             .subscribe(dsp);
@@ -237,14 +233,206 @@ public class StreamableForEachTest extends StreamableBaseTest {
 
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        while (!dsp.hasStreamers()) {
-            Thread.sleep(0, 1000);
-        }
+        awaitStreamers(dsp, 1000);
 
         Streamable.error(new TestException())
         .subscribe(dsp);
 
         ts.awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void forEachInputCancelUpfront() throws Throwable {
+        var dsp0 = new DispatchStreamProcessor<>();
+
+        var dsp = new DispatchStreamProcessor<>();
+        var ts = dsp.test();
+
+        ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
+
+        awaitStreamers(dsp, 1000);
+
+        var cd = new CompositeDisposable();
+        cd.dispose();
+        dsp0.subscribe(dsp.withCancellation(cd));
+
+        awaitNoStreamers(dsp0, 1000);
+
+        assertFalse(dsp.hasComplete(), "dsp completes: error = " + dsp.hasThrowable());
+    }
+
+    @Test
+    public void forEachInputSendNull() throws Throwable {
+        IO.println("forEachInputSendNull");
+        var error = new AtomicReference<Throwable>();
+        var dsp = new DispatchStreamProcessor<>();
+        var si = StreamerInput.create(_ -> null, e -> { error.set(e); return Streamer.FINISHED; });
+        var f = dsp.subscribe(si);
+
+        IO.println("    hasStreamers()");
+
+        awaitStreamers(dsp, 1000);
+
+        IO.println("    next(1)");
+
+        dsp.next(1).toCompletableFuture().join();
+
+        IO.println("    f.toCompletableFuture.join");
+
+        f.toCompletableFuture().join();
+
+        assertTrue(error.get() instanceof NullPointerException, "" + error.get());
+
+        IO.println("    .");
+    }
+
+    @Test
+    public void forEachInputSendCrash() throws Throwable {
+        IO.println("forEachInputSendCrash");
+        var error = new AtomicReference<Throwable>();
+        var dsp = new DispatchStreamProcessor<>();
+        var si = StreamerInput.create(_ -> { throw new TestException(); }, e -> { error.set(e); return Streamer.FINISHED; });
+        var f = dsp.subscribe(si);
+
+        IO.println("    hasStreamers()");
+
+        awaitStreamers(dsp, 1000);
+
+        IO.println("    next(1)");
+        dsp.next(1).toCompletableFuture().join();
+
+        IO.println("    f.toCompletableFuture.join");
+
+        f.toCompletableFuture().join();
+
+        assertTrue(error.get() instanceof TestException, "" + error.get());
+
+        IO.println("    .");
+    }
+
+    @Test
+    public void forEachInputTerminateNull() throws Throwable {
+        IO.println("forEachInputTerminateNull");
+        var dsp = new DispatchStreamProcessor<>();
+        var si = StreamerInput.create(_ -> Streamer.NEXT_TRUE, _ -> { return null; });
+        var f = dsp.subscribe(si);
+
+        IO.println("    hasStreamers()");
+
+        awaitStreamers(dsp, 1000);
+
+        IO.println("    next(1)");
+        dsp.next(1).toCompletableFuture().join();
+
+        IO.println("    finish()");
+        dsp.finish(null).toCompletableFuture().join();
+
+        IO.println("    f.toCompletableFuture.join");
+
+        var ex = assertThrows(CompletionException.class, () -> {
+            f.toCompletableFuture().join();
+        });
+
+        assertTrue(ex.getCause() instanceof NullPointerException, ex.getCause().toString());
+
+        IO.println("    .");
+    }
+
+    @Test
+    public void forEachInputTerminateCrash() throws Throwable {
+        IO.println("forEachInputTerminateNull");
+        var dsp = new DispatchStreamProcessor<>();
+        var si = StreamerInput.create(_ -> Streamer.NEXT_TRUE, _ -> { throw new TestException(); });
+        var f = dsp.subscribe(si);
+
+        IO.println("    hasStreamers()");
+
+        awaitStreamers(dsp, 1000);
+
+        IO.println("    next(1)");
+        dsp.next(1).toCompletableFuture().join();
+
+        IO.println("    finish()");
+        dsp.finish(null).toCompletableFuture().join();
+
+        IO.println("    f.toCompletableFuture.join");
+
+        var ex = assertThrows(CompletionException.class, () -> {
+            f.toCompletableFuture().join();
+        });
+
+        assertTrue(ex.getCause() instanceof TestException, ex.getCause().toString());
+
+        IO.println("    .");
+    }
+
+    @Test
+    public void forEachInputTerminateBothCrash() throws Throwable {
+        IO.println("forEachInputTerminateNull");
+        var dsp = new DispatchStreamProcessor<>();
+        var si = StreamerInput.create(_ -> null, _ -> { throw new TestException(); });
+        var f = dsp.subscribe(si);
+
+        IO.println("    hasStreamers()");
+
+        awaitStreamers(dsp, 1000);
+
+        IO.println("    next(1)");
+        dsp.next(1).toCompletableFuture().join();
+
+        IO.println("    finish()");
+        dsp.finish(null).toCompletableFuture().join();
+
+        IO.println("    f.toCompletableFuture.join");
+
+        var ex = assertThrows(CompletionException.class, () -> {
+            f.toCompletableFuture().join();
+        });
+
+        assertTrue(ex.getCause() instanceof TestException, ex.getCause().toString());
+        assertTrue(ex.getCause().getSuppressed()[0] instanceof NullPointerException,
+                ex.getCause().getSuppressed()[0].toString());
+
+        IO.println("    .");
+    }
+
+    @Test
+    public void forEachUpstreamFinishCrash() throws Throwable {
+        var dsp = new DispatchStreamProcessor<>();
+        var ts = dsp.test();
+
+        ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
+        awaitStreamers(dsp, 1000);
+
+        StreamableFailingFinish.MAIN_COMPLETES
+        .subscribe(dsp);
+
+        ts.awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void forEachBiUpstreamFinishCrash() throws Throwable {
+        var fs = StreamableFailingFinish.MAIN_COMPLETES
+        .forEach((_, _) -> {
+        }, new CompositeDisposable(), Executors.newVirtualThreadPerTaskExecutor());
+
+        assertThrows(TestException.class, () -> {
+            fs.await();
+        });
+    }
+
+    @Test
+    public void forEachBiUpstreamFinishCrashDebug() throws Throwable {
+        withCachedExecutor(exec -> {
+            var fs = StreamableFailingFinish.MAIN_COMPLETES
+                    .forEach((_, _) -> {
+                    }, new CompositeDisposable(), exec);
+
+                    assertThrows(TestException.class, () -> {
+                        fs.await();
+                    });
+        });
     }
 }

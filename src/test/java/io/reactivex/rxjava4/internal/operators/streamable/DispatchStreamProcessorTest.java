@@ -40,13 +40,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        int timeout = 1000;
-        while (!dsp.hasStreamers()) {
-            Thread.sleep(1);
-            if (timeout-- < 0) {
-                throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-            }
-        }
+        awaitStreamers(dsp, 1000);
 
         for (int i = 1; i < 6; i++) {
             dsp.next(i).toCompletableFuture().join();
@@ -75,13 +69,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        int timeout = 1000;
-        while (!dsp.hasStreamers()) {
-            Thread.sleep(1);
-            if (timeout-- < 0) {
-                throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-            }
-        }
+        awaitStreamers(dsp, 1000);
 
         for (int i = 1; i < 6; i++) {
             dsp.next(i).toCompletableFuture().join();
@@ -112,13 +100,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
             ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-            int timeout = 1000;
-            while (!dsp.hasStreamers()) {
-                Thread.sleep(1);
-                if (timeout-- < 0) {
-                    throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-                }
-            }
+            awaitStreamers(dsp, 1000);
 
             assertTrue(dsp.hasStreamers(), "dsp has no streamers?");
 
@@ -196,26 +178,15 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
             ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-            int timeout = 1000;
-            while (!dsp.hasStreamers()) {
-                Thread.sleep(1);
-                if (timeout-- < 0) {
-                    throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-                }
-            }
+            awaitStreamers(dsp, 1000);
 
             for (int i = 1; i < 4; i++) {
                 IO.println(i + " -> next");
                 dsp.next(i).toCompletableFuture().join();
             }
 
-            timeout = 1000;
-            while (dsp.hasStreamers()) {
-                Thread.sleep(1);
-                if (timeout-- < 0) {
-                    throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-                }
-            }
+            awaitNoStreamers(dsp, 1000);
+
             assertFalse(dsp.hasStreamers(), "dsp has streamers?");
 
             for (int i = 4; i < 6; i++) {
@@ -251,13 +222,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
             ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-            int timeout = 1000;
-            while (!dsp.hasStreamers()) {
-                Thread.sleep(1);
-                if (timeout-- < 0) {
-                    throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-                }
-            }
+            awaitStreamers(dsp, 1000);
 
             for (int i = 1; i < 6; i++) {
                 dsp.next(i).toCompletableFuture().join();
@@ -292,13 +257,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
         ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        int timeout = 1000;
-        while (!dsp.hasStreamers()) {
-            Thread.sleep(1);
-            if (timeout-- < 0) {
-                throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-            }
-        }
+        awaitStreamers(dsp, 1000);
 
         for (int i = 1; i < 6; i++) {
             dsp.next(i).toCompletableFuture().join();
@@ -332,13 +291,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
         ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        int timeout = 1000;
-        while (!dsp.hasStreamers()) {
-            Thread.sleep(1);
-            if (timeout-- < 0) {
-                throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-            }
-        }
+        awaitStreamers(dsp, 1000);
 
         ts2.cancel();
 
@@ -373,13 +326,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
         ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        int timeout = 1000;
-        while (!dsp.hasStreamers()) {
-            Thread.sleep(1);
-            if (timeout-- < 0) {
-                throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-            }
-        }
+        awaitStreamers(dsp, 1000);
 
         ts.cancel();
 
@@ -420,24 +367,12 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
             ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
             ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-            int timeout = 1000;
-            while (!dsp.hasStreamers()) {
-                if (timeout-- < 0) {
-                    throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-                }
-                Thread.sleep(0, 1000);
-            }
+            awaitStreamers(dsp, 1000);
 
             ts.cancel();
             ts2.cancel();
 
-            timeout = 1000;
-            while (dsp.hasStreamers()) {
-                if (timeout-- < 0) {
-                    throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-                }
-                Thread.sleep(0, 1000);
-            }
+            awaitNoStreamers(dsp, 1000);
 
             assertFalse(dsp.hasStreamers(), "dsp has streamers?");
             assertFalse(dsp.hasComplete(), "dsp has completed?");
@@ -459,23 +394,11 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        int timeout = 1000;
-        while (!dsp.hasStreamers()) {
-            if (timeout-- < 0) {
-                throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-            }
-            Thread.sleep(1);
-        }
+        awaitStreamers(dsp, 1000);
 
         ts.cancel();
 
-        timeout = 1000;
-        while (dsp.hasStreamers()) {
-            if (timeout-- < 0) {
-                throw new TimeoutException("hasStreamers = " + dsp.hasStreamers());
-            }
-            Thread.sleep(1);
-        }
+        awaitNoStreamers(dsp, 1000);
 
         assertFalse(dsp.hasStreamers(), "dsp has streamers?");
         assertFalse(dsp.hasComplete(), "dsp has completed?");

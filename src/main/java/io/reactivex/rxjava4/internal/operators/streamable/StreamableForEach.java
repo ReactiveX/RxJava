@@ -22,7 +22,6 @@ import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
-import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**
  * ForEach implementation to unclutter the {@link Streamable} type.
@@ -100,10 +99,10 @@ public record StreamableForEach() {
                 }
             } catch (final Throwable crash) {
                 Exceptions.throwIfFatal(crash);
-                throw ExceptionHelper.wrapOrThrow(ExceptionHelper.unwrapAndCombine(crash, finallyCrash));
+                finallyCrash = ExceptionHelper.unwrapAndCombine(crash, finallyCrash);
             }
             if (finallyCrash != null) {
-                throw ExceptionHelper.wrapOrThrow(ExceptionHelper.unwrap(finallyCrash));
+                throw ExceptionHelper.wrapOrThrow(finallyCrash);
             }
             return null;
         });
@@ -111,7 +110,8 @@ public record StreamableForEach() {
         return new CompletionStageDisposable<>(future, canceller);
     }
 
-    public static <T> void forEach(Streamable<T> me, StreamerInput<? super T> consumer, ExecutorService executor) {
+    public static <T> CompletionStage<Void> forEach(Streamable<T> me, StreamerInput<? super T> consumer, ExecutorService executor) {
+        var cf = new CompletableFuture<Void>();
         CompletableFuture.runAsync(() -> {
             Throwable error = null;
             var cancellation = consumer.cancellation();
@@ -145,8 +145,14 @@ public record StreamableForEach() {
                 Streamer.awaitVoid(consumer.finish(error));
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                RxJavaPlugins.onError(ex);
+                if (error != null) {
+                    ex.addSuppressed(error);
+                }
+                cf.completeExceptionally(ex);
+                return;
             }
+            cf.complete(null);
         }, executor);
+        return cf;
     }
 }

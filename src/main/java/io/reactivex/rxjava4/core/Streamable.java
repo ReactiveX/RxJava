@@ -995,24 +995,31 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
-     * Relays the events of the upstream into a {@link StreamerInput} consumer.
+     * Relays the events of the upstream into a {@link StreamerInput} consumer
+     * via the help of the standard {@link Executors#newVirtualThreadPerTaskExecutor()}
+     *  as a mediator for pull-to-push.
      * @param consumer the consumer to relay events into
-     * @throws NullPointerException if {@code consumer} or {@code executor} is {@code null}
+     * @return the stage that gets completed normally or with an exception when this
+     *         {@code Streamable} terminates
+     * @throws NullPointerException if {@code consumer} is {@code null}
      */
-    default void subscribe(@NonNull StreamerInput<? super T> consumer) {
-        subscribe(consumer, Executors.newVirtualThreadPerTaskExecutor());
+    default CompletionStage<Void>  subscribe(@NonNull StreamerInput<? super T> consumer) {
+        return subscribe(consumer, Executors.newVirtualThreadPerTaskExecutor());
     }
 
     /**
-     * Relays the events of the upstream into a {@link StreamerInput} consumer.
+     * Relays the events of the upstream into a {@link StreamerInput} consumer
+     * via the help of the given {@link ExecutorService} as a mediator for pull-to-push.
      * @param consumer the consumer to relay events into
      * @param executor the {@link ExecutorService} to run the blocking consume and emissions
+     * @return the stage that gets completed normally or with an exception when this
+     *         {@code Streamable} terminates
      * @throws NullPointerException if {@code consumer} or {@code executor} is {@code null}
      */
-    default void subscribe(@NonNull StreamerInput<? super T> consumer, ExecutorService executor) {
+    default CompletionStage<Void>  subscribe(@NonNull StreamerInput<? super T> consumer, ExecutorService executor) {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(executor, "executor is null");
-        StreamableForEach.forEach(this, consumer, executor);
+        return StreamableForEach.forEach(this, consumer, executor);
     }
 
     /**
