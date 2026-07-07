@@ -1003,7 +1003,7 @@ public interface Streamable<@NonNull T> {
      *         {@code Streamable} terminates
      * @throws NullPointerException if {@code consumer} is {@code null}
      */
-    default CompletionStage<Void>  subscribe(@NonNull StreamerInput<? super T> consumer) {
+    default CompletionStage<Void> subscribe(@NonNull StreamerInput<? super T> consumer) {
         return subscribe(consumer, Executors.newVirtualThreadPerTaskExecutor());
     }
 
@@ -1016,7 +1016,7 @@ public interface Streamable<@NonNull T> {
      *         {@code Streamable} terminates
      * @throws NullPointerException if {@code consumer} or {@code executor} is {@code null}
      */
-    default CompletionStage<Void>  subscribe(@NonNull StreamerInput<? super T> consumer, ExecutorService executor) {
+    default CompletionStage<Void> subscribe(@NonNull StreamerInput<? super T> consumer, ExecutorService executor) {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(executor, "executor is null");
         return StreamableForEach.forEach(this, consumer, executor);
