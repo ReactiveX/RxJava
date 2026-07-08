@@ -67,11 +67,12 @@ Note that RxJava 4 components now live under `io.reactivex.rxjava4` and the base
 
 RxJava 4 features several base classes you can discover operators on:
 
-  - [`io.reactivex.rxjava4.core.Flowable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Flowable.html): 0 .. N flows, supporting Reactive-Streams and backpressure
+  - [`io.reactivex.rxjava4.core.Flowable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Flowable.html): 0 .. N flows, supporting Reactive-Streams and backpressure,
   - [`io.reactivex.rxjava4.core.Observable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Observable.html): 0 .. N flows, no backpressure,
   - [`io.reactivex.rxjava4.core.Single`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Single.html): a flow of exactly 1 item or an error,
   - [`io.reactivex.rxjava4.core.Completable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Completable.html): a flow without items but only a completion or error signal,
   - [`io.reactivex.rxjava4.core.Maybe`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Maybe.html): a flow with no items, exactly one item or an error.
+  - [`io.reactivex.rxjava4.core.Streamable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Streamable.html): 0 .. N flows based on virtual blocking and `CompletionStage`-based state machines with native backpressure.
 
 ### Some terminology
 
