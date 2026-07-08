@@ -96,7 +96,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
 
         Worker worker;
 
-        final DisposableContainer canceller;
+        final DisposableStreamerCancellation canceller;
 
         volatile boolean stopped;
 
@@ -246,7 +246,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
         }
 
         @Override
-        public DisposableContainer canceller() {
+        public DisposableStreamerCancellation canceller() {
             return canceller;
         }
 

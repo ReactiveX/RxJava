@@ -31,7 +31,7 @@ public record StreamableForEach() {
     public static <T> CompletionStageDisposable<Void> forEach(
             @NonNull Streamable<T> me,
             @NonNull Consumer<? super T> consumer,
-            @NonNull DisposableContainer canceller,
+            @NonNull DisposableStreamerCancellation canceller,
             @NonNull ExecutorService executor) {
         var future = CompletableFuture.<Void>supplyAsync(() -> {
             Throwable finallyCrash = null;
@@ -71,7 +71,7 @@ public record StreamableForEach() {
     public static <T> CompletionStageDisposable<Void> forEach(
             @NonNull Streamable<T> me,
             @NonNull BiConsumer<? super T, ? super Disposable> consumer,
-            @NonNull DisposableContainer canceller,
+            @NonNull DisposableStreamerCancellation canceller,
             @NonNull ExecutorService executor) {
         var future = CompletableFuture.<Void>supplyAsync(() -> {
             var str = me.stream(canceller);
@@ -110,7 +110,8 @@ public record StreamableForEach() {
         return new CompletionStageDisposable<>(future, canceller);
     }
 
-    public static <T> CompletionStage<Void> forEach(Streamable<T> me, StreamSink<? super T> consumer, ExecutorService executor) {
+    public static <T> CompletionStage<Void> forEach(
+            Streamable<T> me, StreamSink<? super T> consumer, ExecutorService executor) {
         var cf = new CompletableFuture<Void>();
         CompletableFuture.runAsync(() -> {
             Throwable error = null;

@@ -16,12 +16,13 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 
-import io.reactivex.rxjava4.annotations.*;
+import io.reactivex.rxjava4.annotations.NonNull;
+import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.core.StreamSink;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.DisposableStreamerCancellation;
 
 /**
- * Wraps a {@link StreamSink} and uses the given {@link DisposableContainer} to be
+ * Wraps a {@link StreamSink} and uses the given {@link DisposableStreamerCancellation} to be
  * returned via {@link #cancellation()}.
  * @param <T> the element type of the stream
  * @param downstream the {@code StreamSink} to relay events to
@@ -29,7 +30,7 @@ import io.reactivex.rxjava4.disposables.DisposableContainer;
  * @since 4.0.0
  */
 public record StreamSinkWithCancellation<@NonNull T>(
-        @NonNull StreamSink<T> downstream, @NonNull DisposableContainer cancellation)
+        @NonNull StreamSink<T> downstream, @NonNull DisposableStreamerCancellation cancellation)
 implements StreamSink<T> {
 
     public StreamSinkWithCancellation {

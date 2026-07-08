@@ -15,14 +15,22 @@ package io.reactivex.rxjava4.internal.virtual;
 
 import java.io.Serial;
 import java.util.Objects;
-import java.util.concurrent.*;
-import java.util.concurrent.Flow.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Flow.Subscriber;
+import java.util.concurrent.Flow.Subscription;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
-import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.internal.util.*;
+import io.reactivex.rxjava4.core.Flowable;
+import io.reactivex.rxjava4.core.Scheduler;
+import io.reactivex.rxjava4.core.VirtualEmitter;
+import io.reactivex.rxjava4.core.VirtualGenerator;
+import io.reactivex.rxjava4.disposables.CompositeDisposable;
+import io.reactivex.rxjava4.disposables.DisposableStreamerCancellation;
+import io.reactivex.rxjava4.exceptions.Exceptions;
+import io.reactivex.rxjava4.internal.util.BackpressureHelper;
+import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 
 /**
  * Runs a generator callback on a virtual thread backed by a Worker of the given scheduler
@@ -83,7 +91,7 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
 
         Scheduler.Worker worker;
 
-        final DisposableContainer canceller;
+        final DisposableStreamerCancellation canceller;
 
         ExecutorVirtualCreateSubscription(Subscriber<? super T> downstream, VirtualGenerator<T> generator) {
             this.downstream = downstream;
@@ -153,7 +161,7 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
         }
 
         @Override
-        public DisposableContainer canceller() {
+        public DisposableStreamerCancellation canceller() {
             return canceller;
         }
     }

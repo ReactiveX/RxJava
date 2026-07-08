@@ -60,20 +60,20 @@ public interface StreamSink<@NonNull T> {
      * @return the {@code DisposableContainer}
      */
     @NonNull
-    default DisposableContainer cancellation() {
+    default DisposableStreamerCancellation cancellation() {
         return new CompositeDisposable();
     }
 
     /**
-     * Returns a new {@link StreamSink} that returns the given {@link DisposableContainer}
+     * Returns a new {@link StreamSink} that returns the given {@link DisposableStreamerCancellation}
      * in its {@link #cancellation()}, allowing overriding the cancellation management
      * of this {@code StreamSink}
-     * @param cancellation the {@link DisposableContainer} to use as cancellation management
+     * @param cancellation the {@link DisposableStreamerCancellation} to use as cancellation management
      * @return the new {@code StreamSink} instance
      * @throws NullPointerException if {@code cancellation} is {@code null}
      */
     @NonNull
-    default StreamSink<T> withCancellation(DisposableContainer cancellation) {
+    default StreamSink<T> withCancellation(DisposableStreamerCancellation cancellation) {
         Objects.requireNonNull(cancellation, "cancellation is null");
         return new StreamSinkWithCancellation<>(this, cancellation);
     }

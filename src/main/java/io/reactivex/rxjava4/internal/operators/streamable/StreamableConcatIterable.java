@@ -41,7 +41,7 @@ public record StreamableConcatIterable<T>(
 
         final StreamerCancellation cancellation;
 
-        DisposableContainer currentCancellation;
+        DisposableStreamerCancellation currentCancellation;
 
         Streamer<? extends T> upstream;
 
