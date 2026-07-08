@@ -67,7 +67,7 @@ initTheme();
 <li><a href="#next(T)" tabindex="0">next(T)</a></li>
 <li><a href="#finish(java.lang.Throwable)" tabindex="0">finish(Throwable)</a></li>
 <li><a href="#cancellation()" tabindex="0">cancellation()</a></li>
-<li><a href="#withCancellation(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">withCancellation(DisposableContainer)</a></li>
+<li><a href="#withCancellation(io.reactivex.rxjava4.disposables.DisposableStreamerCancellation)" tabindex="0">withCancellation(DisposableStreamerCancellation)</a></li>
 <li><a href="#create(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function)" tabindex="0">create(Function, Function)</a></li>
 </ol>
 </li>
@@ -119,7 +119,7 @@ returned <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/j
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#cancellation()" class="member-name-link">cancellation</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns the <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a> to use to detect if the consumer has indicated no more
@@ -143,9 +143,9 @@ items it is willing to accept.</div>
 <div class="block">Offer the next item.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="StreamSink.html" title="interface in io.reactivex.rxjava4.core">StreamSink</a><wbr>&lt;<a href="#type-param-T" title="type parameter in StreamSink">T</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#withCancellation(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">withCancellation</a><wbr>(<a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#withCancellation(io.reactivex.rxjava4.disposables.DisposableStreamerCancellation)" class="member-name-link">withCancellation</a><wbr>(<a href="../disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a>&nbsp;cancellation)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Returns a new <a href="StreamSink.html" title="interface in io.reactivex.rxjava4.core"><code>StreamSink</code></a> that returns the given <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a>
+<div class="block">Returns a new <a href="StreamSink.html" title="interface in io.reactivex.rxjava4.core"><code>StreamSink</code></a> that returns the given <a href="../disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableStreamerCancellation</code></a>
 in its <a href="#cancellation()"><code>cancellation()</code></a>, allowing overriding the cancellation management
 of this <code>StreamSink</code></div>
 </div>
@@ -203,7 +203,7 @@ of this <code>StreamSink</code></div>
 <h3>cancellation</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></span>&nbsp;<span class="element-name">cancellation</span>()</div>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></span>&nbsp;<span class="element-name">cancellation</span>()</div>
 <div class="block">Returns the <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a> to use to detect if the consumer has indicated no more
 items it is willing to accept.
 <p>
@@ -216,17 +216,17 @@ The default implementation returns a fresh <a href="../disposables/CompositeDisp
 </section>
 </li>
 <li>
-<section class="detail" id="withCancellation(io.reactivex.rxjava4.disposables.DisposableContainer)">
+<section class="detail" id="withCancellation(io.reactivex.rxjava4.disposables.DisposableStreamerCancellation)">
 <h3>withCancellation</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="StreamSink.html" title="interface in io.reactivex.rxjava4.core">StreamSink</a>&lt;<a href="#type-param-T" title="type parameter in StreamSink">T</a>&gt;</span>&nbsp;<span class="element-name">withCancellation</span><wbr><span class="parameters">(<a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</span></div>
-<div class="block">Returns a new <a href="StreamSink.html" title="interface in io.reactivex.rxjava4.core"><code>StreamSink</code></a> that returns the given <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="StreamSink.html" title="interface in io.reactivex.rxjava4.core">StreamSink</a>&lt;<a href="#type-param-T" title="type parameter in StreamSink">T</a>&gt;</span>&nbsp;<span class="element-name">withCancellation</span><wbr><span class="parameters">(<a href="../disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a>&nbsp;cancellation)</span></div>
+<div class="block">Returns a new <a href="StreamSink.html" title="interface in io.reactivex.rxjava4.core"><code>StreamSink</code></a> that returns the given <a href="../disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableStreamerCancellation</code></a>
 in its <a href="#cancellation()"><code>cancellation()</code></a>, allowing overriding the cancellation management
 of this <code>StreamSink</code></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>cancellation</code> - the <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a> to use as cancellation management</dd>
+<dd><code>cancellation</code> - the <a href="../disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableStreamerCancellation</code></a> to use as cancellation management</dd>
 <dt>Returns:</dt>
 <dd>the new <code>StreamSink</code> instance</dd>
 <dt>Throws:</dt>

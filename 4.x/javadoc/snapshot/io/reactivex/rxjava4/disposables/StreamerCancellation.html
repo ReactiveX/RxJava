@@ -81,7 +81,7 @@ initTheme();
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Known Subinterfaces:</dt>
-<dd><code><a href="DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></code></dd>
+<dd><code><a href="DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
@@ -90,7 +90,7 @@ initTheme();
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">StreamerCancellation</span></div>
-<div class="block">Represents non-disposable view of a <a href="DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a>
+<div class="block">Represents non-disposable view of a <a href="DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableStreamerCancellation</code></a>
 that allows synchronous testing for disposed state as well as allow
 adding and removing <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> resources to be
 cleaned up when the full container is disposed.
@@ -135,11 +135,12 @@ container has been disposed.</div>
 <div class="block">Removes but does not dispose the given disposable if it is part of this
 container.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#derive()" class="member-name-link">derive</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Create a derived sub-container that can get cancelled by this container,
-but disposing the sub-container does not dispose this container.</div>
+<div class="block">Create a derived sub-cancellation management interface that can get disposed
+by this cancellation management object but disposing the sub-cancellation
+manager does not dispose this current <code>StreamerCancellation</code> instance..</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isDisposed()" class="member-name-link">isDisposed</a>()</code></div>
@@ -235,12 +236,13 @@ container.</div>
 <h3>derive</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></span>&nbsp;<span class="element-name">derive</span>()</div>
-<div class="block">Create a derived sub-container that can get cancelled by this container,
-but disposing the sub-container does not dispose this container.</div>
+</span><span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></span>&nbsp;<span class="element-name">derive</span>()</div>
+<div class="block">Create a derived sub-cancellation management interface that can get disposed
+by this cancellation management object but disposing the sub-cancellation
+manager does not dispose this current <code>StreamerCancellation</code> instance..</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the derived sub-container</dd>
+<dd>the derived sub-cancellation management object</dd>
 </dl>
 </div>
 </section>

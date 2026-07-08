@@ -99,15 +99,20 @@ operations.</div>
 <div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Common interface to add and remove <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>s from a container.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SerialDisposable.html" title="class in io.reactivex.rxjava4.disposables">SerialDisposable</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">Represents the full, disposable cancellation interface for <code>Streamer</code>
+operations.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SerialDisposable.html" title="class in io.reactivex.rxjava4.disposables">SerialDisposable</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">A Disposable container that allows atomically updating/replacing the contained
 Disposable with another Disposable, disposing the old one when updating plus
 handling the disposition when the container itself is disposed.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
-<div class="block">Represents non-disposable view of a <a href="DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">Represents non-disposable view of a <a href="DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableStreamerCancellation</code></a>
 that allows synchronous testing for disposed state as well as allow
 adding and removing <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> resources to be
 cleaned up when the full container is disposed.</div>

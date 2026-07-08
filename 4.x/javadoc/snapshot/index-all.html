@@ -85,6 +85,11 @@ initTheme();
 <div class="block">Adds a <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> to this container or disposes it if the
 container has been disposed.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#add(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">add(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
+<dd>
+<div class="block">Adds a disposable to this container or disposes it if the
+container has been disposed.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html#add(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">add(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></dt>
 <dd>
 <div class="block">Adds a disposable to this container or disposes it if the
@@ -2856,6 +2861,11 @@ signals its first value or completes.</div>
 <div class="block">Removes (but does not dispose) the given <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> if it is part of this
 container.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#delete(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">delete(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
+<dd>
+<div class="block">Removes but does not dispose the given disposable if it is part of this
+container.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html#delete(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">delete(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></dt>
 <dd>
 <div class="block">Removes but does not dispose the given disposable if it is part of this
@@ -2888,8 +2898,9 @@ into their respective <a href="https://docs.oracle.com/en/java/javase/26/docs/ap
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html#derive()" class="member-name-link">derive()</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></dt>
 <dd>
-<div class="block">Create a derived sub-container that can get cancelled by this container,
-but disposing the sub-container does not dispose this container.</div>
+<div class="block">Create a derived sub-cancellation management interface that can get disposed
+by this cancellation management object but disposing the sub-cancellation
+manager does not dispose this current <code>StreamerCancellation</code> instance..</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" class="type-name-link" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor&lt;T&gt;</a> - Class in <a href="io/reactivex/rxjava4/processors/package-summary.html">io.reactivex.rxjava4.processors</a></dt>
 <dd>
@@ -2934,6 +2945,11 @@ downstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in
 </dd>
 <dt><a href="io/reactivex/rxjava4/observers/DisposableSingleObserver.html#%3Cinit%3E()" class="member-name-link">DisposableSingleObserver()</a> - Constructor for class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/DisposableSingleObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableSingleObserver</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/disposables/DisposableStreamerCancellation.html" class="type-name-link" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a> - Interface in <a href="io/reactivex/rxjava4/disposables/package-summary.html">io.reactivex.rxjava4.disposables</a></dt>
+<dd>
+<div class="block">Represents the full, disposable cancellation interface for <code>Streamer</code>
+operations.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/subscribers/DisposableSubscriber.html" class="type-name-link" title="class in io.reactivex.rxjava4.subscribers">DisposableSubscriber&lt;T&gt;</a> - Class in <a href="io/reactivex/rxjava4/subscribers/package-summary.html">io.reactivex.rxjava4.subscribers</a></dt>
 <dd>
 <div class="block">An abstract Subscriber that allows asynchronous, external cancellation by implementing <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>.</div>
@@ -4122,7 +4138,7 @@ for gaining performance.</div>
 <dd>
 <div class="block">Interface to compose <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a>s.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Streamable.html#forEach(io.reactivex.rxjava4.functions.BiConsumer,io.reactivex.rxjava4.disposables.DisposableContainer,java.util.concurrent.ExecutorService)" class="member-name-link">forEach(BiConsumer, DisposableContainer, ExecutorService)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#forEach(io.reactivex.rxjava4.functions.BiConsumer,io.reactivex.rxjava4.disposables.DisposableStreamerCancellation,java.util.concurrent.ExecutorService)" class="member-name-link">forEach(BiConsumer, DisposableStreamerCancellation, ExecutorService)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
 <div class="block">Consumes elements from this <code>Streamable</code> via the provided executor service.</div>
 </dd>
@@ -4139,11 +4155,11 @@ on its emission thread.</div>
 <dd>
 <div class="block">Consumes elements from this <code>Streamable</code> via the provided executor service.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Streamable.html#forEach(io.reactivex.rxjava4.functions.Consumer,io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">forEach(Consumer, DisposableContainer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#forEach(io.reactivex.rxjava4.functions.Consumer,io.reactivex.rxjava4.disposables.DisposableStreamerCancellation)" class="member-name-link">forEach(Consumer, DisposableStreamerCancellation)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
 <div class="block">Consumes elements from this <code>Streamable</code> via the provided executor service.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/Streamable.html#forEach(io.reactivex.rxjava4.functions.Consumer,io.reactivex.rxjava4.disposables.DisposableContainer,java.util.concurrent.ExecutorService)" class="member-name-link">forEach(Consumer, DisposableContainer, ExecutorService)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#forEach(io.reactivex.rxjava4.functions.Consumer,io.reactivex.rxjava4.disposables.DisposableStreamerCancellation,java.util.concurrent.ExecutorService)" class="member-name-link">forEach(Consumer, DisposableStreamerCancellation, ExecutorService)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
 <div class="block">Consumes elements from this <code>Streamable</code> via the provided executor service.</div>
 </dd>
@@ -7629,6 +7645,11 @@ timeout if all <a href="io/reactivex/rxjava4/core/Observer.html" title="interfac
 <div class="block">Removes and disposes the given <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> if it is part of this
 container.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html#remove(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">remove(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></dt>
+<dd>
+<div class="block">Removes and disposes the given disposable if it is part of this
+container.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html#remove(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">remove(Disposable)</a> - Method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></dt>
 <dd>
 <div class="block">Removes and disposes the given disposable if it is part of this
@@ -9375,7 +9396,7 @@ value fluently.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" class="type-name-link" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a> - Interface in <a href="io/reactivex/rxjava4/disposables/package-summary.html">io.reactivex.rxjava4.disposables</a></dt>
 <dd>
-<div class="block">Represents non-disposable view of a <a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a>
+<div class="block">Represents non-disposable view of a <a href="io/reactivex/rxjava4/disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableStreamerCancellation</code></a>
 that allows synchronous testing for disposed state as well as allow
 adding and removing <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> resources to be
 cleaned up when the full container is disposed.</div>
@@ -11673,9 +11694,9 @@ where the boundary of each window is determined by the items emitted from a spec
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits windows of items it collects from the current <code>Flowable</code>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/StreamSink.html#withCancellation(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">withCancellation(DisposableContainer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamSink.html" title="interface in io.reactivex.rxjava4.core">StreamSink</a></dt>
+<dt><a href="io/reactivex/rxjava4/core/StreamSink.html#withCancellation(io.reactivex.rxjava4.disposables.DisposableStreamerCancellation)" class="member-name-link">withCancellation(DisposableStreamerCancellation)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamSink.html" title="interface in io.reactivex.rxjava4.core">StreamSink</a></dt>
 <dd>
-<div class="block">Returns a new <a href="io/reactivex/rxjava4/core/StreamSink.html" title="interface in io.reactivex.rxjava4.core"><code>StreamSink</code></a> that returns the given <a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableContainer</code></a>
+<div class="block">Returns a new <a href="io/reactivex/rxjava4/core/StreamSink.html" title="interface in io.reactivex.rxjava4.core"><code>StreamSink</code></a> that returns the given <a href="io/reactivex/rxjava4/disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableStreamerCancellation</code></a>
 in its <a href="io/reactivex/rxjava4/core/StreamSink.html#cancellation()"><code>StreamSink.cancellation()</code></a>, allowing overriding the cancellation management
 of this <code>StreamSink</code></div>
 </dd>

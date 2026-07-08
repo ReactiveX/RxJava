@@ -64,6 +64,9 @@ initTheme();
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
+<li><a href="#add(io.reactivex.rxjava4.disposables.Disposable)" tabindex="0">add(Disposable)</a></li>
+<li><a href="#remove(io.reactivex.rxjava4.disposables.Disposable)" tabindex="0">remove(Disposable)</a></li>
+<li><a href="#delete(io.reactivex.rxjava4.disposables.Disposable)" tabindex="0">delete(Disposable)</a></li>
 <li><a href="#reset()" tabindex="0">reset()</a></li>
 <li><a href="#clear()" tabindex="0">clear()</a></li>
 </ol>
@@ -78,7 +81,7 @@ initTheme();
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Superinterfaces:</dt>
-<dd><code><a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>, <a href="StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></code></dd>
+<dd><code><a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
@@ -87,7 +90,7 @@ initTheme();
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">DisposableContainer</span><span class="extends-implements">
-extends <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>, <a href="StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></span></div>
+extends <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></span></div>
 <div class="block">Common interface to add and remove <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>s from a container.</div>
 <dl class="notes">
 <dt>Since:</dt>
@@ -108,15 +111,33 @@ extends <a href="Disposable.html" title="interface in io.reactivex.rxjava4.dispo
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#clear()" class="member-name-link">clear</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#add(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">add</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Adds a disposable to this container or disposes it if the
+container has been disposed.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#clear()" class="member-name-link">clear</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Removes and disposes all contained <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>s, making this container fresh
 without disposing the entire container.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#delete(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">delete</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Removes but does not dispose the given disposable if it is part of this
+container.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#remove(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">remove</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Removes and disposes the given disposable if it is part of this
+container.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Removes all contained <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>s without disposing them, making this
 container fresh.</div>
 </div>
@@ -148,44 +169,6 @@ that can be used with try-with-resources constructs.</div>
 </div>
 </div>
 </div>
-<div class="inherited-list">
-<h3 id="methods-inherited-from-class-io.reactivex.rxjava4.disposables.StreamerCancellation">Methods inherited from interface&nbsp;<a href="StreamerCancellation.html#method-summary" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a></h3>
-<code><a href="StreamerCancellation.html#add(io.reactivex.rxjava4.disposables.Disposable)" title="add(Disposable)">add</a>, <a href="StreamerCancellation.html#delete(io.reactivex.rxjava4.disposables.Disposable)" title="delete(Disposable)">delete</a>, <a href="StreamerCancellation.html#derive()" title="derive()">derive</a>, <a href="StreamerCancellation.html#isDisposed()" title="isDisposed()">isDisposed</a>, <a href="StreamerCancellation.html#remove(io.reactivex.rxjava4.disposables.Disposable)" title="remove(Disposable)">remove</a></code>
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier and Type</div>
-<div class="table-header col-second">Method</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>boolean</code></div>
-<div class="col-second even-row-color"><code><a href="StreamerCancellation.html#add(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">add</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Adds a disposable to this container or disposes it if the
-container has been disposed.</div>
-</div>
-<div class="col-first odd-row-color"><code>boolean</code></div>
-<div class="col-second odd-row-color"><code><a href="StreamerCancellation.html#delete(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">delete</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Removes but does not dispose the given disposable if it is part of this
-container.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></code></div>
-<div class="col-second even-row-color"><code><a href="StreamerCancellation.html#derive()" class="member-name-link">derive</a>()</code></div>
-<div class="col-last even-row-color">
-<div class="block">Create a derived sub-container that can get cancelled by this container,
-but disposing the sub-container does not dispose this container.</div>
-</div>
-<div class="col-first odd-row-color"><code>boolean</code></div>
-<div class="col-second odd-row-color"><code><a href="StreamerCancellation.html#isDisposed()" class="member-name-link">isDisposed</a>()</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Returns true if this resource has been disposed.</div>
-</div>
-<div class="col-first even-row-color"><code>boolean</code></div>
-<div class="col-second even-row-color"><code><a href="StreamerCancellation.html#remove(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">remove</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Removes and disposes the given disposable if it is part of this
-container.</div>
-</div>
-</div>
-</div>
 </section>
 </li>
 </ul>
@@ -197,6 +180,57 @@ container.</div>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="add(io.reactivex.rxjava4.disposables.Disposable)">
+<h3>add</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">add</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</span></div>
+<div class="block">Adds a disposable to this container or disposes it if the
+container has been disposed.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>d</code> - the disposable to add, not null</dd>
+<dt>Returns:</dt>
+<dd>true if successful, false if this container has been disposed</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="remove(io.reactivex.rxjava4.disposables.Disposable)">
+<h3>remove</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">remove</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</span></div>
+<div class="block">Removes and disposes the given disposable if it is part of this
+container.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>d</code> - the disposable to remove and dispose, not null</dd>
+<dt>Returns:</dt>
+<dd>true if the operation was successful</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="delete(io.reactivex.rxjava4.disposables.Disposable)">
+<h3>delete</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">delete</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</span></div>
+<div class="block">Removes but does not dispose the given disposable if it is part of this
+container.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>d</code> - the disposable to remove, not null</dd>
+<dt>Returns:</dt>
+<dd>true if the operation was successful</dd>
+</dl>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="reset()">
 <h3>reset</h3>
