@@ -13,14 +13,19 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 import io.reactivex.rxjava4.annotations.NonNull;
-import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.core.Streamer;
+import io.reactivex.rxjava4.disposables.DisposableStreamerCancellation;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.internal.util.AtomicThrowable;
 
 public record StreamableZip<T>(
@@ -50,7 +55,7 @@ public record StreamableZip<T>(
     static final class ZipStreamer<T>
     implements Streamer<List<T>>, BiConsumer<Object, Throwable> {
 
-        final DisposableContainer innerCancellation;
+        final DisposableStreamerCancellation innerCancellation;
 
         final List<? extends Streamer<? extends T>> streamers;
 
@@ -72,7 +77,7 @@ public record StreamableZip<T>(
 
         volatile boolean done;
 
-        ZipStreamer(List<? extends Streamer<? extends T>> streamers, DisposableContainer innerCancellation) {
+        ZipStreamer(List<? extends Streamer<? extends T>> streamers, DisposableStreamerCancellation innerCancellation) {
             this.streamers = streamers;
             this.innerCancellation = innerCancellation;
             this.wip = new AtomicInteger();

@@ -189,13 +189,14 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
 
         final FlatMapMainStreamer<T, R> parent;
 
-        final DisposableContainer canceller;
+        final DisposableStreamerCancellation canceller;
 
         volatile boolean done;
 
         boolean finishing;
 
-        InnerStreamer(Streamer<? extends R> inner, FlatMapMainStreamer<T, R> parent, DisposableContainer canceller) {
+        InnerStreamer(Streamer<? extends R> inner, FlatMapMainStreamer<T, R> parent,
+                DisposableStreamerCancellation canceller) {
             this.inner = inner;
             this.parent = parent;
             this.canceller = canceller;

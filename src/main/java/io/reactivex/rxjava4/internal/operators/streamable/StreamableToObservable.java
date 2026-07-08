@@ -13,12 +13,19 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
 import io.reactivex.rxjava4.annotations.NonNull;
-import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.core.Observable;
+import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.core.Streamer;
+import io.reactivex.rxjava4.disposables.CompositeDisposable;
+import io.reactivex.rxjava4.disposables.Disposable;
+import io.reactivex.rxjava4.disposables.DisposableStreamerCancellation;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 
@@ -46,8 +53,13 @@ implements HasUpstreamStreamableSource<T> {
         sto.drain();
     }
 
-    record StreamToObserver<T>(Streamer<T> streamer, Observer<? super T> observer, DisposableContainer cancellation,
-            AtomicInteger wip, AtomicBoolean done, AtomicReference<Throwable> mainError, AtomicBoolean disposed)
+    record StreamToObserver<T>(Streamer<T> streamer,
+            Observer<? super T> observer,
+            DisposableStreamerCancellation cancellation,
+            AtomicInteger wip,
+            AtomicBoolean done,
+            AtomicReference<Throwable> mainError,
+            AtomicBoolean disposed)
     implements BiConsumer<Object, Throwable>, Disposable {
 
         void drain() {

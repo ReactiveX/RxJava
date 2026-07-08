@@ -76,7 +76,7 @@ public interface Streamable<@NonNull T> {
      * Implementations are not meant to dispose the {@code cancellation} as it is the
      * privilege of whatever calls the {@code stream} method. If you need to talk to other
      * {@code Streamable}s, use the {@link StreamerCancellation#derive()} to gain access to
-     * a fully fledged {@link DisposableContainer} where you can dispose it without disposing
+     * a fully fledged {@link DisposableStreamerCancellation} where you can dispose it without disposing
      * the parent {@code cancellation} instance by accident.
      * <p>
      * It is recommened you {@link StreamerCancellation#remove(Disposable)} or
@@ -987,7 +987,8 @@ public interface Streamable<@NonNull T> {
      */
     @CheckReturnValue
     @NonNull
-    default CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer, @NonNull DisposableContainer canceller) {
+    default CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer,
+            @NonNull DisposableStreamerCancellation canceller) {
         return forEach(consumer, canceller, Executors.newVirtualThreadPerTaskExecutor());
     }
 
@@ -1014,7 +1015,8 @@ public interface Streamable<@NonNull T> {
      */
     @CheckReturnValue
     @NonNull
-    default CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer, @NonNull DisposableContainer canceller, @NonNull ExecutorService executor) {
+    default CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer,
+            @NonNull DisposableStreamerCancellation canceller, @NonNull ExecutorService executor) {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(canceller, "canceller is null");
         Objects.requireNonNull(executor, "executor is null");
@@ -1033,7 +1035,7 @@ public interface Streamable<@NonNull T> {
     @NonNull
     default CompletionStageDisposable<Void> forEach(
             @NonNull BiConsumer<? super T, ? super Disposable> consumer,
-            @NonNull DisposableContainer canceller,
+            @NonNull DisposableStreamerCancellation canceller,
             @NonNull ExecutorService executor) {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(canceller, "canceller is null");

@@ -13,13 +13,18 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import static io.reactivex.rxjava4.internal.operators.streamable.StreamableHelper.*;
+import static io.reactivex.rxjava4.internal.operators.streamable.StreamableHelper.andThenSupply;
+import static io.reactivex.rxjava4.internal.operators.streamable.StreamableHelper.suppressCancel;
+import static io.reactivex.rxjava4.internal.operators.streamable.StreamableHelper.suppressValueAndCancel;
+import static io.reactivex.rxjava4.internal.operators.streamable.StreamableHelper.whenBoth;
 
 import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava4.annotations.NonNull;
-import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.core.Streamer;
+import io.reactivex.rxjava4.disposables.DisposableStreamerCancellation;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 
 public record StreamableTakeUntil<T, U>(
@@ -48,9 +53,9 @@ public record StreamableTakeUntil<T, U>(
 
         final Streamer<? extends U> otherStreamer;
 
-        final DisposableContainer mainCancellation;
+        final DisposableStreamerCancellation mainCancellation;
 
-        final DisposableContainer otherCancellation;
+        final DisposableStreamerCancellation otherCancellation;
 
         final CompletionStage<Boolean> otherNext;
 
@@ -59,8 +64,8 @@ public record StreamableTakeUntil<T, U>(
         public TakeUntilMainStreamer(
                 Streamer<? extends T> upstream,
                 Streamer<? extends U> otherStreamer,
-                DisposableContainer mainCancellation,
-                DisposableContainer otherCancellation,
+                DisposableStreamerCancellation mainCancellation,
+                DisposableStreamerCancellation otherCancellation,
                 CompletionStage<Boolean> otherNext
         ) {
             this.upstream = upstream;

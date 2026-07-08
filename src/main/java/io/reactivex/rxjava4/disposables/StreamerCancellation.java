@@ -17,12 +17,12 @@ import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.Streamable;
 
 /**
- * Represents non-disposable view of a {@link DisposableContainer}
+ * Represents non-disposable view of a {@link DisposableStreamerCancellation}
  * that allows synchronous testing for disposed state as well as allow
  * adding and removing {@link Disposable} resources to be
  * cleaned up when the full container is disposed.
  * <p>
- * This view is provided to prevent calling {@link DisposableContainer#dispose()}
+ * This view is provided to prevent calling {@link DisposableStreamerCancellation#dispose()}
  * in {@link Streamable#stream(StreamerCancellation)} implementations because
  * disposing a stream is the privilege of the caller/downstream.
  * <p>
@@ -65,11 +65,12 @@ public interface StreamerCancellation {
     boolean delete(@NonNull Disposable d);
 
     /**
-     * Create a derived sub-container that can get cancelled by this container,
-     * but disposing the sub-container does not dispose this container.
-     * @return the derived sub-container
+     * Create a derived sub-cancellation management interface that can get disposed
+     * by this cancellation management object but disposing the sub-cancellation
+     * manager does not dispose this current {@code StreamerCancellation} instance..
+     * @return the derived sub-cancellation management object
      */
     @NonNull
-    DisposableContainer derive();
+    DisposableStreamerCancellation derive();
 
 }

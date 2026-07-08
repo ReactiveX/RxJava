@@ -24,7 +24,8 @@ import io.reactivex.rxjava4.internal.util.*;
  * offers <em>O(1)</em> time complexity for {@link #add(Disposable)}, {@link #remove(Disposable)} and {@link #delete(Disposable)}
  * operations.
  */
-public final class CompositeDisposable implements Disposable, DisposableContainer {
+public final class CompositeDisposable
+implements Disposable, DisposableContainer, DisposableStreamerCancellation {
 
     OpenHashSet<Disposable> resources;
 
@@ -270,7 +271,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     }
 
     @Override
-    public DisposableContainer derive() {
+    public DisposableStreamerCancellation derive() {
         var result = new CompositeDisposable();
 
         add(result);

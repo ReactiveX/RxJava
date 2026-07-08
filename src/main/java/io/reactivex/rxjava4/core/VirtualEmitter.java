@@ -33,5 +33,5 @@ public interface VirtualEmitter<T> {
      * Returns a disposable container to relay cancellation notifications while awaiting the run.
      * @return a new Disposable Container instance
      */
-    DisposableContainer canceller();
+    DisposableStreamerCancellation canceller();
 }
