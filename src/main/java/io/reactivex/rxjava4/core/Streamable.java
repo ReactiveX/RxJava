@@ -612,6 +612,19 @@ public interface Streamable<@NonNull T> {
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     /**
+     * Blocks the current thread until this {@code Streamable} produces one item, which is then returned
+     * @return the first item of this {@code Streamable}
+     * @throws NoSuchElementException if the this {@code Streamable} is empty
+     * @throws CancellationException if this {@code Streamable} failed with a checked exception
+     * @throws RuntimeException if this {@code Streamable} failed with an unchecked exception
+     */
+    @CheckReturnValue
+    @NonNull
+    default T blockingFirst() {
+        return StreamableBlocking.blockingFirst(this);
+    }
+
+    /**
      * Collects all upstream values via the use of a {@link Collector} configuration
      * and emits its resulting value as a single item of the returned {@code Streamable}.
      * <p>
@@ -733,6 +746,33 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Signals the last item from the upstream {@code Streamable} or
+     * the provided {@code defaultItem} if the upstream is empty, as a
+     * {@link Single} instance.
+     * @param defaultItem the item to signal if the upstream turns out to be empty
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code defaultItem} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default Single<T> last(@NonNull T defaultItem) {
+        Objects.requireNonNull(defaultItem, "defaultItem is null");
+        return RxJavaPlugins.onAssembly(new StreamableLastAsSingle<>(this, defaultItem));
+    }
+
+    /**
+     * Signals the last item from the upstream {@code Streamable} or a
+     * {@link NoSuchElementException} if the upstream is empty, as a
+     * {@link Single} instance.
+     * @return the new {@code Single} instance
+     */
+    @CheckReturnValue
+    @NonNull
+    default Single<T> lastOrError() {
+        return RxJavaPlugins.onAssembly(new StreamableLastAsSingle<>(this, null));
+    }
+
+    /**
      * <strong>This method requires advanced knowledge about building operators, please consider
      * other standard composition methods first;</strong>
      * Returns a {@code Streamable} instance which when its {@link #stream(StreamerCancellation)} is invoked,
@@ -799,6 +839,21 @@ public interface Streamable<@NonNull T> {
     default Streamable<T> onErrorResumeNext(@NonNull Function<? super Throwable, ? extends Streamable<? extends T>> fallbackMapper) {
         Objects.requireNonNull(fallbackMapper, "fallbackMapper is null");
         return RxJavaPlugins.onAssembly(new StreamableOnErrorResumeNext<>(this, fallbackMapper));
+    }
+
+    /**
+     * Skips the first {@code count} items and relays the rest to the downstream.
+     * @param count the number of items to skip
+     * @return the new {@Streamable} instance
+     * @throws IllegalArgumentException if {@code count} is negative
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> skip(long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 expected but it was " + count);
+        }
+        return RxJavaPlugins.onAssembly(new StreamableSkip<>(this, count));
     }
 
     /**

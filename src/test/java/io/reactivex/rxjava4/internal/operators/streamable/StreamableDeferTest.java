@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
 
@@ -41,6 +42,14 @@ public class StreamableDeferTest extends StreamableBaseTest {
     @Test
     public void crash() throws Throwable {
         Streamable.defer(() -> { throw new TestException(); })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void error() throws Throwable {
+        Streamable.defer(() -> Streamable.error(new TestException()))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);

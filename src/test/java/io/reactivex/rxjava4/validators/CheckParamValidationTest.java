@@ -636,6 +636,8 @@ public class CheckParamValidationTest extends RxJavaTest {
         addIgnore(new ParamIgnore(Streamable.class, "intervalRange", Long.TYPE, Long.TYPE, Long.TYPE, Long.TYPE, TimeUnit.class, ExecutorService.class));
         // zero take is allowed
         addOverride(new ParamOverride(Streamable.class, 0, ParamMode.NON_NEGATIVE, "take", Long.TYPE));
+        // negative skip count is ignored
+        addOverride(new ParamOverride(Streamable.class, 0, ParamMode.NON_NEGATIVE, "skip", Long.TYPE));
 
         // -----------------------------------------------------------------------------------
 

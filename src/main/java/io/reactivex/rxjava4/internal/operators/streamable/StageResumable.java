@@ -25,6 +25,7 @@ import io.reactivex.rxjava4.annotations.*;
  * one use/thread can signal {@link #ready()} to wake up another use/thread
  * on a {@link #await()} call.
  * @param <T> the element type of the notification pass-around
+ * @since 4.0.0
  */
 public final class StageResumable<T> extends AtomicReference<CompletableFuture<T>>
 implements BiConsumer<T, Throwable> {
@@ -32,6 +33,13 @@ implements BiConsumer<T, Throwable> {
     @Serial
     private static final long serialVersionUID = -7518852864146380895L;
 
+    /**
+     * When the producer has arranged the item transfer via some field or queue,
+     * call this method and call {@link CompletableFuture#complete(Object)}
+     * or {@link CompletableFuture#completeExceptionally(Throwable)} to
+     * signal resumption for any current or upcoming {@link #await()} caller.
+     * @return the {@code CompletableFuture} to complete in some way
+     */
     @CheckReturnValue
     @NonNull
     public CompletableFuture<T> ready() {
@@ -49,6 +57,12 @@ implements BiConsumer<T, Throwable> {
         return cf;
     }
 
+    /**
+     * When the consumer is ready to receive an item, call this method
+     * and apply a continuation function, such as {@link CompletableFuture#whenComplete(BiConsumer)}
+     * to it to handle the signal and process any external data made ready.
+     * @return the {@code CompletableFuture} to observe a completion value or exception
+     */
     @CheckReturnValue
     @NonNull
     public CompletableFuture<T> await() {
@@ -66,6 +80,10 @@ implements BiConsumer<T, Throwable> {
         return cf.whenComplete(this);
     }
 
+    /// Used to clear any waiting [CompletableFuture] when the await finishes
+    /// no concern to users and should not be called.
+    /// @param t the completion value if any, ignored
+    /// @param u the exception if any, ignored
     @Override
     public void accept(T t, Throwable u) {
         getAndSet(null);

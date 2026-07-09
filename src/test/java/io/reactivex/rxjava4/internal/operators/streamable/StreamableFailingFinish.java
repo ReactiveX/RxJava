@@ -40,7 +40,7 @@ public enum StreamableFailingFinish implements Streamable<Integer> {
             var d = Disposable.fromFuture(cf, true);
             dc.add(d);
             if (mode == 1) {
-                cf.completeExceptionally(new TestException("StreamableFailingFinish(true)"));
+                cf.completeExceptionally(new TestException("StreamableFailingFinish.next()"));
             } else
             if (mode == 2) {
                 cf.complete(false);
@@ -55,7 +55,7 @@ public enum StreamableFailingFinish implements Streamable<Integer> {
 
         @Override
         public @NonNull CompletionStage<Void> finish() {
-            return CompletableFuture.failedFuture(new TestException());
+            return CompletableFuture.failedFuture(new TestException("StreamableFailingFinish.finish()"));
         }
     }
 

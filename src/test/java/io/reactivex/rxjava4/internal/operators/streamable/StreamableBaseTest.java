@@ -16,10 +16,11 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 import java.lang.ref.Cleaner;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
-import java.util.function.BiConsumer;
+import java.util.function.*;
 
 import org.junit.jupiter.api.*;
 
+import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.config.StreamableInterceptConfig;
 import io.reactivex.rxjava4.exceptions.CompositeException;
@@ -164,6 +165,27 @@ public abstract class StreamableBaseTest extends RxJavaTest {
             Thread.sleep(0, 1000);
             if (--timeout <= 0L) {
                 throw new TimeoutException("hasStreamers still false");
+            }
+        }
+    }
+
+    /**
+     * Awaits a given {@link BooleanSupplier} to return the expected {@code value}
+     * within the given time period by sleeping in 1 microsecond increments until
+     * the timeout happens.
+     * @param value the expected value within the timeout period
+     * @param condition the condition to repeatedly call to assess the state
+     * @param timeoutMillis how long to wait for the condition to become as expected
+     * @throws InterruptedException if the sleep is interrupted
+     * @throws TimeoutException if the wait times out
+     */
+    public static void awaitCondition(boolean value, @NonNull BooleanSupplier condition, long timeoutMillis)
+            throws InterruptedException, TimeoutException {
+        long timeout = timeoutMillis * 1_000_000L;
+        while (condition.getAsBoolean() != value) {
+            Thread.sleep(0, 1000);
+            if (--timeout <= 0L) {
+                throw new TimeoutException("condition still " + (!value));
             }
         }
     }
