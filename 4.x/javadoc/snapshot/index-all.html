@@ -668,6 +668,10 @@ with a specific timeout and rethrows any exception emitted within the timeout wi
 <div class="block">Returns the first item emitted by the current <code>Observable</code>, or throws
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/NoSuchElementException.html" title="class in java.util" class="external-link"><code>NoSuchElementException</code></a> if it emits no items.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#blockingFirst()" class="member-name-link">blockingFirst()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces one item, which is then returned</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#blockingFirst(T)" class="member-name-link">blockingFirst(T)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns the first item emitted by this <code>Flowable</code>, or a default value if it emits no
@@ -4072,6 +4076,11 @@ in no particular order, into a single <code>Flowable</code> sequence, optionally
 <div class="block">Maps the success value of the current <code>Single</code> into an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> and emits its items as an
 <a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> sequence.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Single.html#flattenAsStreamable(io.reactivex.rxjava4.functions.Function)" class="member-name-link">flattenAsStreamable(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
+<dd>
+<div class="block">Maps the success value of the current <code>Single</code> into an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> and emits its items as a
+<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core"><code>Streamable</code></a> sequence.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html#flattenStreamAsFlowable(io.reactivex.rxjava4.functions.Function)" class="member-name-link">flattenStreamAsFlowable(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core">Maybe</a></dt>
 <dd>
 <div class="block">Maps the upstream succecss value into a Java <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/stream/Stream.html" title="interface in java.util.stream" class="external-link"><code>Stream</code></a> and emits its
@@ -5761,6 +5770,12 @@ if this <code>Flowable</code> completes without emitting any items.</div>
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits only the last item emitted by the current <code>Observable</code>, or a default item
 if the current <code>Observable</code> completes without emitting any items.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#last(T)" class="member-name-link">last(T)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Signals the last item from the upstream <code>Streamable</code> or
+the provided <code>defaultItem</code> if the upstream is empty, as a
+<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> instance.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#lastElement()" class="member-name-link">lastElement()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a> that emits the last item emitted by this <code>Flowable</code> or completes if
@@ -5780,6 +5795,12 @@ a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/uti
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits only the last item emitted by the current <code>Observable</code> or
 signals a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/NoSuchElementException.html" title="class in java.util" class="external-link"><code>NoSuchElementException</code></a> if the current <code>Observable</code> is empty.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#lastOrError()" class="member-name-link">lastOrError()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Signals the last item from the upstream <code>Streamable</code> or a
+<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/NoSuchElementException.html" title="class in java.util" class="external-link"><code>NoSuchElementException</code></a> if the upstream is empty, as a
+<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> instance.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#lastOrErrorStage()" class="member-name-link">lastOrErrorStage()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -8952,6 +8973,10 @@ the remainder.</div>
 <dd>
 <div class="block">Returns an <code>Observable</code> that skips the first <code>count</code> items emitted by the current <code>Observable</code> and emits
 the remainder.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#skip(long)" class="member-name-link">skip(long)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Skips the first <code>count</code> items and relays the rest to the downstream.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#skip(long,java.util.concurrent.TimeUnit)" class="member-name-link">skip(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
