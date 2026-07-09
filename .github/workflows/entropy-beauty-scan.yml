@@ -11,12 +11,15 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code (full history)
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # pinned commit (update sha if you bump the action)
         with:
-          # Use shallow clone by default (much faster)
-          # Only use full history when necessary (push/release or when base commit is needed)
-          fetch-depth: ${{ github.event_name == 'pull_request_target' && 2 || 0 }}
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: ${{ github.event_name == 'pull_request_target' && 1 || 2 }}
+
+      - name: Fetch PR base commit (needed for accurate diff)
+        if: github.event_name == 'pull_request_target'
+        run: git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
 
       - name: Cache pip manually
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -43,6 +46,10 @@ jobs:
           extra_args: --results=verified,unknown --filter-entropy=3.5 --json
 
       - name: Compute mid-4 beauty entropy
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: python .github/workflows/compute-entropy.py
 
       - name: Post summary comment (PR only)
@@ -63,7 +70,6 @@ jobs:
                 }).filter(Boolean);
               } catch(e) {}
             } else {
-              // Fallback: the action also logs to GITHUB_STEP_SUMMARY, but we use the file from the Python step
               console.log("No trufflehog.json found, using empty findings");
             }
 
@@ -91,6 +97,7 @@ jobs:
               issue_number: context.issue.number,
               body: body
             });
+
       # ── Create issue on push ONLY if suspicious (entropy outside 4.3–5.1) ──
       - name: Create issue on suspicious push
         if: github.event_name == 'push' || github.event_name == 'release'

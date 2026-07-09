@@ -21,13 +21,13 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 - :+1: New `Streamable<T>` built around Virtual Threads & virtual blocking. Think `IAsyncEnumerable` for Java. :satellite: in progress.
 - :+1: Using Java Cleaner API to detect resource leaks and using it for adaptive cleanups.
 - :information_source: Reactive Streams Test Compatibility Kit usage; [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm).
-- :satellite: Rewamp of the Javadoc bloat in the base types via `sealed` interfaces.
 - :satellite: Reduce overload bloat by using `record`-based configurations.
 - :satellite: Internal optimizations now that I have the master :key:.
 - :eye: Possible usages for Scoped variables for context and per-item resource management.
 - :eye: Possible inclusion of 2nd and 3rd party operators.
 - :eye: Possible inclusion of the Iterable Extensions (Ix) 2nd party library. ju.Stream is sh|t wrt interfacing and composability.
 - :question: Android compatibility depends on your API level and what desugaring is available.
+- :question: Rewamp of the Javadoc bloat in the base types via `sealed` interfaces? Not certain how much it helps.
 - :lady_beetle: Resolve many anomalies and bugs with operators such as `groupBy`, `window`, `concat`, etc.
 - :warning: RxJava 3.x support will be toned down in the coming months, will be offered for +1 year after 4.x official release.
 
@@ -105,6 +105,10 @@ In RxJava's documentation, **emission**, **emits**, **item**, **event**, **signa
 When the dataflow runs through asynchronous steps, each step may perform different things with different speed. To avoid overwhelming such steps, which usually would manifest itself as increased memory usage due to temporary buffering or the need for skipping/dropping data, so-called backpressure is applied, which is a form of flow control where the steps can express how many items are they ready to process. This allows constraining the memory usage of the dataflows in situations where there is generally no way for a step to know how many items the upstream will send to it.
 
 In RxJava, the dedicated `Flowable` class is designated to support backpressure and `Observable` is dedicated to the non-backpressured operations (short sequences, GUI interactions, etc.). The other types, `Single`, `Maybe` and `Completable` don't support backpressure nor should they; there is always room to store one item temporarily.
+
+Since 4.0.0, the `Streamable` type gives natural backpressure because producers and consumers have to wait for
+each other to hand over data. Since waiting is blocking, the type natively works with Virtual Threaded `ExecutorService`s
+and the new `Schedulers.virtual()` `Scheduler`.
 
 #### Assembly time
 
@@ -192,9 +196,16 @@ Typically, you can move computations or blocking IO to some other thread via `su
 RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so-called `Scheduler`s that abstract away sources of concurrency behind a uniform API. RxJava 4 features several standard schedulers accessible via `Schedulers` utility class. 
 
 - `Schedulers.computation()`: Run computation intensive work on a fixed number of dedicated threads in the background. Most asynchronous operators use this as their default `Scheduler`.
-- `Schedulers.io()`: Run I/O-like or blocking operations on a dynamically changing set of threads.
+- `Schedulers.cached()`: Run I/O-like or blocking operations on a dynamically changing set of threads backed by native OS threads. :warning: Can exhaust system resources!
+- `Schedulers.virtual()`: Run I/O-like or blocking scatter-gather operations in a sequential manner on threads with virtualized stacks attached and detached to native OS threads on demand. :information_source: Helps with the issues around unboundedness of `Schedulers.cached()`.
 - `Schedulers.single()`: Run work on a single thread in a sequential and FIFO manner.
 - `Schedulers.trampoline()`: Run work in a sequential and FIFO manner in one of the participating threads, usually for testing purposes.
+- `Schedulers.createParallel()`: Allows creating a `Scheduler` with an user-configurable worker pool size and other parameters to contrast `computation()` which is always set to `availableProcessors()`/configured amount globally.
+- `Schedulers.createBlocking()`: Allows creating an event-loop style `Scheduler` which runs tasks and blocks on the thread calling `execute()`. Can be used to pull tasks onto a specific thread or have it itself run in a virtual threaded executor for maximum efficiency.
+- `Scheduler.shared()`: Every `Scheduler` or `Worker` can now be shared and act like its own full `Scheduler` with lifecycle tracking and dispose support. I.e., share one worker of `cached()` like it is some kind of `Schedulers.single()`.
+
+In 4.x, the traditional I/O scheduler `Schedulers.io()` has been API deprecated and delegates to `Schedulers.cached()` for compatibility reasons. It is recommended you decide at these deprecated code locations which standard (or custom) scheduler
+to use: `cached()` like before or the new `virtual()` for more efficient system resource usages.
 
 These are available on all JVM platforms but some specific platforms, such as Android, have their own typical `Scheduler`s defined: `AndroidSchedulers.mainThread()`, `SwingScheduler.instance()` or `JavaFXScheduler.platform()`.
 
@@ -359,13 +370,14 @@ In such situations, there are usually two options to fix the transformation: 1) 
 
 Each reactive base class features operators that can perform such conversions, including the protocol conversions, to match some other type. The following matrix shows the available conversion options:
 
-|          | Flowable | Observable | Single | Maybe | Completable |
-|----------|----------|------------|--------|-------|-------------|
-|**Flowable**  |          | `toObservable` | `first`, `firstOrError`, `single`, `singleOrError`, `last`, `lastOrError`<sup>1</sup> | `firstElement`, `singleElement`, `lastElement` | `ignoreElements` |
-|**Observable**| `toFlowable`<sup>2</sup> |  | `first`, `firstOrError`, `single`, `singleOrError`, `last`, `lastOrError`<sup>1</sup> | `firstElement`, `singleElement`, `lastElement` | `ignoreElements` |
-|**Single** | `toFlowable`<sup>3</sup> | `toObservable` |  | `toMaybe` | `ignoreElement` |
-|**Maybe** | `toFlowable`<sup>3</sup> | `toObservable` | `toSingle` |  | `ignoreElement` |
-|**Completable** | `toFlowable` | `toObservable` | `toSingle` | `toMaybe` |  |
+|          | Flowable | Observable | Single | Maybe | Completable | Streamable |
+|----------|----------|------------|--------|-------|-------------|------------|
+|**Flowable**  |          | `toObservable` | `first`, `firstOrError`, `single`, `singleOrError`, `last`, `lastOrError`<sup>1</sup> | `firstElement`, `singleElement`, `lastElement` | `ignoreElements` | `toStreamable` |
+|**Observable**| `toFlowable`<sup>2</sup> |  | `first`, `firstOrError`, `single`, `singleOrError`, `last`, `lastOrError`<sup>1</sup> | `firstElement`, `singleElement`, `lastElement` | `ignoreElements` | `toStreamable` |
+|**Single** | `toFlowable`<sup>3</sup> | `toObservable` |  | `toMaybe` | `ignoreElement` | `toStreamable` |
+|**Maybe** | `toFlowable`<sup>3</sup> | `toObservable` | `toSingle` |  | `ignoreElement` | `toStreamable` |
+|**Completable** | `toFlowable` | `toObservable` | `toSingle` | `toMaybe` |  | `toStreamable` |
+|**Streamable** | `toFlowable` | `toObservable` | TBD | TBD | TBD | |
 
 <sup>1</sup>: When turning a multivalued source into a single-valued source, one should decide which of the many source values should be considered as the result.
 
@@ -446,18 +458,33 @@ This can get also ambiguous when functional interface types get involved as the 
 
 #### Error handling
 
-Dataflows can fail, at which point the error is emitted to the consumer(s). Sometimes though, multiple sources may fail at which point there is a choice whether or not wait for all of them to complete or fail. To indicate this opportunity, many operator names are suffixed with the `DelayError` words (while others feature a `delayError` or `delayErrors` boolean flag in one of their overloads):
+Dataflows can fail, at which point the error is emitted to the consumer(s). Sometimes though, multiple sources may fail at which point there is a choice whether or not wait for all of them to complete or fail. 
+
+:warning: With 4.x, the number of overloads were reduced and all `DelayError` methods have been folded into
+configuration record parameter(s).
+
+To indicate this opportunity, operators now use configuration records, such as `StandardBufferedConfig`, `StandardConcurrentConfig` and `StandardConcurrentBufferedConfig` to pass along an error handling settings:
 
 ```java
 Flowable<T> concat(Publisher<? extends Publisher<? extends T>> sources);
 
-Flowable<T> concatDelayError(Publisher<? extends Publisher<? extends T>> sources);
+Flowable<T> concat(Publisher<? extends Publisher<? extends T>> sources, StandardBufferedConfig config);
+
+var config = new StandardBufferedConfig(ErrorMode.BOUNDARY);
+
+var config = new StandardBufferedConfig(true); // equivalent to ErrorMode.END
 ```
 
-Of course, suffixes of various kinds may appear together:
+The `ErrorMode` enum has 3 modes:
+
+- `IMMEDIATE` - emit the error as soon as possible
+- `BOUNDARY` - wait until a boundary or inner source change, may not make sense for certain operators and will act as `END`
+- `END` - wait until all sources (outer, inner) have terminated and present an aggregated error (usually via `CompositeException`) to the consumer.
+
+With varargs-style operators, the configuration record has to precede the varargs parameter:
 
 ```java
-Flowable<T> concatArrayEagerDelayError(Publisher<? extends T>... sources);
+Flowable<T> concatArrayEager(StandardConcurrentBufferedConfig config, Publisher<? extends T>... sources);
 ```
 
 #### Base class vs base type
@@ -466,15 +493,18 @@ The base classes can be considered heavy due to the sheer number of static and i
 
 | Type | Class | Interface | Consumer |
 |------|-------|-----------|----------|
-| 0..N backpressured | `Flowable` | `Publisher`<sup>1</sup> | `Subscriber` |
+| 0..N backpressured | `Flowable` | `Flow.Publisher`<sup>1</sup> | `Flow.Subscriber` |
 | 0..N unbounded | `Observable` | `ObservableSource`<sup>2</sup> | `Observer` |
 | 1 element or error | `Single` | `SingleSource` | `SingleObserver` |
 | 0..1 element or error | `Maybe` | `MaybeSource` | `MaybeObserver` |
 | 0 element or error | `Completable` | `CompletableSource` | `CompletableObserver` |
+| 0..N coordinated | `Streamable` | <sup>3</sup> | `Streamer`, `StreamSink` |
 
 <sup>1</sup>The `java.util.concurrent.Flow.Publisher` is part of the Java internal Flow library. It is the main type to interact with other reactive libraries through a standardized mechanism governed by the [Reactive Streams specification](https://github.com/reactive-streams/reactive-streams-jvm#specification).
 
 <sup>2</sup>The naming convention of the interface was to append `Source` to the semi-traditional class name. There is no `FlowableSource` since `Publisher` is provided by the Reactive Streams library (and subtyping it wouldn't have helped with interoperation either). These interfaces are, however, not standard in the sense of the Reactive Streams specification and are currently RxJava specific only.
+
+<sup>3</sup> **2026.07.09** we haven't decided yet to have a `StreamableSource` becaue we control `Streamable`, unlike `Flow.Publisher`, so we can add defaulted operators there and still have `Streamable` a functional interface.
 
 ### R8 and ProGuard settings
 
