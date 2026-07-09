@@ -13,17 +13,73 @@
 
 package io.reactivex.rxjava4.core;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Flow;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import io.reactivex.rxjava4.annotations.*;
-import io.reactivex.rxjava4.core.config.*;
-import io.reactivex.rxjava4.disposables.*;
-import io.reactivex.rxjava4.functions.*;
-import io.reactivex.rxjava4.internal.functions.ObjectHelper;
-import io.reactivex.rxjava4.internal.operators.streamable.*;
+import io.reactivex.rxjava4.annotations.CheckReturnValue;
+import io.reactivex.rxjava4.annotations.NonNull;
+import io.reactivex.rxjava4.annotations.Nullable;
+import io.reactivex.rxjava4.core.config.StandardConcurrentConfig;
+import io.reactivex.rxjava4.core.config.StreamableInterceptConfig;
+import io.reactivex.rxjava4.disposables.CompositeDisposable;
+import io.reactivex.rxjava4.disposables.Disposable;
+import io.reactivex.rxjava4.disposables.DisposableStreamerCancellation;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
+import io.reactivex.rxjava4.functions.BiConsumer;
+import io.reactivex.rxjava4.functions.Consumer;
+import io.reactivex.rxjava4.functions.Function;
+import io.reactivex.rxjava4.functions.Predicate;
+import io.reactivex.rxjava4.functions.Supplier;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableCollector;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableConcatIterable;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableDefer;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableDelay;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableEmpty;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableError;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFilter;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFlatMap;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableForEach;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromArray;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromCompletable;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromIterable;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromMaybe;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromPublisher;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromSingle;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromStream;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableGroupBy;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableHelper;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableHide;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableIntercept;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableIntervalRange;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableJust;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableLift;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableMap;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableMapOptional;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableNever;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableOnErrorResumeNext;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableRange;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableRangeLong;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableTake;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableTakeUntil;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableTakeWhile;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableTimeout;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableTimer;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableToObservable;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableUsing;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableZip;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -806,23 +862,22 @@ public interface Streamable<@NonNull T> {
     /**
      * Takes at most the given number of items from the upstream and relays it to the downstream,
      * then cancels the rest of the sequence.
-     * @param n the maximum number of items to relay
+     * <p>
+     * Note that cancellation of the upstream happens when the downstream
+     * calls {@link Streamer#next()} because unlike the push-based {@code take}
+     * implementations, the current upstream value has to remain accessible until
+     * the downstream calls {@code next} or {@link Streamer#finish()}.
+     * @param count the maximum number of items to relay
      * @return the new {@code Streamable} instance
-     * @throws IllegalArgumentException if {@code n} is non-positive
+     * @throws IllegalArgumentException if {@code count} is negative
      */
     @CheckReturnValue
     @NonNull
-    default Streamable<T> take(long n) {
-        ObjectHelper.verifyPositive(n, "n");
-        return defer(() -> {
-            var countdown = new AtomicLong(n);
-            return transform((item, emitter, stopper) -> {
-                emitter.emit(item);
-                if (countdown.decrementAndGet() <= 0) {
-                    stopper.dispose();
-                }
-            });
-        });
+    default Streamable<T> take(long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
+        return RxJavaPlugins.onAssembly(new StreamableTake<>(this, count));
     }
 
     /**
