@@ -16,6 +16,7 @@ jobs:
         with:
           ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
           fetch-depth: ${{ github.event_name == 'pull_request_target' && 1 || 2 }}
+          allow-unsafe-pr-checkout: ${{ github.event_name == 'pull_request_target' }}
 
       - name: Fetch PR base commit (needed for accurate diff)
         if: github.event_name == 'pull_request_target'
