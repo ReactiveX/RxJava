@@ -1,5 +1,7 @@
 # RxJava: Reactive Extensions for the JVM
 
+## :information_source: 4.0.0 release: 2026.11.30. Monday. [Track](https://github.com/ReactiveX/RxJava/milestone/30)
+
 [![Maven Central](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava4/rxjava/badge.svg)](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava4/rxjava)
 [![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=4.x)](https://codecov.io/gh/ReactiveX/RxJava/branch/4.x)
 <a href='https://github.com/ReactiveX/RxJava/actions?query=workflow%3ASnapshot'><img src='https://github.com/ReactiveX/RxJava/workflows/Snapshot/badge.svg'></a>
@@ -13,7 +15,7 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 
 #### Version 4.x ([Javadoc](http://reactivex.io/RxJava/4.x/javadoc/))
 
-- :+1: Native Java 26* implementation. Will go 27 depending on how long it takes and what useful things 27 brings.
+- :+1: Native Java 26 implementation<sup>1</sup>.
 - :+1: No 3rd party library required at runtime.
 - :+1: JPMS and :question: OSGi support still intact.
 - :+1: `java.util.concurrent.Flow`-based implementation.
@@ -31,6 +33,7 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 - :lady_beetle: Resolve many anomalies and bugs with operators such as `groupBy`, `window`, `concat`, etc.
 - :warning: RxJava 3.x support will be toned down in the coming months, will be offered for +1 year after 4.x official release.
 
+<sup>1</sup> :stop: Unfortunately Java 27 has no language or API enhancements we can use, because Structured Concurrency remained preview for one.
 
 ## Getting started
 
