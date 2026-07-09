@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Action;
-import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
+import io.reactivex.rxjava4.internal.disposables.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -249,5 +249,20 @@ public class DisposableTest extends RxJavaTest {
         }
 
         assertTrue(d.isDisposed(), "d is not disposed");
+    }
+
+    @Test
+    public void disposableOnlyThrows() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            enum Only implements DisposableOnly {
+                INSTANCE;
+                @Override
+                public void dispose() {
+                    // not used here
+                }
+            }
+
+            Only.INSTANCE.isDisposed();
+        });
     }
 }

@@ -147,7 +147,8 @@ public class CheckBaseTypeAnnotationsTest extends RxJavaTest {
                     }
                 } else {
                     if (m.getReturnType() == Flowable.class
-                            || m.getReturnType() == ParallelFlowable.class) {
+                            || m.getReturnType() == ParallelFlowable.class
+                            || m.getReturnType() == Streamable.class) {
                         if (!m.isAnnotationPresent(BackpressureSupport.class)) {
                             b.append("No @BackpressureSupport annotation (having ")
                             .append(m.getReturnType().getSimpleName())

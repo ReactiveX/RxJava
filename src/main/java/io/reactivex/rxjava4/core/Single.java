@@ -33,7 +33,7 @@ import io.reactivex.rxjava4.internal.operators.maybe.*;
 import io.reactivex.rxjava4.internal.operators.mixed.*;
 import io.reactivex.rxjava4.internal.operators.observable.ObservableSingleSingle;
 import io.reactivex.rxjava4.internal.operators.single.*;
-import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromSingle;
+import io.reactivex.rxjava4.internal.operators.streamable.*;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.*;
@@ -2977,6 +2977,37 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
+     * Maps the success value of the current {@code Single} into an {@link Iterable} and emits its items as a
+     * {@link Streamable} sequence.
+     * <p>
+     * <img width="640" height="373" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flattenAsStreamable.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flattenAsStreamable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <U>
+     *            the type of item emitted by the resulting {@code Iterable}
+     * @param mapper
+     *            a function that returns an {@code Iterable} sequence of values for when given an item emitted by the
+     *            current {@code Single}
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 4.0.0
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <@NonNull U> Streamable<U> flattenAsStreamable(@NonNull Function<? super T, @NonNull ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new StreamableSingleFlattenAs<>(this, mapper));
+    }
+
+    /**
      * Returns an {@link Observable} that is based on applying a specified function to the item emitted by the current {@code Single},
      * where that function returns an {@link ObservableSource}.
      * <p>
@@ -4894,14 +4925,17 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toStreamable.v3.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Streamable} honors the backpressure of the downstream consumer.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toStreamable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @return the new {@code Streamable} instance
      * @since 4.0.0
      */
-    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @NonNull
     public final Streamable<T> toStreamable() {
         return RxJavaPlugins.onAssembly(new StreamableFromSingle<>(this));

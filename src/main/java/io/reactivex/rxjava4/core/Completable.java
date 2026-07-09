@@ -3228,6 +3228,8 @@ public abstract class Completable implements CompletableSource {
      * <p>
      * <img width="640" height="293" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toStreamable.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Streamable} honors the backpressure of the downstream consumer.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toStreamable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3236,6 +3238,7 @@ public abstract class Completable implements CompletableSource {
      * @since 4.0.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
     @NonNull
     public final <@NonNull T> Streamable<T> toStreamable() {

@@ -3896,14 +3896,17 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
      * <p>
      * <img width="640" height="346" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.toStreamable.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Streamable} honors the backpressure of the downstream consumer.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toStreamable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @return the new {@code Streamable} instance
      * @since 4.0.0
      */
-    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @NonNull
     public final Streamable<T> toStreamable() {
         return RxJavaPlugins.onAssembly(new StreamableFromMaybe<>(this));
