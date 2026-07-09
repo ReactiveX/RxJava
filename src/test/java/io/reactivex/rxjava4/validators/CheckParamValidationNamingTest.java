@@ -318,6 +318,7 @@ public class CheckParamValidationNamingTest extends RxJavaTest {
                         if (linek.startsWith("public") || linek.startsWith("private")
                                 || linek.startsWith("protected")
                                 || linek.startsWith("static")
+                                || linek.startsWith("default")
                                 || linek.startsWith(baseClassName)) {
                             break;
                         }

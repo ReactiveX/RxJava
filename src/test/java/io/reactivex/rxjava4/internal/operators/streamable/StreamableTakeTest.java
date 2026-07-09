@@ -19,7 +19,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
-import io.reactivex.rxjava4.core.Flowable;
+
+import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.exceptions.TestException;
+import io.reactivex.rxjava4.processors.DispatchStreamProcessor;
 
 public class StreamableTakeTest extends StreamableBaseTest {
 
@@ -51,5 +54,46 @@ public class StreamableTakeTest extends StreamableBaseTest {
         .assertResult(1, 2, 3, 4);
 
         assertFalse(isCancelled.get(), "Cancel was propagated!");
+    }
+
+    @Test
+    public void error() {
+        Streamable.error(new TestException())
+        .take(5)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void doubleTake() {
+        Streamable.range(1, 5)
+        .take(3)
+        .take(1)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1)
+        ;
+    }
+
+    @Test
+    public void cancelled() throws Throwable {
+        var dsp = new DispatchStreamProcessor<>();
+
+        var ts = dsp.take(3).test();
+
+        ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
+        awaitStreamers(dsp, 1000);
+
+        dsp.next(1).toCompletableFuture().join();
+        dsp.next(2).toCompletableFuture().join();
+        dsp.next(3).toCompletableFuture().join();
+        dsp.next(4).toCompletableFuture().join();
+
+        awaitNoStreamers(dsp, 1000);
+
+        ts
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3);
     }
 }

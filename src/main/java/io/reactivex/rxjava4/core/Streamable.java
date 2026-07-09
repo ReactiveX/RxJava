@@ -15,14 +15,12 @@ package io.reactivex.rxjava4.core;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.*;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.functions.*;
-import io.reactivex.rxjava4.internal.functions.ObjectHelper;
 import io.reactivex.rxjava4.internal.operators.streamable.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -806,23 +804,22 @@ public interface Streamable<@NonNull T> {
     /**
      * Takes at most the given number of items from the upstream and relays it to the downstream,
      * then cancels the rest of the sequence.
-     * @param n the maximum number of items to relay
+     * <p>
+     * Note that cancellation of the upstream happens when the downstream
+     * calls {@link Streamer#next()} because unlike the push-based {@code take}
+     * implementations, the current upstream value has to remain accessible until
+     * the downstream calls {@code next} or {@link Streamer#finish()}.
+     * @param count the maximum number of items to relay
      * @return the new {@code Streamable} instance
-     * @throws IllegalArgumentException if {@code n} is non-positive
+     * @throws IllegalArgumentException if {@code count} is negative
      */
     @CheckReturnValue
     @NonNull
-    default Streamable<T> take(long n) {
-        ObjectHelper.verifyPositive(n, "n");
-        return defer(() -> {
-            var countdown = new AtomicLong(n);
-            return transform((item, emitter, stopper) -> {
-                emitter.emit(item);
-                if (countdown.decrementAndGet() <= 0) {
-                    stopper.dispose();
-                }
-            });
-        });
+    default Streamable<T> take(long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
+        return RxJavaPlugins.onAssembly(new StreamableTake<>(this, count));
     }
 
     /**
