@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-import sys, math, json, subprocess
+import os
+import sys
+import math
+import json
+import subprocess
 from collections import Counter
 from pathlib import Path
 
@@ -10,23 +14,36 @@ def shannon_entropy(text: str) -> float:
     probs = [count / len(text) for count in freq.values()]
     return -sum(p * math.log2(p) for p in probs if p > 0)
 
-# Get changed files safely for pull_request events
+# Determine changed files based on event type
 changed_files = []
+event_name = os.environ.get("EVENT_NAME", "")
+base_sha = os.environ.get("BASE_SHA", "").strip()
+head_sha = os.environ.get("HEAD_SHA", "").strip() or "HEAD"
+
 try:
-    # GitHub provides github.event.pull_request.base.sha and head.sha in the context
-    base_sha = subprocess.check_output(['git', 'rev-parse', 'origin/${{ github.base_ref }}'], text=True).strip()
-    changed_files = subprocess.check_output(
-        ['git', 'diff', '--name-only', base_sha, 'HEAD'], text=True
-    ).splitlines()
+    if event_name == "pull_request_target" and base_sha:
+        # PR case: we checked out the PR head and fetched the base commit
+        changed_files = subprocess.check_output(
+            ["git", "diff", "--name-only", base_sha, head_sha],
+            text=True
+        ).splitlines()
+    else:
+        # push / release: diff against previous commit
+        changed_files = subprocess.check_output(
+            ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
+            text=True
+        ).splitlines()
 except subprocess.CalledProcessError:
-    # Fallback for first-time PRs or edge cases: use the merge-base or just files in HEAD
+    # Fallbacks
     try:
         changed_files = subprocess.check_output(
-            ['git', 'diff', '--name-only', 'HEAD~1', 'HEAD'], text=True
+            ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
+            text=True
         ).splitlines()
     except subprocess.CalledProcessError:
-        # Last resort: all files in the repo
-        changed_files = subprocess.check_output(['git', 'ls-files'], text=True).splitlines()
+        changed_files = subprocess.check_output(
+            ["git", "ls-files"], text=True
+        ).splitlines()
 
 results = []
 total_ent = 0.0
@@ -37,7 +54,7 @@ for f in changed_files:
     if not path.exists() or path.suffix in {'.png', '.jpg', '.gif', '.bin', '.lock', '.exe', '.dll', '.so'}:
         continue
     try:
-        content = path.read_text(encoding='utf-8', errors='ignore')
+        content = path.read_text(encoding="utf-8", errors="ignore")
         ent = shannon_entropy(content)
         results.append(f"{f}: {ent:.3f}")
         total_ent += ent
@@ -53,7 +70,7 @@ verdict = (
     "No source files changed"
 )
 
-with open('/tmp/beauty.json', 'w') as f:
+with open("/tmp/beauty.json", "w") as f:
     json.dump({
         "average_entropy": avg,
         "verdict": verdict,
