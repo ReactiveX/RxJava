@@ -482,7 +482,7 @@ on a virtual thread backed executor service.</div>
 <div class="block">Consume this <code>Streamable</code> via the given flow-reactive-streams subscriber.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#take(long)" class="member-name-link">take</a><wbr>(long&nbsp;n)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#take(long)" class="member-name-link">take</a><wbr>(long&nbsp;count)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Takes at most the given number of items from the upstream and relays it to the downstream,
 then cancels the rest of the sequence.</div>
@@ -1570,16 +1570,21 @@ failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/ja
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">take</span><wbr><span class="parameters">(long&nbsp;n)</span></div>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">take</span><wbr><span class="parameters">(long&nbsp;count)</span></div>
 <div class="block">Takes at most the given number of items from the upstream and relays it to the downstream,
-then cancels the rest of the sequence.</div>
+then cancels the rest of the sequence.
+<p>
+Note that cancellation of the upstream happens when the downstream
+calls <a href="Streamer.html#next()"><code>Streamer.next()</code></a> because unlike the push-based <code>take</code>
+implementations, the current upstream value has to remain accessible until
+the downstream calls <code>next</code> or <a href="Streamer.html#finish()"><code>Streamer.finish()</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>n</code> - the maximum number of items to relay</dd>
+<dd><code>count</code> - the maximum number of items to relay</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Streamable</code> instance</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>n</code> is non-positive</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>count</code> is negative</dd>
 </dl>
 </div>
 </section>
