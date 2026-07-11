@@ -576,9 +576,17 @@ up to a total of <code>timeoutMillis</code>.</div>
 <dd>
 <div class="block">Convenience method to blockingly await the CompletionStage returned by the <a href="io/reactivex/rxjava4/core/Streamer.html#finish()"><code>Streamer.finish()</code></a> method.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/StreamSink.html#awaitFinish(java.lang.Throwable)" class="member-name-link">awaitFinish(Throwable)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamSink.html" title="interface in io.reactivex.rxjava4.core">StreamSink</a></dt>
+<dd>
+<div class="block">Offer the final, terminal event and then awaits its consumption in a blocking fashion.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.html#awaitNext()" class="member-name-link">awaitNext()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
 <dd>
 <div class="block">Convenience method to blockingly await the CompletionStage returned by the <a href="io/reactivex/rxjava4/core/Streamer.html#next()"><code>Streamer.next()</code></a> method.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/StreamSink.html#awaitNext(T)" class="member-name-link">awaitNext(T)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/StreamSink.html" title="interface in io.reactivex.rxjava4.core">StreamSink</a></dt>
+<dd>
+<div class="block">Offers the given item and then awaits its consumption in a blocking fashion.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#awaitOnSubscribe(long,java.util.concurrent.TimeUnit)" class="member-name-link">awaitOnSubscribe(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
 <dd>
@@ -670,7 +678,7 @@ with a specific timeout and rethrows any exception emitted within the timeout wi
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#blockingFirst()" class="member-name-link">blockingFirst()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
-<div class="block">Blocks the current thread until this <code>Streamable</code> produces one item, which is then returned</div>
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces one item, which is then returned.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#blockingFirst(T)" class="member-name-link">blockingFirst(T)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -750,6 +758,11 @@ until the current <code>Observable</code> emits items or terminates.</div>
 <dd>
 <div class="block">Returns the last item emitted by the current <code>Observable</code>, or throws
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/NoSuchElementException.html" title="class in java.util" class="external-link"><code>NoSuchElementException</code></a> if the current <code>Observable</code> emits no items.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#blockingLast()" class="member-name-link">blockingLast()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces all of its items
+and the very last is then returned.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#blockingLast(T)" class="member-name-link">blockingLast(T)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -5310,6 +5323,10 @@ and signals <code>onComplete</code> instead.</div>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#ignoreElements()" class="member-name-link">ignoreElements()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
 <div class="block">Ignores all items emitted by the current <code>Observable</code> and only calls <code>onComplete</code> or <code>onError</code>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#ignoreElements()" class="member-name-link">ignoreElements()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Ignores all elements from the current <a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core"><code>Streamable</code></a> and completes.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/ErrorMode.html#IMMEDIATE" class="member-name-link">IMMEDIATE</a> - Enum constant in enum class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a></dt>
 <dd>

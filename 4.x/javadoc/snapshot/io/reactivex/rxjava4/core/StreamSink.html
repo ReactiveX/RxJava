@@ -66,6 +66,8 @@ initTheme();
 <ol class="toc-list">
 <li><a href="#next(T)" tabindex="0">next(T)</a></li>
 <li><a href="#finish(java.lang.Throwable)" tabindex="0">finish(Throwable)</a></li>
+<li><a href="#awaitNext(T)" tabindex="0">awaitNext(T)</a></li>
+<li><a href="#awaitFinish(java.lang.Throwable)" tabindex="0">awaitFinish(Throwable)</a></li>
 <li><a href="#cancellation()" tabindex="0">cancellation()</a></li>
 <li><a href="#withCancellation(io.reactivex.rxjava4.disposables.DisposableStreamerCancellation)" tabindex="0">withCancellation(DisposableStreamerCancellation)</a></li>
 <li><a href="#create(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function)" tabindex="0">create(Function, Function)</a></li>
@@ -119,6 +121,16 @@ returned <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/j
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#awaitFinish(java.lang.Throwable)" class="member-name-link">awaitFinish</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a>&nbsp;throwable)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Offer the final, terminal event and then awaits its consumption in a blocking fashion.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#awaitNext(T)" class="member-name-link">awaitNext</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in StreamSink">T</a>&nbsp;item)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Offers the given item and then awaits its consumption in a blocking fashion.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#cancellation()" class="member-name-link">cancellation</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
@@ -194,6 +206,40 @@ of this <code>StreamSink</code></div>
 <dt>Returns:</dt>
 <dd>a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> that completes with <code>null</code> if the call succeeded
         or exceptionally on error</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="awaitNext(T)">
+<h3 id="awaitNext(java.lang.Object)">awaitNext</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">awaitNext</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in StreamSink">T</a>&nbsp;item)</span></div>
+<div class="block">Offers the given item and then awaits its consumption in a blocking fashion.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>item</code> - the item being offered</dd>
+<dt>Returns:</dt>
+<dd>true if the item was accepted, false if not</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class in java.util.concurrent" class="external-link">CancellationException</a></code> - if there was a cancellation issued</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionException.html" title="class in java.util.concurrent" class="external-link">CompletionException</a></code> - if the upstream failed</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="awaitFinish(java.lang.Throwable)">
+<h3>awaitFinish</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">awaitFinish</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a>&nbsp;throwable)</span></div>
+<div class="block">Offer the final, terminal event and then awaits its consumption in a blocking fashion.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>throwable</code> - the optional throwable to signal error, <code>null</code> to signal normal completion</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class in java.util.concurrent" class="external-link">CancellationException</a></code> - if there was a cancellation issued</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionException.html" title="class in java.util.concurrent" class="external-link">CompletionException</a></code> - if the upstream failed</dd>
 </dl>
 </div>
 </section>
