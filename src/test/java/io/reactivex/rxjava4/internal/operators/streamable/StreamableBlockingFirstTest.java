@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
 
-public class StreamableBlockingTest extends StreamableBaseTest {
+public class StreamableBlockingFirstTest extends StreamableBaseTest {
 
     @Test
     public void blockingFirstNormal() throws Throwable {

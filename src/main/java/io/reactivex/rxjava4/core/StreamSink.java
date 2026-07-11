@@ -53,6 +53,27 @@ public interface StreamSink<@NonNull T> {
     CompletionStage<Void> finish(@Nullable Throwable throwable);
 
     /**
+     * Offers the given item and then awaits its consumption in a blocking fashion.
+     * @param item the item being offered
+     * @return true if the item was accepted, false if not
+     * @throws CancellationException if there was a cancellation issued
+     * @throws CompletionException if the upstream failed
+     */
+    default boolean awaitNext(T item) {
+        return next(item).toCompletableFuture().join();
+    }
+
+    /**
+     * Offer the final, terminal event and then awaits its consumption in a blocking fashion.
+     * @param throwable the optional throwable to signal error, {@code null} to signal normal completion
+     * @throws CancellationException if there was a cancellation issued
+     * @throws CompletionException if the upstream failed
+     */
+    default void awaitFinish(Throwable throwable) {
+        finish(throwable).toCompletableFuture().join();
+    }
+
+    /**
      * Returns the {@link DisposableContainer} to use to detect if the consumer has indicated no more
      * items it is willing to accept.
      * <p>
