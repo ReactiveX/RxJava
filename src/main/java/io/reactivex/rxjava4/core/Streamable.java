@@ -612,7 +612,7 @@ public interface Streamable<@NonNull T> {
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     /**
-     * Blocks the current thread until this {@code Streamable} produces one item, which is then returned
+     * Blocks the current thread until this {@code Streamable} produces one item, which is then returned.
      * @return the first item of this {@code Streamable}
      * @throws NoSuchElementException if the this {@code Streamable} is empty
      * @throws CancellationException if this {@code Streamable} failed with a checked exception
@@ -622,6 +622,20 @@ public interface Streamable<@NonNull T> {
     @NonNull
     default T blockingFirst() {
         return StreamableBlocking.blockingFirst(this);
+    }
+
+    /**
+     * Blocks the current thread until this {@code Streamable} produces all of its items
+     * and the very last is then returned.
+     * @return the very last item of this {@code Streamable}
+     * @throws NoSuchElementException if the this {@code Streamable} is empty
+     * @throws CancellationException if this {@code Streamable} failed with a checked exception
+     * @throws RuntimeException if this {@code Streamable} failed with an unchecked exception
+     */
+    @CheckReturnValue
+    @NonNull
+    default T blockingLast() {
+        return StreamableBlocking.blockingLast(this);
     }
 
     /**
@@ -728,6 +742,16 @@ public interface Streamable<@NonNull T> {
     @NonNull
     default Streamable<T> hide() {
         return RxJavaPlugins.onAssembly(new StreamableHide<>(this));
+    }
+
+    /**
+     * Ignores all elements from the current {@link Streamable} and completes.
+     * @return the new {@code Streamable} instance
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> ignoreElements() {
+        return RxJavaPlugins.onAssembly(new StreamableIgnoreElements<>(this));
     }
 
     /**

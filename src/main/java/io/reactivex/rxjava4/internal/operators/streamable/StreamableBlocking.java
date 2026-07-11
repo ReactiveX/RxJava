@@ -64,4 +64,41 @@ public record StreamableBlocking() {
         return result;
     }
 
+    /**
+     * Consumes all upstream items and returns the very last or throws
+     * a {@link NoSuchElementException}.
+     * @param <T> the element type
+     * @param source the source sequence
+     * @return the very last value
+     * @throws RuntimeException if the source signals an unchecked exception
+     * @throws CompletionException if the source signals a checked exception
+     */
+    public static <T> T blockingLast(Streamable<T> source) {
+        var streamer = source.stream(new CompositeDisposable());
+        Throwable nextException = null;
+        Throwable finishException = null;
+        T result = null;
+        try {
+            while (streamer.awaitNext()) {
+                result = streamer.current();
+            }
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            nextException = ex;
+        }
+        try {
+            streamer.awaitFinish();
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            finishException = ex;
+        }
+
+        if (nextException != null || finishException != null) {
+            throw ExceptionHelper.wrapOrThrow(ExceptionHelper.unwrapAndCombine(nextException, finishException));
+        }
+        if (result == null) {
+            throw new NoSuchElementException();
+        }
+        return result;
+    }
 }
