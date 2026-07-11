@@ -13,8 +13,9 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
@@ -112,5 +113,14 @@ public class StreamableIgnoreElementsTest extends StreamableBaseTest {
 
         ts.awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
+    }
+
+    @Test
+    public void currentThrows() {
+        assertThrows(NoSuchElementException.class, () -> {
+            var dsp = new DispatchStreamProcessor<>();
+            var streamer = dsp.ignoreElements().stream(new CompositeDisposable());
+            streamer.current();
+        });
     }
 }
