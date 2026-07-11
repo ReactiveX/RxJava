@@ -8,7 +8,7 @@ on:
   schedule:
     - cron: '43 12 * * 4'
   push:
-    branches: [ "3.x" ]
+    branches: [ "4.x" ]
   workflow_dispatch: 
 
 permissions: read-all
