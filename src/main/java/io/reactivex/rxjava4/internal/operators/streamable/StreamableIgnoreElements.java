@@ -78,7 +78,6 @@ implements Streamable<T> {
             } while (decrementAndGet() != 0);
         }
 
-
         @Override
         public void accept(Object t, Throwable u) {
             if (done) {
