@@ -23,7 +23,7 @@ import io.reactivex.rxjava4.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava4.internal.functions.Functions;
 
 /**
- * Represents a disposable resource.
+ * Represents a disposable resource or ongoing task.
  */
 public interface Disposable {
     /**
