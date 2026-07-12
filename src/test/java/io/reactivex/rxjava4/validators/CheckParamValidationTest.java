@@ -598,6 +598,8 @@ public class CheckParamValidationTest extends RxJavaTest {
         addOverride(new ParamOverride(Streamable.class, 0, ParamMode.ANY, "timer", Long.TYPE, TimeUnit.class, ExecutorService.class));
         addOverride(new ParamOverride(Streamable.class, 0, ParamMode.ANY, "timeout", Long.TYPE, TimeUnit.class, Scheduler.class, Streamable.class));
         addOverride(new ParamOverride(Streamable.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Streamable.class, 0, ParamMode.NON_NEGATIVE, "repeat", Long.TYPE));
+        addOverride(new ParamOverride(Streamable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE));
 
         // -----------------------------------------------------------------------------------
 

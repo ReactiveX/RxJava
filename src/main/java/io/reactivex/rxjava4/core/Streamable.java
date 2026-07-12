@@ -866,6 +866,116 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Runs the upstream at most the given {@code count} times while it succeeds.
+     * <p>
+     * So a {@code repeat(1)} will try to consume the upstream once.
+     * @param count the number of retries if the upstream fails
+     * @return the new {@code Streamable} instance
+     * @throws IllegalArgumentException if {@code count} is negative
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> repeat(long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
+        if (count == 0) {
+            return empty();
+        }
+        return RxJavaPlugins.onAssembly(new StreamableRepeat<>(this,
+                v -> v + 1 < count ? Streamer.NEXT_TRUE : Streamer.NEXT_FALSE));
+    }
+
+    /**
+     * Repeats the upstream when the given function signals {@code true} via the
+     * {@link CompletionStage} for the count how many times the upstream was streamed.
+     * <p>
+     * The first repeat run will present 0 for the function.
+     * @param whenFunction the function to call with the run index,
+     *                     it should signal {@code true} to repeat the source, {@code false}
+     *                     to complete without error or complete exceptionally to become the
+     *                     failure result of the sequence.
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code whenFunction} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> repeatWhen(Function<? super Long, ? extends CompletionStage<Boolean>> whenFunction) {
+        Objects.requireNonNull(whenFunction, "whenFunction is null");
+        return RxJavaPlugins.onAssembly(new StreamableRepeat<>(this, whenFunction));
+    }
+
+    /**
+     * Retries at most the given {@code count} times the upstream if it fails with any error.
+     * <p>
+     * So a {@code retry(1)} will try to consume the upstream twice.
+     * @param count the number of retries if the upstream fails
+     * @return the new {@code Streamable} instance
+     * @throws IllegalArgumentException if {@code count} is negative
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> retry(long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
+        return RxJavaPlugins.onAssembly(new StreamableRetry<>(this,
+                (v, e) -> v < count ? Streamer.NEXT_TRUE : CompletableFuture.failedStage(e)));
+    }
+
+    /**
+     * Retries the upstream if the given predicate returns {@code true} for the
+     * failure {@link Throwable} of the last streaming of the upstream.
+     * @param predicate the p
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> retry(Predicate<? super Throwable> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return RxJavaPlugins.onAssembly(new StreamableRetry<>(this,
+                (_, e) -> predicate.test(e) ? Streamer.NEXT_TRUE : CompletableFuture.failedStage(e)));
+    }
+
+    /**
+     * Retries the upstream if the given predicate returns {@code true} for the
+     * failure count and {@link Throwable} of the last streaming of the upstream.
+     * <p>
+     * The first failure run will present 0 for the predicate.
+     * @param predicate the function to call with the failure index and {@code Throwable}
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> retry(BiPredicate<? super Long, ? super Throwable> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return RxJavaPlugins.onAssembly(new StreamableRetry<>(this,
+                (v, e) -> predicate.test(v, e) ? Streamer.NEXT_TRUE : CompletableFuture.failedStage(e)));
+    }
+
+    /**
+     * Retries the upstream when the given predicate signals {@code true} via the
+     * {@link CompletionStage} for the failure count and {@link Throwable} of the last
+     * streaming of the upstream.
+     * <p>
+     * The first failure run will present 0 for the predicate.
+     * @param whenFunction the function to call with the failure index and {@code Throwable},
+     *                     it should signal {@code true} to retry the source, {@code false}
+     *                     to complete without error or complete exceptionally to become the
+     *                     failure result of the sequence.
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code whenFunction} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> retryWhen(BiFunction<? super Long, ? super Throwable, ? extends CompletionStage<Boolean>> whenFunction) {
+        Objects.requireNonNull(whenFunction, "whenFunction is null");
+        return RxJavaPlugins.onAssembly(new StreamableRetry<>(this, whenFunction));
+    }
+
+    /**
      * Skips the first {@code count} items and relays the rest to the downstream.
      * @param count the number of items to skip
      * @return the new {@Streamable} instance
