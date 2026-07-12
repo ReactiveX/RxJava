@@ -2932,7 +2932,7 @@ downstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in
 </dd>
 <dt><a href="io/reactivex/rxjava4/disposables/Disposable.html" class="type-name-link" title="interface in io.reactivex.rxjava4.disposables">Disposable</a> - Interface in <a href="io/reactivex/rxjava4/disposables/package-summary.html">io.reactivex.rxjava4.disposables</a></dt>
 <dd>
-<div class="block">Represents a disposable resource.</div>
+<div class="block">Represents a disposable resource or ongoing task.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/observers/DisposableCompletableObserver.html" class="type-name-link" title="class in io.reactivex.rxjava4.observers">DisposableCompletableObserver</a> - Class in <a href="io/reactivex/rxjava4/observers/package-summary.html">io.reactivex.rxjava4.observers</a></dt>
 <dd>
@@ -7736,6 +7736,10 @@ container.</div>
 <dd>
 <div class="block">Re-subscribes to the current <code>Single</code> at most the given number of times and emits each success value as a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> sequence.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#repeat(long)" class="member-name-link">repeat(long)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Runs the upstream at most the given <code>count</code> times while it succeeds.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#repeatUntil(io.reactivex.rxjava4.functions.BooleanSupplier)" class="member-name-link">repeatUntil(BooleanSupplier)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a <code>Completable</code> that repeatedly subscribes to this <code>Completable</code> so long as the given
@@ -7786,6 +7790,11 @@ value signaled through the <a href="io/reactivex/rxjava4/core/Flowable.html" tit
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the same values as the current <code>Observable</code> with the exception of an
 <code>onComplete</code>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#repeatWhen(io.reactivex.rxjava4.functions.Function)" class="member-name-link">repeatWhen(Function)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Repeats the upstream when the given function signals <code>true</code> via the
+<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> for the count how many times the upstream was streamed.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/disposables/SerialDisposable.html#replace(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">replace(Disposable)</a> - Method in class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/SerialDisposable.html" title="class in io.reactivex.rxjava4.disposables">SerialDisposable</a></dt>
 <dd>
@@ -8127,6 +8136,10 @@ up to a specified number of retries.</div>
 <div class="block">Repeatedly re-subscribe at most the specified times to the current <code>Single</code>
 if it fails with an <code>onError</code>.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#retry(long)" class="member-name-link">retry(long)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Retries at most the given <code>count</code> times the upstream if it fails with any error.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#retry(long,io.reactivex.rxjava4.functions.Predicate)" class="member-name-link">retry(long, Predicate)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a <code>Completable</code> that when this <code>Completable</code> emits an error, retries at most times
@@ -8196,6 +8209,16 @@ with an <code>onError</code>.</div>
 <dd>
 <div class="block">Retries the current <code>Flowable</code> if the predicate returns <code>true</code>.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#retry(io.reactivex.rxjava4.functions.BiPredicate)" class="member-name-link">retry(BiPredicate)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Retries the upstream if the given predicate returns <code>true</code> for the
+failure count and <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the last streaming of the upstream.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#retry(io.reactivex.rxjava4.functions.Predicate)" class="member-name-link">retry(Predicate)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Retries the upstream if the given predicate returns <code>true</code> for the
+failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the last streaming of the upstream.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFailureHandling.html#RETRY" class="member-name-link">RETRY</a> - Enum constant in enum class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFailureHandling.html" title="enum class in io.reactivex.rxjava4.parallel">ParallelFailureHandling</a></dt>
 <dd>
 <div class="block">Retry the current value.</div>
@@ -8245,6 +8268,12 @@ function signals a value.</div>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the same values as the current <code>Observable</code> with the exception of an
 <code>onError</code>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#retryWhen(io.reactivex.rxjava4.functions.BiFunction)" class="member-name-link">retryWhen(BiFunction)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Retries the upstream when the given predicate signals <code>true</code> via the
+<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> for the failure count and <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the last
+streaming of the upstream.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/functions/Action.html#run()" class="member-name-link">run()</a> - Method in interface io.reactivex.rxjava4.functions.<a href="io/reactivex/rxjava4/functions/Action.html" title="interface in io.reactivex.rxjava4.functions">Action</a></dt>
 <dd>

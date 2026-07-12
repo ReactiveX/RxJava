@@ -109,6 +109,12 @@ initTheme();
 <li><a href="#map(io.reactivex.rxjava4.functions.Function)" tabindex="0">map(Function)</a></li>
 <li><a href="#mapOptional(io.reactivex.rxjava4.functions.Function)" tabindex="0">mapOptional(Function)</a></li>
 <li><a href="#onErrorResumeNext(io.reactivex.rxjava4.functions.Function)" tabindex="0">onErrorResumeNext(Function)</a></li>
+<li><a href="#repeat(long)" tabindex="0">repeat(long)</a></li>
+<li><a href="#repeatWhen(io.reactivex.rxjava4.functions.Function)" tabindex="0">repeatWhen(Function)</a></li>
+<li><a href="#retry(long)" tabindex="0">retry(long)</a></li>
+<li><a href="#retry(io.reactivex.rxjava4.functions.Predicate)" tabindex="0">retry(Predicate)</a></li>
+<li><a href="#retry(io.reactivex.rxjava4.functions.BiPredicate)" tabindex="0">retry(BiPredicate)</a></li>
+<li><a href="#retryWhen(io.reactivex.rxjava4.functions.BiFunction)" tabindex="0">retryWhen(BiFunction)</a></li>
 <li><a href="#skip(long)" tabindex="0">skip(long)</a></li>
 <li><a href="#take(long)" tabindex="0">take(long)</a></li>
 <li><a href="#takeUntil(io.reactivex.rxjava4.core.Streamable)" tabindex="0">takeUntil(Streamable)</a></li>
@@ -485,6 +491,41 @@ failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/ja
  long&nbsp;count)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Emits elements from start up to start + count exclusive.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#repeat(long)" class="member-name-link">repeat</a><wbr>(long&nbsp;count)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Runs the upstream at most the given <code>count</code> times while it succeeds.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#repeatWhen(io.reactivex.rxjava4.functions.Function)" class="member-name-link">repeatWhen</a><wbr>(<a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;&gt;&nbsp;whenFunction)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Repeats the upstream when the given function signals <code>true</code> via the
+<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> for the count how many times the upstream was streamed.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#retry(long)" class="member-name-link">retry</a><wbr>(long&nbsp;count)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Retries at most the given <code>count</code> times the upstream if it fails with any error.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#retry(io.reactivex.rxjava4.functions.BiPredicate)" class="member-name-link">retry</a><wbr>(<a href="../functions/BiPredicate.html" title="interface in io.reactivex.rxjava4.functions">BiPredicate</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>, ? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a>&gt;&nbsp;predicate)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Retries the upstream if the given predicate returns <code>true</code> for the
+failure count and <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the last streaming of the upstream.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#retry(io.reactivex.rxjava4.functions.Predicate)" class="member-name-link">retry</a><wbr>(<a href="../functions/Predicate.html" title="interface in io.reactivex.rxjava4.functions">Predicate</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a>&gt;&nbsp;predicate)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Retries the upstream if the given predicate returns <code>true</code> for the
+failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the last streaming of the upstream.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#retryWhen(io.reactivex.rxjava4.functions.BiFunction)" class="member-name-link">retryWhen</a><wbr>(<a href="../functions/BiFunction.html" title="interface in io.reactivex.rxjava4.functions">BiFunction</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>, ? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;&gt;&nbsp;whenFunction)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Retries the upstream when the given predicate signals <code>true</code> via the
+<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> for the failure count and <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the last
+streaming of the upstream.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#skip(long)" class="member-name-link">skip</a><wbr>(long&nbsp;count)</code></div>
@@ -1694,6 +1735,141 @@ failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/ja
 <dd>the new <code>Streamable</code> instance</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>fallbackMapper</code> is <code>null</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="repeat(long)">
+<h3>repeat</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">repeat</span><wbr><span class="parameters">(long&nbsp;count)</span></div>
+<div class="block">Runs the upstream at most the given <code>count</code> times while it succeeds.
+<p>
+So a <code>repeat(1)</code> will try to consume the upstream once.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>count</code> - the number of retries if the upstream fails</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Streamable</code> instance</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>count</code> is negative</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="repeatWhen(io.reactivex.rxjava4.functions.Function)">
+<h3>repeatWhen</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">repeatWhen</span><wbr><span class="parameters">(<a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;&gt;&nbsp;whenFunction)</span></div>
+<div class="block">Repeats the upstream when the given function signals <code>true</code> via the
+<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> for the count how many times the upstream was streamed.
+<p>
+The first repeat run will present 0 for the function.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>whenFunction</code> - the function to call with the run index,
+                    it should signal <code>true</code> to repeat the source, <code>false</code>
+                    to complete without error or complete exceptionally to become the
+                    failure result of the sequence.</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Streamable</code> instance</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>whenFunction</code> is <code>null</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="retry(long)">
+<h3>retry</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">retry</span><wbr><span class="parameters">(long&nbsp;count)</span></div>
+<div class="block">Retries at most the given <code>count</code> times the upstream if it fails with any error.
+<p>
+So a <code>retry(1)</code> will try to consume the upstream twice.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>count</code> - the number of retries if the upstream fails</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Streamable</code> instance</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>count</code> is negative</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="retry(io.reactivex.rxjava4.functions.Predicate)">
+<h3>retry</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">retry</span><wbr><span class="parameters">(<a href="../functions/Predicate.html" title="interface in io.reactivex.rxjava4.functions">Predicate</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a>&gt;&nbsp;predicate)</span></div>
+<div class="block">Retries the upstream if the given predicate returns <code>true</code> for the
+failure <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the last streaming of the upstream.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>predicate</code> - the p</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Streamable</code> instance</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>predicate</code> is <code>null</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="retry(io.reactivex.rxjava4.functions.BiPredicate)">
+<h3>retry</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">retry</span><wbr><span class="parameters">(<a href="../functions/BiPredicate.html" title="interface in io.reactivex.rxjava4.functions">BiPredicate</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>, ? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a>&gt;&nbsp;predicate)</span></div>
+<div class="block">Retries the upstream if the given predicate returns <code>true</code> for the
+failure count and <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the last streaming of the upstream.
+<p>
+The first failure run will present 0 for the predicate.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>predicate</code> - the function to call with the failure index and <code>Throwable</code></dd>
+<dt>Returns:</dt>
+<dd>the new <code>Streamable</code> instance</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>predicate</code> is <code>null</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="retryWhen(io.reactivex.rxjava4.functions.BiFunction)">
+<h3>retryWhen</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">retryWhen</span><wbr><span class="parameters">(<a href="../functions/BiFunction.html" title="interface in io.reactivex.rxjava4.functions">BiFunction</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>, ? super <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;&gt;&nbsp;whenFunction)</span></div>
+<div class="block">Retries the upstream when the given predicate signals <code>true</code> via the
+<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> for the failure count and <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> of the last
+streaming of the upstream.
+<p>
+The first failure run will present 0 for the predicate.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>whenFunction</code> - the function to call with the failure index and <code>Throwable</code>,
+                    it should signal <code>true</code> to retry the source, <code>false</code>
+                    to complete without error or complete exceptionally to become the
+                    failure result of the sequence.</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Streamable</code> instance</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>whenFunction</code> is <code>null</code></dd>
 </dl>
 </div>
 </section>
