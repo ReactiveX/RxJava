@@ -20,8 +20,10 @@ import java.util.stream.Collector;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.StreamerCancellation;
+import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
+import io.reactivex.rxjava4.operators.IndexableSource;
 
 public record StreamableCollector<T, A, R>(
         Streamable<T> source,
@@ -34,7 +36,8 @@ public record StreamableCollector<T, A, R>(
                 source.stream(cancellation),
                 collector.supplier().get(),
                 collector.accumulator(),
-                collector.finisher());
+                collector.finisher(),
+                cancellation);
     }
 
     static final class CollectorStreamable<T, A, R>
@@ -54,13 +57,18 @@ public record StreamableCollector<T, A, R>(
 
         final CompletableFuture<Void> finishReady;
 
+        final StreamerCancellation cancellation;
+
         R current;
 
-        int stage;
+        boolean once;
 
         volatile boolean done;
 
-        CollectorStreamable(Streamer<T> upstream, A storage, BiConsumer<A, T> accumulator, Function<A, R> finisher) {
+        CollectorStreamable(Streamer<T> upstream, A storage,
+                BiConsumer<A, T> accumulator,
+                Function<A, R> finisher,
+                StreamerCancellation cancellation) {
             this.upstream = upstream;
             this.wip = new AtomicInteger();
             this.storage = storage;
@@ -68,11 +76,36 @@ public record StreamableCollector<T, A, R>(
             this.finisher = finisher;
             this.nextReady = new CompletableFuture<>();
             this.finishReady = new CompletableFuture<>();
+            this.cancellation = cancellation;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public @NonNull CompletionStage<Boolean> next() {
-            if (stage++ == 0) {
+            if (!once) {
+                once = true;
+
+                if (upstream instanceof IndexableSource<?> isrc) {
+                    long max = isrc.limit();
+                    for (long index = 0; index < max; index++) {
+                        if (cancellation.isDisposed()) {
+                            return CompletableFuture.failedFuture(new CancellationException());
+                        }
+
+                        T value;
+
+                        try {
+                            value = (T)isrc.elementAt(index);
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            return CompletableFuture.failedFuture(ex);
+                        }
+                        accumulator.accept(storage, value);
+                    }
+                    current = finisher.apply(storage);
+                    return NEXT_TRUE;
+                }
+
                 drain();
                 return nextReady;
             }
@@ -96,14 +129,28 @@ public record StreamableCollector<T, A, R>(
                 return;
             }
 
+            int wipMax = 1;
+            int wipIndex = 0;
             do {
                 if (done) {
-                    upstream.finish().whenComplete(this);
+                    StreamableHelper.whenComplete(upstream.finish(), this);
                     break;
                 } else {
-                    upstream.next().whenComplete(this);
+                    StreamableHelper.whenComplete(upstream.next(), this);
                 }
-            } while (wip.decrementAndGet() != 0);
+                if (++wipIndex == wipMax) {
+                    var newWip = wip.get();
+                    if (newWip != wipMax) {
+                        wipMax = newWip;
+                    } else {
+                        wipMax = wip.addAndGet(-wipMax);
+                        if (wipMax == 0) {
+                            break;
+                        }
+                        wipIndex = 0;
+                    }
+                }
+            } while (true);
         }
 
         @Override

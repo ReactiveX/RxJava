@@ -401,4 +401,23 @@ public enum StreamableHelper {
             });
             return cf;
         }, v -> v, (_, v) -> v);
-    }}
+    }
+
+    /**
+     * Shortcuts the stage to call the consumer directly if it is detected as completed.
+     * @param <T> the signal type of the {@link CompletionStage}
+     * @param stage the stage to handle
+     * @param consumer the consumer called with the stage's value or its exception
+     */
+    public static <T> void whenComplete(CompletionStage<T> stage, java.util.function.BiConsumer<? super T, ? super Throwable> consumer) {
+        if (stage instanceof CompletableFuture<T> cf && cf.isDone()) {
+            if (cf.isCompletedExceptionally()) {
+                consumer.accept(null, cf.exceptionNow());
+            } else {
+                consumer.accept(cf.getNow(null), null);
+            }
+        } else {
+            stage.whenComplete(consumer);
+        }
+    }
+}

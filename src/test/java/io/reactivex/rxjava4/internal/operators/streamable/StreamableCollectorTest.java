@@ -13,19 +13,32 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.disposables.CompositeDisposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class StreamableCollectorTest extends StreamableBaseTest {
 
     @Test
     public void normal() throws Throwable {
+        Streamable.range(1, 5)
+        .hide()
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(1, 2, 3, 4, 5));
+    }
+
+    @Test
+    public void normalOptimized() throws Throwable {
         Streamable.range(1, 5)
         .collect(Collectors.toList())
         .test()
@@ -58,5 +71,18 @@ public class StreamableCollectorTest extends StreamableBaseTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, List.of());
+    }
+
+    @Test
+    public void indexerDisposed() throws Throwable {
+        assertThrows(CancellationException.class, () -> {
+            var cd = new CompositeDisposable();
+            cd.dispose();
+
+            Streamable.range(1, 5)
+            .collect(Collectors.maxBy(Comparator.naturalOrder()))
+            .stream(cd)
+            .awaitNext();
+        });
     }
 }
