@@ -235,48 +235,59 @@ support for requesting via <code>#request(long)</code>, cancelling via
 <code>#cancel()</code> (both synchronously) and calls <code>#onStart()</code>
 when the subscription happens.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/DeferredEnumerableSource.html" title="interface in io.reactivex.rxjava4.operators">DeferredEnumerableSource&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Represents an unknown length, deferred iterable source which can be moved forward synchronously
+and obtain the current item via a simple call once it reports said iterable elements are ready
+to be consumed.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html" title="class in io.reactivex.rxjava4.processors">DispatchStreamProcessor&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Signals the various <a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#next(T)"><code>DispatchStreamProcessor.next(Object)</code></a> and <a href="io/reactivex/rxjava4/processors/DispatchStreamProcessor.html#finish(java.lang.Throwable)"><code>DispatchStreamProcessor.finish(Throwable)</code></a> events to one or more
 downstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a>s.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Represents a disposable resource or ongoing task.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DisposableCompletableObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableCompletableObserver</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DisposableCompletableObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableCompletableObserver</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An abstract <a href="io/reactivex/rxjava4/core/CompletableObserver.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableObserver</code></a> that allows asynchronous cancellation by implementing Disposable.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Common interface to add and remove <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>s from a container.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DisposableMaybeObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableMaybeObserver&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DisposableMaybeObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableMaybeObserver&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An abstract <a href="io/reactivex/rxjava4/core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeObserver</code></a> that allows asynchronous cancellation by implementing <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DisposableObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableObserver&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DisposableObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableObserver&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An abstract <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> that allows asynchronous cancellation by implementing <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DisposableSingleObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableSingleObserver&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DisposableSingleObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableSingleObserver&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An abstract <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> that allows asynchronous cancellation by implementing <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Represents the full, disposable cancellation interface for <code>Streamer</code>
 operations.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/DisposableSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">DisposableSubscriber&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/DisposableSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">DisposableSubscriber&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An abstract Subscriber that allows asynchronous, external cancellation by implementing <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Emitter.html" title="interface in io.reactivex.rxjava4.core">Emitter&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Emitter.html" title="interface in io.reactivex.rxjava4.core">Emitter&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Base interface for emitting signals in a push-fashion in various generator-like source
 operators (create, generate).</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/operators/EnumerableSource.html" title="interface in io.reactivex.rxjava4.operators">EnumerableSource&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Represents an unknown length iterable source which can be moved forward synchronously and obtain the current
+item via a simple call.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab3"><a href="io/reactivex/rxjava4/core/ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab3">

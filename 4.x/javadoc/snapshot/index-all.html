@@ -554,7 +554,7 @@ receives an <code>onError</code> or <code>onComplete</code> events, whichever ha
 <dt><a href="io/reactivex/rxjava4/core/Streamer.html#awaitBoolean(java.util.concurrent.CompletionStage)" class="member-name-link">awaitBoolean(CompletionStage)</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
 <dd>
 <div class="block">Convenience method to await the completion of a boolean stage, optimized
-for handling  and  directly.</div>
+for handling <a href="io/reactivex/rxjava4/core/Streamer.html#NEXT_TRUE"><code>Streamer.NEXT_TRUE</code></a> and <a href="io/reactivex/rxjava4/core/Streamer.html#NEXT_FALSE"><code>Streamer.NEXT_FALSE</code></a> directly.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#awaitCount(int)" class="member-name-link">awaitCount(int)</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
 <dd>
@@ -595,7 +595,7 @@ up to a total of <code>timeoutMillis</code>.</div>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.html#awaitVoid(java.util.concurrent.CompletionStage)" class="member-name-link">awaitVoid(CompletionStage)</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a></dt>
 <dd>
 <div class="block">Convenience method to await the completion of a stage, optimized
-for handling  directly.</div>
+for handling <a href="io/reactivex/rxjava4/core/Streamer.html#FINISHED"><code>Streamer.FINISHED</code></a> directly.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:B">B</h2>
@@ -2509,6 +2509,10 @@ except using <code>threadFactory</code> for thread creation.</div>
 <dd>
 <div class="block">Returns the currently available item synchronously if the previous call to [#next()] yielded `true`.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/operators/EnumerableSource.html#current()" class="member-name-link">current()</a> - Method in interface io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/EnumerableSource.html" title="interface in io.reactivex.rxjava4.operators">EnumerableSource</a></dt>
+<dd>
+<div class="block">Returns the current item if <a href="io/reactivex/rxjava4/operators/EnumerableSource.html#nextSync()"><code>EnumerableSource.nextSync()</code></a> returned <code>true</code> the previous call.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html#CUSTOM" class="member-name-link">CUSTOM</a> - Static variable in annotation interface io.reactivex.rxjava4.annotations.<a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">SchedulerSupport</a></dt>
 <dd>
 <div class="block">A special value indicating the operator/class requires a scheduler to be manually specified.</div>
@@ -2654,6 +2658,12 @@ that subscribes.</div>
 <dd>
 <div class="block">Defers the creation of the actual <code>Streamable</code>, allowing a per streamer
 state to be created along with it.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/operators/DeferredEnumerableSource.html" class="type-name-link" title="interface in io.reactivex.rxjava4.operators">DeferredEnumerableSource&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/operators/package-summary.html">io.reactivex.rxjava4.operators</a></dt>
+<dd>
+<div class="block">Represents an unknown length, deferred iterable source which can be moved forward synchronously
+and obtain the current item via a simple call once it reports said iterable elements are ready
+to be consumed.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#delay(long,java.util.concurrent.TimeUnit)" class="member-name-link">delay(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -3509,6 +3519,17 @@ immediately.</div>
 <dt><a href="io/reactivex/rxjava4/core/ErrorMode.html#END" class="member-name-link">END</a> - Enum constant in enum class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/ErrorMode.html" title="enum class in io.reactivex.rxjava4.core">ErrorMode</a></dt>
 <dd>
 <div class="block">Report the error after all sources terminated.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/operators/DeferredEnumerableSource.html#enumerableReady()" class="member-name-link">enumerableReady()</a> - Method in interface io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/DeferredEnumerableSource.html" title="interface in io.reactivex.rxjava4.operators">DeferredEnumerableSource</a></dt>
+<dd>
+<div class="block">Returns true if the source is ready to be consumed via its
+<a href="io/reactivex/rxjava4/operators/EnumerableSource.html#nextSync()"><code>EnumerableSource.nextSync()</code></a> and <a href="io/reactivex/rxjava4/operators/EnumerableSource.html#current()"><code>EnumerableSource.current()</code></a>
+methods.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/operators/EnumerableSource.html" class="type-name-link" title="interface in io.reactivex.rxjava4.operators">EnumerableSource&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/operators/package-summary.html">io.reactivex.rxjava4.operators</a></dt>
+<dd>
+<div class="block">Represents an unknown length iterable source which can be moved forward synchronously and obtain the current
+item via a simple call.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/OnBackpressureBufferConfig.html" title="class in io.reactivex.rxjava4.core.config">OnBackpressureBufferConfig</a></dt>
 <dd>
@@ -6403,6 +6424,11 @@ no more values will be available, synchronously.</div>
 <dd>
 <div class="block">Use this constant in <a href="io/reactivex/rxjava4/core/Streamer.html#next()"><code>Streamer.next()</code></a> to indicate
 the next value is available, synchronously.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/operators/EnumerableSource.html#nextSync()" class="member-name-link">nextSync()</a> - Method in interface io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/EnumerableSource.html" title="interface in io.reactivex.rxjava4.operators">EnumerableSource</a></dt>
+<dd>
+<div class="block">Synchronously obtains the next item or returns <code>false</code> if no
+more items.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/annotations/BackpressureKind.html#NONE" class="member-name-link">NONE</a> - Enum constant in enum class io.reactivex.rxjava4.annotations.<a href="io/reactivex/rxjava4/annotations/BackpressureKind.html" title="enum class in io.reactivex.rxjava4.annotations">BackpressureKind</a></dt>
 <dd>

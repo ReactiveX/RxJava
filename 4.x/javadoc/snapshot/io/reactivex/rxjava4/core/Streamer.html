@@ -156,7 +156,7 @@ the next value is available, synchronously.</div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#awaitBoolean(java.util.concurrent.CompletionStage)" class="member-name-link">awaitBoolean</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;&nbsp;stage)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Convenience method to await the completion of a boolean stage, optimized
-for handling  and  directly.</div>
+for handling <a href="#NEXT_TRUE"><code>NEXT_TRUE</code></a> and <a href="#NEXT_FALSE"><code>NEXT_FALSE</code></a> directly.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#awaitFinish()" class="member-name-link">awaitFinish</a>()</code></div>
@@ -172,7 +172,7 @@ for handling  and  directly.</div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#awaitVoid(java.util.concurrent.CompletionStage)" class="member-name-link">awaitVoid</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;&nbsp;stage)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Convenience method to await the completion of a stage, optimized
-for handling  directly.</div>
+for handling <a href="#FINISHED"><code>FINISHED</code></a> directly.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#type-param-T" title="type parameter in Streamer">T</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#current()" class="member-name-link">current</a>()</code></div>
@@ -325,7 +325,7 @@ to the main crash `Throwable` from `next`.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">awaitBoolean</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;&nbsp;stage)</span></div>
 <div class="block">Convenience method to await the completion of a boolean stage, optimized
-for handling  and  directly.</div>
+for handling <a href="#NEXT_TRUE"><code>NEXT_TRUE</code></a> and <a href="#NEXT_FALSE"><code>NEXT_FALSE</code></a> directly.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>stage</code> - the stage to await</dd>
@@ -341,7 +341,7 @@ for handling  and  directly.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">awaitVoid</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;&nbsp;stage)</span></div>
 <div class="block">Convenience method to await the completion of a stage, optimized
-for handling  directly.</div>
+for handling <a href="#FINISHED"><code>FINISHED</code></a> directly.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>stage</code> - the stage to await</dd>
