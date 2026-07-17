@@ -14,13 +14,16 @@
 package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.io.Serial;
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Future.State;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.exceptions.Exceptions;
 
 public record StreamableConcatIterable<T>(
         Iterable<? extends Streamable<? extends T>> sources,
@@ -32,7 +35,8 @@ public record StreamableConcatIterable<T>(
         return new ConcatIteratorStreamer<>(sources.iterator(), cancellation);
     }
 
-    static final class ConcatIteratorStreamer<T> extends AtomicInteger implements Streamer<T> {
+    static final class ConcatIteratorStreamer<T> extends AtomicInteger
+    implements Streamer<T>, BiConsumer<Boolean, Throwable> {
 
         @Serial
         private static final long serialVersionUID = -9136569444189652718L;
@@ -55,9 +59,51 @@ public record StreamableConcatIterable<T>(
 
         @Override
         public @NonNull CompletionStage<Boolean> next() {
-            nextReady = new CompletableFuture<Boolean>();
-            drain();
-            return nextReady;
+            for (;;) {
+                if (upstream == null) {
+                    if (iterator.hasNext()) {
+                        try {
+                            var source = Objects.requireNonNull(iterator.next(), "The iterable returned a null Streamable");
+                            currentCancellation = cancellation.derive();
+                            upstream = source.stream(currentCancellation);
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            return CompletableFuture.failedFuture(ex);
+                        }
+                    } else {
+                        return NEXT_FALSE;
+                    }
+                }
+                var stage = upstream.next();
+                if (stage instanceof CompletableFuture<Boolean> cf) {
+                    if (cf.state() == State.SUCCESS) {
+                        if (cf.getNow(false)) {
+                            return NEXT_TRUE;
+                        } else {
+                            var finishStage = upstream.finish();
+                            if (finishStage instanceof CompletableFuture<Void> cff && cff.isDone()) {
+                                upstream = null;
+                                cancellation.delete(currentCancellation);
+                                currentCancellation = null;
+                                if (cff.isCompletedExceptionally()) {
+                                    return CompletableFuture.failedFuture(cff.exceptionNow());
+                                }
+                                // will get the next source synchronously
+                            } else {
+                                nextReady = new CompletableFuture<Boolean>();
+                                finishStage.whenComplete(this::whenFinishComplete);
+                                return nextReady;
+                            }
+                        }
+                    } else {
+                        return stage;
+                    }
+                } else {
+                    nextReady = new CompletableFuture<Boolean>();
+                    stage.whenComplete(this);
+                    return nextReady;
+                }
+            }
         }
 
         @Override
@@ -93,32 +139,37 @@ public record StreamableConcatIterable<T>(
                             nextReady.completeExceptionally(new NullPointerException("The iterator returned a null Streamable"));
                         } else {
                             upstream = nextStreamable.stream(currentCancellation);
-                            drain();
                         }
                     } else {
                         nextReady.complete(false);
                     }
-                } else {
-                    upstream.next().whenComplete((v, e) -> {
-                       if (e != null) {
-                           nextReady.completeExceptionally(e);
-                       } else
-                       if (v)  {
-                           nextReady.complete(true);
-                       } else {
-                           cancellation.delete(currentCancellation);
-                           upstream.finish().whenComplete((_, u) -> {
-                               if (u != null) {
-                                   nextReady.completeExceptionally(u);
-                               } else {
-                                   upstream = null;
-                                   drain();
-                               }
-                           });
-                       }
-                    });
+                }
+                if (upstream != null) {
+                    StreamableHelper.whenComplete(upstream.next(), this);
                 }
             } while (decrementAndGet() != 0);
+        }
+
+        @Override
+        public void accept(Boolean v, Throwable e) {
+            if (e != null) {
+                nextReady.completeExceptionally(e);
+            } else
+            if (v)  {
+                nextReady.complete(true);
+            } else {
+                cancellation.delete(currentCancellation);
+                StreamableHelper.whenComplete(upstream.finish(), this::whenFinishComplete);
+            }
+        }
+
+        void whenFinishComplete(Void t, Throwable u) {
+            if (u != null) {
+                nextReady.completeExceptionally(u);
+            } else {
+                upstream = null;
+                drain();
+            }
         }
     }
 }

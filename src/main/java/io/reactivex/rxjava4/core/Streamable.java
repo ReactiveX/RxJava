@@ -978,7 +978,7 @@ public interface Streamable<@NonNull T> {
     /**
      * Skips the first {@code count} items and relays the rest to the downstream.
      * @param count the number of items to skip
-     * @return the new {@Streamable} instance
+     * @return the new {@code Streamable} instance
      * @throws IllegalArgumentException if {@code count} is negative
      */
     @CheckReturnValue

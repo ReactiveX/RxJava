@@ -25,6 +25,7 @@ import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.disposables.*;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamSingleSource;
+import io.reactivex.rxjava4.operators.DeferredEnumerableSource;
 
 public record StreamableSingleFlattenAs<T, U>(
         SingleSource<T> source,
@@ -41,7 +42,8 @@ public record StreamableSingleFlattenAs<T, U>(
 
     static final class FlattenAsSingleObserver<T, U>
     extends AtomicInteger
-    implements SingleObserver<T>, Streamer<U>, DisposableOnly, java.util.function.Function<Boolean, Boolean> {
+    implements SingleObserver<T>, Streamer<U>, DisposableOnly,
+            DeferredEnumerableSource<U> {
 
         @Serial
         private static final long serialVersionUID = 796267562672678347L;
@@ -54,11 +56,11 @@ public record StreamableSingleFlattenAs<T, U>(
 
         final CompletableFuture<Boolean> iteratorReady;
 
-        volatile Iterator<? extends U> iteratorHandover;
-
         U current;
 
-        Iterator<? extends U> currentIterator;
+        volatile Iterator<? extends U> currentIterator;
+
+        boolean deferredOnce;
 
         FlattenAsSingleObserver(
                 Function<? super T, @NonNull ? extends Iterable<? extends U>> mapper,
@@ -73,26 +75,17 @@ public record StreamableSingleFlattenAs<T, U>(
         public @NonNull CompletionStage<Boolean> next() {
             var it = currentIterator;
             if (it == null) {
-                return iteratorReady.thenApply(this);
+                return iteratorReady;
+            }
+            if (!deferredOnce) {
+                deferredOnce = true;
+                return NEXT_TRUE;
             }
             if (it.hasNext()) {
                 current = it.next();
                 return NEXT_TRUE;
             }
             return NEXT_FALSE;
-        }
-
-        @Override
-        public Boolean apply(Boolean t) {
-            if (t) {
-                currentIterator = iteratorHandover;
-                iteratorHandover = null;
-                return true;
-            } else {
-                currentIterator = null;
-                iteratorHandover = null;
-            }
-            return false;
         }
 
         @Override
@@ -122,9 +115,9 @@ public record StreamableSingleFlattenAs<T, U>(
         public void onSuccess(@NonNull T t) {
             try {
                 var iterator = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable").iterator();
-                this.iteratorHandover = iterator;
                 if (iterator.hasNext()) {
                     current = iterator.next();
+                    this.currentIterator = iterator;
                     iteratorReady.complete(true);
                 } else {
                     iteratorReady.complete(false);
@@ -141,6 +134,25 @@ public record StreamableSingleFlattenAs<T, U>(
         public void onError(@NonNull Throwable e) {
             upstream.lazySet(DisposableHelper.DISPOSED);
             iteratorReady.completeExceptionally(e);
+        }
+
+        @Override
+        public CompletionStage<Boolean> enumerableReady() {
+            return iteratorReady;
+        }
+
+        @Override
+        public boolean nextSync() throws Throwable {
+            // because onSuccess will pull out the first item
+            if (!deferredOnce) {
+                deferredOnce = true;
+                return true;
+            }
+            if (currentIterator.hasNext()) {
+                current = currentIterator.next();
+                return true;
+            }
+            return false;
         }
     }
 }

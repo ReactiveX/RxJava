@@ -90,7 +90,7 @@ public interface Streamer<@NonNull T> {
 
     /**
      * Convenience method to await the completion of a boolean stage, optimized
-     * for handling {@value #NEXT_TRUE} and {@value #NEXT_FALSE} directly.
+     * for handling {@link #NEXT_TRUE} and {@link #NEXT_FALSE} directly.
      * @param stage the stage to await
      * @return the result of the stage
      */
@@ -106,7 +106,7 @@ public interface Streamer<@NonNull T> {
 
     /**
      * Convenience method to await the completion of a stage, optimized
-     * for handling {@value #FINISHED} directly.
+     * for handling {@link #FINISHED} directly.
      * @param stage the stage to await
      */
     static void awaitVoid(CompletionStage<Void> stage) {

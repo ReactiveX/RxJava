@@ -20,10 +20,10 @@ import java.util.stream.Collector;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
-import io.reactivex.rxjava4.operators.IndexableSource;
+import io.reactivex.rxjava4.operators.*;
 
 public record StreamableCollector<T, A, R>(
         Streamable<T> source,
@@ -104,12 +104,57 @@ public record StreamableCollector<T, A, R>(
                     }
                     current = finisher.apply(storage);
                     return NEXT_TRUE;
+                } else
+                if (upstream instanceof DeferredEnumerableSource<?> dsrc) {
+                    StreamableHelper.whenComplete(dsrc.enumerableReady(), this::deferredEnumerate);
+                    return nextReady;
+                } else
+                if (upstream instanceof EnumerableSource<?> esrc) {
+                    try {
+                        while (esrc.nextSync()) {
+                            if (cancellation.isDisposed()) {
+                                return CompletableFuture.failedFuture(new CancellationException());
+                            }
+                            accumulator.accept(storage, (T)esrc.current());
+                        }
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        return CompletableFuture.failedFuture(ex);
+                    }
+                    current = finisher.apply(storage);
+                    return NEXT_TRUE;
                 }
-
                 drain();
                 return nextReady;
             }
             return NEXT_FALSE;
+        }
+
+        void deferredEnumerate(boolean hasInitialValue, Throwable error) {
+            if (error != null) {
+                nextReady.completeExceptionally(error);
+                return;
+            }
+            if (hasInitialValue) {
+                @SuppressWarnings("unchecked")
+                var upstreamCast = (DeferredEnumerableSource<T>)upstream;
+
+                try {
+                    while (upstreamCast.nextSync()) {
+                        if (cancellation.isDisposed()) {
+                            nextReady.completeExceptionally(new CancellationException());
+                            return;
+                        }
+                        accumulator.accept(storage, upstreamCast.current());
+                    }
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    nextReady.completeExceptionally(ex);
+                    return;
+                }
+            }
+            current = finisher.apply(storage);
+            nextReady.complete(true);
         }
 
         @Override
