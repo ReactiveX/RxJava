@@ -3442,6 +3442,10 @@ this <code>Flowable</code> or completes if this <code>Flowable</code> sequence h
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a> that emits the single item at a specified index in a sequence of emissions from
 the current <code>Observable</code> or completes if the current <code>Observable</code> signals fewer elements than index.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/operators/IndexableSource.html#elementAt(long)" class="member-name-link">elementAt(long)</a> - Method in interface io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/IndexableSource.html" title="interface in io.reactivex.rxjava4.operators">IndexableSource</a></dt>
+<dd>
+<div class="block">Obtain an element from the given index.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#elementAt(long,T)" class="member-name-link">elementAt(long, T)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits the item found at a specified index in a sequence of emissions from
@@ -5332,6 +5336,11 @@ and signals <code>onComplete</code> instead.</div>
 <dd>
 <div class="block">Report the error immediately, cancelling the active sources.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/operators/IndexableSource.html" class="type-name-link" title="interface in io.reactivex.rxjava4.operators">IndexableSource&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/operators/package-summary.html">io.reactivex.rxjava4.operators</a></dt>
+<dd>
+<div class="block">Represents a source which can be accessed via a zero-based index synchronously,
+without going through the usual <a href="io/reactivex/rxjava4/core/Streamer.html#next()"><code>Streamer.next()</code></a> calls to obtain the next item.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#initCachedScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initCachedScheduler(Supplier)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Calls the associated hook function.</div>
@@ -5905,6 +5914,10 @@ other standard composition methods first;</strong>
 Returns a <code>Streamable</code> instance which when its <a href="io/reactivex/rxjava4/core/Streamable.html#stream(io.reactivex.rxjava4.disposables.StreamerCancellation)"><code>Streamable.stream(StreamerCancellation)</code></a> is invoked,
 applies the specified operator callback to the upstream <a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a> to produce
 an actual <code>Streamer</code> instance to be handed downstream.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/operators/IndexableSource.html#limit()" class="member-name-link">limit()</a> - Method in interface io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/IndexableSource.html" title="interface in io.reactivex.rxjava4.operators">IndexableSource</a></dt>
+<dd>
+<div class="block">Returns the limit of how many items can be obtained via [<a href="io/reactivex/rxjava4/operators/IndexableSource.html#elementAt(long)"><code>IndexableSource.elementAt(long)</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#lockdown()" class="member-name-link">lockdown()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
