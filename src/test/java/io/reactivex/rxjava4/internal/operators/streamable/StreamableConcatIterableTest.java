@@ -247,6 +247,27 @@ public class StreamableConcatIterableTest extends StreamableBaseTest {
     }
 
     @Test
+    public void virtualCreateNullDebug() throws Throwable {
+        withCachedExecutor(exec -> {
+            Streamable.concat(Arrays.asList(Streamable.empty(),
+                    Streamable.create(emitter -> {
+                        emitter.emit(1);
+                        emitter.emit(2);
+                        emitter.emit(3);
+                        emitter.emit(4);
+                        emitter.emit(5);
+                    }, exec),
+                    Streamable.create(_ -> {
+                    }, exec),
+                    null
+                ))
+                .test(exec)
+                .awaitDone(500, TimeUnit.SECONDS)
+                .assertFailure(NullPointerException.class, 1, 2, 3, 4, 5);
+        });
+    }
+
+    @Test
     public void virtualCreateError() {
         Streamable.concat(Arrays.asList(Streamable.empty(),
             Streamable.create(emitter -> {

@@ -47,7 +47,7 @@ public record StreamableConcatIterable<T>(
 
         DisposableStreamerCancellation currentCancellation;
 
-        Streamer<? extends T> upstream;
+        volatile Streamer<? extends T> upstream;
 
         CompletableFuture<Boolean> nextReady;
 
@@ -96,7 +96,9 @@ public record StreamableConcatIterable<T>(
                             }
                         }
                     } else {
-                        return stage;
+                        nextReady = new CompletableFuture<Boolean>();
+                        stage.whenComplete(this);
+                        return nextReady;
                     }
                 } else {
                     nextReady = new CompletableFuture<Boolean>();
