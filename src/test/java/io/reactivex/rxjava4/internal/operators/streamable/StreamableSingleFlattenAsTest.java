@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +32,17 @@ public class StreamableSingleFlattenAsTest extends StreamableBaseTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(10, 20, 30, 40, 50);
+    }
+
+    @Test
+    public void normalDebug() throws Throwable {
+        withCachedExecutor(exec -> {
+            Single.just(1)
+            .flattenAsStreamable(v -> List.of(v * 10, v * 20, v * 30, v * 40, v * 50))
+            .test(exec)
+            .awaitDone(500, TimeUnit.SECONDS)
+            .assertResult(10, 20, 30, 40, 50);
+        });
     }
 
     @Test
@@ -83,5 +95,15 @@ public class StreamableSingleFlattenAsTest extends StreamableBaseTest {
         to.cancel();
 
         awaitCondition(false, () -> ss.hasObservers(), 1000);
+    }
+
+    @Test
+    public void deferredEnumerable() throws Throwable {
+        Single.just(List.of(1, 2, 3, 4, 5))
+        .flattenAsStreamable(v -> v)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(1, 2, 3, 4, 5));
     }
 }

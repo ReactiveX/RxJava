@@ -59,9 +59,20 @@ public record StreamableSkip<T>(Streamable<T> source, long count) implements Str
             if (getAndIncrement() != 0) {
                 return;
             }
+            int wipMax = 1;
+            int wipIndex = 0;
             do {
-                upstream.next().whenComplete(this);
-            } while (decrementAndGet() != 0);
+                StreamableHelper.whenComplete(upstream.next(), this);
+                if (++wipIndex == wipMax) {
+                    wipMax = get();
+                    if (wipIndex == wipMax) {
+                        wipMax = addAndGet(-wipMax);
+                        if (wipMax != 0) {
+                            wipIndex = 0;
+                        }
+                    }
+                }
+            } while (wipMax != 0);
         }
 
         @Override

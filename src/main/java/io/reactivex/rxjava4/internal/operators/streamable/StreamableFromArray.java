@@ -18,6 +18,7 @@ import java.util.concurrent.*;
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.StreamerCancellation;
+import io.reactivex.rxjava4.operators.*;
 
 public record StreamableFromArray<T>(@NonNull T[] items) implements Streamable<T> {
 
@@ -26,45 +27,67 @@ public record StreamableFromArray<T>(@NonNull T[] items) implements Streamable<T
         return new FromArrayStreamer<>(items);
     }
 
-    static final class FromArrayStreamer<T> implements Streamer<T> {
+    static final class FromArrayStreamer<T>
+    implements Streamer<T>, IndexableSource<T>, EnumerableSource<T> {
 
         final T[] items;
 
-        volatile int index;
-
-        volatile T current;
+        int index;
 
         public FromArrayStreamer(T[] items) {
             this.items = items;
+            this.index = -1;
         }
 
         @Override
         public @NonNull CompletionStage<Boolean> next() {
-            var i = index;
-            if (i >= items.length) {
+            if (++index >= items.length) {
                 return NEXT_FALSE;
             }
-            var nextItem = items[i];
-            if (nextItem == null) {
-                index = items.length;
-                current = null;
-                return CompletableFuture.failedStage(new NullPointerException("Item at index " + i + " is null."));
+            if (current() == null) {
+                return CompletableFuture.failedFuture(createNullError(index));
             }
-            current = nextItem;
-            index = i + 1;
             return NEXT_TRUE;
+        }
+
+        static NullPointerException createNullError(int index) {
+            return new NullPointerException("Item at index " + index + " is null.");
+        }
+
+        @Override
+        public boolean nextSync() {
+            if (++index < items.length) {
+                if (current() == null) {
+                    throw createNullError(index);
+                }
+                return true;
+            };
+            return false;
         }
 
         @Override
         public @NonNull T current() {
-            return current;
+            return items[index];
         }
 
         @Override
         public @NonNull CompletionStage<Void> finish() {
             index = items.length;
-            current = null;
             return FINISHED;
+        }
+
+        @Override
+        public @NonNull T elementAt(long index) throws Throwable {
+            var v = items[(int)index];
+            if (v ==  null) {
+                throw createNullError((int)index);
+            }
+            return v;
+        }
+
+        @Override
+        public long limit() {
+            return items.length;
         }
     }
 }

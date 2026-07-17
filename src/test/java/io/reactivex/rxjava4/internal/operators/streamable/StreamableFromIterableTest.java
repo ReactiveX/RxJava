@@ -15,15 +15,18 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.exceptions.TestException;
 
 public class StreamableFromIterableTest extends StreamableBaseTest {
 
     @Test
     public void normal() throws Throwable {
-        Streamable.fromStream(List.of(1, 2, 3).stream())
+        Streamable.fromIterable(List.of(1, 2, 3))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3);
@@ -31,7 +34,7 @@ public class StreamableFromIterableTest extends StreamableBaseTest {
 
     @Test
     public void empty() throws Throwable {
-        Streamable.fromStream(List.of().stream())
+        Streamable.fromIterable(List.of())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
@@ -39,7 +42,7 @@ public class StreamableFromIterableTest extends StreamableBaseTest {
 
     @Test
     public void one() throws Throwable {
-        Streamable.fromStream(List.of(1).stream())
+        Streamable.fromIterable(List.of(1))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -47,7 +50,7 @@ public class StreamableFromIterableTest extends StreamableBaseTest {
 
     @Test
     public void hasNull() throws Throwable {
-        Streamable.fromStream(Arrays.asList(1, null, 3).stream())
+        Streamable.fromIterable(Arrays.asList(1, null, 3))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(NullPointerException.class, 1)
@@ -57,11 +60,39 @@ public class StreamableFromIterableTest extends StreamableBaseTest {
 
     @Test
     public void hasNull2() throws Throwable {
-        Streamable.fromStream(Arrays.asList(null, 1, 2, 3).stream())
+        Streamable.fromIterable(Arrays.asList(null, 1, 2, 3))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(NullPointerException.class)
         .assertError(t -> t.getMessage().equals("Item at index 0 is null."));
         ;
+    }
+
+    @Test
+    public void iteratorThrows() throws Throwable {
+        Streamable.fromIterable(() -> { throw new TestException("test"); })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class)
+        .assertError(t -> t.getMessage().equals("test"));
+        ;
+    }
+
+    @Test
+    public void enumerableSource() {
+        Streamable.fromIterable(List.of(1, 2, 3, 4, 5))
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(1, 2, 3, 4, 5));
+    }
+
+    @Test
+    public void enumerableSourceWithNull() {
+        Streamable.fromIterable(Arrays.asList(1, 2, null, 4, 5))
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
     }
 }

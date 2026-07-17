@@ -24,7 +24,7 @@ public class StreamableFromStreamTest extends StreamableBaseTest {
 
     @Test
     public void normal() throws Throwable {
-        Streamable.fromIterable(List.of(1, 2, 3))
+        Streamable.fromStream(List.of(1, 2, 3).stream())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3);
@@ -32,7 +32,7 @@ public class StreamableFromStreamTest extends StreamableBaseTest {
 
     @Test
     public void empty() throws Throwable {
-        Streamable.fromIterable(List.of())
+        Streamable.fromStream(List.of().stream())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
@@ -40,7 +40,7 @@ public class StreamableFromStreamTest extends StreamableBaseTest {
 
     @Test
     public void one() throws Throwable {
-        Streamable.fromIterable(List.of(1))
+        Streamable.fromStream(List.of(1).stream())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -48,7 +48,7 @@ public class StreamableFromStreamTest extends StreamableBaseTest {
 
     @Test
     public void hasNull() throws Throwable {
-        Streamable.fromIterable(Arrays.asList(1, null, 3))
+        Streamable.fromStream(Arrays.asList(1, null, 3).stream())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(NullPointerException.class, 1)
@@ -58,21 +58,11 @@ public class StreamableFromStreamTest extends StreamableBaseTest {
 
     @Test
     public void hasNull2() throws Throwable {
-        Streamable.fromIterable(Arrays.asList(null, 1, 2, 3))
+        Streamable.fromStream(Arrays.asList(null, 1, 2, 3).stream())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(NullPointerException.class)
         .assertError(t -> t.getMessage().equals("Item at index 0 is null."));
-        ;
-    }
-
-    @Test
-    public void iteratorThrows() throws Throwable {
-        Streamable.fromIterable(() -> { throw new TestException("test"); })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class)
-        .assertError(t -> t.getMessage().equals("test"));
         ;
     }
 }

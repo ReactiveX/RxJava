@@ -13,9 +13,12 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.Streamable;
 
 public class StreamableFromArrayTest extends StreamableBaseTest {
@@ -38,4 +41,21 @@ public class StreamableFromArrayTest extends StreamableBaseTest {
         ;
     }
 
+    @Test
+    public void indexable() {
+        Streamable.fromArray(1, 2, 3)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(1, 2, 3));
+    }
+
+    @Test
+    public void indexableNull() {
+        Streamable.fromArray(1, null, 3)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
 }

@@ -21,6 +21,7 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.internal.operators.streamable.StreamableEmpty.EmptyStreamer;
+import io.reactivex.rxjava4.operators.EnumerableSource;
 
 public record StreamableFromIterable<T>(@NonNull Iterable<? extends T> items) implements Streamable<T> {
 
@@ -40,13 +41,13 @@ public record StreamableFromIterable<T>(@NonNull Iterable<? extends T> items) im
         return new IteratorStreamer<>(iterator);
     }
 
-    static final class IteratorStreamer<T> implements Streamer<T> {
+    static final class IteratorStreamer<T> implements Streamer<T>, EnumerableSource<T> {
 
         Iterator<? extends T> iterator;
 
         long index;
 
-        volatile T current;
+        T current;
 
         IteratorStreamer(Iterator<? extends T> iterator) {
             this.iterator = iterator;
@@ -58,13 +59,17 @@ public record StreamableFromIterable<T>(@NonNull Iterable<? extends T> items) im
                 var v = iterator.next();
                 current = v;
                 if (v == null) {
-                    return CompletableFuture.failedStage(new NullPointerException("Item at index " + index + " is null."));
+                    return CompletableFuture.failedStage(createNullError(index));
                 }
                 index++;
                 return NEXT_TRUE;
             }
             current = null;
             return NEXT_FALSE;
+        }
+
+        static NullPointerException createNullError(long index) {
+            return new NullPointerException("Item at index " + index + " is null.");
         }
 
         @Override
@@ -77,6 +82,21 @@ public record StreamableFromIterable<T>(@NonNull Iterable<? extends T> items) im
             iterator = null;
             current = null;
             return FINISHED;
+        }
+
+        @Override
+        public boolean nextSync() throws Throwable {
+            if (index == 0L || iterator.hasNext()) {
+                var v = iterator.next();
+                current = v;
+                if (v == null) {
+                    throw createNullError(index);
+                }
+                index++;
+                return true;
+            }
+            current = null;
+            return false;
         }
     }
 }

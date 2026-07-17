@@ -86,14 +86,25 @@ extends Single<T> implements HasUpstreamStreamableSource<T> {
                 return;
             }
 
+            int wipMax = 1;
+            int wipIndex = 0;
             do {
                 if (done) {
-                    upstream.finish().whenComplete(this);
+                    StreamableHelper.whenComplete(upstream.finish(), this);
                     break;
                 } else {
-                    upstream.next().whenComplete(this);
+                    StreamableHelper.whenComplete(upstream.next(), this);
                 }
-            } while (decrementAndGet() != 0);
+                if (++wipIndex == wipMax) {
+                    wipMax = get();
+                    if (wipIndex == wipMax) {
+                        wipMax = addAndGet(-wipMax);
+                        if (wipMax != 0) {
+                            wipIndex = 0;
+                        }
+                    }
+                }
+            } while (wipMax != 0);
         }
 
         @Override

@@ -22,12 +22,49 @@ import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
+import io.reactivex.rxjava4.schedulers.Schedulers;
 
 public class StreamableConcatIterableTest extends StreamableBaseTest {
 
     @Test
     public void normal() throws Throwable {
         Streamable.concat(List.of(Streamable.range(1, 5), Streamable.range(6, 5), Streamable.range(11, 5)))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(
+                1, 2, 3, 4, 5,
+                6, 7, 8, 9, 10,
+                11, 12, 13, 14, 15
+                );
+    }
+
+    @Test
+    public void normalHidden() throws Throwable {
+        Streamable.concat(List.of(Streamable.range(1, 5).hide(), Streamable.range(6, 5).hide(), Streamable.range(11, 5).hide()))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(
+                1, 2, 3, 4, 5,
+                6, 7, 8, 9, 10,
+                11, 12, 13, 14, 15
+                );
+    }
+
+    @Test
+    public void normalMixedHidden1() throws Throwable {
+        Streamable.concat(List.of(Streamable.range(1, 5).hide(), Streamable.range(6, 5), Streamable.range(11, 5).hide()))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(
+                1, 2, 3, 4, 5,
+                6, 7, 8, 9, 10,
+                11, 12, 13, 14, 15
+                );
+    }
+
+    @Test
+    public void normalHidden2() throws Throwable {
+        Streamable.concat(List.of(Streamable.range(1, 5), Streamable.range(6, 5).hide(), Streamable.range(11, 5)))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(
@@ -120,5 +157,151 @@ public class StreamableConcatIterableTest extends StreamableBaseTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
+    }
+
+    @Test
+    public void delayed() throws Throwable {
+        Streamable.concat(List.of(
+                Streamable.range(1, 5),
+                Streamable.range(6, 5).delay(1, TimeUnit.MILLISECONDS, Schedulers.single()),
+                Streamable.range(11, 5)))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(
+                1, 2, 3, 4, 5,
+                6, 7, 8, 9, 10,
+                11, 12, 13, 14, 15
+                );
+    }
+
+    @Test
+    public void intervalRange() throws Throwable {
+        Streamable.concat(List.of(
+                Streamable.intervalRange(1, 5, 1, 1, TimeUnit.MILLISECONDS, Schedulers.single()),
+                Streamable.intervalRange(6, 5, 1, 1, TimeUnit.MILLISECONDS, Schedulers.single()),
+                Streamable.intervalRange(11, 5, 1, 1, TimeUnit.MILLISECONDS, Schedulers.single())))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(
+                1L, 2L, 3L, 4L, 5L,
+                6L, 7L, 8L, 9L, 10L,
+                11L, 12L, 13L, 14L, 15L
+                );
+    }
+
+    @Test
+    public void virtualCreate() {
+        Streamable.concat(List.of(Streamable.empty(),
+            Streamable.create(emitter -> {
+                emitter.emit(1);
+                emitter.emit(2);
+                emitter.emit(3);
+                emitter.emit(4);
+                emitter.emit(5);
+            }),
+            Streamable.create(_ -> {
+            })
+        ))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void virtualCreate2() {
+        Streamable.concat(List.of(Streamable.empty(),
+            Streamable.create(emitter -> {
+                emitter.emit(1);
+                emitter.emit(2);
+                emitter.emit(3);
+                emitter.emit(4);
+                emitter.emit(5);
+            }),
+            Streamable.create(emitter -> {
+                emitter.emit(6);
+                emitter.emit(7);
+            })
+        ))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5, 6, 7);
+    }
+
+    @Test
+    public void virtualCreateNull() {
+        Streamable.concat(Arrays.asList(Streamable.empty(),
+            Streamable.create(emitter -> {
+                emitter.emit(1);
+                emitter.emit(2);
+                emitter.emit(3);
+                emitter.emit(4);
+                emitter.emit(5);
+            }),
+            Streamable.create(_ -> {
+            }),
+            null
+        ))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class, 1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void virtualCreateNullDebug() throws Throwable {
+        withCachedExecutor(exec -> {
+            Streamable.concat(Arrays.asList(Streamable.empty(),
+                    Streamable.create(emitter -> {
+                        emitter.emit(1);
+                        emitter.emit(2);
+                        emitter.emit(3);
+                        emitter.emit(4);
+                        emitter.emit(5);
+                    }, exec),
+                    Streamable.create(_ -> {
+                    }, exec),
+                    null
+                ))
+                .test(exec)
+                .awaitDone(500, TimeUnit.SECONDS)
+                .assertFailure(NullPointerException.class, 1, 2, 3, 4, 5);
+        });
+    }
+
+    @Test
+    public void virtualCreateError() {
+        Streamable.concat(Arrays.asList(Streamable.empty(),
+            Streamable.create(emitter -> {
+                emitter.emit(1);
+                emitter.emit(2);
+                emitter.emit(3);
+                emitter.emit(4);
+                emitter.emit(5);
+            }),
+            Streamable.create(_ -> {
+            }),
+            Streamable.error(new TestException())
+        ))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void virtualCreateFinishFail() {
+        Streamable.concat(Arrays.asList(Streamable.empty(),
+            Streamable.create(emitter -> {
+                emitter.emit(1);
+                emitter.emit(2);
+                emitter.emit(3);
+                emitter.emit(4);
+                emitter.emit(5);
+            }),
+            Streamable.create(_ -> {
+            }),
+            StreamableFailingFinish.MAIN_COMPLETES
+        ))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 }
