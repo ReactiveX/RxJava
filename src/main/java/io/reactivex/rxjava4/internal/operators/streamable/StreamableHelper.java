@@ -410,14 +410,11 @@ public enum StreamableHelper {
      * @param consumer the consumer called with the stage's value or its exception
      */
     public static <T> void whenComplete(CompletionStage<T> stage, java.util.function.BiConsumer<? super T, ? super Throwable> consumer) {
-        if (stage instanceof CompletableFuture<T> cf) {
-            switch (cf.state()) {
-            case SUCCESS -> consumer.accept(cf.getNow(null), null);
-            case CANCELLED, FAILED -> consumer.accept(null, cf.exceptionNow());
-            default -> stage.whenComplete(consumer);
-            }
-        } else {
-            stage.whenComplete(consumer);
+        var cf = stage.toCompletableFuture();
+        switch (cf.state()) {
+        case SUCCESS -> consumer.accept(cf.getNow(null), null);
+        case CANCELLED, FAILED -> consumer.accept(null, cf.exceptionNow());
+        default -> stage.whenComplete(consumer);
         }
     }
 }
