@@ -18,6 +18,7 @@ import java.util.concurrent.CompletionStage;
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.StreamerCancellation;
+import io.reactivex.rxjava4.operators.*;
 
 public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
 
@@ -26,11 +27,12 @@ public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
         return new JustStreamer<>(item);
     }
 
-    static final class JustStreamer<T> implements Streamer<T> {
+    static final class JustStreamer<T>
+    implements Streamer<T>, IndexableSource<T>, EnumerableSource<T> {
 
-        volatile T item;
+        final T item;
 
-        volatile int stage;
+        int stage;
 
         JustStreamer(T item) {
             this.item = item;
@@ -42,8 +44,6 @@ public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
                 stage = 1;
                 return NEXT_TRUE;
             }
-            item = null;
-            stage = 2;
             return NEXT_FALSE;
         }
 
@@ -54,9 +54,22 @@ public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
 
         @Override
         public @NonNull CompletionStage<Void> finish() {
-            item = null;
-            stage = 2;
             return FINISHED;
+        }
+
+        @Override
+        public @NonNull T elementAt(long index) throws Throwable {
+            return item;
+        }
+
+        @Override
+        public long limit() {
+            return 1;
+        }
+
+        @Override
+        public boolean nextSync() throws Throwable {
+            return stage++ == 0;
         }
     }
 }

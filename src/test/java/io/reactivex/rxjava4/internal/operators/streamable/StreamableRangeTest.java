@@ -15,9 +15,12 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.Streamable;
 
 public class StreamableRangeTest extends StreamableBaseTest {
@@ -101,5 +104,24 @@ public class StreamableRangeTest extends StreamableBaseTest {
     @Test
     public void underNoOverflowLong() throws Throwable {
         Streamable.rangeLong(-2, Long.MAX_VALUE);
+    }
+
+    @Test
+    public void longIndexed() throws Throwable {
+        Streamable.rangeLong(1, 3)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(1L, 2L, 3L));
+    }
+
+    @Test
+    public void longEnumerated() throws Throwable {
+        Streamable.rangeLong(1, 3)
+        .filter(_ -> true)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(1L, 2L, 3L));
     }
 }

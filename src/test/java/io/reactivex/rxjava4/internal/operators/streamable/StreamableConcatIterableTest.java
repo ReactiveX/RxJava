@@ -304,4 +304,20 @@ public class StreamableConcatIterableTest extends StreamableBaseTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
+
+    @Test
+    public void delay() throws Throwable {
+        Streamable.concat(List.of(
+                Streamable.range(1, 5),
+                Streamable.range(6, 5).delay(1, TimeUnit.MILLISECONDS, Schedulers.single()),
+                Streamable.range(11, 5)))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(
+                1, 2, 3, 4, 5,
+                6, 7, 8, 9, 10,
+                11, 12, 13, 14, 15
+                );
+    }
+
 }

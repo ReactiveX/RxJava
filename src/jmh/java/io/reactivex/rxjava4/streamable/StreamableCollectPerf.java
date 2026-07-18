@@ -102,6 +102,20 @@ import io.reactivex.rxjava4.core.*;
 /// StreamableCollectPerf.benchmarkHidden   100000  thrpt    5      1161,570 ┬▒     20,902  ops/s
 /// StreamableCollectPerf.benchmarkHidden  1000000  thrpt    5       116,332 ┬▒      1,313  ops/s
 /// ```
+///
+/// ## 5 - Synchronous bias in the non-fused area, via Claude Fable
+///
+/// +198% for times 1 vs 4., +177% for times million vs 4
+///
+/// ```
+/// StreamableCollectPerf.benchmarkHidden        1  thrpt    5  47849604,612 ┬▒  873982,158  ops/s
+/// StreamableCollectPerf.benchmarkHidden       10  thrpt    5  34146288,027 ┬▒  395418,081  ops/s
+/// StreamableCollectPerf.benchmarkHidden      100  thrpt    5   3294354,815 ┬▒   47802,050  ops/s
+/// StreamableCollectPerf.benchmarkHidden     1000  thrpt    5    329341,300 ┬▒    6665,423  ops/s
+/// StreamableCollectPerf.benchmarkHidden    10000  thrpt    5     33513,984 ┬▒    2196,936  ops/s
+/// StreamableCollectPerf.benchmarkHidden   100000  thrpt    5      3529,826 ┬▒      71,479  ops/s
+/// StreamableCollectPerf.benchmarkHidden  1000000  thrpt    5       322,838 ┬▒       5,698  ops/s
+/// ```
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)

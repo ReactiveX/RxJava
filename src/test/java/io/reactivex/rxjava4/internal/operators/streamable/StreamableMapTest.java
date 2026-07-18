@@ -213,4 +213,14 @@ public class StreamableMapTest extends StreamableBaseTest {
         });
     }
 
+    @Test
+    public void indexedToEnumerable() throws Throwable {
+        Streamable.range(1, 5)
+        .map(v -> v + 1)
+        .filter(v -> v % 2 == 0)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(2, 4, 6));
+    }
 }
