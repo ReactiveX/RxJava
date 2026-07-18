@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.disposables.CompositeDisposable;
 import io.reactivex.rxjava4.exceptions.TestException;
+import io.reactivex.rxjava4.processors.DispatchStreamProcessor;
+import io.reactivex.rxjava4.schedulers.Schedulers;
 
 public class StreamableCollectorTest extends StreamableBaseTest {
 
@@ -84,5 +86,57 @@ public class StreamableCollectorTest extends StreamableBaseTest {
             .stream(cd)
             .awaitNext();
         });
+    }
+
+    @Test
+    public void intelvalRange() throws Throwable {
+        Streamable.intervalRange(1, 5, 1, 1, TimeUnit.MILLISECONDS, Schedulers.single())
+        .hide()
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(1L, 2L, 3L, 4L, 5L));
+    }
+
+    @Test
+    public void viaDispatch() throws Throwable {
+        var dsp = new DispatchStreamProcessor<>();
+
+        var ts = dsp
+        .collect(Collectors.toList())
+        .test();
+
+        ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
+
+        awaitStreamers(dsp, 1000);
+
+        dsp.next(1).toCompletableFuture().join();
+        dsp.next(2).toCompletableFuture().join();
+        dsp.next(3).toCompletableFuture().join();
+        dsp.finish(null).toCompletableFuture().join();
+
+        ts.awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(1, 2, 3));
+    }
+
+    @Test
+    public void viaDispatchError() throws Throwable {
+        var dsp = new DispatchStreamProcessor<>();
+
+        var ts = dsp
+        .collect(Collectors.toList())
+        .test();
+
+        ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
+
+        awaitStreamers(dsp, 1000);
+
+        dsp.next(1).toCompletableFuture().join();
+        dsp.next(2).toCompletableFuture().join();
+        dsp.next(3).toCompletableFuture().join();
+        dsp.finish(new TestException()).toCompletableFuture().join();
+
+        ts.awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
     }
 }

@@ -18,7 +18,7 @@ import java.util.concurrent.CompletionStage;
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.StreamerCancellation;
-import io.reactivex.rxjava4.operators.IndexableSource;
+import io.reactivex.rxjava4.operators.*;
 
 public record StreamableRange(int start, int count) implements Streamable<Integer> {
 
@@ -27,7 +27,8 @@ public record StreamableRange(int start, int count) implements Streamable<Intege
         return new RangeStreamer<>(start, start + count);
     }
 
-    static final class RangeStreamer<T> implements Streamer<Integer>, IndexableSource<Integer> {
+    static final class RangeStreamer<T>
+    implements Streamer<Integer>, IndexableSource<Integer>, EnumerableSource<Integer> {
 
         final int start;
 
@@ -68,6 +69,14 @@ public record StreamableRange(int start, int count) implements Streamable<Intege
         @Override
         public long limit() {
             return end - start;
+        }
+
+        @Override
+        public boolean nextSync() throws Throwable {
+            if (++current >= end) {
+                return false;
+            }
+            return true;
         }
     }
 }

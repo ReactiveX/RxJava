@@ -67,6 +67,21 @@ import io.reactivex.rxjava4.core.*;
 /// StreamableLastAsSinglePerf.benchmark   100000  thrpt    5      1408,117 ┬▒    134,934  ops/s
 /// StreamableLastAsSinglePerf.benchmark  1000000  thrpt    5       123,326 ┬▒     29,358  ops/s
 /// ```
+///
+/// # 3. synchronous biased consumption loop, similar to filter, via Claude Fable
+///
+///  +55% for times 1 vs baseline, +582% for times million vs baseline
+///
+/// ```
+/// Benchmark                             (times)   Mode  Cnt         Score         Error  Units
+/// StreamableLastAsSinglePerf.benchmark        1  thrpt    5  22006265,959 ┬▒ 1776391,634  ops/s
+/// StreamableLastAsSinglePerf.benchmark       10  thrpt    5  28047951,727 ┬▒  302931,360  ops/s
+/// StreamableLastAsSinglePerf.benchmark      100  thrpt    5   6137837,568 ┬▒  100371,047  ops/s
+/// StreamableLastAsSinglePerf.benchmark     1000  thrpt    5    496011,671 ┬▒  114738,714  ops/s
+/// StreamableLastAsSinglePerf.benchmark    10000  thrpt    5     51837,709 ┬▒    3228,185  ops/s
+/// StreamableLastAsSinglePerf.benchmark   100000  thrpt    5      5094,499 ┬▒     405,946  ops/s
+/// StreamableLastAsSinglePerf.benchmark  1000000  thrpt    5       456,867 ┬▒      15,351  ops/s
+/// ```
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)

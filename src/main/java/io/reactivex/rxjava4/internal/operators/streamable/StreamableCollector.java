@@ -13,7 +13,9 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
+import java.io.Serial;
 import java.util.concurrent.*;
+import java.util.concurrent.Future.State;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -41,9 +43,11 @@ public record StreamableCollector<T, A, R>(
     }
 
     static final class CollectorStreamable<T, A, R>
+    extends AtomicInteger
     implements Streamer<R>, BiConsumer<Object, Throwable> {
 
-        final AtomicInteger wip;
+        @Serial
+        private static final long serialVersionUID = -2893736592415047972L;
 
         final Streamer<T> upstream;
 
@@ -70,7 +74,6 @@ public record StreamableCollector<T, A, R>(
                 Function<A, R> finisher,
                 StreamerCancellation cancellation) {
             this.upstream = upstream;
-            this.wip = new AtomicInteger();
             this.storage = storage;
             this.accumulator = accumulator;
             this.finisher = finisher;
@@ -170,32 +173,36 @@ public record StreamableCollector<T, A, R>(
         }
 
         void drain() {
-            if (wip.getAndIncrement() != 0) {
-                return;
-            }
-
-            int wipMax = 1;
-            int wipIndex = 0;
-            do {
+            for (;;) {
                 if (done) {
                     StreamableHelper.whenComplete(upstream.finish(), this);
-                    break;
+                    return;
                 } else {
-                    StreamableHelper.whenComplete(upstream.next(), this);
-                }
-                if (++wipIndex == wipMax) {
-                    var newWip = wip.get();
-                    if (newWip != wipMax) {
-                        wipMax = newWip;
-                    } else {
-                        wipMax = wip.addAndGet(-wipMax);
-                        if (wipMax == 0) {
-                            break;
+                    var upstreamNext = upstream.next().toCompletableFuture();
+                    var state = upstreamNext.state();
+                    if (state == State.RUNNING) {
+                        set(1);
+                        upstreamNext.whenComplete(this);
+                        if (compareAndSet(1, 0)) {
+                            return;
                         }
-                        wipIndex = 0;
+                        state = upstreamNext.state();
+                    }
+
+                    if (state == State.SUCCESS) {
+                        if (upstreamNext.getNow((false))) {
+                            accumulator.accept(storage, upstream.current());
+                        } else {
+                            current = finisher.apply(storage);
+                            nextReady.complete(true);
+                            return;
+                        }
+                    } else {
+                        nextReady.completeExceptionally(upstreamNext.exceptionNow());
+                        return;
                     }
                 }
-            } while (true);
+            }
         }
 
         @Override
@@ -207,15 +214,17 @@ public record StreamableCollector<T, A, R>(
                     finishReady.complete(null);
                 }
             } else {
-                if (u != null) {
-                    nextReady.completeExceptionally(u);
-                } else
-                if ((Boolean)t) {
-                    accumulator.accept(storage, upstream.current());
-                    drain();
-                } else {
-                    current = finisher.apply(storage);
-                    nextReady.complete(true);
+                if (!compareAndSet(1, 2)) {
+                    if (u != null) {
+                        nextReady.completeExceptionally(u);
+                    } else
+                    if ((Boolean)t) {
+                        accumulator.accept(storage, upstream.current());
+                        drain();
+                    } else {
+                        current = finisher.apply(storage);
+                        nextReady.complete(true);
+                    }
                 }
             }
         }

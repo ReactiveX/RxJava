@@ -14,11 +14,12 @@
 package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.util.NoSuchElementException;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
+import io.reactivex.rxjava4.operators.*;
 
 public enum StreamableEmpty implements Streamable<Object> {
 
@@ -34,7 +35,7 @@ public enum StreamableEmpty implements Streamable<Object> {
         return (Streamer<T>)EmptyStreamer.INSTANCE;
     }
 
-    enum EmptyStreamer implements Streamer<Object> {
+    enum EmptyStreamer implements Streamer<Object>, IndexableSource<Object>, EnumerableSource<Object> {
 
         INSTANCE;
 
@@ -51,6 +52,21 @@ public enum StreamableEmpty implements Streamable<Object> {
         @Override
         public @NonNull CompletionStage<Void> finish() {
             return FINISHED;
+        }
+
+        @Override
+        public boolean nextSync() throws Throwable {
+            return false;
+        }
+
+        @Override
+        public @NonNull Object elementAt(long index) throws Throwable {
+            throw new NoSuchElementException("This Streamable/Streamer never has elements");
+        }
+
+        @Override
+        public long limit() {
+            return 0;
         }
     }
 }

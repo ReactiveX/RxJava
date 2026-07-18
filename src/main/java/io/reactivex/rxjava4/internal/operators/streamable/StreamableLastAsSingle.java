@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.io.Serial;
 import java.util.NoSuchElementException;
+import java.util.concurrent.Future.State;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
@@ -82,29 +83,40 @@ extends Single<T> implements HasUpstreamStreamableSource<T> {
         }
 
         void drain() {
-            if (getAndIncrement() != 0) {
-                return;
-            }
-
-            int wipMax = 1;
-            int wipIndex = 0;
-            do {
+            for (;;) {
                 if (done) {
                     StreamableHelper.whenComplete(upstream.finish(), this);
-                    break;
+                    return;
                 } else {
-                    StreamableHelper.whenComplete(upstream.next(), this);
-                }
-                if (++wipIndex == wipMax) {
-                    wipMax = get();
-                    if (wipIndex == wipMax) {
-                        wipMax = addAndGet(-wipMax);
-                        if (wipMax != 0) {
-                            wipIndex = 0;
+                    var upstreamNext = upstream.next().toCompletableFuture();
+
+                    var state = upstreamNext.state();
+
+                    if (state == State.RUNNING) {
+                        set(1);
+                        upstreamNext.whenComplete(this);
+                        if (compareAndSet(1, 0)) {
+                            return;
                         }
+                        state = upstreamNext.state();
+                    }
+
+                    if (state == State.SUCCESS) {
+                        if (upstreamNext.getNow(false)) {
+                            current = upstream.current();
+                        } else {
+                            done = true;
+                            StreamableHelper.whenComplete(upstream.finish(), this);
+                            return;
+                        }
+                    } else {
+                        nextFailure = upstreamNext.exceptionNow();
+                        done = true;
+                        StreamableHelper.whenComplete(upstream.finish(), this);
+                        return;
                     }
                 }
-            } while (wipMax != 0);
+            }
         }
 
         @Override
@@ -124,17 +136,19 @@ extends Single<T> implements HasUpstreamStreamableSource<T> {
                     }
                 }
             } else {
-                if (u != null) {
-                    nextFailure = u;
-                    done = true;
-                    drain();
-                } else {
-                    if ((Boolean)t) {
-                        current = upstream.current();
-                    } else {
+                if (!compareAndSet(1, 2)) {
+                    if (u != null) {
+                        nextFailure = u;
                         done = true;
+                        drain();
+                    } else {
+                        if ((Boolean)t) {
+                            current = upstream.current();
+                        } else {
+                            done = true;
+                        }
+                        drain();
                     }
-                    drain();
                 }
             }
         }

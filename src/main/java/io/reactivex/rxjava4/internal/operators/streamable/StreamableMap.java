@@ -37,10 +37,10 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
         var upstream = source.stream(cancellation);
         if (upstream instanceof IndexableSource<?> isrc) {
             return new MapStreamerIndexed<>(upstream, (IndexableSource<T>)isrc, mapper);
-        }
+        } else
         if (upstream instanceof DeferredEnumerableSource<?> esrc) {
             return new MapStreamerDeferredEnumerated<>(upstream, (DeferredEnumerableSource<T>)esrc, mapper);
-        }
+        } else
         if (upstream instanceof EnumerableSource<?> esrc) {
             return new MapStreamerEnumerated<>(upstream, (EnumerableSource<T>)esrc, mapper);
         }
@@ -114,9 +114,11 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
     }
 
     static final class MapStreamerIndexed<T, R> extends MapStreamerBase<T, R>
-    implements IndexableSource<R> {
+    implements IndexableSource<R>, EnumerableSource<R> {
 
         final IndexableSource<T> indexed;
+
+        long index = -1L;
 
         MapStreamerIndexed(Streamer<T> upstream, IndexableSource<T> indexed, Function<? super T, ? extends R> mapper) {
             super(upstream, mapper);
@@ -131,6 +133,15 @@ implements Streamable<R>, HasUpstreamStreamableSource<T> {
         @Override
         public long limit() {
             return indexed.limit();
+        }
+
+        @Override
+        public boolean nextSync() throws Throwable {
+            if (++index >= indexed.limit()) {
+                return false;
+            }
+            current = elementAt(index);
+            return true;
         }
     }
 

@@ -24,6 +24,7 @@ import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 import io.reactivex.rxjava4.processors.DispatchStreamProcessor;
+import io.reactivex.rxjava4.schedulers.Schedulers;
 
 public class StreamableLastAsSingleTest extends StreamableBaseTest {
 
@@ -105,5 +106,14 @@ public class StreamableLastAsSingleTest extends StreamableBaseTest {
 
         assertTrue(operator instanceof HasUpstreamStreamableSource<?> huss && source == huss.source(),
                 "HasUpstreamStreamableSource not supported or source() returns something unexpected: " + operator);
+    }
+
+    @Test
+    public void intervalRange() throws Throwable {
+        Streamable.intervalRange(1, 5, 1, 1, TimeUnit.MILLISECONDS, Schedulers.single())
+        .lastOrError()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(5L);
     }
 }
