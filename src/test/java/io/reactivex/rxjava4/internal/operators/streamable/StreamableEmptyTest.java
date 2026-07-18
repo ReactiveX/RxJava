@@ -58,6 +58,7 @@ public class StreamableEmptyTest extends StreamableBaseTest {
             StreamableEmpty.EmptyStreamer.INSTANCE.current();
         });
     }
+
     @Test
     public void noSuchElementExceptionElementAt() {
         assertThrows(NoSuchElementException.class, () -> {
