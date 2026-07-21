@@ -18,7 +18,7 @@ import java.util.concurrent.CompletionException;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.Streamable;
-import io.reactivex.rxjava4.disposables.CompositeDisposable;
+import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 
@@ -36,7 +36,23 @@ public record StreamableBlocking() {
     @CheckReturnValue
     @NonNull
     public static <T> T blockingFirst(Streamable<T> source) {
-        var streamer = source.stream(new CompositeDisposable());
+        return blockingFirst(source, new CompositeDisposable());
+    }
+
+    /**
+     * Consumes the first item and finishes the {@link Streamable},
+     * throwing {@link NoSuchElementException} if the source is empty.
+     * @param <T> the element type
+     * @param source the source {@code Streamable}
+     * @param cancellation the external cancellation manager
+     * @return the first item
+     * @throws RuntimeException if the source signals an unchecked exception
+     * @throws CompletionException if the source signals a checked exception
+     */
+    @CheckReturnValue
+    @NonNull
+    public static <T> T blockingFirst(Streamable<T> source, StreamerCancellation cancellation) {
+        var streamer = source.stream(cancellation);
         Throwable nextException = null;
         Throwable finishException = null;
         T result = null;
@@ -74,7 +90,21 @@ public record StreamableBlocking() {
      * @throws CompletionException if the source signals a checked exception
      */
     public static <T> T blockingLast(Streamable<T> source) {
-        var streamer = source.stream(new CompositeDisposable());
+        return blockingLast(source, new CompositeDisposable());
+    }
+
+    /**
+     * Consumes all upstream items and returns the very last or throws
+     * a {@link NoSuchElementException}.
+     * @param <T> the element type
+     * @param source the source sequence
+     * @param cancellation the external cancellation manager
+     * @return the very last value
+     * @throws RuntimeException if the source signals an unchecked exception
+     * @throws CompletionException if the source signals a checked exception
+     */
+    public static <T> T blockingLast(Streamable<T> source, StreamerCancellation cancellation) {
+        var streamer = source.stream(cancellation);
         Throwable nextException = null;
         Throwable finishException = null;
         T result = null;

@@ -623,6 +623,19 @@ public interface Streamable<@NonNull T> {
     default T blockingFirst() {
         return StreamableBlocking.blockingFirst(this);
     }
+    /**
+     * Blocks the current thread until this {@code Streamable} produces one item, which is then returned.
+     * @param cancellation the external cancellation resource to pass into the chain
+     * @return the first item of this {@code Streamable}
+     * @throws NoSuchElementException if the this {@code Streamable} is empty
+     * @throws CancellationException if this {@code Streamable} failed with a checked exception
+     * @throws RuntimeException if this {@code Streamable} failed with an unchecked exception
+     */
+    @CheckReturnValue
+    @NonNull
+    default T blockingFirst(StreamerCancellation cancellation) {
+        return StreamableBlocking.blockingFirst(this, cancellation);
+    }
 
     /**
      * Blocks the current thread until this {@code Streamable} produces all of its items
@@ -636,6 +649,21 @@ public interface Streamable<@NonNull T> {
     @NonNull
     default T blockingLast() {
         return StreamableBlocking.blockingLast(this);
+    }
+
+    /**
+     * Blocks the current thread until this {@code Streamable} produces all of its items
+     * and the very last is then returned.
+     * @param cancellation the external cancellation resource to pass into the chain
+     * @return the very last item of this {@code Streamable}
+     * @throws NoSuchElementException if the this {@code Streamable} is empty
+     * @throws CancellationException if this {@code Streamable} failed with a checked exception
+     * @throws RuntimeException if this {@code Streamable} failed with an unchecked exception
+     */
+    @CheckReturnValue
+    @NonNull
+    default T blockingLast(StreamerCancellation cancellation) {
+        return StreamableBlocking.blockingLast(this, cancellation);
     }
 
     /**
