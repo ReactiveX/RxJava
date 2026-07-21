@@ -20,7 +20,7 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.operators.*;
 
-public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
+public record StreamableJust<T>(@NonNull T item) implements IsSynchronousStreamable<T> {
 
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {

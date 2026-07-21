@@ -15,8 +15,10 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -95,5 +97,98 @@ public class StreamableTakeTest extends StreamableBaseTest {
         ts
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3);
+    }
+
+    @Test
+    public void normalHidden() throws Throwable {
+        Streamable.range(1, 10)
+        .hide()
+        .take(5)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void normalIndexed() throws Throwable {
+        Streamable.range(1, 10)
+        .take(5)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void normalEnumerable() throws Throwable {
+        Streamable.range(1, 10)
+        .filter(v -> v >= 2)
+        .take(5)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(2, 3, 4, 5, 6);
+    }
+
+    @Test
+    public void normalEnumerableDebug() throws Throwable {
+        withCachedExecutor(exec -> {
+            Streamable.range(1, 10)
+            .filter(v -> v >= 2)
+            .take(5)
+            .test(exec)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(2, 3, 4, 5, 6);
+        });
+    }
+
+    @Test
+    public void normalDeferredEnumerable() throws Throwable {
+        Single.just(1)
+        .flattenAsStreamable(v -> List.of(v, v + 1, v + 2, v + 3, v + 4, v + 5, v + 6))
+        .take(5)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void normalIndexedCollect() throws Throwable {
+        Streamable.range(1, 10)
+        .take(5)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(1, 2, 3, 4, 5));
+    }
+
+    @Test
+    public void normalIndexedCollect2() throws Throwable {
+        Streamable.range(1, 3)
+        .take(5)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(1, 2, 3));
+    }
+
+    @Test
+    public void normalEnumerableCollect() throws Throwable {
+        Streamable.range(1, 10)
+        .filter(v -> v >= 2)
+        .take(5)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(2, 3, 4, 5, 6));
+    }
+
+    @Test
+    public void normalDeferredEnumerableCollect() throws Throwable {
+        Single.just(1)
+        .flattenAsStreamable(v -> List.of(v, v + 1, v + 2, v + 3, v + 4, v + 5, v + 6))
+        .take(5)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(1, 2, 3, 4, 5));
     }
 }

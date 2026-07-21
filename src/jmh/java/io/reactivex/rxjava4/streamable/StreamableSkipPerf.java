@@ -13,11 +13,13 @@
 
 package io.reactivex.rxjava4.streamable;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.openjdk.jmh.annotations.*;
 
-import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.Streamable;
 
 ///
 /// The map is one of the most used operator in the ecosystem so it must be fast and
@@ -66,6 +68,48 @@ import io.reactivex.rxjava4.core.*;
 /// StreamableSkipPerf.benchmark   100000  thrpt    5        2168,925 ┬▒        32,591  ops/s
 /// StreamableSkipPerf.benchmark  1000000  thrpt    5         214,055 ┬▒         5,629  ops/s
 /// ```
+///
+/// # 3. sync bias via Claude Fable atomics
+///
+/// Small regression on 1, but +200% on million vs 2., almost +410% vs baseline
+///
+/// ```
+/// Benchmark                     (times)   Mode  Cnt           Score           Error  Units
+/// StreamableSkipPerf.benchmark        1  thrpt    5  1392748873,097 ┬▒ 240564597,648  ops/s
+/// StreamableSkipPerf.benchmark       10  thrpt    5    50478482,677 ┬▒   2503440,823  ops/s
+/// StreamableSkipPerf.benchmark      100  thrpt    5     8260512,961 ┬▒    832256,445  ops/s
+/// StreamableSkipPerf.benchmark     1000  thrpt    5      617903,033 ┬▒    127135,231  ops/s
+/// StreamableSkipPerf.benchmark    10000  thrpt    5       65116,345 ┬▒      8425,364  ops/s
+/// StreamableSkipPerf.benchmark   100000  thrpt    5        6298,539 ┬▒       739,686  ops/s
+/// StreamableSkipPerf.benchmark  1000000  thrpt    5         634,945 ┬▒        99,134  ops/s
+/// ```
+///
+/// # 4. indexable/enumerable/deferredenumerable
+///
+/// ```
+/// Benchmark                      (times)   Mode  Cnt           Score           Error  Units
+/// StreamableSkipPerf.benchmark         1  thrpt    5  1371065918,333 ┬▒ 114154178,555  ops/s
+/// StreamableSkipPerf.benchmark        10  thrpt    5    48387844,296 ┬▒   1998160,368  ops/s
+/// StreamableSkipPerf.benchmark       100  thrpt    5     8344391,259 ┬▒    251723,213  ops/s
+/// StreamableSkipPerf.benchmark      1000  thrpt    5      700332,413 ┬▒     28667,777  ops/s
+/// StreamableSkipPerf.benchmark     10000  thrpt    5       68645,229 ┬▒      3123,103  ops/s
+/// StreamableSkipPerf.benchmark    100000  thrpt    5        6047,152 ┬▒       725,594  ops/s
+/// StreamableSkipPerf.benchmark   1000000  thrpt    5         649,134 ┬▒        36,349  ops/s
+/// StreamableSkipPerf.enumerable        1  thrpt    5    71117553,552 ┬▒   6738602,495  ops/s
+/// StreamableSkipPerf.enumerable       10  thrpt    5    43426136,653 ┬▒   2744303,836  ops/s
+/// StreamableSkipPerf.enumerable      100  thrpt    5     2819347,969 ┬▒     20437,839  ops/s
+/// StreamableSkipPerf.enumerable     1000  thrpt    5      298000,822 ┬▒     28754,714  ops/s
+/// StreamableSkipPerf.enumerable    10000  thrpt    5       28839,499 ┬▒      3096,840  ops/s
+/// StreamableSkipPerf.enumerable   100000  thrpt    5        2657,147 ┬▒        23,023  ops/s
+/// StreamableSkipPerf.enumerable  1000000  thrpt    5         187,770 ┬▒        42,082  ops/s
+/// StreamableSkipPerf.indexed           1  thrpt    5    75403131,814 ┬▒   4676965,390  ops/s
+/// StreamableSkipPerf.indexed          10  thrpt    5    42730509,975 ┬▒   6004178,786  ops/s
+/// StreamableSkipPerf.indexed         100  thrpt    5     3561284,547 ┬▒    381609,301  ops/s
+/// StreamableSkipPerf.indexed        1000  thrpt    5      346781,462 ┬▒     28909,008  ops/s
+/// StreamableSkipPerf.indexed       10000  thrpt    5       54254,177 ┬▒      7440,753  ops/s
+/// StreamableSkipPerf.indexed      100000  thrpt    5        5153,256 ┬▒       310,895  ops/s
+/// StreamableSkipPerf.indexed     1000000  thrpt    5         259,912 ┬▒        76,746  ops/s
+/// ```
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
@@ -77,14 +121,28 @@ public class StreamableSkipPerf {
     public int times;
 
     Streamable<Integer> result;
+    Streamable<List<Integer>> resultIndexed;
+    Streamable<List<Integer>> resultEnumerable;
 
     @Setup
     public void setup() {
         result = Streamable.range(1, times).skip(times / 2);
+        resultIndexed = Streamable.range(1, times).skip(times / 2).collect(Collectors.toList());
+        resultEnumerable = Streamable.range(1, times).filter(_ -> true).skip(times / 2).collect(Collectors.toList());
     }
 
     @Benchmark
     public Object benchmark() {
         return result.blockingLast();
+    }
+
+    @Benchmark
+    public Object indexed() {
+        return resultIndexed.blockingLast();
+    }
+
+    @Benchmark
+    public Object enumerable() {
+        return resultEnumerable.blockingLast();
     }
 }
