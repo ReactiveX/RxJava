@@ -28,23 +28,12 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  *
  * @param <T> the source element type
  */
-public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T>
-implements FlowableSubscriber<T> {
+public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
 
     /**
      * The subscription to the source should happen at most once.
      */
     final AtomicBoolean once;
-
-    /**
-     * The number of items per cached nodes.
-     */
-    final int capacityHint;
-
-    /**
-     * The current known array of subscriber state to notify.
-     */
-    final AtomicReference<CacheSubscription<T>[]> subscribers;
 
     /**
      * A shared instance of an empty array of subscribers to avoid creating
@@ -60,61 +49,44 @@ implements FlowableSubscriber<T> {
     static final CacheSubscription[] TERMINATED = new CacheSubscription[0];
 
     /**
-     * The total number of elements in the list available for reads.
+     * Responsible for caching events from the source and multicasting them to each downstream.
      */
-    volatile long size;
+    final Multicaster<T> multicaster;
 
     /**
-     * The starting point of the cached items.
+     * The first node in a singly linked list. Each node has the capacity to hold a specific number of events, and each
+     * points exclusively to the <em>next</em> node (if present). When a new downstream arrives, the subscription is
+     * initialized with a reference to the "head" node, and any events present in the linked list are replayed. As
+     * events are replayed to the new downstream, its 'node' reference advances through the linked list, discarding each
+     * node reference once all events in that node have been replayed. Consequently, once {@code this} instance goes out
+     * of scope, the prefix of nodes up to the first node that is still being replayed becomes unreachable and eligible
+     * for collection.
      */
     final Node<T> head;
-
-    /**
-     * The current tail of the linked structure holding the items.
-     */
-    Node<T> tail;
-
-    /**
-     * How many items have been put into the tail node so far.
-     */
-    int tailOffset;
-
-    /**
-     * If {@link #subscribers} is {@link #TERMINATED}, this holds the terminal error if not null.
-     */
-    Throwable error;
-
-    /**
-     * True if the source has terminated.
-     */
-    volatile boolean done;
 
     /**
      * Constructs an empty, non-connected cache.
      * @param source the source to subscribe to for the first incoming subscriber
      * @param capacityHint the number of items expected (reduce allocation frequency)
      */
-    @SuppressWarnings("unchecked")
     public FlowableCache(Flowable<T> source, int capacityHint) {
         super(source);
-        this.capacityHint = capacityHint;
         this.once = new AtomicBoolean();
         Node<T> n = new Node<>(capacityHint);
         this.head = n;
-        this.tail = n;
-        this.subscribers = new AtomicReference<>(EMPTY);
+        this.multicaster = new Multicaster<>(capacityHint, n);
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> t) {
-        CacheSubscription<T> consumer = new CacheSubscription<>(t, this);
+        CacheSubscription<T> consumer = new CacheSubscription<>(t, multicaster, head);
         t.onSubscribe(consumer);
-        add(consumer);
+        multicaster.add(consumer);
 
         if (!once.get() && once.compareAndSet(false, true)) {
-            source.subscribe(this);
+            source.subscribe(multicaster);
         } else {
-            replay(consumer);
+            multicaster.replay(consumer);
         }
     }
 
@@ -131,7 +103,7 @@ implements FlowableSubscriber<T> {
      * @return true if the cache has Subscribers
      */
     /* public */ boolean hasSubscribers() {
-        return subscribers.get().length != 0;
+        return multicaster.get().length != 0;
     }
 
     /**
@@ -139,116 +111,138 @@ implements FlowableSubscriber<T> {
      * @return the number of currently cached event count
      */
     /* public */ long cachedEventCount() {
-        return size;
+        return multicaster.size;
     }
 
-    /**
-     * Atomically adds the consumer to the {@link #subscribers} copy-on-write array
-     * if the source has not yet terminated.
-     * @param consumer the consumer to add
-     */
-    void add(CacheSubscription<T> consumer) {
-        for (;;) {
-            CacheSubscription<T>[] current = subscribers.get();
-            if (current == TERMINATED) {
-                return;
-            }
-            int n = current.length;
+    static final class Multicaster<T> extends AtomicReference<CacheSubscription<T>[]>
+    implements FlowableSubscriber<T> {
 
-            @SuppressWarnings("unchecked")
-            CacheSubscription<T>[] next = new CacheSubscription[n + 1];
-            System.arraycopy(current, 0, next, 0, n);
-            next[n] = consumer;
+        /** */
+        private static final long serialVersionUID = 8514643269016498691L;
 
-            if (subscribers.compareAndSet(current, next)) {
-                return;
-            }
+        /**
+         * The number of items per cached nodes.
+         */
+        final int capacityHint;
+
+        /**
+         * The total number of elements in the list available for reads.
+         */
+        volatile long size;
+
+        /**
+         * The current tail of the linked structure holding the items.
+         */
+        Node<T> tail;
+
+        /**
+         * How many items have been put into the tail node so far.
+         */
+        int tailOffset;
+
+        /**
+         * If the subscribers are {@link #TERMINATED}, this holds the terminal error if not null.
+         */
+        Throwable error;
+
+        /**
+         * True if the source has terminated.
+         */
+        volatile boolean done;
+
+        @SuppressWarnings("unchecked")
+        Multicaster(int capacityHint, Node<T> head) {
+            super(EMPTY);
+            this.tail = head;
+            this.capacityHint = capacityHint;
         }
-    }
 
-    /**
-     * Atomically removes the consumer from the {@link #subscribers} copy-on-write array.
-     * @param consumer the consumer to remove
-     */
-    @SuppressWarnings("unchecked")
-    void remove(CacheSubscription<T> consumer) {
-        for (;;) {
-            CacheSubscription<T>[] current = subscribers.get();
-            int n = current.length;
-            if (n == 0) {
-                return;
-            }
+        /**
+         * Atomically adds the consumer to the subscribers copy-on-write array
+         * if the source has not yet terminated.
+         * @param consumer the consumer to add
+         */
+        void add(CacheSubscription<T> consumer) {
+            for (;;) {
+                CacheSubscription<T>[] current = get();
+                if (current == TERMINATED) {
+                    return;
+                }
+                int n = current.length;
 
-            int j = -1;
-            for (int i = 0; i < n; i++) {
-                if (current[i] == consumer) {
-                    j = i;
-                    break;
+                @SuppressWarnings("unchecked")
+                CacheSubscription<T>[] next = new CacheSubscription[n + 1];
+                System.arraycopy(current, 0, next, 0, n);
+                next[n] = consumer;
+
+                if (compareAndSet(current, next)) {
+                    return;
                 }
             }
-
-            if (j < 0) {
-                return;
-            }
-            CacheSubscription<T>[] next;
-
-            if (n == 1) {
-                next = EMPTY;
-            } else {
-                next = new CacheSubscription[n - 1];
-                System.arraycopy(current, 0, next, 0, j);
-                System.arraycopy(current, j + 1, next, j, n - j - 1);
-            }
-
-            if (subscribers.compareAndSet(current, next)) {
-                return;
-            }
-        }
-    }
-
-    /**
-     * Replays the contents of this cache to the given consumer based on its
-     * current state and number of items requested by it.
-     * @param consumer the consumer to continue replaying items to
-     */
-    void replay(CacheSubscription<T> consumer) {
-        // make sure there is only one replay going on at a time
-        if (consumer.getAndIncrement() != 0) {
-            return;
         }
 
-        // see if there were more replay request in the meantime
-        int missed = 1;
-        // read out state into locals upfront to avoid being re-read due to volatile reads
-        long index = consumer.index;
-        int offset = consumer.offset;
-        Node<T> node = consumer.node;
-        AtomicLong requested = consumer.requested;
-        Subscriber<? super T> downstream = consumer.downstream;
-        int capacity = capacityHint;
+        /**
+         * Atomically removes the consumer from the subscribers copy-on-write array.
+         * @param consumer the consumer to remove
+         */
+        @SuppressWarnings("unchecked")
+        void remove(CacheSubscription<T> consumer) {
+            for (;;) {
+                CacheSubscription<T>[] current = get();
+                int n = current.length;
+                if (n == 0) {
+                    return;
+                }
 
-        for (;;) {
-            // first see if the source has terminated, read order matters!
-            boolean sourceDone = done;
-            // and if the number of items is the same as this consumer has received
-            boolean empty = size == index;
+                int j = -1;
+                for (int i = 0; i < n; i++) {
+                    if (current[i] == consumer) {
+                        j = i;
+                        break;
+                    }
+                }
 
-            // if the source is done and we have all items so far, terminate the consumer
-            if (sourceDone && empty) {
-                // release the node object to avoid leaks through retained consumers
-                consumer.node = null;
-                // if error is not null then the source failed
-                Throwable ex = error;
-                if (ex != null) {
-                    downstream.onError(ex);
+                if (j < 0) {
+                    return;
+                }
+                CacheSubscription<T>[] next;
+
+                if (n == 1) {
+                    next = EMPTY;
                 } else {
-                    downstream.onComplete();
+                    next = new CacheSubscription[n - 1];
+                    System.arraycopy(current, 0, next, 0, j);
+                    System.arraycopy(current, j + 1, next, j, n - j - 1);
                 }
+
+                if (compareAndSet(current, next)) {
+                    return;
+                }
+            }
+        }
+
+        /**
+         * Replays the contents of this cache to the given consumer based on its
+         * current state and number of items requested by it.
+         * @param consumer the consumer to continue replaying items to
+         */
+        void replay(CacheSubscription<T> consumer) {
+            // make sure there is only one replay going on at a time
+            if (consumer.getAndIncrement() != 0) {
                 return;
             }
 
-            // there are still items not sent to the consumer
-            if (!empty) {
+            // see if there were more replay request in the meantime
+            int missed = 1;
+            // read out state into locals upfront to avoid being re-read due to volatile reads
+            long index = consumer.index;
+            int offset = consumer.offset;
+            Node<T> node = consumer.node;
+            AtomicLong requested = consumer.requested;
+            Subscriber<? super T> downstream = consumer.downstream;
+            int capacity = capacityHint;
+
+            for (;;) {
                 // see how many items the consumer has requested in total so far
                 long consumerRequested = requested.get();
                 // MIN_VALUE indicates a cancelled consumer, we stop replaying
@@ -257,9 +251,28 @@ implements FlowableSubscriber<T> {
                     consumer.node = null;
                     return;
                 }
-                // if the consumer has requested more and there is more, we will emit an item
-                if (consumerRequested != index) {
 
+                // first see if the source has terminated, read order matters!
+                boolean sourceDone = done;
+                // and if the number of items is the same as this consumer has received
+                boolean empty = size == index;
+
+                // if the source is done and we have all items so far, terminate the consumer
+                if (sourceDone && empty) {
+                    // release the node object to avoid leaks through retained consumers
+                    consumer.node = null;
+                    // if error is not null then the source failed
+                    Throwable ex = error;
+                    if (ex != null) {
+                        downstream.onError(ex);
+                    } else {
+                        downstream.onComplete();
+                    }
+                    return;
+                }
+
+                // there are still items not sent to the consumer
+                if (!empty && consumerRequested != index) {
                     // if the offset in the current node has reached the node capacity
                     if (offset == capacity) {
                         // switch to the subsequent node
@@ -279,65 +292,75 @@ implements FlowableSubscriber<T> {
                     // retry for the next item/terminal event if any
                     continue;
                 }
+
+                // commit the changed references back
+                consumer.index = index;
+                consumer.offset = offset;
+                consumer.node = node;
+                // release the changes and see if there were more replay request in the meantime
+                missed = consumer.addAndGet(-missed);
+                if (missed == 0) {
+                    break;
+                }
             }
+        }
 
-            // commit the changed references back
-            consumer.index = index;
-            consumer.offset = offset;
-            consumer.node = node;
-            // release the changes and see if there were more replay request in the meantime
-            missed = consumer.addAndGet(-missed);
-            if (missed == 0) {
-                break;
+        @Override
+        public void onSubscribe(Subscription s) {
+            s.request(Long.MAX_VALUE);
+        }
+
+        @Override
+        public void onNext(T t) {
+            if (done) {
+                return;
+            }
+            int tailOffset = this.tailOffset;
+            // if the current tail node is full, create a fresh node
+            if (tailOffset == capacityHint) {
+                Node<T> n = new Node<>(tailOffset);
+                n.values[0] = t;
+                this.tailOffset = 1;
+                tail.next = n;
+                tail = n;
+            } else {
+                tail.values[tailOffset] = t;
+                this.tailOffset = tailOffset + 1;
+            }
+            size++;
+            for (CacheSubscription<T> consumer : get()) {
+                replay(consumer);
             }
         }
-    }
 
-    @Override
-    public void onSubscribe(Subscription s) {
-        s.request(Long.MAX_VALUE);
-    }
+        @SuppressWarnings("unchecked")
+        @Override
+        public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            error = t;
+            done = true;
+            // No additional events will arrive, so now we can clear the 'tail' reference
+            tail = null;
+            for (CacheSubscription<T> consumer : getAndSet(TERMINATED)) {
+                replay(consumer);
+            }
+        }
 
-    @Override
-    public void onNext(T t) {
-        int tailOffset = this.tailOffset;
-        // if the current tail node is full, create a fresh node
-        if (tailOffset == capacityHint) {
-            Node<T> n = new Node<>(tailOffset);
-            n.values[0] = t;
-            this.tailOffset = 1;
-            tail.next = n;
-            tail = n;
-        } else {
-            tail.values[tailOffset] = t;
-            this.tailOffset = tailOffset + 1;
-        }
-        size++;
-        for (CacheSubscription<T> consumer : subscribers.get()) {
-            replay(consumer);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void onError(Throwable t) {
-        if (done) {
-            RxJavaPlugins.onError(t);
-            return;
-        }
-        error = t;
-        done = true;
-        for (CacheSubscription<T> consumer : subscribers.getAndSet(TERMINATED)) {
-            replay(consumer);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void onComplete() {
-        done = true;
-        for (CacheSubscription<T> consumer : subscribers.getAndSet(TERMINATED)) {
-            replay(consumer);
+        @SuppressWarnings("unchecked")
+        @Override
+        public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
+            // No additional events will arrive, so now we can clear the 'tail' reference
+            tail = null;
+            for (CacheSubscription<T> consumer : getAndSet(TERMINATED)) {
+                replay(consumer);
+            }
         }
     }
 
@@ -353,7 +376,7 @@ implements FlowableSubscriber<T> {
 
         final Subscriber<? super T> downstream;
 
-        final FlowableCache<T> parent;
+        final Multicaster<T> parent;
 
         final AtomicLong requested;
 
@@ -365,14 +388,15 @@ implements FlowableSubscriber<T> {
 
         /**
          * Constructs a new instance with the actual downstream consumer and
-         * the parent cache object.
+         * the parent multicaster.
          * @param downstream the actual consumer
          * @param parent the parent that holds onto the cached items
+         * @param head the first node in the linked list
          */
-        CacheSubscription(Subscriber<? super T> downstream, FlowableCache<T> parent) {
+        CacheSubscription(Subscriber<? super T> downstream, Multicaster<T> parent, Node<T> head) {
             this.downstream = downstream;
             this.parent = parent;
-            this.node = parent.head;
+            this.node = head;
             this.requested = new AtomicLong();
         }
 
