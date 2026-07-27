@@ -1,8 +1,24 @@
 # Contributing to RxJava 4.x
 
-If you would like to contribute code you can do so through GitHub by forking the repository and sending a pull request targeting the branch `3.x`.
+If you would like to contribute code you can do so through GitHub by forking the repository and sending a pull request targeting the branch `4.x`.
+
+If necessary, we can decide if your contribution can or needs to be backported to fix a major issue with the previous maintained version.
+
+:warning: Do not target 3.x with new operators, bugfixes, cosmetic or pedantic changes.
 
 When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible.
+
+When you contribute, consider any amplification of your work towards us. We don't have the capacity to propagate your changes to relevant other places in the code. So if you fix `Observable`, there is a good chance `Flowable` and `Streamable` may need changes too. You can do this in multiple PRs over a bigger timespan.
+
+We'd also like to avoid low-effort drive by PRs, spam, changes that clearly show you are trying to prop up your repertoire with a popular repository.
+
+:warning: In addition, failing to respond to change requests, clarification requests or detailed reasons for a change will result in your PR being rejected on principle, even if technically correct.
+
+:information_source: If you are/were using AI to manipulate the code, we require you disclose it in your PR text. If you discussed your change with an AI but coded it yourself, we'd still like you disclosed that and a brief except of your and the AIs reasoning for the change.
+
+:stop_sign: Due to the maturity of the project (10-14 years depending on where you count it started) and in an age of low effort, AI laden content creation, we are taking a much harsher stance of you causing us trouble with your conduct: you will be banned and the issue/PR title changed to `[Banned, reason]` for everyone to see. If you hide your public contributions in your profile and contribute to us, no matter what you did, you will be automatically banned. 
+
+**Transparency over one's conduct is a primary principle in this project.**
 
 ## AI contributions
 
