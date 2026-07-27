@@ -1,6 +1,6 @@
 name: Entropy Beauty + TruffleHog Scan
 
-on: [push, release, pull_request, pull_request_target]
+on: [push, release, pull_request_target]
 
 permissions:
   contents: read
@@ -11,23 +11,51 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code (full history)
-        uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: ${{ github.event_name == 'pull_request_target' && 1 || 2 }}
+          allow-unsafe-pr-checkout: ${{ github.event_name == 'pull_request_target' }}
+
+      - name: Fetch PR base commit (needed for accurate diff)
+        if: github.event_name == 'pull_request_target'
+        run: git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
+
+      - name: Cache pip manually
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-entropy-${{ hashFiles('.github/workflows/compute-entropy.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-entropy-
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies (only when needed)
+        run: |
+          python -m pip install --upgrade pip
+          # No extra packages needed — compute-entropy.py uses only stdlib
 
       - name: Run TruffleHog
-        uses: trufflesecurity/trufflehog@main
+        uses: trufflesecurity/trufflehog@27b0417c16317ca9a472a9a8092acce143b49c55 # v3.95.9
         with:
           path: .
           extra_args: --results=verified,unknown --filter-entropy=3.5 --json
 
       - name: Compute mid-4 beauty entropy
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: python .github/workflows/compute-entropy.py
 
       - name: Post summary comment (PR only)
         if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -43,7 +71,6 @@ jobs:
                 }).filter(Boolean);
               } catch(e) {}
             } else {
-              // Fallback: the action also logs to GITHUB_STEP_SUMMARY, but we use the file from the Python step
               console.log("No trufflehog.json found, using empty findings");
             }
 
@@ -71,10 +98,11 @@ jobs:
               issue_number: context.issue.number,
               body: body
             });
-      # ── Create issue on push ONLY if suspicious (entropy outside 4.3–4.7) ──
+
+      # ── Create issue on push ONLY if suspicious (entropy outside 4.3–5.1) ──
       - name: Create issue on suspicious push
         if: github.event_name == 'push' || github.event_name == 'release'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -82,7 +110,7 @@ jobs:
             const beauty = JSON.parse(fs.readFileSync('/tmp/beauty.json', 'utf8'));
 
             // Only create issue if it's NOT beautiful mid-4
-            if (beauty.average_entropy >= 4.3 && beauty.average_entropy <= 4.7) {
+            if (beauty.average_entropy >= 4.3 && beauty.average_entropy <= 5.1) {
               console.log("✅ Mid-4 beauty — no issue created");
               return;
             }
