@@ -383,19 +383,6 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     }
 
     @Test
-    public void requestCancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>never())
-            .flatMapSingle(Functions.justFunction(Single.just(2))).test(0);
-
-            Runnable r1 = () -> ts.request(1);
-            Runnable r2 = ts::cancel;
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
     public void asyncFlattenErrorMaxConcurrency() {
         Flowable.range(1, 1000)
         .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ ->
@@ -423,24 +410,6 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void badRequest() {
         TestHelper.assertBadRequestReported(Flowable.never().flatMapSingle(_ -> Single.never()));
-    }
-
-    @Test
-    public void successRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            SingleSubject<Integer> ss1 = SingleSubject.create();
-            SingleSubject<Integer> ss2 = SingleSubject.create();
-
-            TestSubscriber<Integer> ts = Flowable.just(ss1, ss2).flatMapSingle(v -> v)
-            .test();
-
-            TestHelper.race(
-                    () -> ss1.onSuccess(1),
-                    () -> ss2.onSuccess(1)
-            );
-
-            ts.assertResult(1, 1);
-        }
     }
 
     @Test

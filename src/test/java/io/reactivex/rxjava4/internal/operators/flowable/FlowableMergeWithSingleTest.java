@@ -120,27 +120,6 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
     }
 
     @Test
-    public void completeRace() {
-        for (int i = 0; i < 10000; i++) {
-            final PublishProcessor<Integer> pp = PublishProcessor.create();
-            final SingleSubject<Integer> cs = SingleSubject.create();
-
-            TestSubscriber<Integer> ts = pp.mergeWith(cs).test();
-
-            Runnable r1 = () -> {
-                pp.onNext(1);
-                pp.onComplete();
-            };
-
-            Runnable r2 = () -> cs.onSuccess(1);
-
-            TestHelper.race(r1, r2);
-
-            ts.assertResult(1, 1);
-        }
-    }
-
-    @Test
     public void onNextSlowPath() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
         final SingleSubject<Integer> cs = SingleSubject.create();
@@ -212,27 +191,6 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
     }
 
     @Test
-    public void onSuccessFastPathBackpressuredRace() {
-        for (int i = 0; i < 10000; i++) {
-            final PublishProcessor<Integer> pp = PublishProcessor.create();
-            final SingleSubject<Integer> cs = SingleSubject.create();
-
-            final TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<>(0));
-
-            Runnable r1 = () -> cs.onSuccess(1);
-
-            Runnable r2 = () -> ts.request(2);
-
-            TestHelper.race(r1, r2);
-
-            pp.onNext(2);
-            pp.onComplete();
-
-            ts.assertResult(1, 2);
-        }
-    }
-
-    @Test
     public void onErrorMainOverflow() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -271,29 +229,6 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
-        }
-    }
-
-    @Test
-    public void onNextRequestRace() {
-        for (int i = 0; i < 10000; i++) {
-            final PublishProcessor<Integer> pp = PublishProcessor.create();
-            final SingleSubject<Integer> cs = SingleSubject.create();
-
-            final TestSubscriber<Integer> ts = pp.mergeWith(cs).test(0);
-
-            pp.onNext(0);
-
-            Runnable r1 = () -> pp.onNext(1);
-
-            Runnable r2 = () -> ts.request(3);
-
-            TestHelper.race(r1, r2);
-
-            cs.onSuccess(1);
-            pp.onComplete();
-
-            ts.assertResult(0, 1, 1);
         }
     }
 

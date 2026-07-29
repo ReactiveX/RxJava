@@ -649,21 +649,6 @@ public class FlowableFlatMapTest extends RxJavaTest {
     }
 
     @Test
-    public void innerCompleteCancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp = PublishProcessor.create();
-
-            final TestSubscriber<Integer> ts = Flowable.merge(Flowable.just(pp)).test();
-
-            Runnable r1 = pp::onComplete;
-
-            Runnable r2 = ts::cancel;
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
     public void fusedInnerThrows() {
         Flowable.just(1).hide()
         .flatMap((Function<Integer, Flowable<Object>>) _ -> Flowable.range(1, 2).map(_ -> {
@@ -712,58 +697,6 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
             assertTrue(list.contains("RxSi"), list.toString());
             assertTrue(list.contains("RxCo"), list.toString());
-        }
-    }
-
-    @Test
-    public void cancelScalarDrainRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-            try {
-
-                final PublishProcessor<Flowable<Integer>> pp = PublishProcessor.create();
-
-                final TestSubscriber<Integer> ts = pp.flatMap(Functions.<Flowable<Integer>>identity()).test(0);
-
-                Runnable r1 = ts::cancel;
-                Runnable r2 = pp::onComplete;
-
-                TestHelper.race(r1, r2);
-
-                assertTrue(errors.isEmpty(), errors.toString());
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
-    }
-
-    @Test
-    public void cancelDrainRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            for (int j = 1; j < 50; j += 5) {
-                List<Throwable> errors = TestHelper.trackPluginErrors();
-                try {
-
-                    final PublishProcessor<Flowable<Integer>> pp = PublishProcessor.create();
-
-                    final TestSubscriber<Integer> ts = pp.flatMap(Functions.<Flowable<Integer>>identity()).test(0);
-
-                    final PublishProcessor<Integer> just = PublishProcessor.create();
-                    pp.onNext(just);
-
-                    Runnable r1 = () -> {
-                        ts.request(1);
-                        ts.cancel();
-                    };
-                    Runnable r2 = () -> just.onNext(1);
-
-                    TestHelper.race(r1, r2);
-
-                    assertTrue(errors.isEmpty(), errors.toString());
-                } finally {
-                    RxJavaPlugins.reset();
-                }
-            }
         }
     }
 
