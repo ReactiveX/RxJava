@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava4.core.Streamable;
-import io.reactivex.rxjava4.exceptions.TestException;
 
 public class StreamableFromStreamTest extends StreamableBaseTest {
 

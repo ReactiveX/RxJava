@@ -21,7 +21,7 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.operators.*;
 
-public enum StreamableEmpty implements Streamable<Object> {
+public enum StreamableEmpty implements IsSynchronousStreamable<Object> {
 
     INSTANCE;
 

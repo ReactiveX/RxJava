@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava4.disposables;
 
+import io.reactivex.rxjava4.internal.disposables.NeverDisposableStreamerCancellation;
+
 /**
  * Represents the full, disposable cancellation interface for {@code Streamer}
  * operations.
@@ -23,4 +25,13 @@ package io.reactivex.rxjava4.disposables;
  */
 public interface DisposableStreamerCancellation extends StreamerCancellation, Disposable {
 
+    /**
+     * Returns a constant instance which does nothing, cannot be disposed and
+     * accepts any incoming Disposable without registering it or handling it in any form,
+     * because this {@code never} instance cannot be disposed to begin with.
+     * @return the shared constant no-op instance
+     */
+    static DisposableStreamerCancellation never() {
+        return NeverDisposableStreamerCancellation.INSTANCE;
+    }
 }

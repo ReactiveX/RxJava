@@ -17,35 +17,42 @@ import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
+import io.reactivex.rxjava4.operators.*;
 
 public record StreamableTake<T>(Streamable<T> source, long count)
 implements Streamable<T>, HasUpstreamStreamableSource<T> {
 
+    @SuppressWarnings("unchecked")
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
-        var dsc = cancellation.derive();
-        return new TakeStreamer<>(source.stream(dsc), count, dsc);
+        var upstream = source.stream(cancellation);
+        if (upstream instanceof IndexableSource<?> isrc) {
+            return new TakeStreamerIndexable<>(upstream, (IndexableSource<T>)isrc, count);
+        } else
+        if (upstream instanceof DeferredEnumerableSource<?> dsrc) {
+            return new TakeStreamerDeferredEnumerable<>(upstream, (DeferredEnumerableSource<T>)dsrc, count);
+        } else
+        if (upstream instanceof EnumerableSource<?> esrc) {
+            return new TakeStreamerEnumerable<>(upstream, (EnumerableSource<T>)esrc, count);
+        }
+        return new TakeStreamerBasic<>(upstream, count);
     }
 
-    static final class TakeStreamer<T> implements Streamer<T> {
+    static abstract class TakeStreamerBase<T> implements Streamer<T> {
         final Streamer<T> upstream;
-
-        final Disposable upstreamDisposable;
 
         long remaining;
 
-        TakeStreamer(Streamer<T> upstream, long count, Disposable upstreamDisposable) {
+        TakeStreamerBase(Streamer<T> upstream, long count) {
             this.upstream = upstream;
-            this.upstreamDisposable = upstreamDisposable;
             this.remaining = count;
         }
 
         @Override
         public @NonNull CompletionStage<Boolean> next() {
             if (remaining-- <= 0L) {
-                upstreamDisposable.dispose();
                 return NEXT_FALSE;
             }
             return upstream.next();
@@ -60,5 +67,88 @@ implements Streamable<T>, HasUpstreamStreamableSource<T> {
         public @NonNull CompletionStage<Void> finish() {
             return upstream.finish();
         }
+    }
+
+    static final class TakeStreamerBasic<T> extends TakeStreamerBase<T> {
+
+        TakeStreamerBasic(Streamer<T> upstream, long count) {
+            super(upstream, count);
+        }
+
+    }
+
+    static final class TakeStreamerIndexable<T> extends TakeStreamerBase<T>
+    implements IndexableSource<T> {
+
+        final IndexableSource<T> indexable;
+
+        final long count;
+
+        TakeStreamerIndexable(Streamer<T> upstream, IndexableSource<T> indexable, long count) {
+            super(upstream, count);
+            this.indexable = indexable;
+            this.count = count;
+        }
+
+        @Override
+        public @NonNull T elementAt(long index) throws Throwable {
+            return indexable.elementAt(index);
+        }
+
+        @Override
+        public long limit() {
+            return Math.min(count, indexable.limit());
+        }
+    }
+
+    static final class TakeStreamerEnumerable<T> extends TakeStreamerBase<T>
+    implements EnumerableSource<T> {
+
+        final EnumerableSource<T> enumerable;
+
+        final long count;
+
+        TakeStreamerEnumerable(Streamer<T> upstream, EnumerableSource<T> enumerable, long count) {
+            super(upstream, count);
+            this.enumerable = enumerable;
+            this.count = count;
+        }
+
+        @Override
+        public boolean nextSync() throws Throwable {
+            while (remaining-- > 0) {
+                return enumerable.nextSync();
+            }
+            return false;
+        }
+
+    }
+
+    static final class TakeStreamerDeferredEnumerable<T> extends TakeStreamerBase<T>
+    implements DeferredEnumerableSource<T> {
+
+        final DeferredEnumerableSource<T> enumerable;
+
+        final long count;
+
+        TakeStreamerDeferredEnumerable(Streamer<T> upstream, DeferredEnumerableSource<T> enumerable, long count) {
+            super(upstream, count);
+            this.enumerable = enumerable;
+            this.count = count;
+        }
+
+        @Override
+        public boolean nextSync() throws Throwable {
+            while (remaining-- > 0) {
+                return enumerable.nextSync();
+            }
+            return false;
+        }
+
+        @Override
+        public CompletionStage<Boolean> enumerableReady() {
+            return enumerable.enumerableReady();
+        }
+
     }
 }
