@@ -8,6 +8,7 @@ on:
     branches: [ '4.x' ]
   pull_request:
     branches: [ '4.x' ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -19,11 +20,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [27]   # add 28-ea etc. later
+        jdk: [27, 28]   # add 28-ea etc. later
 
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - name: Set up JDK 26
+    - name: Set up JDK 26 for Gradle
       uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
       with:
         distribution: 'zulu'
@@ -31,10 +32,11 @@ jobs:
         cache: gradle
 
     - name: Set up JDK ${{ matrix.jdk }}-ea
-      uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+      uses: oracle-actions/setup-java@ec7274acdd237c7fe61395ed2edda22d756b5afe # v1
       with:
-        distribution: 'temurin'
-        java-version: '${{ matrix.jdk }}-ea'
+        website: jdk.java.net
+        release: ${{ matrix.jdk }}   # or just "27"
+        # version: latest   # default; this is what you want
 
     - name: Cache Gradle packages
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0

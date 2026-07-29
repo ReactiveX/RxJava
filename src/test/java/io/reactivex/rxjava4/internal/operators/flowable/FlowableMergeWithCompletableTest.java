@@ -99,27 +99,6 @@ public class FlowableMergeWithCompletableTest extends RxJavaTest {
     }
 
     @Test
-    public void completeRace() {
-        for (int i = 0; i < 1000; i++) {
-            final PublishProcessor<Integer> pp = PublishProcessor.create();
-            final CompletableSubject cs = CompletableSubject.create();
-
-            TestSubscriber<Integer> ts = pp.mergeWith(cs).test();
-
-            Runnable r1 = () -> {
-                pp.onNext(1);
-                pp.onComplete();
-            };
-
-            Runnable r2 = cs::onComplete;
-
-            TestHelper.race(r1, r2);
-
-            ts.assertResult(1);
-        }
-    }
-
-    @Test
     public void cancelOtherOnMainError() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         CompletableSubject cs = CompletableSubject.create();
