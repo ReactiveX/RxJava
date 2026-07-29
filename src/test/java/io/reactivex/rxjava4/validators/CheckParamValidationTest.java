@@ -728,6 +728,8 @@ public class CheckParamValidationTest extends RxJavaTest {
 
         defaultValues.put(StreamSink.class, new DispatchStreamProcessor<>());
 
+        defaultValues.put(StreamerCancellation.class, new CompositeDisposable());
+
         // TODO insert new config record types here
 
         @SuppressWarnings("rawtypes")

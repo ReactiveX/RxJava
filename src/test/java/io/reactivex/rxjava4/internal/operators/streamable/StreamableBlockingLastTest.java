@@ -76,7 +76,6 @@ public class StreamableBlockingLastTest extends StreamableBaseTest {
         assertTrue(ex.getSuppressed()[0] instanceof TestException, "Wrong exception? " + ex.getSuppressed()[0]);
     }
 
-
     @Test
     public void normalCancellation() throws Throwable {
         assertEquals(1, Streamable.just(1).blockingLast(DisposableStreamerCancellation.never()));

@@ -630,10 +630,12 @@ public interface Streamable<@NonNull T> {
      * @throws NoSuchElementException if the this {@code Streamable} is empty
      * @throws CancellationException if this {@code Streamable} failed with a checked exception
      * @throws RuntimeException if this {@code Streamable} failed with an unchecked exception
+     * @throws NullPointerException if {@code cancellation} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     default T blockingFirst(StreamerCancellation cancellation) {
+        Objects.requireNonNull(cancellation, "cancellation is null");
         return StreamableBlocking.blockingFirst(this, cancellation);
     }
 
@@ -659,10 +661,12 @@ public interface Streamable<@NonNull T> {
      * @throws NoSuchElementException if the this {@code Streamable} is empty
      * @throws CancellationException if this {@code Streamable} failed with a checked exception
      * @throws RuntimeException if this {@code Streamable} failed with an unchecked exception
+     * @throws NullPointerException if {@code cancellation} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     default T blockingLast(StreamerCancellation cancellation) {
+        Objects.requireNonNull(cancellation, "cancellation is null");
         return StreamableBlocking.blockingLast(this, cancellation);
     }
 
