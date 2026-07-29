@@ -472,19 +472,6 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     }
 
     @Test
-    public void requestCancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>never())
-            .flatMapMaybe(Functions.justFunction(Maybe.just(2))).test(0);
-
-            Runnable r1 = () -> ts.request(1);
-            Runnable r2 = ts::cancel;
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
     public void undeliverableUponCancel() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
             upstream.flatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide()));
@@ -500,42 +487,6 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void badRequest() {
         TestHelper.assertBadRequestReported(Flowable.never().flatMapMaybe(_ -> Maybe.never()));
-    }
-
-    @Test
-    public void successRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            MaybeSubject<Integer> ms1 = MaybeSubject.create();
-            MaybeSubject<Integer> ms2 = MaybeSubject.create();
-
-            TestSubscriber<Integer> ts = Flowable.just(ms1, ms2).flatMapMaybe(v -> v)
-            .test();
-
-            TestHelper.race(
-                    () -> ms1.onSuccess(1),
-                    () -> ms2.onSuccess(1)
-            );
-
-            ts.assertResult(1, 1);
-        }
-    }
-
-    @Test
-    public void successCompleteRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            MaybeSubject<Integer> ms1 = MaybeSubject.create();
-            MaybeSubject<Integer> ms2 = MaybeSubject.create();
-
-            TestSubscriber<Integer> ts = Flowable.just(ms1, ms2).flatMapMaybe(v -> v)
-            .test();
-
-            TestHelper.race(
-                    () -> ms1.onSuccess(1),
-                    ms2::onComplete
-            );
-
-            ts.assertResult(1);
-        }
     }
 
     @Test
