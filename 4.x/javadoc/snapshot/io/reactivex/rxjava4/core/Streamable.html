@@ -93,7 +93,9 @@ initTheme();
 <li><a href="#using(io.reactivex.rxjava4.functions.Supplier,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Consumer)" tabindex="0">using(Supplier, Function, Consumer)</a></li>
 <li><a href="#zip(java.lang.Iterable)" tabindex="0">zip(Iterable)</a></li>
 <li><a href="#blockingFirst()" tabindex="0">blockingFirst()</a></li>
+<li><a href="#blockingFirst(io.reactivex.rxjava4.disposables.StreamerCancellation)" tabindex="0">blockingFirst(StreamerCancellation)</a></li>
 <li><a href="#blockingLast()" tabindex="0">blockingLast()</a></li>
+<li><a href="#blockingLast(io.reactivex.rxjava4.disposables.StreamerCancellation)" tabindex="0">blockingLast(StreamerCancellation)</a></li>
 <li><a href="#collect(java.util.stream.Collector)" tabindex="0">collect(Collector)</a></li>
 <li><a href="#delay(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)" tabindex="0">delay(long, TimeUnit, Scheduler)</a></li>
 <li><a href="#doOnError(io.reactivex.rxjava4.functions.Consumer)" tabindex="0">doOnError(Consumer)</a></li>
@@ -223,7 +225,18 @@ or <a href="Streamer.html#awaitFinish()"><code>Streamer.awaitFinish()</code></a>
 <div class="block">Blocks the current thread until this <code>Streamable</code> produces one item, which is then returned.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="#type-param-T" title="type parameter in Streamable">T</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#blockingLast()" class="member-name-link">blockingLast</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#blockingFirst(io.reactivex.rxjava4.disposables.StreamerCancellation)" class="member-name-link">blockingFirst</a><wbr>(<a href="../disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a>&nbsp;cancellation)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces one item, which is then returned.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="#type-param-T" title="type parameter in Streamable">T</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#blockingLast()" class="member-name-link">blockingLast</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces all of its items
+and the very last is then returned.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="#type-param-T" title="type parameter in Streamable">T</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#blockingLast(io.reactivex.rxjava4.disposables.StreamerCancellation)" class="member-name-link">blockingLast</a><wbr>(<a href="../disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a>&nbsp;cancellation)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Blocks the current thread until this <code>Streamable</code> produces all of its items
 and the very last is then returned.</div>
@@ -1387,6 +1400,28 @@ sequence is completed early normally or with an exception, respectively.</div>
 </section>
 </li>
 <li>
+<section class="detail" id="blockingFirst(io.reactivex.rxjava4.disposables.StreamerCancellation)">
+<h3>blockingFirst</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="#type-param-T" title="type parameter in Streamable">T</a></span>&nbsp;<span class="element-name">blockingFirst</span><wbr><span class="parameters">(<a href="../disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a>&nbsp;cancellation)</span></div>
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces one item, which is then returned.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>cancellation</code> - the external cancellation resource to pass into the chain</dd>
+<dt>Returns:</dt>
+<dd>the first item of this <code>Streamable</code></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/NoSuchElementException.html" title="class in java.util" class="external-link">NoSuchElementException</a></code> - if the this <code>Streamable</code> is empty</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class in java.util.concurrent" class="external-link">CancellationException</a></code> - if this <code>Streamable</code> failed with a checked exception</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/RuntimeException.html" title="class in java.lang" class="external-link">RuntimeException</a></code> - if this <code>Streamable</code> failed with an unchecked exception</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>cancellation</code> is <code>null</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="blockingLast()">
 <h3>blockingLast</h3>
 <div class="horizontal-scroll">
@@ -1402,6 +1437,29 @@ and the very last is then returned.</div>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/NoSuchElementException.html" title="class in java.util" class="external-link">NoSuchElementException</a></code> - if the this <code>Streamable</code> is empty</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class in java.util.concurrent" class="external-link">CancellationException</a></code> - if this <code>Streamable</code> failed with a checked exception</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/RuntimeException.html" title="class in java.lang" class="external-link">RuntimeException</a></code> - if this <code>Streamable</code> failed with an unchecked exception</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="blockingLast(io.reactivex.rxjava4.disposables.StreamerCancellation)">
+<h3>blockingLast</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="#type-param-T" title="type parameter in Streamable">T</a></span>&nbsp;<span class="element-name">blockingLast</span><wbr><span class="parameters">(<a href="../disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">StreamerCancellation</a>&nbsp;cancellation)</span></div>
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces all of its items
+and the very last is then returned.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>cancellation</code> - the external cancellation resource to pass into the chain</dd>
+<dt>Returns:</dt>
+<dd>the very last item of this <code>Streamable</code></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/NoSuchElementException.html" title="class in java.util" class="external-link">NoSuchElementException</a></code> - if the this <code>Streamable</code> is empty</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class in java.util.concurrent" class="external-link">CancellationException</a></code> - if this <code>Streamable</code> failed with a checked exception</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/RuntimeException.html" title="class in java.lang" class="external-link">RuntimeException</a></code> - if this <code>Streamable</code> failed with an unchecked exception</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>cancellation</code> is <code>null</code></dd>
 </dl>
 </div>
 </section>

@@ -62,6 +62,11 @@ initTheme();
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
+<li><a href="#method-detail" tabindex="0">Method Details</a>
+<ol class="toc-list">
+<li><a href="#never()" tabindex="0">never()</a></li>
+</ol>
+</li>
 </ol>
 <button class="hide-sidebar"><span>Hide sidebar&nbsp;</span><img src="../../../../resource-files/left.svg" alt="Hide sidebar"></button><button class="show-sidebar"><img src="../../../../resource-files/right.svg" alt="Show sidebar"><span>&nbsp;Show sidebar</span></button></nav>
 <main role="main">
@@ -99,6 +104,21 @@ retrofit <a href="DisposableContainer.html" title="interface in io.reactivex.rxj
 <li>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
+<div id="method-summary-table">
+<div class="caption"><span>Static Methods</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#never()" class="member-name-link">never</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1">
+<div class="block">Returns a constant instance which does nothing, cannot be disposed and
+accepts any incoming Disposable without registering it or handling it in any form,
+because this <code>never</code> instance cannot be disposed to begin with.</div>
+</div>
+</div>
+</div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.reactivex.rxjava4.disposables.Disposable">Methods inherited from interface&nbsp;<a href="Disposable.html#method-summary" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></h3>
 <code><a href="Disposable.html#asAutoCloseable()" title="asAutoCloseable()">asAutoCloseable</a>, <a href="Disposable.html#dispose()" title="dispose()">dispose</a>, <a href="Disposable.html#isDisposed()" title="isDisposed()">isDisposed</a></code>
@@ -163,6 +183,33 @@ container.</div>
 </div>
 </div>
 </div>
+</section>
+</li>
+</ul>
+</section>
+<section class="details">
+<ul class="details-list">
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method-detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="never()">
+<h3>never</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></span>&nbsp;<span class="element-name">never</span>()</div>
+<div class="block">Returns a constant instance which does nothing, cannot be disposed and
+accepts any incoming Disposable without registering it or handling it in any form,
+because this <code>never</code> instance cannot be disposed to begin with.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the shared constant no-op instance</dd>
+</dl>
+</div>
+</section>
+</li>
+</ul>
 </section>
 </li>
 </ul>

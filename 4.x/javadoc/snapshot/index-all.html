@@ -680,6 +680,10 @@ with a specific timeout and rethrows any exception emitted within the timeout wi
 <dd>
 <div class="block">Blocks the current thread until this <code>Streamable</code> produces one item, which is then returned.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#blockingFirst(io.reactivex.rxjava4.disposables.StreamerCancellation)" class="member-name-link">blockingFirst(StreamerCancellation)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces one item, which is then returned.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#blockingFirst(T)" class="member-name-link">blockingFirst(T)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns the first item emitted by this <code>Flowable</code>, or a default value if it emits no
@@ -760,6 +764,11 @@ until the current <code>Observable</code> emits items or terminates.</div>
 <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/NoSuchElementException.html" title="class in java.util" class="external-link"><code>NoSuchElementException</code></a> if the current <code>Observable</code> emits no items.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#blockingLast()" class="member-name-link">blockingLast()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces all of its items
+and the very last is then returned.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#blockingLast(io.reactivex.rxjava4.disposables.StreamerCancellation)" class="member-name-link">blockingLast(StreamerCancellation)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
 <div class="block">Blocks the current thread until this <code>Streamable</code> produces all of its items
 and the very last is then returned.</div>
@@ -6395,6 +6404,12 @@ subscribers have cancelled.</div>
 <dt><a href="io/reactivex/rxjava4/core/Streamable.html#never()" class="member-name-link">never()</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
 <dd>
 <div class="block">Returns an <code>Streamable</code> that never produces an item and never terminates.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/disposables/DisposableStreamerCancellation.html#never()" class="member-name-link">never()</a> - Static method in interface io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables">DisposableStreamerCancellation</a></dt>
+<dd>
+<div class="block">Returns a constant instance which does nothing, cannot be disposed and
+accepts any incoming Disposable without registering it or handling it in any form,
+because this <code>never</code> instance cannot be disposed to begin with.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html#NEW_THREAD" class="member-name-link">NEW_THREAD</a> - Static variable in annotation interface io.reactivex.rxjava4.annotations.<a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">SchedulerSupport</a></dt>
 <dd>
