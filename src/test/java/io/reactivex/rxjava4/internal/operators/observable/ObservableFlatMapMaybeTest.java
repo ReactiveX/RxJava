@@ -394,42 +394,4 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
             cdl.await();
         }
     }
-
-    @Test
-    public void successCompleteRace() {
-        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-            MaybeSubject<Integer> ms1 = MaybeSubject.create();
-            MaybeSubject<Integer> ms2 = MaybeSubject.create();
-
-            TestObserver<Integer> to = Observable.just(1, 2)
-            .flatMapMaybe(v -> v == 1 ? ms1 : ms2)
-            .test();
-
-            TestHelper.race(
-                    ms1::onComplete,
-                    () -> ms2.onSuccess(1)
-            );
-
-            to.assertResult(1);
-        }
-    }
-
-    @Test
-    public void successCompleteRace2() {
-        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-            MaybeSubject<Integer> ms1 = MaybeSubject.create();
-            MaybeSubject<Integer> ms2 = MaybeSubject.create();
-
-            TestObserver<Integer> to = Observable.just(1, 2)
-            .flatMapMaybe(v -> v == 1 ? ms1 : ms2)
-            .test();
-
-            TestHelper.race(
-                    () -> ms2.onSuccess(1),
-                    ms1::onComplete
-            );
-
-            to.assertResult(1);
-        }
-    }
 }

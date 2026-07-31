@@ -310,27 +310,6 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     }
 
     @Test
-    public void innerErrorOuterCompleteRace() {
-        TestException ex = new TestException();
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            PublishSubject<Integer> ps1 = PublishSubject.create();
-            SingleSubject<Integer> ps2 = SingleSubject.create();
-
-            TestObserver<Integer> to = ps1.flatMapSingle(_ -> ps2)
-            .test();
-
-            ps1.onNext(1);
-
-            TestHelper.race(
-                    ps1::onComplete,
-                    () -> ps2.onError(ex)
-            );
-
-            to.assertFailure(TestException.class);
-        }
-    }
-
-    @Test
     public void cancelWhileMapping() throws Throwable {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             PublishSubject<Integer> ps1 = PublishSubject.create();

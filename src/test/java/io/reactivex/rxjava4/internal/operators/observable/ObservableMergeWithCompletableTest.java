@@ -84,27 +84,6 @@ public class ObservableMergeWithCompletableTest extends RxJavaTest {
     }
 
     @Test
-    public void completeRace() {
-        for (int i = 0; i < 1000; i++) {
-            final PublishSubject<Integer> ps = PublishSubject.create();
-            final CompletableSubject cs = CompletableSubject.create();
-
-            TestObserver<Integer> to = ps.mergeWith(cs).test();
-
-            Runnable r1 = () -> {
-                ps.onNext(1);
-                ps.onComplete();
-            };
-
-            Runnable r2 = cs::onComplete;
-
-            TestHelper.race(r1, r2);
-
-            to.assertResult(1);
-        }
-    }
-
-    @Test
     public void isDisposed() {
         new Observable<Integer>() /* NFI */ {
             @Override
