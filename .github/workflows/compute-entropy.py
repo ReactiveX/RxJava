@@ -21,7 +21,7 @@ base_sha = os.environ.get("BASE_SHA", "").strip()
 head_sha = os.environ.get("HEAD_SHA", "").strip() or "HEAD"
 
 try:
-    if event_name == "pull_request_target" and base_sha:
+    if event_name in ("pull_request", "pull_request_target") and base_sha:
         # PR case: we checked out the PR head and fetched the base commit
         changed_files = subprocess.check_output(
             ["git", "diff", "--name-only", base_sha, head_sha],

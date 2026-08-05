@@ -1,0 +1,68 @@
+name: Post Entropy Beauty Comment
+
+on:
+  workflow_run:
+    workflows: ["Entropy Beauty + TruffleHog Scan"]
+    types: [completed]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  comment:
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download scan results
+        uses: actions/download-artifact@v4
+        with:
+          name: scan-results
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post summary comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            if (!fs.existsSync('scan-summary.json')) {
+              core.setFailed('scan-summary.json missing — analysis did not produce results');
+              return;
+            }
+
+            const summary = JSON.parse(fs.readFileSync('scan-summary.json', 'utf8'));
+            const beauty = summary.beauty || {};
+            const findingsCount = summary.findings_count || 0;
+
+            let body = `## 🐷 TruffleHog + Entropy Beauty Scan\n\n`;
+            body += `**Average entropy of changed code:** ${beauty.average_entropy} bits/char\n`;
+            body += `**Verdict:** ${beauty.verdict}\n\n`;
+
+            if (beauty.files && beauty.files.length) {
+              body += `**Changed files entropy:**\n\`\`\`\n${beauty.files.join('\n')}\n\`\`\`\n\n`;
+            }
+
+            if (findingsCount > 0) {
+              body += `⚠️ **TruffleHog found ${findingsCount} potential issue(s)**\n`;
+            } else {
+              body += `✅ No secrets or suspicious high-entropy strings found.\n`;
+            }
+
+            body += `\n*Mid-4 beauty heuristic in action — powered by our entropy chats! 😊*`;
+
+            const prs = github.event.workflow_run.pull_requests || [];
+            if (prs.length === 0) {
+              console.log('No associated PR found');
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prs[0].number,
+              body: body
+            });
