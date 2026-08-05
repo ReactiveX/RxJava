@@ -6,8 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read          # minimal for analysis
-  # no write permissions here
+  contents: read
 
 jobs:
   scan:
@@ -16,8 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # For pull_request this is the PR head – safe because we have no write token
-          fetch-depth: 0   # or 2 if you prefer
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Setup Python
@@ -44,40 +42,74 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: python .github/workflows/compute-entropy.py
 
-      - name: Upload scan results
-        uses: actions/upload-artifact@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v4.3.0
+      - name: Create sanitized summary (never include Raw secrets)
+        run: |
+          python3 << 'EOF'
+          import json, os
+          from pathlib import Path
+
+          findings = []
+          if Path("trufflehog.json").exists():
+              for line in Path("trufflehog.json").read_text().splitlines():
+                  line = line.strip()
+                  if not line:
+                      continue
+                  try:
+                      f = json.loads(line)
+                      findings.append({
+                          "detector": f.get("DetectorName"),
+                          "verified": f.get("Verified"),
+                          "file": f.get("SourceMetadata", {}).get("Data", {}).get("Git", {}).get("file"),
+                          "line": f.get("SourceMetadata", {}).get("Data", {}).get("Git", {}).get("line"),
+                      })
+                  except Exception:
+                      pass
+
+          beauty = {}
+          if Path("/tmp/beauty.json").exists():
+              beauty = json.loads(Path("/tmp/beauty.json").read_text())
+
+          summary = {
+              "beauty": beauty,
+              "findings_count": len(findings),
+              "findings": findings,          # safe fields only
+          }
+          Path("scan-summary.json").write_text(json.dumps(summary, indent=2))
+          print(f"Sanitized summary written ({len(findings)} findings)")
+          EOF
+
+      - name: Upload sanitized results only
+        uses: actions/upload-artifact@v4
         with:
           name: scan-results
-          path: |
-            /tmp/beauty.json
-            trufflehog.json   # if TruffleHog wrote it; adjust if needed
+          path: scan-summary.json
           retention-days: 1
 
-      # ── Create issue on push/release (trusted events) ──
-      - name: Create issue on suspicious push
-        if: github.event_name == 'push' || github.event_name == 'release'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+  # Separate job that only runs on trusted events and has write permission
+  create-issue:
+    needs: scan
+    if: github.event_name == 'push' || github.event_name == 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Download summary
+        uses: actions/download-artifact@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: scan-results
+
+      - name: Create issue on suspicious entropy
+        uses: actions/github-script@v7
+        with:
           script: |
             const fs = require('fs');
-            const beauty = JSON.parse(fs.readFileSync('/tmp/beauty.json', 'utf8'));
+            const summary = JSON.parse(fs.readFileSync('scan-summary.json', 'utf8'));
+            const beauty = summary.beauty || {};
+            const findingsCount = summary.findings_count || 0;
 
             if (beauty.average_entropy >= 4.3 && beauty.average_entropy <= 5.1) {
               console.log("✅ Mid-4 beauty — no issue created");
-              return;
-            }
-
-            let findings = [];
-            if (fs.existsSync('trufflehog.json')) {
-              try {
-                const lines = fs.readFileSync('trufflehog.json', 'utf8').trim().split('\n');
-                findings = lines.map(line => {
-                  try { return JSON.parse(line); } catch(e) { return null; }
-                }).filter(Boolean);
-              } catch(e) {}
-            } else {
-              core.setFailed("trufflehog.json was not produced — secret scan did not run correctly");
               return;
             }
 
@@ -88,8 +120,8 @@ jobs:
               body += `**Changed files:**\n\`\`\`\n${beauty.files.join('\n')}\n\`\`\`\n\n`;
             }
 
-            if (findings.length > 0) {
-              body += `**TruffleHog found ${findings.length} potential issue(s)**\n`;
+            if (findingsCount > 0) {
+              body += `**TruffleHog found ${findingsCount} potential issue(s)**\n`;
             } else {
               body += `✅ No secrets or suspicious high-entropy strings found.\n`;
             }
