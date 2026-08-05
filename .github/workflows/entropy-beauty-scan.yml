@@ -18,6 +18,7 @@ jobs:
         with:
           # For pull_request this is the PR head – safe because we have no write token
           fetch-depth: 0   # or 2 if you prefer
+          persist-credentials: false
 
       - name: Setup Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
