@@ -2,7 +2,9 @@ name: Post Entropy Beauty Comment
 
 on:
   workflow_run:
-    workflows: ["Entropy Beauty + TruffleHog Scan"]
+    # The workflows filter is a glob pattern: '+' is a quantifier there,
+    # so a literal plus sign in the workflow name must be escaped with \+
+    workflows: ['Entropy Beauty \+ TruffleHog Scan']
     types: [completed]
 
 permissions:
@@ -58,19 +60,23 @@ jobs:
 
             body += `\n*Mid-4 beauty heuristic in action — powered by our entropy chats! 😊*`;
 
+            // Inside github-script, `github` is the Octokit client;
+            // the event payload lives on context.payload.
+            const workflowRun = context.payload.workflow_run;
+
             // Robust PR number lookup
             let prNumber = null;
-            const prs = github.event.workflow_run.pull_requests || [];
+            const prs = workflowRun.pull_requests || [];
             if (prs.length > 0) {
               prNumber = prs[0].number;
             } else {
-              // Fallback: look up open PRs by head SHA
-              const headSha = github.event.workflow_run.head_sha;
+              // Fallback: workflow_run.pull_requests is empty for fork PRs,
+              // so look up open PRs by head "owner:branch"
               const { data: found } = await github.rest.pulls.list({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 state: 'open',
-                head: `${github.event.workflow_run.head_repository.owner.login}:${github.event.workflow_run.head_branch}`
+                head: `${workflowRun.head_repository.owner.login}:${workflowRun.head_branch}`
               });
               if (found.length > 0) {
                 prNumber = found[0].number;
@@ -79,7 +85,7 @@ jobs:
 
             if (!prNumber) {
               console.log('No associated PR found (even after fallback lookup)');
-              console.log(JSON.stringify(github.event.workflow_run, null, 2));
+              console.log(JSON.stringify(workflowRun, null, 2));
               return;
             }
 
