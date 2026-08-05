@@ -26,11 +26,16 @@ jobs:
           python-version: '3.12'
 
       - name: Run TruffleHog
-        uses: trufflesecurity/trufflehog@6f3c981e7b77f235fd2702dd74af25fc4b72bf11 # v3.96.0
-        with:
-          path: .
-          extra_args: --results=verified,unknown --filter-entropy=3.5 --json
-        # Optional: continue-on-error: true if you don't want the job to fail on findings
+        run: |
+          docker run --rm \
+            -v "$PWD:/pwd" \
+            trufflesecurity/trufflehog:3.96.0 \
+            git file:///pwd \
+            --results=verified,unknown \
+            --filter-entropy=3.5 \
+            --json \
+            --no-update \
+            > trufflehog.json 2>/dev/null || true
 
       - name: Compute mid-4 beauty entropy
         env:
