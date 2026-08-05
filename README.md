@@ -27,10 +27,7 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 - :satellite: Internal optimizations now that I have the master :key:.
 - :eye: Possible usages for Scoped variables for context and per-item resource management.
 - :eye: Possible inclusion of 2nd and 3rd party operators.
-- :eye: Possible inclusion of the Iterable Extensions (Ix) 2nd party library. ju.Stream is sh|t wrt interfacing and composability.
 - :question: Android compatibility depends on your API level and what desugaring is available.
-- :question: Rewamp of the Javadoc bloat in the base types via `sealed` interfaces? Not certain how much it helps.
-- :lady_beetle: Resolve many anomalies and bugs with operators such as `groupBy`, `window`, `concat`, etc.
 - :warning: RxJava 3.x support will be toned down in the coming months, will be offered for +1 year after 4.x official release.
 
 <sup>1</sup> :stop: Unfortunately Java 27 has no language or API enhancements we can use, because Structured Concurrency remained preview for one.
