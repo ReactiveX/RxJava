@@ -1,0 +1,79 @@
+name: Post Entropy Beauty Comment
+
+on:
+  workflow_run:
+    workflows: ["Entropy Beauty + TruffleHog Scan"]
+    types:
+      - completed
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  comment:
+    # Only for successful PR runs
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download scan results
+        uses: actions/download-artifact@v4
+        with:
+          name: scan-results
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: results
+
+      - name: Post summary comment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const beauty = JSON.parse(fs.readFileSync(path.join('results', 'beauty.json'), 'utf8'));
+
+            let findings = [];
+            const thPath = path.join('results', 'trufflehog.json');
+            if (fs.existsSync(thPath)) {
+              try {
+                const lines = fs.readFileSync(thPath, 'utf8').trim().split('\n');
+                findings = lines.map(line => {
+                  try { return JSON.parse(line); } catch(e) { return null; }
+                }).filter(Boolean);
+              } catch(e) {}
+            }
+
+            let body = `## 🐷 TruffleHog + Entropy Beauty Scan\n\n`;
+            body += `**Average entropy of changed code:** ${beauty.average_entropy} bits/char\n`;
+            body += `**Verdict:** ${beauty.verdict}\n\n`;
+
+            if (beauty.files && beauty.files.length) {
+              body += `**Changed files entropy:**\n\`\`\`\n${beauty.files.join('\n')}\n\`\`\`\n\n`;
+            }
+
+            if (findings.length > 0) {
+              body += `⚠️ **TruffleHog found ${findings.length} potential issue(s)**\n`;
+            } else {
+              body += `✅ No secrets or suspicious high-entropy strings found.\n`;
+            }
+
+            body += `\n*Mid-4 beauty heuristic in action — powered by our entropy chats! 😊*`;
+
+            // Get the PR number from the workflow_run payload
+            const pr = github.event.workflow_run.pull_requests[0];
+            if (!pr) {
+              console.log("No associated PR found");
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: body
+            });
