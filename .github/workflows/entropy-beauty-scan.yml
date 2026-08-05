@@ -76,6 +76,9 @@ jobs:
                   try { return JSON.parse(line); } catch(e) { return null; }
                 }).filter(Boolean);
               } catch(e) {}
+            } else {
+              core.setFailed("trufflehog.json was not produced — secret scan did not run correctly");
+              return;
             }
 
             let body = `**Average entropy:** ${beauty.average_entropy} bits/char\n\n`;
