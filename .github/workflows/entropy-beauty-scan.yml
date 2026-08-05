@@ -1,11 +1,13 @@
 name: Entropy Beauty + TruffleHog Scan
 
-on: [push, release, pull_request_target]
+on:
+  push:
+  release:
+  pull_request:
 
 permissions:
-  contents: read
-  pull-requests: write
-  issues: write          # must be at workflow level for push/merge events
+  contents: read          # minimal for analysis
+  # no write permissions here
 
 jobs:
   scan:
@@ -14,37 +16,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: ${{ github.event_name == 'pull_request_target' && 1 || 2 }}
-          allow-unsafe-pr-checkout: ${{ github.event_name == 'pull_request_target' }}
-
-      - name: Fetch PR base commit (needed for accurate diff)
-        if: github.event_name == 'pull_request_target'
-        run: git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
-
-      - name: Cache pip manually
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-entropy-${{ hashFiles('.github/workflows/compute-entropy.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-entropy-
+          # For pull_request this is the PR head – safe because we have no write token
+          fetch-depth: 0   # or 2 if you prefer
 
       - name: Setup Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
 
-      - name: Install Python dependencies (only when needed)
-        run: |
-          python -m pip install --upgrade pip
-          # No extra packages needed — compute-entropy.py uses only stdlib
-
       - name: Run TruffleHog
         uses: trufflesecurity/trufflehog@6f3c981e7b77f235fd2702dd74af25fc4b72bf11 # v3.96.0
         with:
           path: .
           extra_args: --results=verified,unknown --filter-entropy=3.5 --json
+        # Optional: continue-on-error: true if you don't want the job to fail on findings
 
       - name: Compute mid-4 beauty entropy
         env:
@@ -53,63 +38,25 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: python .github/workflows/compute-entropy.py
 
-      - name: Post summary comment (PR only)
-        if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
-        uses: actions/github-script@v9
+      - name: Upload scan results
+        uses: actions/upload-artifact@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            
-            // Read TruffleHog output — it prints one JSON object per line (NDJSON)
-            let findings = [];
-            if (fs.existsSync('trufflehog.json')) {
-              try {
-                const lines = fs.readFileSync('trufflehog.json', 'utf8').trim().split('\n');
-                findings = lines.map(line => {
-                  try { return JSON.parse(line); } catch(e) { return null; }
-                }).filter(Boolean);
-              } catch(e) {}
-            } else {
-              console.log("No trufflehog.json found, using empty findings");
-            }
+          name: scan-results
+          path: |
+            /tmp/beauty.json
+            trufflehog.json   # if TruffleHog wrote it; adjust if needed
+          retention-days: 1
 
-            const beauty = JSON.parse(fs.readFileSync('/tmp/beauty.json', 'utf8'));
-
-            let body = `## 🐷 TruffleHog + Entropy Beauty Scan\n\n`;
-            body += `**Average entropy of changed code:** ${beauty.average_entropy} bits/char\n`;
-            body += `**Verdict:** ${beauty.verdict}\n\n`;
-
-            if (beauty.files && beauty.files.length) {
-              body += `**Changed files entropy:**\n\`\`\`\n${beauty.files.join('\n')}\n\`\`\`\n\n`;
-            }
-
-            if (findings.length > 0) {
-              body += `⚠️ **TruffleHog found ${findings.length} potential issue(s)**\n`;
-            } else {
-              body += `✅ No secrets or suspicious high-entropy strings found.\n`;
-            }
-
-            body += `\n*Mid-4 beauty heuristic in action — powered by our entropy chats! 😊*`;
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: body
-            });
-
-      # ── Create issue on push ONLY if suspicious (entropy outside 4.3–5.1) ──
+      # ── Create issue on push/release (trusted events) ──
       - name: Create issue on suspicious push
         if: github.event_name == 'push' || github.event_name == 'release'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const beauty = JSON.parse(fs.readFileSync('/tmp/beauty.json', 'utf8'));
 
-            // Only create issue if it's NOT beautiful mid-4
             if (beauty.average_entropy >= 4.3 && beauty.average_entropy <= 5.1) {
               console.log("✅ Mid-4 beauty — no issue created");
               return;
@@ -138,14 +85,12 @@ jobs:
               body += `✅ No secrets or suspicious high-entropy strings found.\n`;
             }
 
-            body += `\n*Triggered by push to \`${context.sha}\` — mid-4 beauty heuristic*`;
+            body += `\n*Triggered by ${context.eventName} to \`${context.sha}\` — mid-4 beauty heuristic*`;
 
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `🚨 Suspicious entropy detected in recent push (${beauty.average_entropy})`,
+              title: `🚨 Suspicious entropy detected in recent ${context.eventName} (${beauty.average_entropy})`,
               body: body,
               labels: ['entropy', 'security', 'review-needed']
             });
-
-            console.log("⚠️ Created issue because entropy was outside mid-4 range");
