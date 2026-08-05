@@ -3,50 +3,40 @@ name: Post Entropy Beauty Comment
 on:
   workflow_run:
     workflows: ["Entropy Beauty + TruffleHog Scan"]
-    types:
-      - completed
+    types: [completed]
 
 permissions:
   contents: read
   pull-requests: write
-  issues: write
 
 jobs:
   comment:
-    # Only for successful PR runs
     if: >
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Download scan results
-        uses: actions/download-artifact@fa0a91b85d4f404e444e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@v4
         with:
           name: scan-results
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path: results
 
       - name: Post summary comment
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const path = require('path');
 
-            const beauty = JSON.parse(fs.readFileSync(path.join('results', 'beauty.json'), 'utf8'));
-
-            let findings = [];
-            const thPath = path.join('results', 'trufflehog.json');
-            if (fs.existsSync(thPath)) {
-              try {
-                const lines = fs.readFileSync(thPath, 'utf8').trim().split('\n');
-                findings = lines.map(line => {
-                  try { return JSON.parse(line); } catch(e) { return null; }
-                }).filter(Boolean);
-              } catch(e) {}
+            if (!fs.existsSync('scan-summary.json')) {
+              core.setFailed('scan-summary.json missing — analysis did not produce results');
+              return;
             }
+
+            const summary = JSON.parse(fs.readFileSync('scan-summary.json', 'utf8'));
+            const beauty = summary.beauty || {};
+            const findingsCount = summary.findings_count || 0;
 
             let body = `## 🐷 TruffleHog + Entropy Beauty Scan\n\n`;
             body += `**Average entropy of changed code:** ${beauty.average_entropy} bits/char\n`;
@@ -56,24 +46,23 @@ jobs:
               body += `**Changed files entropy:**\n\`\`\`\n${beauty.files.join('\n')}\n\`\`\`\n\n`;
             }
 
-            if (findings.length > 0) {
-              body += `⚠️ **TruffleHog found ${findings.length} potential issue(s)**\n`;
+            if (findingsCount > 0) {
+              body += `⚠️ **TruffleHog found ${findingsCount} potential issue(s)**\n`;
             } else {
               body += `✅ No secrets or suspicious high-entropy strings found.\n`;
             }
 
             body += `\n*Mid-4 beauty heuristic in action — powered by our entropy chats! 😊*`;
 
-            // Get the PR number from the workflow_run payload
-            const pr = github.event.workflow_run.pull_requests[0];
-            if (!pr) {
-              console.log("No associated PR found");
+            const prs = github.event.workflow_run.pull_requests || [];
+            if (prs.length === 0) {
+              console.log('No associated PR found');
               return;
             }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: pr.number,
+              issue_number: prs[0].number,
               body: body
             });
