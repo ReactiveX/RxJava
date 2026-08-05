@@ -38,19 +38,22 @@ public record StreamableFromIterable<T>(@NonNull Iterable<? extends T> items) im
             Exceptions.throwIfFatal(ex);
             return StreamableError.createFailed(ex);
         }
-        return new IteratorStreamer<>(iterator);
+        return new IteratorStreamer<>(iterator, null);
     }
 
     static final class IteratorStreamer<T> implements Streamer<T>, EnumerableSource<T> {
 
         Iterator<? extends T> iterator;
 
+        AutoCloseable toClose;
+
         long index;
 
         T current;
 
-        IteratorStreamer(Iterator<? extends T> iterator) {
+        IteratorStreamer(Iterator<? extends T> iterator, AutoCloseable toClose) {
             this.iterator = iterator;
+            this.toClose = toClose;
         }
 
         @Override
@@ -81,6 +84,16 @@ public record StreamableFromIterable<T>(@NonNull Iterable<? extends T> items) im
         public @NonNull CompletionStage<Void> finish() {
             iterator = null;
             current = null;
+            var toClose = this.toClose;
+            this.toClose = null;
+            if (toClose != null) {
+                try {
+                    toClose.close();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    return CompletableFuture.failedFuture(ex);
+                }
+            }
             return FINISHED;
         }
 

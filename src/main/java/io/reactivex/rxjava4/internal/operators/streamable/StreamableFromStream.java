@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.StreamerCancellation;
+import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.internal.operators.streamable.StreamableEmpty.EmptyStreamer;
 
 public record StreamableFromStream<T>(@NonNull Stream<? extends T> items) implements Streamable<T> {
@@ -28,8 +29,15 @@ public record StreamableFromStream<T>(@NonNull Stream<? extends T> items) implem
     public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         var iterator = Objects.requireNonNull(items.iterator(), "iterator is null");
         if (!iterator.hasNext()) {
+            try {
+                items.close();
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                return StreamableError.createFailed(ex);
+            }
+
             return (Streamer<T>)EmptyStreamer.INSTANCE;
         }
-        return new StreamableFromIterable.IteratorStreamer<>(iterator);
+        return new StreamableFromIterable.IteratorStreamer<>(iterator, items);
     }
 }
