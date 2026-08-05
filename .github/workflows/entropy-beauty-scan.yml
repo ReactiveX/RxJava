@@ -40,7 +40,7 @@ jobs:
         run: python .github/workflows/compute-entropy.py
 
       - name: Upload scan results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v4.3.0
         with:
           name: scan-results
           path: |
