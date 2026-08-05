@@ -23,6 +23,22 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Cache TruffleHog Docker image
+        id: cache-trufflehog
+        uses: actions/cache@v4
+        with:
+          path: /tmp/trufflehog-image.tar
+          key: trufflehog-3.96.0-${{ runner.os }}
+
+      - name: Load TruffleHog image from cache
+        if: steps.cache-trufflehog.outputs.cache-hit == 'true'
+        run: docker load -i /tmp/trufflehog-image.tar
+
+      - name: Pull TruffleHog image (cache miss)
+        if: steps.cache-trufflehog.outputs.cache-hit != 'true'
+        run: |
+          docker pull trufflesecurity/trufflehog:3.96.0
+          docker save trufflesecurity/trufflehog:3.96.0 -o /tmp/trufflehog-image.tar
       - name: Run TruffleHog
         run: |
           docker run --rm \
