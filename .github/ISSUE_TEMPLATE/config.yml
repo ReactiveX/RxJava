@@ -1,0 +1,5 @@
+blank_issues_enabled: false   # hide the blank issue option for normal users
+contact_links:
+  - name: Discord
+    url: dsc.gg/rxjava
+    about: Please ask "how do I…" questions in the version appropriate channels first.
