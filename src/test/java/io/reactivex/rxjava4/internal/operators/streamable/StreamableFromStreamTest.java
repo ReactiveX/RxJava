@@ -13,11 +13,17 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.exceptions.TestException;
 
 public class StreamableFromStreamTest extends StreamableBaseTest {
 
@@ -63,5 +69,55 @@ public class StreamableFromStreamTest extends StreamableBaseTest {
         .assertFailure(NullPointerException.class)
         .assertError(t -> t.getMessage().equals("Item at index 0 is null."));
         ;
+    }
+
+    @Test
+    public void ensureCloses() {
+        var hasClosed = new AtomicBoolean();
+        Streamable.fromStream(Stream.empty().onClose(() -> hasClosed.set(true)))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult();
+
+        assertTrue(hasClosed.get(), "Close not called");
+    }
+
+    @Test
+    public void ensureClosesCrash() {
+        var hasClosed = new AtomicBoolean();
+        Streamable.fromStream(Stream.empty().onClose(() -> {
+            hasClosed.set(true);
+            throw new TestException();
+        }))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+
+        assertTrue(hasClosed.get(), "Close not called");
+    }
+
+    @Test
+    public void ensureCloses2() {
+        var hasClosed = new AtomicBoolean();
+        Streamable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(() -> hasClosed.set(true)))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertTrue(hasClosed.get(), "Close not called");
+    }
+
+    @Test
+    public void ensureCloses2Crash() {
+        var hasClosed = new AtomicBoolean();
+        Streamable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(() -> {
+            hasClosed.set(true);
+            throw new TestException();
+        }))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+
+        assertTrue(hasClosed.get(), "Close not called");
     }
 }
