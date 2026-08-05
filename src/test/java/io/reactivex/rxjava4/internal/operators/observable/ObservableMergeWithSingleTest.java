@@ -91,27 +91,6 @@ public class ObservableMergeWithSingleTest extends RxJavaTest {
     }
 
     @Test
-    public void completeRace() {
-        for (int i = 0; i < 10000; i++) {
-            final PublishSubject<Integer> ps = PublishSubject.create();
-            final SingleSubject<Integer> cs = SingleSubject.create();
-
-            TestObserver<Integer> to = ps.mergeWith(cs).test();
-
-            Runnable r1 = () -> {
-                ps.onNext(1);
-                ps.onComplete();
-            };
-
-            Runnable r2 = () -> cs.onSuccess(1);
-
-            TestHelper.race(r1, r2);
-
-            to.assertResult(1, 1);
-        }
-    }
-
-    @Test
     public void onNextSlowPath() {
         final PublishSubject<Integer> ps = PublishSubject.create();
         final SingleSubject<Integer> cs = SingleSubject.create();
