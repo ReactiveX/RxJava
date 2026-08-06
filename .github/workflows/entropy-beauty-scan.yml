@@ -25,7 +25,7 @@ jobs:
 
       - name: Cache TruffleHog Docker image
         id: cache-trufflehog
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/trufflehog-image.tar
           key: trufflehog-3.96.0-${{ runner.os }}
