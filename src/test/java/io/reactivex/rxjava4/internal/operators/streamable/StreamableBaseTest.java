@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.lang.ref.Cleaner;
 import java.util.*;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.function.*;
 
 import org.junit.jupiter.api.*;
@@ -119,13 +119,7 @@ public abstract class StreamableBaseTest extends RxJavaTest {
     public static void awaitStreamers(StreamProcessor<?, ?> sp, long timeoutMillis)
     throws InterruptedException, TimeoutException
     {
-        long timeout = timeoutMillis * 1_000_000L;
-        while (!sp.hasStreamers()) {
-            Thread.sleep(0, 1000);
-            if (--timeout <= 0L) {
-                throw new TimeoutException("hasStreamers still false");
-            }
-        }
+        awaitCondition(true, sp::hasStreamers, timeoutMillis, "hasStreamers still false");
     }
 
     /**
@@ -140,13 +134,8 @@ public abstract class StreamableBaseTest extends RxJavaTest {
     public static void awaitStreamers(StreamProcessor<?, ?> sp, long timeoutMillis, int atLeast)
     throws InterruptedException, TimeoutException
     {
-        long timeout = timeoutMillis * 1_000_000L;
-        while (sp.streamerCount() < atLeast) {
-            Thread.sleep(0, 1000);
-            if (--timeout <= 0L) {
-                throw new TimeoutException("hasStreamers still false");
-            }
-        }
+        awaitCondition(true, () -> sp.streamerCount() >= atLeast, timeoutMillis,
+                "streamerCount still below " + atLeast + " (was " + sp.streamerCount() + ")");
     }
 
     /**
@@ -160,12 +149,55 @@ public abstract class StreamableBaseTest extends RxJavaTest {
     public static void awaitNoStreamers(StreamProcessor<?, ?> sp, long timeoutMillis)
     throws InterruptedException, TimeoutException
     {
-        long timeout = timeoutMillis * 1_000_000L;
-        while (sp.hasStreamers()) {
-            Thread.sleep(0, 1000);
-            if (--timeout <= 0L) {
-                throw new TimeoutException("hasStreamers still false");
-            }
+        awaitCondition(false, sp::hasStreamers, timeoutMillis, "hasStreamers still true");
+    }
+
+    /**
+     * Awaits until the processor has no streamers and asserts that state.
+     * @param sp the processor
+     * @param timeoutMillis how long to wait for the streamer(s) to leave
+     * @throws InterruptedException if the sleep is interrupted
+     * @throws TimeoutException if the wait times out
+     */
+    public static void assertNoStreamers(StreamProcessor<?, ?> sp, long timeoutMillis)
+    throws InterruptedException, TimeoutException
+    {
+        awaitNoStreamers(sp, timeoutMillis);
+        if (sp.hasStreamers()) {
+            throw new AssertionError("Processor still has streamers: " + sp.streamerCount());
+        }
+    }
+
+    /**
+     * Awaits until the processor has at least one streamer and asserts that state.
+     * @param sp the processor
+     * @param timeoutMillis how long to wait for the streamer(s) to arrive
+     * @throws InterruptedException if the sleep is interrupted
+     * @throws TimeoutException if the wait times out
+     */
+    public static void assertHasStreamers(StreamProcessor<?, ?> sp, long timeoutMillis)
+    throws InterruptedException, TimeoutException
+    {
+        awaitStreamers(sp, timeoutMillis);
+        if (!sp.hasStreamers()) {
+            throw new AssertionError("Processor has no streamers");
+        }
+    }
+
+    /**
+     * Awaits until the processor has at least {@code atLeast} streamers and asserts that state.
+     * @param sp the processor
+     * @param timeoutMillis how long to wait for the streamer(s) to arrive
+     * @param atLeast the minimum number of streamers expected
+     * @throws InterruptedException if the sleep is interrupted
+     * @throws TimeoutException if the wait times out
+     */
+    public static void assertHasStreamers(StreamProcessor<?, ?> sp, long timeoutMillis, int atLeast)
+    throws InterruptedException, TimeoutException
+    {
+        awaitStreamers(sp, timeoutMillis, atLeast);
+        if (sp.streamerCount() < atLeast) {
+            throw new AssertionError("Processor streamerCount below " + atLeast + ": " + sp.streamerCount());
         }
     }
 
@@ -181,12 +213,31 @@ public abstract class StreamableBaseTest extends RxJavaTest {
      */
     public static void awaitCondition(boolean value, @NonNull BooleanSupplier condition, long timeoutMillis)
             throws InterruptedException, TimeoutException {
-        long timeout = timeoutMillis * 1_000_000L;
-        while (condition.getAsBoolean() != value) {
-            Thread.sleep(0, 1000);
-            if (--timeout <= 0L) {
-                throw new TimeoutException("condition still " + (!value));
+        awaitCondition(value, condition, timeoutMillis, "condition still " + (!value));
+    }
+
+    /**
+     * Awaits a given {@link BooleanSupplier} to return the expected {@code value}
+     * within the given wall-clock time period.
+     * @param value the expected value within the timeout period
+     * @param condition the condition to repeatedly call to assess the state
+     * @param timeoutMillis how long to wait for the condition to become as expected
+     * @param timeoutMessage the message used when the wait times out
+     * @throws InterruptedException if the sleep is interrupted
+     * @throws TimeoutException if the wait times out
+     */
+    public static void awaitCondition(boolean value, @NonNull BooleanSupplier condition, long timeoutMillis,
+            @NonNull String timeoutMessage)
+            throws InterruptedException, TimeoutException {
+        long end = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+        for (;;) {
+            if (condition.getAsBoolean() == value) {
+                return;
             }
+            if (System.nanoTime() >= end) {
+                throw new TimeoutException(timeoutMessage);
+            }
+            Thread.sleep(0, 1000);
         }
     }
 }

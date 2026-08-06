@@ -40,7 +40,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        awaitStreamers(dsp, 1000);
+        assertHasStreamers(dsp, 1000);
 
         for (int i = 1; i < 6; i++) {
             dsp.next(i).toCompletableFuture().join();
@@ -50,7 +50,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         ts.awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5);
 
-        assertFalse(dsp.hasStreamers(), "dsp has streamers?");
+        assertNoStreamers(dsp, 1000);
         assertTrue(dsp.hasComplete(), "dsp has completed?");
         assertFalse(dsp.hasThrowable(), "dsp has throwable?");
         assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
@@ -69,7 +69,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        awaitStreamers(dsp, 1000);
+        assertHasStreamers(dsp, 1000);
 
         for (int i = 1; i < 6; i++) {
             dsp.next(i).toCompletableFuture().join();
@@ -80,7 +80,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         ts.awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
 
-        assertFalse(dsp.hasStreamers(), "dsp has streamers?");
+        assertNoStreamers(dsp, 1000);
         assertFalse(dsp.hasComplete(), "dsp has completed?");
         assertTrue(dsp.hasThrowable(), "dsp has no throwable?");
         assertSame(te, dsp.getThrowable(), "dsp has the wrong throwable?");
@@ -100,9 +100,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
             ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-            awaitStreamers(dsp, 1000);
-
-            assertTrue(dsp.hasStreamers(), "dsp has no streamers?");
+            assertHasStreamers(dsp, 1000);
 
             for (int i = 1; i < 6; i++) {
                 dsp.next(i).toCompletableFuture().join();
@@ -112,7 +110,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1, 2, 3, 4, 5);
 
-            assertFalse(dsp.hasStreamers(), "dsp has streamers?");
+            assertNoStreamers(dsp, 1000);
             assertTrue(dsp.hasComplete(), "dsp has completed?");
             assertFalse(dsp.hasThrowable(), "dsp has throwable?");
             assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
@@ -178,16 +176,14 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
             ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-            awaitStreamers(dsp, 1000);
+            assertHasStreamers(dsp, 1000);
 
             for (int i = 1; i < 4; i++) {
                 IO.println(i + " -> next");
                 dsp.next(i).toCompletableFuture().join();
             }
 
-            awaitNoStreamers(dsp, 1000);
-
-            assertFalse(dsp.hasStreamers(), "dsp has streamers?");
+            assertNoStreamers(dsp, 1000);
 
             for (int i = 4; i < 6; i++) {
                 IO.println(i + " -> next");
@@ -201,7 +197,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1, 2, 3);
 
-            assertFalse(dsp.hasStreamers(), "dsp has streamers?");
+            assertNoStreamers(dsp, 1000);
             assertTrue(dsp.hasComplete(), "dsp has completed?");
             assertFalse(dsp.hasThrowable(), "dsp has throwable?");
             assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
@@ -222,7 +218,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
             ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-            awaitStreamers(dsp, 1000);
+            assertHasStreamers(dsp, 1000);
 
             for (int i = 1; i < 6; i++) {
                 dsp.next(i).toCompletableFuture().join();
@@ -235,7 +231,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1, 2, 3);
 
-            assertFalse(dsp.hasStreamers(), "dsp has streamers?");
+            assertNoStreamers(dsp, 1000);
             assertTrue(dsp.hasComplete(), "dsp has completed?");
             assertFalse(dsp.hasThrowable(), "dsp has throwable?");
             assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
@@ -257,7 +253,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
         ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        awaitStreamers(dsp, 1000, 2);
+        assertHasStreamers(dsp, 1000, 2);
 
         for (int i = 1; i < 6; i++) {
             dsp.next(i).toCompletableFuture().join();
@@ -270,7 +266,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         ts2.awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5);
 
-        assertFalse(dsp.hasStreamers(), "dsp has streamers?");
+        assertNoStreamers(dsp, 1000);
         assertTrue(dsp.hasComplete(), "dsp has completed?");
         assertFalse(dsp.hasThrowable(), "dsp has throwable?");
         assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
@@ -291,7 +287,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
         ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        awaitStreamers(dsp, 1000, 2);
+        assertHasStreamers(dsp, 1000, 2);
 
         ts2.cancel();
 
@@ -305,7 +301,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
         ts2.assertEmpty();
 
-        assertFalse(dsp.hasStreamers(), "dsp has streamers?");
+        assertNoStreamers(dsp, 1000);
         assertTrue(dsp.hasComplete(), "dsp has completed?");
         assertFalse(dsp.hasThrowable(), "dsp has throwable?");
         assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
@@ -326,7 +322,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
         ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        awaitStreamers(dsp, 1000, 2);
+        assertHasStreamers(dsp, 1000, 2);
 
         ts.cancel();
 
@@ -340,7 +336,7 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
         ts.assertEmpty();
 
-        assertFalse(dsp.hasStreamers(), "dsp has streamers?");
+        assertNoStreamers(dsp, 1000);
         assertTrue(dsp.hasComplete(), "dsp has completed?");
         assertFalse(dsp.hasThrowable(), "dsp has throwable?");
         assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
@@ -367,14 +363,14 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
             ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
             ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-            awaitStreamers(dsp, 1000);
+            // Both subscribers must be fully attached before cancellation,
+            // otherwise a late stream() can re-add a streamer after the wait.
+            assertHasStreamers(dsp, 1000, 2);
 
             ts.cancel();
             ts2.cancel();
 
-            awaitNoStreamers(dsp, 1000);
-
-            assertFalse(dsp.hasStreamers(), "dsp has streamers?");
+            assertNoStreamers(dsp, 1000);
             assertFalse(dsp.hasComplete(), "dsp has completed?");
             assertFalse(dsp.hasThrowable(), "dsp has throwable?");
             assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
@@ -394,13 +390,11 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
 
         ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-        awaitStreamers(dsp, 1000);
+        assertHasStreamers(dsp, 1000);
 
         ts.cancel();
 
-        awaitNoStreamers(dsp, 1000);
-
-        assertFalse(dsp.hasStreamers(), "dsp has streamers?");
+        assertNoStreamers(dsp, 1000);
         assertFalse(dsp.hasComplete(), "dsp has completed?");
         assertFalse(dsp.hasThrowable(), "dsp has throwable?");
         assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
