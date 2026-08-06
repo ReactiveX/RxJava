@@ -116,7 +116,7 @@ jobs:
           name: scan-results
 
       - name: Create issue on suspicious entropy
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
