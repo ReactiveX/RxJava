@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.lang.ref.Cleaner;
 import java.util.*;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.function.*;
 
 import org.junit.jupiter.api.*;
@@ -229,8 +229,11 @@ public abstract class StreamableBaseTest extends RxJavaTest {
     public static void awaitCondition(boolean value, @NonNull BooleanSupplier condition, long timeoutMillis,
             @NonNull String timeoutMessage)
             throws InterruptedException, TimeoutException {
-        long end = System.nanoTime() + timeoutMillis * 1_000_000L;
-        while (condition.getAsBoolean() != value) {
+        long end = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+        for (;;) {
+            if (condition.getAsBoolean() == value) {
+                return;
+            }
             if (System.nanoTime() >= end) {
                 throw new TimeoutException(timeoutMessage);
             }
