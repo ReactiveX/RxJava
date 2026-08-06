@@ -46,8 +46,14 @@ public final class DispatchStreamProcessor<T> implements StreamProcessor<T, T> {
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         var result = new DispatchStreamer<T>(this);
-        cancellation.add(result);
         if (add(result)) {
+            // Register with cancellation after a successful add. If cancellation
+            // already disposed the streamer (or dispose races with add), remove again
+            // because the first remove may have observed the pre-add array.
+            cancellation.add(result);
+            if (result.isDisposed()) {
+                remove(result);
+            }
             return result;
         }
         var t = terminalEvent;
