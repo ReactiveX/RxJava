@@ -95,7 +95,7 @@ jobs:
           EOF
 
       - name: Upload sanitized results only
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: scan-results
           path: scan-summary.json
