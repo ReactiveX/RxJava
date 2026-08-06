@@ -25,7 +25,7 @@ jobs:
 
       - name: Cache TruffleHog Docker image
         id: cache-trufflehog
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: /tmp/trufflehog-image.tar
           key: trufflehog-3.96.0-${{ runner.os }}
@@ -95,7 +95,7 @@ jobs:
           EOF
 
       - name: Upload sanitized results only
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: scan-results
           path: scan-summary.json
@@ -111,12 +111,12 @@ jobs:
       issues: write
     steps:
       - name: Download summary
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: scan-results
 
       - name: Create issue on suspicious entropy
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const fs = require('fs');
