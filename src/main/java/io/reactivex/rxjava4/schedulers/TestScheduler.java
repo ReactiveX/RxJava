@@ -95,24 +95,28 @@ public final class TestScheduler extends Scheduler {
     }
 
     /**
-     * @param count for differentiating tasks at same time
+     * Represents an unit of work scheduled for a time and an unique total-order index.
+     * @param worker the parent {@link TestWorker} instance
+     * @param time the time in nanoseconds this runnable was scheduled to execute
+     * @param run the {@link Runnable} to execute
+     * @param id the unique, monotonic total-order index of this runnable
      */
-    record TimedRunnable(TestWorker scheduler, long time, Runnable run,
-                         long count) implements Comparable<TimedRunnable> {
+    record TimedRunnable(TestWorker worker, long time, Runnable run,
+                         long id) implements Comparable<TimedRunnable> {
 
         @Override
-            public String toString() {
-                return String.format("TimedRunnable(time = %d, run = %s)", time, run.toString());
-            }
-
-            @Override
-            public int compareTo(TimedRunnable o) {
-                if (time == o.time) {
-                    return Long.compare(count, o.count);
-                }
-                return Long.compare(time, o.time);
-            }
+        public String toString() {
+            return String.format("TimedRunnable(time = %d, run = %s)", time, run.toString());
         }
+
+        @Override
+        public int compareTo(TimedRunnable o) {
+            if (time == o.time) {
+                return Long.compare(id, o.id);
+            }
+            return Long.compare(time, o.time);
+        }
+    }
 
     @Override
     public long now(@NonNull TimeUnit unit) {
@@ -163,11 +167,20 @@ public final class TestScheduler extends Scheduler {
             queue.remove(current);
 
             // Only execute if not unsubscribed
-            if (!current.scheduler.disposed) {
+            if (!current.worker.disposed) {
                 current.run.run();
             }
         }
         time = targetTimeInNanoseconds;
+    }
+
+    /**
+     * Returns the currently scheduled tasks waiting for execution in the internal queue.
+     * @return the number of {@link Runnable}s waiting to be executed via {@link #advanceTimeBy(long, TimeUnit)}
+     * or {@link #advanceTimeTo(long, TimeUnit)}.
+     */
+    public int runnableCount() {
+        return queue.size();
     }
 
     @NonNull
@@ -183,6 +196,8 @@ public final class TestScheduler extends Scheduler {
         @Override
         public void dispose() {
             disposed = true;
+            // make sure disposing the worker removes all tasks queued up, via ownership predicate
+            queue.removeIf(tr -> tr.worker() == this);
         }
 
         @Override
