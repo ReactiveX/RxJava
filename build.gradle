@@ -21,7 +21,7 @@ ext {
     jmhLibVersion = "1.37"
     guavaVersion = "33.6.0-jre"
     jupiterVersion = "6.1.3"
-    jupiterLauncherVersion = "6.1.2"
+    jupiterLauncherVersion = "6.1.3"
 }
 
 def releaseTag = System.getenv("BUILD_TAG")
