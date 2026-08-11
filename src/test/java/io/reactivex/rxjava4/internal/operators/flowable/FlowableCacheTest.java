@@ -16,13 +16,10 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
+import java.lang.management.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -513,5 +510,19 @@ public class FlowableCacheTest extends RxJavaTest {
             fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after.get() / 1024.0 / 1024.0);
         }
+    }
+
+    @Test
+    public void noRetentionOnImmediateSelfCancel() {
+        var source = (FlowableCache<Integer>)Flowable.<Integer>never().cache();
+
+        var consumer = new TestSubscriber<Integer>();
+        consumer.cancel();
+
+        source.subscribe(consumer);
+
+        consumer.assertNoValues().assertNoErrors().assertNotComplete();
+
+        assertEquals(0, source.multicaster.get().length, "Retention error!");
     }
 }

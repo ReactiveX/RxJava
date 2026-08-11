@@ -48,7 +48,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     /**
      * Responsible caching events from the source and multicasting them to each downstream.
      */
-    final Multicaster<T>  multicaster;
+    final Multicaster<T> multicaster;
 
     /**
      * The first node in a singly linked list. Each node has the capacity to hold a specific number of events, and each
@@ -79,6 +79,9 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         CacheDisposable<T> consumer = new CacheDisposable<>(t, multicaster, head);
         t.onSubscribe(consumer);
         multicaster.add(consumer);
+        if (consumer.isDisposed()) {
+            multicaster.remove(consumer);
+        }
 
         if (!once.get() && once.compareAndSet(false, true)) {
             source.subscribe(multicaster);
