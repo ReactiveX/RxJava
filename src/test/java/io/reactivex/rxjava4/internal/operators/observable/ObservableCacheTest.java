@@ -370,4 +370,29 @@ public class ObservableCacheTest extends RxJavaTest {
                     + " -> " + after.get() / 1024.0 / 1024.0);
         }
     }
+
+    @Test
+    public void cancelledUpFrontConnectAnyway() {
+        final AtomicInteger call = new AtomicInteger();
+        Observable.fromCallable(call::incrementAndGet)
+        .cache()
+        .test(true)
+        .assertNoValues();
+
+        assertEquals(1, call.get());
+    }
+
+    @Test
+    public void noRetentionOnImmediateSelfCancel() {
+        var source = (ObservableCache<Integer>)Observable.<Integer>never().cache();
+
+        var consumer = new TestObserver<Integer>();
+        consumer.dispose();
+
+        source.subscribe(consumer);
+
+        consumer.assertNoValues().assertNoErrors().assertNotComplete();
+
+        assertEquals(0, source.multicaster.get().length, "Retention error!");
+    }
 }

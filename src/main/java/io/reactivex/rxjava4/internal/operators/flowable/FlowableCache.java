@@ -83,6 +83,9 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         CacheSubscription<T> consumer = new CacheSubscription<>(t, multicaster, head);
         t.onSubscribe(consumer);
         multicaster.add(consumer);
+        if (consumer.isCancelled()) {
+            multicaster.remove(consumer);
+        }
 
         if (!once.get() && once.compareAndSet(false, true)) {
             source.subscribe(multicaster);
@@ -414,6 +417,10 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
             if (requested.getAndSet(Long.MIN_VALUE) != Long.MIN_VALUE) {
                 parent.remove(this);
             }
+        }
+
+        public boolean isCancelled() {
+            return requested.get() == Long.MIN_VALUE;
         }
     }
 
