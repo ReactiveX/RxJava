@@ -78,6 +78,7 @@ initTheme();
 <li><a href="#advanceTimeBy(long,java.util.concurrent.TimeUnit)" tabindex="0">advanceTimeBy(long, TimeUnit)</a></li>
 <li><a href="#advanceTimeTo(long,java.util.concurrent.TimeUnit)" tabindex="0">advanceTimeTo(long, TimeUnit)</a></li>
 <li><a href="#triggerActions()" tabindex="0">triggerActions()</a></li>
+<li><a href="#runnableCount()" tabindex="0">runnableCount()</a></li>
 <li><a href="#createWorker()" tabindex="0">createWorker()</a></li>
 </ol>
 </li>
@@ -196,9 +197,14 @@ and with the option to use the
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the 'current time' of the Scheduler in the specified time unit.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#triggerActions()" class="member-name-link">triggerActions</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runnableCount()" class="member-name-link">runnableCount</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the currently scheduled tasks waiting for execution in the internal queue.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#triggerActions()" class="member-name-link">triggerActions</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Triggers any actions that have not yet been triggered and that are scheduled to be triggered at or
 before this Scheduler's present time.</div>
 </div>
@@ -416,6 +422,20 @@ and with the option to use the
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">triggerActions</span>()</div>
 <div class="block">Triggers any actions that have not yet been triggered and that are scheduled to be triggered at or
 before this Scheduler's present time.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="runnableCount()">
+<h3>runnableCount</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">runnableCount</span>()</div>
+<div class="block">Returns the currently scheduled tasks waiting for execution in the internal queue.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the number of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runnable.html" title="interface in java.lang" class="external-link"><code>Runnable</code></a>s waiting to be executed via <a href="#advanceTimeBy(long,java.util.concurrent.TimeUnit)"><code>advanceTimeBy(long, TimeUnit)</code></a>
+or <a href="#advanceTimeTo(long,java.util.concurrent.TimeUnit)"><code>advanceTimeTo(long, TimeUnit)</code></a>.</dd>
+</dl>
 </div>
 </section>
 </li>
