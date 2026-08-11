@@ -13,14 +13,15 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.*;
 
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Streamable;
-import io.reactivex.rxjava4.schedulers.Schedulers;
+import io.reactivex.rxjava4.disposables.CompositeDisposable;
+import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class StreamableTimerTest extends StreamableBaseTest {
@@ -159,4 +160,41 @@ public class StreamableTimerTest extends StreamableBaseTest {
         }
     }
 
+    @Test
+    public void finishStopsTimerActionScheduler() throws Throwable {
+        var scheduler = new TestScheduler();
+
+        var streamer = Streamable.timer(1, TimeUnit.MINUTES, scheduler).stream(new CompositeDisposable());
+
+        assertEquals(1, scheduler.runnableCount());
+
+        streamer.awaitFinish();
+
+        assertEquals(0, scheduler.runnableCount());
+    }
+
+    @Test
+    public void finishStopsTimerActionScheduledExecutor() throws Throwable {
+        var exec = (ScheduledThreadPoolExecutor)Executors.newScheduledThreadPool(1);
+        exec.setRemoveOnCancelPolicy(true);
+        try {
+            var streamer = Streamable.timer(1, TimeUnit.MINUTES, exec).stream(new CompositeDisposable());
+
+            streamer.awaitFinish();
+        } finally {
+            assertEquals(0, exec.shutdownNow().size());
+        }
+    }
+
+    @Test
+    public void finishStopsTimerActionExecutor() throws Throwable {
+        var exec = Executors.newFixedThreadPool(1);
+        try {
+            var streamer = Streamable.timer(1, TimeUnit.MINUTES, exec).stream(new CompositeDisposable());
+
+            streamer.awaitFinish();
+        } finally {
+            assertEquals(0, exec.shutdownNow().size());
+        }
+    }
 }

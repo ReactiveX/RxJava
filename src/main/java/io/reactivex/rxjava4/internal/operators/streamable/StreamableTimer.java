@@ -96,7 +96,7 @@ public record StreamableTimer(long delay, @NonNull TimeUnit unit,
         @Override
         public @NonNull CompletionStage<Void> finish() {
             waiter.complete(false);
-            lazySet(DisposableHelper.DISPOSED);
+            DisposableHelper.dispose(this);
             return FINISHED;
         }
 
