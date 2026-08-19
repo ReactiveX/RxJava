@@ -8,27 +8,27 @@ Example for Maven:
 <dependency>
     <groupId>io.reactivex.rxjava4</groupId>
     <artifactId>rxjava</artifactId>
-    <version>4.0.0</version>
+    <version>x.y.z</version>
 </dependency>
 ```
 and for Ivy:
 
 ```xml
-<dependency org="io.reactivex.rxjava4" name="rxjava" rev="4.0.0" />
+<dependency org="io.reactivex.rxjava4" name="rxjava" rev="x.y.z" />
 ```
 
 and for SBT:
 
 ```scala
-libraryDependencies += "io.reactivex" %% "rxscala" % "0.26.5"
-
-libraryDependencies += "io.reactivex.rxjava4" % "rxjava" % "4.0.0"
+libraryDependencies += "io.reactivex.rxjava4" % "rxjava" % "x.y.z"
 ```
 
 and for Gradle:
 ```groovy
-implementation 'io.reactivex.rxjava4:rxjava:4.0.0'
+implementation 'io.reactivex.rxjava4:rxjava:x.y.z'
 ```
+
+Replace `x.y.z` with a released version from Maven Central.
 
 If you need to download the jars instead of using a build system, create a Maven `pom` file like this with the desired version:
 
@@ -38,17 +38,14 @@ If you need to download the jars instead of using a build system, create a Maven
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <modelVersion>4.0.0</modelVersion>
-      <groupId>io.reactivex.rxjava4</groupId>
-      <artifactId>rxjava</artifactId>
-      <version>3.0.4</version>
-      <name>RxJava</name>
-      <description>Reactive Extensions for Java</description>
-      <url>https://github.com/ReactiveX/RxJava</url>
+      <groupId>com.example</groupId>
+      <artifactId>download-rxjava</artifactId>
+      <version>1.0.0</version>
       <dependencies>
           <dependency>
               <groupId>io.reactivex.rxjava4</groupId>
               <artifactId>rxjava</artifactId>
-              <version>4.0.0</version>
+              <version>x.y.z</version>
           </dependency>
       </dependencies>
 </project>
@@ -62,15 +59,15 @@ $ mvn -f download-rxjava-pom.xml dependency:copy-dependencies
 
 That command downloads `rxjava-*.jar` and its dependencies into `./target/dependency/`.
 
-You need Java 6 or later.
+You need Java 26 or later.
 
 ### Snapshots
 
-Snapshots after May 1st, 2021 are available via https://oss.sonatype.org/content/repositories/snapshots/io/reactivex/rxjava4/rxjava/
+Snapshots after May 19th, 2025 are available via https://central.sonatype.com/repository/maven-snapshots/io/reactivex/rxjava4/rxjava/
 
 ```groovy
 repositories {
-  maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+  maven { url 'https://central.sonatype.com/repository/maven-snapshots' }
 }
 
 dependencies {
@@ -78,7 +75,7 @@ dependencies {
 }
 ```
 
-Javadoc snapshots are available at http://reactivex.io/RxJava/4.x/javadoc/snapshot
+Javadoc snapshots are available at https://reactivex.io/RxJava/4.x/javadoc/snapshot
 
 
 ## Building
