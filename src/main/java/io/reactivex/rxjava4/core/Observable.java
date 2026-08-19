@@ -11489,7 +11489,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/take.html">ReactiveX operators documentation: Take</a>
      */
     @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
     public final Observable<T> take(long time, @NonNull TimeUnit unit) {
         return takeUntil(timer(time, unit));
