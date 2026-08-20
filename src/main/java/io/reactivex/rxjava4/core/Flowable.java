@@ -12629,7 +12629,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION) // Computation scheduler is only used for creating timestamps.
     @NonNull
     public final Flowable<T> skip(long time, @NonNull TimeUnit unit) {
         return skipUntil(timer(time, unit));
@@ -12730,7 +12730,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerSupport.NONE)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION) // Computation scheduler is only used for creating timestamps.
     @NonNull
     public final Flowable<T> skipLast(long time, @NonNull TimeUnit unit) {
         return skipLast(time, unit, Schedulers.computation(), StandardBufferedConfig.DEFAULT);
@@ -14035,7 +14035,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION) // Computation scheduler is only used for creating timestamps.
     @NonNull
     public final Flowable<T> takeLast(long count, long time, @NonNull TimeUnit unit) {
         return takeLast(count, time, unit, Schedulers.computation());
@@ -14860,7 +14860,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.NONE)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION) // Computation scheduler is only used for creating timestamps.
     @NonNull
     public final Flowable<Timed<T>> timeInterval(@NonNull TimeUnit unit) {
         return timeInterval(unit, Schedulers.computation());
@@ -14889,7 +14889,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
+    @SchedulerSupport(SchedulerSupport.CUSTOM) // Supplied scheduler is only used for creating timestamps.
     @NonNull
     public final Flowable<Timed<T>> timeInterval(@NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
@@ -15284,7 +15284,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.NONE)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION) // Computation scheduler is only used for creating timestamps.
     @NonNull
     public final Flowable<Timed<T>> timestamp(@NonNull TimeUnit unit) {
         return timestamp(unit, Schedulers.computation());
@@ -15314,7 +15314,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
+    @SchedulerSupport(SchedulerSupport.CUSTOM) // Supplied scheduler is only used for creating timestamps.
     public final Flowable<Timed<T>> timestamp(@NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");

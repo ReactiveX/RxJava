@@ -397,6 +397,9 @@ public interface Streamable<@NonNull T> {
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @throws IllegalArgumentException if {@code count} is negative
      */
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @CheckReturnValue
+    @NonNull
     static Streamable<Long> intervalRange(long start, long count,
             long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
@@ -432,6 +435,9 @@ public interface Streamable<@NonNull T> {
      * @throws NullPointerException if {@code unit} or {@code executor} is {@code null}
      * @throws IllegalArgumentException if {@code count} is negative
      */
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @CheckReturnValue
+    @NonNull
     static Streamable<Long> intervalRange(long start, long count,
             long initialDelay, long period, TimeUnit unit, ExecutorService executor) {
         Objects.requireNonNull(unit, "unit is null");
@@ -535,6 +541,7 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      */
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     @CheckReturnValue
     @NonNull
     static Streamable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
@@ -556,6 +563,7 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code unit} or {@code executor} is {@code null}
      */
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     @CheckReturnValue
     @NonNull
     static Streamable<Long> timer(long delay, TimeUnit unit, ExecutorService executor) {
@@ -696,6 +704,7 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      */
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     @CheckReturnValue
     @NonNull
     default Streamable<T> delay(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
@@ -1082,6 +1091,7 @@ public interface Streamable<@NonNull T> {
      * @return the new {@code Streamable} instance
      * @throws NullPointerException if {@code unit} or {@code scheduler} or {@code fallback} is {@code null}
      */
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     @CheckReturnValue
     @NonNull
     default Streamable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Streamable<T> fallback) {
