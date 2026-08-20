@@ -422,7 +422,7 @@ relaying the upstream items into those groups.</div>
 <div class="block">Intercepts the lifecycle method calls of <code>Streamable</code> and <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core"><code>Streamer</code></a>
 and allows the modification of them via Function callbacks.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#intervalRange(long,long,long,long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">intervalRange</a><wbr>(long&nbsp;start,
  long&nbsp;count,
  long&nbsp;initialDelay,
@@ -433,7 +433,7 @@ and allows the modification of them via Function callbacks.</div>
 <div class="block">Constructs a <code>Streamable</code> that after the initial delay, starts emitting an ever increasing
 numbers from <code>start</code> up to <code>start + count</code> exclusive with the given period.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#intervalRange(long,long,long,long,java.util.concurrent.TimeUnit,java.util.concurrent.ExecutorService)" class="member-name-link">intervalRange</a><wbr>(long&nbsp;start,
  long&nbsp;count,
  long&nbsp;initialDelay,
@@ -1131,7 +1131,10 @@ The resulting <code>Streamable</code> will never produce any items.</div>
 <section class="detail" id="intervalRange(long,long,long,long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)">
 <h3>intervalRange</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;</span>&nbsp;<span class="element-name">intervalRange</span><wbr><span class="parameters">(long&nbsp;start,
+<div class="member-signature"><span class="annotations"><a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("custom")
+<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;</span>&nbsp;<span class="element-name">intervalRange</span><wbr><span class="parameters">(long&nbsp;start,
  long&nbsp;count,
  long&nbsp;initialDelay,
  long&nbsp;period,
@@ -1162,7 +1165,10 @@ If there are processing delays, this source may emit multiple queued up items in
 <section class="detail" id="intervalRange(long,long,long,long,java.util.concurrent.TimeUnit,java.util.concurrent.ExecutorService)">
 <h3>intervalRange</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;</span>&nbsp;<span class="element-name">intervalRange</span><wbr><span class="parameters">(long&nbsp;start,
+<div class="member-signature"><span class="annotations"><a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("custom")
+<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;</span>&nbsp;<span class="element-name">intervalRange</span><wbr><span class="parameters">(long&nbsp;start,
  long&nbsp;count,
  long&nbsp;initialDelay,
  long&nbsp;period,
@@ -1278,7 +1284,8 @@ If there are processing delays, this source may emit multiple queued up items in
 <section class="detail" id="timer(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)">
 <h3>timer</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<div class="member-signature"><span class="annotations"><a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("custom")
+<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;</span>&nbsp;<span class="element-name">timer</span><wbr><span class="parameters">(long&nbsp;delay,
  <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit,
@@ -1301,7 +1308,8 @@ If there are processing delays, this source may emit multiple queued up items in
 <section class="detail" id="timer(long,java.util.concurrent.TimeUnit,java.util.concurrent.ExecutorService)">
 <h3>timer</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<div class="member-signature"><span class="annotations"><a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("custom")
+<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html" title="class in java.lang" class="external-link">Long</a>&gt;</span>&nbsp;<span class="element-name">timer</span><wbr><span class="parameters">(long&nbsp;delay,
  <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="enum class in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit,
@@ -1494,7 +1502,8 @@ See <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/u
 <section class="detail" id="delay(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler)">
 <h3>delay</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<div class="member-signature"><span class="annotations"><a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("custom")
+<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">delay</span><wbr><span class="parameters">(long&nbsp;time,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
@@ -2023,7 +2032,8 @@ an item or completes.</div>
 <section class="detail" id="timeout(long,java.util.concurrent.TimeUnit,io.reactivex.rxjava4.core.Scheduler,io.reactivex.rxjava4.core.Streamable)">
 <h3>timeout</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<div class="member-signature"><span class="annotations"><a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("custom")
+<a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;<a href="#type-param-T" title="type parameter in Streamable">T</a>&gt;</span>&nbsp;<span class="element-name">timeout</span><wbr><span class="parameters">(long&nbsp;timeout,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
