@@ -12304,7 +12304,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeinterval.html">ReactiveX operators documentation: TimeInterval</a>
      */
     @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION) // Computation scheduler is only used for creating timestamps.
     @NonNull
     public final Observable<Timed<T>> timeInterval(@NonNull TimeUnit unit) {
         return timeInterval(unit, Schedulers.computation());
@@ -12329,7 +12329,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeinterval.html">ReactiveX operators documentation: TimeInterval</a>
      */
     @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
+    @SchedulerSupport(SchedulerSupport.CUSTOM) // Supplied scheduler is only used for creating timestamps.
     @NonNull
     public final Observable<Timed<T>> timeInterval(@NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
@@ -12674,7 +12674,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timestamp.html">ReactiveX operators documentation: Timestamp</a>
      */
     @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION) // Computation scheduler is only used for creating timestamps.
     @NonNull
     public final Observable<Timed<T>> timestamp(@NonNull TimeUnit unit) {
         return timestamp(unit, Schedulers.computation());
@@ -12699,7 +12699,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timestamp.html">ReactiveX operators documentation: Timestamp</a>
      */
     @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
+    @SchedulerSupport(SchedulerSupport.CUSTOM) // Supplied scheduler is only used for creating timestamps.
     @NonNull
     public final Observable<Timed<T>> timestamp(@NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
