@@ -25,7 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Set up JDK 26 for Gradle
-      uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+      uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
       with:
         distribution: 'zulu'
         java-version: '26'
@@ -62,4 +62,3 @@ jobs:
         JDK_EXPERIMENTAL: ${{ matrix.jdk }}
         JAVA_HOME: ${{ env.JAVA_HOME_26_X64 }}
       run: ./gradlew javadoc --stacktrace
-
