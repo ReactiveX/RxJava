@@ -216,4 +216,32 @@ public class SchedulerToExecutorServiceTest {
             assertTrue(f.isCancelled(), "Task was not cancelled: " + f);
         }
     }
+
+    @Test
+    public void awaitTerminationUsesRequestedTimeUnit() throws Exception {
+        Scheduler scheduler = Schedulers.computation();
+        Scheduler.Worker worker = scheduler.createWorker();
+        SchedulerToExecutorService executor = new SchedulerToExecutorService(
+                scheduler, new AtomicReference<>(worker));
+
+        try {
+            scheduler.scheduleDirect(worker::dispose, 50, TimeUnit.MILLISECONDS);
+
+            assertTrue(executor.awaitTermination(1, TimeUnit.SECONDS));
+        } finally {
+            worker.dispose();
+        }
+    }
+
+    @Test
+    public void awaitTerminationReturnsTrueIfAlreadyTerminated() throws Exception {
+        SchedulerToExecutorService executor = new SchedulerToExecutorService(
+                Schedulers.computation(), new AtomicReference<>(null));
+
+        assertFalse(executor.awaitTermination(0, TimeUnit.MILLISECONDS));
+
+        executor.shutdown();
+
+        assertTrue(executor.awaitTermination(0, TimeUnit.MILLISECONDS));
+    }
 }
