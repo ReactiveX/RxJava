@@ -84,13 +84,29 @@ public record SchedulerToExecutorService(@NonNull Scheduler scheduler,
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
         // FIXME no idea how to passively wait, not really applicable in Rx
-        long totalTime = unit.convert(timeout, TimeUnit.MILLISECONDS);
-
-        while (!isTerminated() && totalTime > 0) {
-            totalTime--;
-            Thread.sleep(1);
+        long timeoutNanos = unit.toNanos(timeout);
+        if (isTerminated()) {
+            return true;
         }
-        return totalTime > 0;
+        if (timeoutNanos <= 0) {
+            return false;
+        }
+
+        long start = System.nanoTime();
+        for (;;) {
+            if (isTerminated()) {
+                return true;
+            }
+
+            long elapsed = System.nanoTime() - start;
+            long remaining = timeoutNanos - elapsed;
+            if (remaining <= 0) {
+                return isTerminated();
+            }
+
+            // There is no termination signal to await, so poll at a short interval.
+            TimeUnit.NANOSECONDS.sleep(Math.min(remaining, TimeUnit.MILLISECONDS.toNanos(1)));
+        }
     }
 
     @Override
