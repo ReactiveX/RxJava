@@ -135,6 +135,25 @@ public class StreamableForEachTest extends StreamableBaseTest {
     }
 
     @Test
+    public void forEachBiUsesProvidedExecutor() throws Throwable {
+        var expectedThread = new AtomicReference<Thread>();
+        var actualThread = new AtomicReference<Thread>();
+        try (var executor = Executors.newSingleThreadExecutor(run -> {
+            var thread = new Thread(run, "RxJava-Test-Executor");
+            expectedThread.set(thread);
+            return thread;
+        })) {
+            var canceller = new CompositeDisposable();
+
+            Streamable.just(1)
+            .forEach((_, _) -> actualThread.set(Thread.currentThread()), canceller, executor)
+            .await();
+
+            assertSame(expectedThread.get(), actualThread.get());
+        }
+    }
+
+    @Test
     public void forEachOutsideCancel() {
         var cd = new CompositeDisposable();
         var counter = new AtomicInteger();
