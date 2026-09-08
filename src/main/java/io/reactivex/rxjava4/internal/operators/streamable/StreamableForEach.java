@@ -105,7 +105,7 @@ public record StreamableForEach() {
                 throw ExceptionHelper.wrapOrThrow(finallyCrash);
             }
             return null;
-        });
+        }, executor);
         canceller.add(Disposable.fromFuture(future));
         return new CompletionStageDisposable<>(future, canceller);
     }
