@@ -87,4 +87,29 @@ public class StreamableUsingTest extends StreamableBaseTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, 5, 6, 7, 8, 9);
     }
+
+    @Test
+    public void upstreamFinishCrash() {
+        var resource = new AtomicReference<Integer>();
+
+        Streamable.using(() -> 1, _ -> StreamableFailingFinish.MAIN_COMPLETES, resource::set)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class)
+        .assertError(e -> e.getMessage().equals("StreamableFailingFinish.finish()"));
+
+        assertEquals(1, resource.get(), "resource cleanup mismatch");
+    }
+
+    @Test
+    public void upstreamFinishAndResourceCleanerCrash() {
+        var cleanerError = new TestException("resourceCleaner");
+
+        Streamable.using(() -> 1, _ -> StreamableFailingFinish.MAIN_COMPLETES, _ -> { throw cleanerError; })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class)
+        .assertError(e -> e.getMessage().equals("StreamableFailingFinish.finish()"))
+        .assertError(e -> e.getSuppressed().length == 1 && e.getSuppressed()[0] == cleanerError);
+    }
 }

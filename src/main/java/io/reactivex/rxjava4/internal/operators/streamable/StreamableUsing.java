@@ -21,6 +21,7 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 
 public record StreamableUsing<T, R>(
         Supplier<? extends R> resourceSupplier,
@@ -80,11 +81,14 @@ implements Streamable<T> {
                     cleanup = null;
                     c.run();
                 } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(e);
-                    cf.completeExceptionally(ex);
-                    return;
+                    Exceptions.throwIfFatal(ex);
+                    e = ExceptionHelper.unwrapAndCombine(e, ex);
                 }
-                cf.complete(null);
+                if (e != null) {
+                    cf.completeExceptionally(e);
+                } else {
+                    cf.complete(null);
+                }
             });
             return cf;
         }
