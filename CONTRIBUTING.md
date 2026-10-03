@@ -6,6 +6,8 @@ If necessary, we can decide if your contribution can or needs to be backported t
 
 :warning: Do not target 3.x with new operators, bugfixes, cosmetic or pedantic changes.
 
+:stop_sign: Do not target 1.x or 2.x with any changes.
+
 When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible.
 
 When you contribute, consider any amplification of your work towards us. We don't have the capacity to propagate your changes to relevant other places in the code. So if you fix `Observable`, there is a good chance `Flowable` and `Streamable` may need changes too. You can do this in multiple PRs over a bigger timespan.
