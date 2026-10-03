@@ -28,9 +28,7 @@ import org.junit.*;
 import org.mockito.*;
 
 import rx.*;
-import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
 import rx.functions.*;
 import rx.observables.ConnectableObservable;
 import rx.observers.*;

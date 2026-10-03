@@ -24,9 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.*;
 
 import rx.*;
-import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;

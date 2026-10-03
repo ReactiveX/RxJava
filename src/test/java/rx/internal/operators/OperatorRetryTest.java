@@ -27,9 +27,7 @@ import org.junit.Test;
 import org.mockito.*;
 
 import rx.*;
-import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
 import rx.exceptions.TestException;
 import rx.functions.*;
 import rx.internal.util.RxRingBuffer;

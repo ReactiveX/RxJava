@@ -25,8 +25,6 @@ import org.junit.*;
 import org.mockito.*;
 
 import rx.*;
-import rx.Observable;
-import rx.Observer;
 import rx.internal.util.PlatformDependent;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;

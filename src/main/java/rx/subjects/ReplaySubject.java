@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import rx.*;
-import rx.Observer;
 import rx.exceptions.Exceptions;
 import rx.internal.operators.BackpressureUtils;
 import rx.plugins.RxJavaHooks;

@@ -23,9 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import rx.*;
-import rx.Observer;
 import rx.Scheduler.Worker;
-import rx.Observable;
 import rx.functions.*;
 import rx.observers.Observers;
 import rx.observers.TestSubscriber;
