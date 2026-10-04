@@ -621,7 +621,7 @@ public final class ReplaySubject<T> extends Subject<T> {
         @Serial
         private static final long serialVersionUID = 466549804534799122L;
         final Observer<? super T> downstream;
-        final ReplaySubject<T> state;
+        volatile ReplaySubject<T> state;
 
         Object index;
 
@@ -634,9 +634,14 @@ public final class ReplaySubject<T> extends Subject<T> {
 
         @Override
         public void dispose() {
-            if (!cancelled) {
+            ReplaySubject<T> s = state;
+            if (s != null) {
                 cancelled = true;
-                state.remove(this);
+                state = null;
+                s.remove(this);
+                if (getAndIncrement() == 0) {
+                    index = null;
+                }
             }
         }
 

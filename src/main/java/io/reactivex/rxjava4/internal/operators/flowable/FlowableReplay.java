@@ -465,7 +465,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * The parent subscriber-to-source used to allow removing the child in case of
          * child cancellation.
          */
-        final ReplaySubscriber<T> parent;
+        volatile ReplaySubscriber<T> parent;
         /** The actual child subscriber. */
         final Subscriber<? super T> child;
         /**
@@ -502,11 +502,14 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 if (BackpressureHelper.addCancel(this, n) != CANCELLED) {
                     // increment the total request counter
                     BackpressureHelper.add(totalRequested, n);
+                    ReplaySubscriber<T> p = parent;
                     // if successful, notify the parent dispatcher this child can receive more
                     // elements
-                    parent.manageRequests();
-                    // try replaying any cached content
-                    parent.buffer.replay(this);
+                    if (p != null) {
+                        p.manageRequests();
+                        // try replaying any cached content
+                        p.buffer.replay(this);
+                    }
                 }
             }
         }
@@ -533,15 +536,20 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         @Override
         public void dispose() {
             if (getAndSet(CANCELLED) != CANCELLED) {
+                ReplaySubscriber<T> p = parent;
+                parent = null;
                 // remove this from the parent
-                parent.remove(this);
+                p.remove(this);
                 // After removal, we might have unblocked the other child subscribers:
                 // let's assume this child had 0 requested before the cancellation while
                 // the others had non-zero. By removing this 'blocking' child, the others
                 // are now free to receive events
-                parent.manageRequests();
+                p.manageRequests();
                 // make sure the last known node is not retained
-                index = null;
+                synchronized (this) {
+                    index = null;
+                    missed = true;
+                }
             }
         }
         /**

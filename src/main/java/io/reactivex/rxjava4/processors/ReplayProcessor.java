@@ -618,7 +618,7 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
         @Serial
         private static final long serialVersionUID = 466549804534799122L;
         final Subscriber<? super T> downstream;
-        final ReplayProcessor<T> state;
+        volatile ReplayProcessor<T> state;
 
         Object index;
 
@@ -637,16 +637,24 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
-                BackpressureHelper.add(requested, n);
-                state.buffer.replay(this);
+                ReplayProcessor<T> s = state;
+                if (s != null) {
+                    BackpressureHelper.add(requested, n);
+                    s.buffer.replay(this);
+                }
             }
         }
 
         @Override
         public void cancel() {
-            if (!cancelled) {
+            ReplayProcessor<T> s = state;
+            if (s != null) {
                 cancelled = true;
-                state.remove(this);
+                state = null;
+                s.remove(this);
+                if (getAndIncrement() == 0) {
+                    index = null;
+                }
             }
         }
     }
