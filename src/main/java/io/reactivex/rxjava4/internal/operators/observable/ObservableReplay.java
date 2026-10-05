@@ -423,7 +423,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
          * The parent subscriber-to-source used to allow removing the child in case of
          * child dispose() call.
          */
-        final ReplayObserver<T> parent;
+        volatile ReplayObserver<T> parent;
         /** The actual child subscriber. */
         final Observer<? super T> child;
         /**
@@ -448,10 +448,16 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
+                ReplayObserver<T> p = parent;
+                parent = null;
                 // remove this from the parent
-                parent.remove(this);
+                if (p != null) {
+                    p.remove(this);
+                }
                 // make sure the last known node is not retained
-                index = null;
+                if (getAndIncrement() == 0) {
+                    index = null;
+                }
             }
         }
         /**
