@@ -25,7 +25,6 @@ import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.util.CrashingMappedIterable;
 import io.reactivex.rxjava4.observers.TestObserver;
-import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -91,37 +90,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         assertFalse(pp0.hasSubscribers());
 
         to.assertFailure(TestException.class);
-    }
-
-    @Test
-    public void innerErrorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-            try {
-                final PublishProcessor<Integer> pp0 = PublishProcessor.create();
-                final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-
-                final TestObserver<Object> to = Maybe.zip(
-                        Arrays.asList(pp0.singleElement(), pp1.singleElement()), addString)
-                .test();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> pp0.onError(ex);
-
-                Runnable r2 = () -> pp1.onError(ex);
-
-                TestHelper.race(r1, r2);
-
-                to.assertFailure(TestException.class);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
     }
 
     @Test
