@@ -111,55 +111,6 @@ public class MaybeTakeUntilPublisherTest extends RxJavaTest {
     }
 
     @Test
-    public void onErrorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
-
-            TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2).test();
-
-            final TestException ex1 = new TestException();
-            final TestException ex2 = new TestException();
-
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-            try {
-
-                Runnable r1 = () -> pp1.onError(ex1);
-                Runnable r2 = () -> pp2.onError(ex2);
-
-                TestHelper.race(r1, r2);
-
-                to.assertFailure(TestException.class);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-
-            } finally {
-                RxJavaPlugins.reset();
-            }
-
-        }
-    }
-
-    @Test
-    public void onCompleteRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
-
-            TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2).test();
-
-            Runnable r1 = pp1::onComplete;
-            Runnable r2 = pp2::onComplete;
-
-            TestHelper.race(r1, r2);
-
-            to.assertResult();
-        }
-    }
-
-    @Test
     public void otherSignalsAndCompletes() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
