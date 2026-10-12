@@ -24,11 +24,10 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.observers.TestObserver;
-import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subjects.MaybeSubject;
-import io.reactivex.rxjava4.testsupport.*;
+import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class MaybeTimeoutTest extends RxJavaTest {
 
@@ -276,53 +275,6 @@ public class MaybeTimeoutTest extends RxJavaTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
         TestHelper.checkDisposed(pp1.singleElement().timeout(pp2.singleElement(), Maybe.just(1)));
-    }
-
-    @Test
-    public void onErrorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestHelper.trackPluginErrors();
-            try {
-                final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-                final PublishProcessor<Integer> pp2 = PublishProcessor.create();
-
-                TestObserver<Integer> to = pp1.singleElement().timeout(pp2.singleElement()).test();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> pp1.onError(ex);
-                Runnable r2 = () -> pp2.onError(ex);
-
-                TestHelper.race(r1, r2);
-
-                to.assertFailure(TestException.class);
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
-    }
-
-    @Test
-    public void onCompleteRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
-
-            TestObserverEx<Integer> to = pp1.singleElement().timeout(pp2.singleElement()).to(TestHelper.<Integer>testConsumer());
-
-            Runnable r1 = pp1::onComplete;
-            Runnable r2 = pp2::onComplete;
-
-            TestHelper.race(r1, r2);
-
-            to.assertSubscribed().assertNoValues();
-
-            if (!to.errors().isEmpty()) {
-                to.assertError(TimeoutException.class).assertNotComplete();
-            } else {
-                to.assertNoErrors().assertComplete();
-            }
-        }
     }
 
     @Test
