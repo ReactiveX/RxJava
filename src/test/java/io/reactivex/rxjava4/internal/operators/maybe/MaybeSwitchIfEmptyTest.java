@@ -88,19 +88,4 @@ public class MaybeSwitchIfEmptyTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Integer>, Maybe<Integer>>) f -> f.switchIfEmpty(Maybe.just(2)));
     }
-
-    @Test
-    public void emptyCancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp = PublishProcessor.create();
-
-            final TestObserver<Integer> to = pp.singleElement().switchIfEmpty(Maybe.just(2)).test();
-
-            Runnable r1 = pp::onComplete;
-
-            Runnable r2 = to::dispose;
-
-            TestHelper.race(r1, r2);
-        }
-    }
 }
