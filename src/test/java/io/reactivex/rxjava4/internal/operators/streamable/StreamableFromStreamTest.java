@@ -13,16 +13,16 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class StreamableFromStreamTest extends StreamableBaseTest {
@@ -119,5 +119,31 @@ public class StreamableFromStreamTest extends StreamableBaseTest {
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
 
         assertTrue(hasClosed.get(), "Close not called");
+    }
+
+    @Test
+    public void firstItemCrashCloses() {
+        var hasClosed = new AtomicBoolean();
+        Streamable.fromStream(Stream.of(1, 2, 3).<Integer>map(_ -> { throw new TestException(); })
+                .onClose(() -> hasClosed.set(true)))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+
+        assertTrue(hasClosed.get(), "Close not called");
+    }
+
+    @Test
+    public void alreadyConsumedStreamSink() throws Throwable {
+        var stream = Stream.of(1, 2, 3);
+        stream.forEach(_ -> { });
+
+        var error = new AtomicReference<Throwable>();
+        Streamable.fromStream(stream)
+        .subscribe(StreamSink.create(_ -> Streamer.NEXT_TRUE, e -> { error.set(e); return Streamer.FINISHED; }))
+        .toCompletableFuture()
+        .get(5, TimeUnit.SECONDS);
+
+        assertInstanceOf(IllegalStateException.class, error.get());
     }
 }
