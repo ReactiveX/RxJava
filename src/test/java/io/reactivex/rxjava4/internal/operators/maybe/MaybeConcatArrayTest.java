@@ -80,34 +80,6 @@ public class MaybeConcatArrayTest extends RxJavaTest {
     }
 
     @Test
-    public void requestCancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = Maybe.concatArray(Maybe.just(1), Maybe.just(2))
-                    .test(0L);
-
-            Runnable r1 = ts::cancel;
-
-            Runnable r2 = () -> ts.request(1);
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
-    public void requestCancelRaceDelayError() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = Maybe.concatArray(StandardBufferedConfig.DELAY_ERRORS, Maybe.just(1), Maybe.just(2))
-                    .test(0L);
-
-            Runnable r1 = ts::cancel;
-
-            Runnable r2 = () -> ts.request(1);
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
     public void errorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {

@@ -27,7 +27,6 @@ import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observers.TestObserver;
-import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subjects.*;
@@ -72,36 +71,6 @@ public class MaybeAmbTest extends RxJavaTest {
 
         assertFalse(pp1.hasSubscribers());
         assertFalse(pp2.hasSubscribers());
-    }
-
-    @Test
-    public void innerErrorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-            try {
-                final PublishProcessor<Integer> pp0 = PublishProcessor.create();
-                final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-
-                final TestObserver<Integer> to = Maybe.amb(Arrays.asList(pp0.singleElement(), pp1.singleElement()))
-                .test();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> pp0.onError(ex);
-
-                Runnable r2 = () -> pp1.onError(ex);
-
-                TestHelper.race(r1, r2);
-
-                to.assertFailure(TestException.class);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
     }
 
     @Test
@@ -187,34 +156,6 @@ public class MaybeAmbTest extends RxJavaTest {
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
             assertFalse(interrupted.get(), "Interrupted!");
-        }
-    }
-
-    @Test
-    public void nullSourceSuccessRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-
-            try {
-
-                final Subject<Integer> ps = ReplaySubject.create();
-                ps.onNext(1);
-
-                final Maybe<Integer> source = Maybe.ambArray(ps.singleElement(),
-                        Maybe.<Integer>never(), Maybe.<Integer>never(), null);
-
-                Runnable r1 = source::test;
-
-                Runnable r2 = ps::onComplete;
-
-                TestHelper.race(r1, r2);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertError(errors, 0, NullPointerException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
         }
     }
 

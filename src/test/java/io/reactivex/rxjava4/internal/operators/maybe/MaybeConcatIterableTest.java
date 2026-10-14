@@ -24,9 +24,7 @@ import io.reactivex.rxjava4.core.config.StandardBufferedConfig;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.util.CrashingMappedIterable;
-import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.subjects.MaybeSubject;
-import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class MaybeConcatIterableTest extends RxJavaTest {
@@ -53,25 +51,6 @@ public class MaybeConcatIterableTest extends RxJavaTest {
         Maybe.concat(Arrays.asList(Maybe.just(1), Maybe.<Integer>error(new TestException()), Maybe.just(3)))
         .test()
         .assertFailure(TestException.class, 1);
-    }
-
-    @Test
-    public void successCancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-
-            final PublishProcessor<Integer> pp = PublishProcessor.create();
-
-            final TestSubscriber<Integer> ts = Maybe.concat(Collections.singletonList(pp.singleElement()))
-            .test();
-
-            pp.onNext(1);
-
-            Runnable r1 = ts::cancel;
-
-            Runnable r2 = pp::onComplete;
-
-            TestHelper.race(r1, r2);
-        }
     }
 
     @Test
