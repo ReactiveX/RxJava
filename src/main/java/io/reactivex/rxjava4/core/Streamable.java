@@ -239,6 +239,21 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Creates a {@code Streamable} that invokes the given {@link Supplier} to produce a {@link Throwable}
+     * that will be immediately signaled when the streaming begins.
+     * @param <T> the element type of the sequence
+     * @param throwableSupplier the {@code Supplier} to produce a {@code Throwable} for each of the streamers.
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code throwableSupplier} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> error(Supplier<? extends Throwable> throwableSupplier) {
+        Objects.requireNonNull(throwableSupplier, "throwableSupplier is null");
+        return defer(() -> error(throwableSupplier.get()));
+    }
+
+    /**
      * Returns an empty {@code Streamable} that never produces an item and just completes.
      * @param <T> the element type
      * @return the {@code Streamable} instance
@@ -629,8 +644,25 @@ public interface Streamable<@NonNull T> {
     @CheckReturnValue
     @NonNull
     default T blockingFirst() {
-        return StreamableBlocking.blockingFirst(this);
+        return StreamableBlocking.blockingFirst(this, null, new CompositeDisposable());
     }
+
+    /**
+     * Blocks the current thread until this {@code Streamable} produces one item, which is then returned immediately,
+     * or the {@code defaultItem} is returned if the upstream is empty.
+     * @param defaultItem if the upstream is empty
+     * @return the first item of this {@code Streamable}
+     * @throws CancellationException if this {@code Streamable} failed with a checked exception
+     * @throws RuntimeException if this {@code Streamable} failed with an unchecked exception
+     * @throws NullPointerException if {@code defaultItem} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default T blockingFirst(@NonNull T defaultItem) {
+        Objects.requireNonNull(defaultItem, "defaultItem is null");
+        return StreamableBlocking.blockingFirst(this, defaultItem, new CompositeDisposable());
+    }
+
     /**
      * Blocks the current thread until this {@code Streamable} produces one item, which is then returned.
      * @param cancellation the external cancellation resource to pass into the chain
@@ -642,9 +674,27 @@ public interface Streamable<@NonNull T> {
      */
     @CheckReturnValue
     @NonNull
-    default T blockingFirst(StreamerCancellation cancellation) {
+    default T blockingFirst(@NonNull StreamerCancellation cancellation) {
         Objects.requireNonNull(cancellation, "cancellation is null");
-        return StreamableBlocking.blockingFirst(this, cancellation);
+        return StreamableBlocking.blockingFirst(this, null, cancellation);
+    }
+
+    /**
+     * Blocks the current thread until this {@code Streamable} produces one item, which is then returned immediately,
+     * or the {@code defaultItem} is returned if the upstream is empty.
+     * @param defaultItem if the upstream is empty
+     * @param cancellation the external cancellation resource to pass into the chain
+     * @return the first item of this {@code Streamable}
+     * @throws CancellationException if this {@code Streamable} failed with a checked exception
+     * @throws RuntimeException if this {@code Streamable} failed with an unchecked exception
+     * @throws NullPointerException if {@code defaultItem} or {@code cancellation} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default T blockingFirst(@NonNull T defaultItem, @NonNull StreamerCancellation cancellation) {
+        Objects.requireNonNull(defaultItem, "defaultItem is null");
+        Objects.requireNonNull(cancellation, "cancellation is null");
+        return StreamableBlocking.blockingFirst(this, defaultItem, cancellation);
     }
 
     /**
@@ -658,7 +708,25 @@ public interface Streamable<@NonNull T> {
     @CheckReturnValue
     @NonNull
     default T blockingLast() {
-        return StreamableBlocking.blockingLast(this);
+        return StreamableBlocking.blockingLast(this, null, new CompositeDisposable());
+    }
+
+    /**
+     * Blocks the current thread until this {@code Streamable} produces all of its items
+     * and the very last is then returned, or returns the {@code defaultItem} if the
+     * upstream is empty.
+     * @param defaultItem if the upstream is empty
+     * @return the very last item of this {@code Streamable}
+     * @throws NoSuchElementException if the this {@code Streamable} is empty
+     * @throws CancellationException if this {@code Streamable} failed with a checked exception
+     * @throws RuntimeException if this {@code Streamable} failed with an unchecked exception
+     * @throws NullPointerException if {@code defaultItem} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default T blockingLast(@NonNull T defaultItem) {
+        Objects.requireNonNull(defaultItem, "defaultItem is null");
+        return StreamableBlocking.blockingLast(this, defaultItem, new CompositeDisposable());
     }
 
     /**
@@ -673,9 +741,29 @@ public interface Streamable<@NonNull T> {
      */
     @CheckReturnValue
     @NonNull
-    default T blockingLast(StreamerCancellation cancellation) {
+    default T blockingLast(@NonNull StreamerCancellation cancellation) {
         Objects.requireNonNull(cancellation, "cancellation is null");
-        return StreamableBlocking.blockingLast(this, cancellation);
+        return StreamableBlocking.blockingLast(this, null, cancellation);
+    }
+
+    /**
+     * Blocks the current thread until this {@code Streamable} produces all of its items
+     * and the very last is then returned, or returns the {@code defaultItem} if the
+     * upstream is empty.
+     * @param defaultItem if the upstream is empty
+     * @param cancellation the external cancellation resource to pass into the chain
+     * @return the very last item of this {@code Streamable}
+     * @throws NoSuchElementException if the this {@code Streamable} is empty
+     * @throws CancellationException if this {@code Streamable} failed with a checked exception
+     * @throws RuntimeException if this {@code Streamable} failed with an unchecked exception
+     * @throws NullPointerException if {@code defaultItem} or {@code cancellation} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default T blockingLast(@NonNull T defaultItem, @NonNull StreamerCancellation cancellation) {
+        Objects.requireNonNull(defaultItem, "defaultItem is null");
+        Objects.requireNonNull(cancellation, "cancellation is null");
+        return StreamableBlocking.blockingLast(this, defaultItem, cancellation);
     }
 
     /**
@@ -694,6 +782,24 @@ public interface Streamable<@NonNull T> {
     default <A, R> Streamable<R> collect(@NonNull Collector<T, A, R> collector) {
         Objects.requireNonNull(collector, "collector is null");
         return RxJavaPlugins.onAssembly(new StreamableCollector<>(this, collector));
+    }
+
+    /**
+     * Collects all upstream values into a data structure, provided for each streamer, via
+     * a custom collector callback and emits this single item as the result of the returned
+     * {@code Streamable}.
+     * @param <U> the element type of the data structure and returned value
+     * @param initialItemSupplier provides an individual item for each streamer to collect upstream items into
+     * @param collector the callback that receives the individual data structure item and the current upstream value
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code initialItemSupplier} or {@code collector} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default <U> Streamable<U> collect(Supplier<? extends U> initialItemSupplier, BiConsumer<? super U, ? super T> collector) {
+        Objects.requireNonNull(initialItemSupplier, "initialItemSupplier is null");
+        Objects.requireNonNull(collector, "collector is null");
+        return RxJavaPlugins.onAssembly(new StreamableCollect<>(this, initialItemSupplier, collector));
     }
 
     /**
@@ -1189,6 +1295,36 @@ public interface Streamable<@NonNull T> {
             transformer.transform(item, emitter, stopper);
         }, emitter.canceller(), executor)
         .await(), executor);
+    }
+
+    /**
+     * Replaces the {@link StreamerCancellation} instance of the downstream travelling through
+     * this operator with the provided instance to allow external cancellation.
+     * @param cancellation the new {@code StreamerCancellation} to use
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code cancellation} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> withCancellation(StreamerCancellation cancellation) {
+        Objects.requireNonNull(cancellation, "cancellation is null");
+        return withCancellation(_ -> cancellation);
+    }
+
+    /**
+     * Replaces the {@link StreamerCancellation} instance of the downstream travelling through
+     * this operator with the instance returned by the {@code onStream} callback to allow external,
+     * possibly dependent cancellation.
+     * @param onStream the function called with the downstream {@code StreamerCancellation} and expected
+     *                 to return a {@code StreamerCancellation} to pass it to the upstream source
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code onStream} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default Streamable<T> withCancellation(Function<? super StreamerCancellation, ? extends StreamerCancellation> onStream) {
+        Objects.requireNonNull(onStream, "onStream is null");
+        return RxJavaPlugins.onAssembly(new StreamableWithCancellation<>(this, onStream));
     }
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo

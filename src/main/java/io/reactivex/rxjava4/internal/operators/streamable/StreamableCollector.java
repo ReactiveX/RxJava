@@ -133,7 +133,7 @@ public record StreamableCollector<T, A, R>(
             return NEXT_FALSE;
         }
 
-        void deferredEnumerate(boolean hasInitialValue, Throwable error) {
+        void deferredEnumerate(Boolean hasInitialValue, Throwable error) {
             if (error != null) {
                 nextReady.completeExceptionally(error);
                 return;

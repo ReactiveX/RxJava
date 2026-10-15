@@ -15,9 +15,12 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
+
 import io.reactivex.rxjava4.core.Streamable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.operators.streamable.StreamableError.ErrorStreamer;
@@ -47,5 +50,34 @@ public class StreamableErrorTest extends StreamableBaseTest {
         assertThrows(IllegalStateException.class, () -> {
             new ErrorStreamer<>(new TestException()).current();
         });
+    }
+
+    @Test
+    public void supplierNormal() {
+        var index = new AtomicInteger();
+        var source = Streamable.error(() -> new TestException(index.getAndIncrement() + ""));
+        for (int i = 0; i < 10; i++) {
+            var j = i;
+            source.test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertFailure(TestException.class)
+            .assertError(t -> t.getMessage().equals("" + j));
+        }
+    }
+
+    @Test
+    public void supplierNull() {
+        Streamable.error(() -> null)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void supplierCrash() {
+        Streamable.error(() -> { throw new IOException(); })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(IOException.class);
     }
 }
