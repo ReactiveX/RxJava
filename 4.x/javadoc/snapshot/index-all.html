@@ -694,6 +694,16 @@ items.</div>
 <div class="block">Returns the first item emitted by the current <code>Observable</code>, or a default value if it emits no
 items.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#blockingFirst(T)" class="member-name-link">blockingFirst(T)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces one item, which is then returned immediately,
+or the <code>defaultItem</code> is returned if the upstream is empty.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#blockingFirst(T,io.reactivex.rxjava4.disposables.StreamerCancellation)" class="member-name-link">blockingFirst(T, StreamerCancellation)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces one item, which is then returned immediately,
+or the <code>defaultItem</code> is returned if the upstream is empty.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#blockingForEach(io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">blockingForEach(Consumer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Consumes the current <code>Flowable</code> in a blocking fashion and invokes the given
@@ -782,6 +792,18 @@ items.</div>
 <dd>
 <div class="block">Returns the last item emitted by the current <code>Observable</code>, or a default value if it emits no
 items.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#blockingLast(T)" class="member-name-link">blockingLast(T)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces all of its items
+and the very last is then returned, or returns the <code>defaultItem</code> if the
+upstream is empty.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#blockingLast(T,io.reactivex.rxjava4.disposables.StreamerCancellation)" class="member-name-link">blockingLast(T, StreamerCancellation)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Blocks the current thread until this <code>Streamable</code> produces all of its items
+and the very last is then returned, or returns the <code>defaultItem</code> if the
+upstream is empty.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#blockingLatest()" class="member-name-link">blockingLatest()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -1325,6 +1347,12 @@ a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.r
 <dd>
 <div class="block">Collects items emitted by the finite source <code>Observable</code> into a single mutable data structure and returns
 a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits this structure.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#collect(io.reactivex.rxjava4.functions.Supplier,io.reactivex.rxjava4.functions.BiConsumer)" class="member-name-link">collect(Supplier, BiConsumer)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Collects all upstream values into a data structure, provided for each streamer, via
+a custom collector callback and emits this single item as the result of the returned
+<code>Streamable</code>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#collect(java.util.stream.Collector)" class="member-name-link">collect(Collector)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -3605,6 +3633,11 @@ and emits its returned <a href="https://docs.oracle.com/en/java/javase/26/docs/a
 <dt><a href="io/reactivex/rxjava4/core/Single.html#error(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">error(Supplier)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
 <dd>
 <div class="block">Signals a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a> returned by the callback function for each individual <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#error(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">error(Supplier)</a> - Static method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Creates a <code>Streamable</code> that invokes the given <a href="io/reactivex/rxjava4/functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions"><code>Supplier</code></a> to produce a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link"><code>Throwable</code></a>
+that will be immediately signaled when the streaming begins.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#error(java.lang.Throwable)" class="member-name-link">error(Throwable)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -11828,6 +11861,17 @@ where the boundary of each window is determined by the items emitted from a spec
 <div class="block">Returns a new <a href="io/reactivex/rxjava4/core/StreamSink.html" title="interface in io.reactivex.rxjava4.core"><code>StreamSink</code></a> that returns the given <a href="io/reactivex/rxjava4/disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableStreamerCancellation</code></a>
 in its <a href="io/reactivex/rxjava4/core/StreamSink.html#cancellation()"><code>StreamSink.cancellation()</code></a>, allowing overriding the cancellation management
 of this <code>StreamSink</code></div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#withCancellation(io.reactivex.rxjava4.disposables.StreamerCancellation)" class="member-name-link">withCancellation(StreamerCancellation)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Replaces the <a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>StreamerCancellation</code></a> instance of the downstream travelling through
+this operator with the provided instance to allow external cancellation.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Streamable.html#withCancellation(io.reactivex.rxjava4.functions.Function)" class="member-name-link">withCancellation(Function)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a></dt>
+<dd>
+<div class="block">Replaces the <a href="io/reactivex/rxjava4/disposables/StreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>StreamerCancellation</code></a> instance of the downstream travelling through
+this operator with the instance returned by the <code>onStream</code> callback to allow external,
+possibly dependent cancellation.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Observable.html#withLatestFrom(io.reactivex.rxjava4.core.ObservableSource%5B%5D,io.reactivex.rxjava4.functions.Function)" class="member-name-link">withLatestFrom(ObservableSource[], Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
 <dd>
