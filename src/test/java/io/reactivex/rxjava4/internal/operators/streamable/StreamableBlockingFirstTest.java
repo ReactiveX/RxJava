@@ -22,6 +22,7 @@ import java.util.concurrent.CompletionException;
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.disposables.CompositeDisposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class StreamableBlockingFirstTest extends StreamableBaseTest {
@@ -75,4 +76,13 @@ public class StreamableBlockingFirstTest extends StreamableBaseTest {
         assertTrue(ex.getSuppressed()[0] instanceof TestException, "Wrong exception? " + ex.getSuppressed()[0]);
     }
 
+    @Test
+    public void blockingFirstDefaultEmpty() throws Throwable {
+        assertEquals(1, Streamable.empty().blockingFirst(1));
+    }
+
+    @Test
+    public void blockingFirstDefaultCancelEmpty() throws Throwable {
+        assertEquals(1, Streamable.empty().blockingFirst(1, new CompositeDisposable()));
+    }
 }

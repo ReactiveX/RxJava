@@ -26,24 +26,10 @@ public record StreamableBlocking() {
 
     /**
      * Consumes the first item and finishes the {@link Streamable},
-     * throwing {@link NoSuchElementException} if the source is empty.
+     * throwing {@link NoSuchElementException} if the source is empty and {@code defaultItem} is {@code null}.
      * @param <T> the element type
      * @param source the source {@code Streamable}
-     * @return the first item
-     * @throws RuntimeException if the source signals an unchecked exception
-     * @throws CompletionException if the source signals a checked exception
-     */
-    @CheckReturnValue
-    @NonNull
-    public static <T> T blockingFirst(Streamable<T> source) {
-        return blockingFirst(source, new CompositeDisposable());
-    }
-
-    /**
-     * Consumes the first item and finishes the {@link Streamable},
-     * throwing {@link NoSuchElementException} if the source is empty.
-     * @param <T> the element type
-     * @param source the source {@code Streamable}
+     * @param defaultItem if not null and the source is empty, this value will be returned
      * @param cancellation the external cancellation manager
      * @return the first item
      * @throws RuntimeException if the source signals an unchecked exception
@@ -51,7 +37,8 @@ public record StreamableBlocking() {
      */
     @CheckReturnValue
     @NonNull
-    public static <T> T blockingFirst(Streamable<T> source, StreamerCancellation cancellation) {
+    public static <T> T blockingFirst(@NonNull Streamable<T> source,
+            @Nullable T defaultItem, @NonNull StreamerCancellation cancellation) {
         var streamer = source.stream(cancellation);
         Throwable nextException = null;
         Throwable finishException = null;
@@ -75,6 +62,9 @@ public record StreamableBlocking() {
             throw ExceptionHelper.wrapOrThrow(ExceptionHelper.unwrapAndCombine(nextException, finishException));
         }
         if (result == null) {
+            if (defaultItem != null) {
+                return defaultItem;
+            }
             throw new NoSuchElementException();
         }
         return result;
@@ -82,28 +72,16 @@ public record StreamableBlocking() {
 
     /**
      * Consumes all upstream items and returns the very last or throws
-     * a {@link NoSuchElementException}.
+     * a {@link NoSuchElementException} if {@code defaultItem} is also {@code null}.
      * @param <T> the element type
      * @param source the source sequence
-     * @return the very last value
-     * @throws RuntimeException if the source signals an unchecked exception
-     * @throws CompletionException if the source signals a checked exception
-     */
-    public static <T> T blockingLast(Streamable<T> source) {
-        return blockingLast(source, new CompositeDisposable());
-    }
-
-    /**
-     * Consumes all upstream items and returns the very last or throws
-     * a {@link NoSuchElementException}.
-     * @param <T> the element type
-     * @param source the source sequence
+     * @param defaultItem if not null, item to return if the source is empty
      * @param cancellation the external cancellation manager
      * @return the very last value
      * @throws RuntimeException if the source signals an unchecked exception
      * @throws CompletionException if the source signals a checked exception
      */
-    public static <T> T blockingLast(Streamable<T> source, StreamerCancellation cancellation) {
+    public static <T> T blockingLast(Streamable<T> source, T defaultItem, StreamerCancellation cancellation) {
         var streamer = source.stream(cancellation);
         Throwable nextException = null;
         Throwable finishException = null;
@@ -127,6 +105,9 @@ public record StreamableBlocking() {
             throw ExceptionHelper.wrapOrThrow(ExceptionHelper.unwrapAndCombine(nextException, finishException));
         }
         if (result == null) {
+            if (defaultItem != null) {
+                return defaultItem;
+            }
             throw new NoSuchElementException();
         }
         return result;

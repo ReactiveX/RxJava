@@ -22,7 +22,7 @@ import java.util.concurrent.CompletionException;
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava4.core.Streamable;
-import io.reactivex.rxjava4.disposables.DisposableStreamerCancellation;
+import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class StreamableBlockingLastTest extends StreamableBaseTest {
@@ -79,6 +79,16 @@ public class StreamableBlockingLastTest extends StreamableBaseTest {
     @Test
     public void normalCancellation() throws Throwable {
         assertEquals(1, Streamable.just(1).blockingLast(DisposableStreamerCancellation.never()));
+    }
+
+    @Test
+    public void blockingLastDefaultEmpty() throws Throwable {
+        assertEquals(1, Streamable.empty().blockingLast(1));
+    }
+
+    @Test
+    public void blockingLastDefaultCancelEmpty() throws Throwable {
+        assertEquals(1, Streamable.empty().blockingLast(1, new CompositeDisposable()));
     }
 
 }

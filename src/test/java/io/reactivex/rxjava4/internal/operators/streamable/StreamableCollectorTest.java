@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.CompositeDisposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.processors.DispatchStreamProcessor;
@@ -138,5 +138,17 @@ public class StreamableCollectorTest extends StreamableBaseTest {
 
         ts.awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void deferredEnumerableSourceCrashDebug() throws Throwable {
+        withCachedExecutor(exec -> {
+            Single.error(new TestException())
+            .flattenAsStreamable(_ -> List.of(1, 2, 3, 4, 5))
+            .collect(Collectors.toList())
+            .test(exec)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertFailure(TestException.class);
+        });
     }
 }

@@ -221,6 +221,7 @@ public class SchedulerToExecutorServiceTest {
     public void awaitTerminationUsesRequestedTimeUnit() throws Exception {
         Scheduler scheduler = Schedulers.computation();
         Scheduler.Worker worker = scheduler.createWorker();
+        @SuppressWarnings("resource")
         SchedulerToExecutorService executor = new SchedulerToExecutorService(
                 scheduler, new AtomicReference<>(worker));
 
@@ -235,6 +236,7 @@ public class SchedulerToExecutorServiceTest {
 
     @Test
     public void awaitTerminationReturnsTrueIfAlreadyTerminated() throws Exception {
+        @SuppressWarnings("resource")
         SchedulerToExecutorService executor = new SchedulerToExecutorService(
                 Schedulers.computation(), new AtomicReference<>(null));
 
