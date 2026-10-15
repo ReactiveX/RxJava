@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
 
 import io.reactivex.rxjava4.annotations.NonNull;
@@ -27,8 +27,22 @@ public record StreamableFromStream<T>(@NonNull Stream<? extends T> items) implem
     @SuppressWarnings("unchecked")
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
-        var iterator = Objects.requireNonNull(items.iterator(), "iterator is null");
-        if (!iterator.hasNext()) {
+        Iterator<? extends T> iterator;
+        boolean hasNext;
+        try {
+            iterator = Objects.requireNonNull(items.iterator(), "iterator is null");
+            hasNext = iterator.hasNext();
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            try {
+                items.close();
+            } catch (Throwable exc) {
+                Exceptions.throwIfFatal(exc);
+                ex.addSuppressed(exc);
+            }
+            return StreamableError.createFailed(ex);
+        }
+        if (!hasNext) {
             try {
                 items.close();
             } catch (Throwable ex) {
