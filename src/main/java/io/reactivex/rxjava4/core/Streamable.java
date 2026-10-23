@@ -77,7 +77,7 @@ public interface Streamable<@NonNull T> {
      * a fully fledged {@link DisposableStreamerCancellation} where you can dispose it without disposing
      * the parent {@code cancellation} instance by accident.
      * <p>
-     * It is recommened you {@link StreamerCancellation#remove(Disposable)} or
+     * It is recommended you {@link StreamerCancellation#remove(Disposable)} or
      * {@link StreamerCancellation#delete(Disposable)} any extra resources you added
      * via {@link StreamerCancellation#add(Disposable)} when your operator
      * reaches the {@link Streamer#finish()} call.
@@ -443,7 +443,7 @@ public interface Streamable<@NonNull T> {
      * @param start the first long value to emit
      * @param count the number of items to emit, use {@link Long#MAX_VALUE} for an unlimited range
      * @param initialDelay the time to delay before the {@code start} item is emitted
-     * @param period the period of how often emit the next itme
+     * @param period the period of how often emit the next item
      * @param unit the time unit for both {@code initialDelay} and {@code period}
      * @param executor the executor to use
      * @return the new {@code Streamable} instance
