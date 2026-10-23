@@ -3000,7 +3000,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
 
     /**
      * Flattens a {@link Publisher} that emits {@code Publisher}s into a single {@code Publisher} that emits the items emitted by
-     * thos {@code Publisher}s , without any transformation.
+     * those {@code Publisher}s , without any transformation.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.oo.v3.png" alt="">
      * <p>
