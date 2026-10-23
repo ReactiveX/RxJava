@@ -36,18 +36,17 @@ public record StreamableRange(int start, int count) implements IsSynchronousStre
 
         int current;
 
+        int index;
+
         RangeStreamer(int start, int end) {
             this.start = start;
-            this.current = start - 1;
+            this.index = start;
             this.end = end;
         }
 
         @Override
         public @NonNull CompletionStage<Boolean> next() {
-            if (++current >= end) {
-                return NEXT_FALSE;
-            }
-            return NEXT_TRUE;
+            return nextSync() ? NEXT_TRUE : NEXT_FALSE;
         }
 
         @Override
@@ -57,6 +56,7 @@ public record StreamableRange(int start, int count) implements IsSynchronousStre
 
         @Override
         public @NonNull CompletionStage<Void> finish() {
+            index = end;
             current = end;
             return FINISHED;
         }
@@ -72,10 +72,13 @@ public record StreamableRange(int start, int count) implements IsSynchronousStre
         }
 
         @Override
-        public boolean nextSync() throws Throwable {
-            if (++current >= end) {
+        public boolean nextSync() {
+            int i = index;
+            if (i == end) {
                 return false;
             }
+            current = i;
+            index = i + 1;
             return true;
         }
     }

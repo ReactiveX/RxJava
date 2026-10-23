@@ -46,13 +46,7 @@ public record StreamableRangeLong(long start, long count) implements IsSynchrono
 
         @Override
         public @NonNull CompletionStage<Boolean> next() {
-            long i = index;
-            if (i >= end) {
-                return NEXT_FALSE;
-            }
-            current = i;
-            index = i + 1;
-            return NEXT_TRUE;
+            return nextSync() ? NEXT_TRUE : NEXT_FALSE;
         }
 
         @Override
@@ -78,10 +72,13 @@ public record StreamableRangeLong(long start, long count) implements IsSynchrono
         }
 
         @Override
-        public boolean nextSync() throws Throwable {
-            if (++current >= end) {
+        public boolean nextSync() {
+            long i = index;
+            if (i == end) {
                 return false;
             }
+            current = i;
+            index = i + 1;
             return true;
         }
     }

@@ -124,4 +124,96 @@ public class StreamableRangeTest extends StreamableBaseTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(List.of(1L, 2L, 3L));
     }
+
+    @Test
+    public void maximum() throws Throwable {
+        Streamable.range(Integer.MAX_VALUE - 1, 2)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+    }
+
+    @Test
+    public void maximumLong() throws Throwable {
+        Streamable.rangeLong(Long.MAX_VALUE - 1, 2)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(Long.MAX_VALUE - 1, Long.MAX_VALUE);
+    }
+
+    @Test
+    public void minimum() throws Throwable {
+        Streamable.range(Integer.MIN_VALUE, 2)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(Integer.MIN_VALUE, Integer.MIN_VALUE + 1);
+    }
+
+    @Test
+    public void minimumLong() throws Throwable {
+        Streamable.rangeLong(Long.MIN_VALUE, 2)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(Long.MIN_VALUE, Long.MIN_VALUE + 1);
+    }
+
+    @Test
+    public void maximumEnumerated() throws Throwable {
+        Streamable.range(Integer.MAX_VALUE - 1, 2)
+        .filter(_ -> true)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(Integer.MAX_VALUE - 1, Integer.MAX_VALUE));
+    }
+
+    @Test
+    public void maximumEnumeratedLong() throws Throwable {
+        Streamable.rangeLong(Long.MAX_VALUE - 1, 2)
+        .filter(_ -> true)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(Long.MAX_VALUE - 1, Long.MAX_VALUE));
+    }
+
+    @Test
+    public void minimumEnumeratedLong() throws Throwable {
+        Streamable.rangeLong(Long.MIN_VALUE, 2)
+        .filter(_ -> true)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(Long.MIN_VALUE, Long.MIN_VALUE + 1));
+    }
+
+    @Test
+    public void longEnumeratedFromZero() throws Throwable {
+        Streamable.rangeLong(0, 2)
+        .filter(_ -> true)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(0L, 1L));
+    }
+
+    @Test
+    public void longEnumeratedFromNegative() throws Throwable {
+        Streamable.rangeLong(-2, 2)
+        .filter(_ -> true)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(-2L, -1L));
+    }
+
+    @Test
+    public void longEnumeratedFromOffset() throws Throwable {
+        Streamable.rangeLong(5, 2)
+        .filter(_ -> true)
+        .collect(Collectors.toList())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(List.of(5L, 6L));
+    }
 }
