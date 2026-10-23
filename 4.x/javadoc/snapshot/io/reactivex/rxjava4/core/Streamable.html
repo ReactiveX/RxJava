@@ -769,7 +769,7 @@ privilege of whatever calls the <code>stream</code> method. If you need to talk 
 a fully fledged <a href="../disposables/DisposableStreamerCancellation.html" title="interface in io.reactivex.rxjava4.disposables"><code>DisposableStreamerCancellation</code></a> where you can dispose it without disposing
 the parent <code>cancellation</code> instance by accident.
 <p>
-It is recommened you <a href="../disposables/StreamerCancellation.html#remove(io.reactivex.rxjava4.disposables.Disposable)"><code>StreamerCancellation.remove(Disposable)</code></a> or
+It is recommended you <a href="../disposables/StreamerCancellation.html#remove(io.reactivex.rxjava4.disposables.Disposable)"><code>StreamerCancellation.remove(Disposable)</code></a> or
 <a href="../disposables/StreamerCancellation.html#delete(io.reactivex.rxjava4.disposables.Disposable)"><code>StreamerCancellation.delete(Disposable)</code></a> any extra resources you added
 via <a href="../disposables/StreamerCancellation.html#add(io.reactivex.rxjava4.disposables.Disposable)"><code>StreamerCancellation.add(Disposable)</code></a> when your operator
 reaches the <a href="Streamer.html#finish()"><code>Streamer.finish()</code></a> call.</div>
@@ -1272,7 +1272,7 @@ If there are processing delays, this source may emit multiple queued up items in
 <dd><code>start</code> - the first long value to emit</dd>
 <dd><code>count</code> - the number of items to emit, use <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Long.html#MAX_VALUE" class="external-link"><code>Long.MAX_VALUE</code></a> for an unlimited range</dd>
 <dd><code>initialDelay</code> - the time to delay before the <code>start</code> item is emitted</dd>
-<dd><code>period</code> - the period of how often emit the next itme</dd>
+<dd><code>period</code> - the period of how often emit the next item</dd>
 <dd><code>unit</code> - the time unit for both <code>initialDelay</code> and <code>period</code></dd>
 <dd><code>executor</code> - the executor to use</dd>
 <dt>Returns:</dt>
