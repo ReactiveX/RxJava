@@ -54,7 +54,7 @@ A more complete and up-to-date list of resources can be found at the [reactivex.
 * [Difference between RxJava and RxAndroid](https://stackoverflow.com/questions/49651249/difference-between-rxjava-and-rxandroid) **(2.x)**
 * [Reactive programming with RxAndroid](https://www.androidauthority.com/reactive-programming-with-rxandroid-711104/) **(1.x)**
 * [RxJava - Vogella.com](http://www.vogella.com/tutorials/RxJava/article.html) **(2.x)**
-* [Funcitional reactive Android](https://www.toptal.com/android/functional-reactive-android-rxjava) **(1.x)**
+* [Functional reactive Android](https://www.toptal.com/android/functional-reactive-android-rxjava) **(1.x)**
 * [Reactive Programming with RxAndroid and Kotlin](https://www.pluralsight.com/courses/rxandroid-kotlin-reactive-programming)
 
 # Miscellany
