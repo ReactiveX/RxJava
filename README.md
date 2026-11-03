@@ -504,7 +504,7 @@ The base classes can be considered heavy due to the sheer number of static and i
 
 <sup>2</sup>The naming convention of the interface was to append `Source` to the semi-traditional class name. There is no `FlowableSource` since `Publisher` is provided by the Reactive Streams library (and subtyping it wouldn't have helped with interoperation either). These interfaces are, however, not standard in the sense of the Reactive Streams specification and are currently RxJava specific only.
 
-<sup>3</sup> **2026.07.09** we haven't decided yet to have a `StreamableSource` becaue we control `Streamable`, unlike `Flow.Publisher`, so we can add defaulted operators there and still have `Streamable` a functional interface.
+<sup>3</sup> **2026.07.09** we haven't decided yet to have a `StreamableSource` because we control `Streamable`, unlike `Flow.Publisher`, so we can add defaulted operators there and still have `Streamable` a functional interface.
 
 ### R8 and ProGuard settings
 
@@ -566,7 +566,7 @@ All code inside the `io.reactivex.rxjava4.internal.*` packages are considered pr
 
 - [Wiki](https://github.com/ReactiveX/RxJava/wiki)
 - [Javadoc](http://reactivex.io/RxJava/4.x/javadoc/)
-- [Latest snaphot Javadoc](http://reactivex.io/RxJava/4.x/javadoc/snapshot/)
+- [Latest snapshot Javadoc](http://reactivex.io/RxJava/4.x/javadoc/snapshot/)
 - Javadoc of a specific [release version](https://github.com/ReactiveX/RxJava/tags): `http://reactivex.io/RxJava/4.x/javadoc/4.x.y/`
 
 ## Binaries
