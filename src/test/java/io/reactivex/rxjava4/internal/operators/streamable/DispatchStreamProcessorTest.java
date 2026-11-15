@@ -355,25 +355,34 @@ public class DispatchStreamProcessorTest extends StreamableBaseTest {
             var ts = new TestSubscriber<>();
             var ts2 = new TestSubscriber<>();
 
-            Runnable r1 = () -> dsp.subscribe(ts);
-            Runnable r2 = () -> dsp.subscribe(ts2);
+            // Close the executor after cancellation so the asynchronous subscribe
+            // tasks finish before StreamableBaseTest checks their CompletionStages.
+            try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+                try {
+                    Runnable r1 = () -> dsp.subscribe(ts, executor);
+                    Runnable r2 = () -> dsp.subscribe(ts2, executor);
 
-            TestHelper.race(r1, r2);
+                    TestHelper.race(r1, r2);
 
-            ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
-            ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
+                    ts.awaitOnSubscribe(1, TimeUnit.SECONDS);
+                    ts2.awaitOnSubscribe(1, TimeUnit.SECONDS);
 
-            // Both subscribers must be fully attached before cancellation,
-            // otherwise a late stream() can re-add a streamer after the wait.
-            assertHasStreamers(dsp, 1000, 2);
+                    // Both subscribers must be fully attached before cancellation,
+                    // otherwise a late stream() can re-add a streamer after the wait.
+                    assertHasStreamers(dsp, 1000, 2);
 
-            ts.cancel();
-            ts2.cancel();
+                    ts.cancel();
+                    ts2.cancel();
 
-            assertNoStreamers(dsp, 1000);
-            assertFalse(dsp.hasComplete(), "dsp has completed?");
-            assertFalse(dsp.hasThrowable(), "dsp has throwable?");
-            assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
+                    assertNoStreamers(dsp, 1000);
+                    assertFalse(dsp.hasComplete(), "dsp has completed?");
+                    assertFalse(dsp.hasThrowable(), "dsp has throwable?");
+                    assertNull(dsp.getThrowable(), "dsp has a non-null throwable?");
+                } finally {
+                    ts.cancel();
+                    ts2.cancel();
+                }
+            }
         }
     }
 
