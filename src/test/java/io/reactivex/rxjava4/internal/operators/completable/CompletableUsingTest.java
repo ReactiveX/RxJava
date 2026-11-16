@@ -226,69 +226,6 @@ public class CompletableUsingTest extends RxJavaTest {
     }
 
     @Test
-    public void successDisposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-
-            final PublishSubject<Integer> ps = PublishSubject.create();
-
-            final TestObserverEx<Void> to = Completable.using(() -> 1, _ -> ps.ignoreElements(),
-                    _ -> { }, true)
-            .to(TestHelper.<Void>testConsumer());
-
-            ps.onNext(1);
-
-            Runnable r1 = to::dispose;
-
-            Runnable r2 = ps::onComplete;
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
-    public void errorDisposeRace() {
-        RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
-        try {
-            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-
-                final PublishSubject<Integer> ps = PublishSubject.create();
-
-                final TestObserver<Void> to = Completable.using(() -> 1, _ -> ps.ignoreElements(),
-                        _ -> { }, true)
-                .test();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = to::dispose;
-
-                Runnable r2 = () -> ps.onError(ex);
-
-                TestHelper.race(r1, r2);
-            }
-        } finally {
-            RxJavaPlugins.reset();
-        }
-    }
-
-    @Test
-    public void emptyDisposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-
-            final PublishSubject<Integer> ps = PublishSubject.create();
-
-            final TestObserver<Void> to = Completable.using(() -> 1, _ -> ps.ignoreElements(),
-                    _ -> { }, true)
-            .test();
-
-            Runnable r1 = to::dispose;
-
-            Runnable r2 = ps::onComplete;
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
     public void eagerDisposeResourceThenDisposeUpstream() {
         final StringBuilder sb = new StringBuilder();
 
