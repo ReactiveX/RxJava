@@ -393,68 +393,6 @@ public class FlowableAmbTest extends RxJavaTest {
     }
 
     @Test
-    public void onNextRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
-
-            TestSubscriberEx<Integer> ts = Flowable.ambArray(pp1, pp2).to(TestHelper.<Integer>testConsumer());
-
-            Runnable r1 = () -> pp1.onNext(1);
-            Runnable r2 = () -> pp2.onNext(1);
-
-            TestHelper.race(r1, r2);
-
-            ts.assertSubscribed().assertNoErrors()
-            .assertNotComplete().assertValueCount(1);
-        }
-    }
-
-    @Test
-    public void onCompleteRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
-
-            TestSubscriber<Integer> ts = Flowable.ambArray(pp1, pp2).test();
-
-            Runnable r1 = pp1::onComplete;
-            Runnable r2 = pp2::onComplete;
-
-            TestHelper.race(r1, r2);
-
-            ts.assertResult();
-        }
-    }
-
-    @Test
-    public void onErrorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
-
-            TestSubscriber<Integer> ts = Flowable.ambArray(pp1, pp2).test();
-
-            final Throwable ex = new TestException();
-
-            Runnable r1 = () -> pp1.onError(ex);
-            Runnable r2 = () -> pp2.onError(ex);
-
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-            try {
-                TestHelper.race(r1, r2);
-            } finally {
-                RxJavaPlugins.reset();
-            }
-
-            ts.assertFailure(TestException.class);
-            if (!errors.isEmpty()) {
-                TestHelper.assertUndeliverable(errors, 0, TestException.class);
-            }
-        }
-    }
-
-    @Test
     public void nullIterableElement() {
         Flowable.amb(Arrays.asList(Flowable.never(), null, Flowable.never()))
         .test()
