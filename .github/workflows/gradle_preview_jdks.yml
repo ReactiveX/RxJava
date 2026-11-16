@@ -51,15 +51,18 @@ jobs:
       env:
         JDK_EXPERIMENTAL: ${{ matrix.jdk }}
         JAVA_HOME: ${{ env.JAVA_HOME_26_X64 }}
+        JAVA_TOOL_OPTIONS: -Djdk.reflect.allowNonSerializableConstruction=true
       run: ./gradlew test --tests "io.reactivex.rxjava4.validators.*" --stacktrace --no-daemon
     - name: Build RxJava
       env:
         JDK_EXPERIMENTAL: ${{ matrix.jdk }}
         JAVA_HOME: ${{ env.JAVA_HOME_26_X64 }}
+        JAVA_TOOL_OPTIONS: -Djdk.reflect.allowNonSerializableConstruction=true
       run: ./gradlew build --stacktrace
     - name: Generate Javadoc
       env:
         JDK_EXPERIMENTAL: ${{ matrix.jdk }}
         JAVA_HOME: ${{ env.JAVA_HOME_26_X64 }}
+        JAVA_TOOL_OPTIONS: -Djdk.reflect.allowNonSerializableConstruction=true
       run: ./gradlew javadoc --stacktrace
 
