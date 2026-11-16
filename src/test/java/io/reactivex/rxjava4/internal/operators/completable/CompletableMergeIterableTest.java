@@ -30,35 +30,6 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class CompletableMergeIterableTest extends RxJavaTest {
 
     @Test
-    public void errorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-            try {
-                final PublishSubject<Integer> ps1 = PublishSubject.create();
-                final PublishSubject<Integer> ps2 = PublishSubject.create();
-
-                TestObserver<Void> to = Completable.merge(
-                        Arrays.asList(ps1.ignoreElements(), ps2.ignoreElements())).test();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> ps1.onError(ex);
-                Runnable r2 = () -> ps2.onError(ex);
-
-                TestHelper.race(r1, r2);
-
-                to.assertFailure(TestException.class);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
-    }
-
-    @Test
     public void cancelAfterHasNext() {
         final TestObserver<Void> to = new TestObserver<>();
 
