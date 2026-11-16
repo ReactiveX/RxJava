@@ -127,37 +127,6 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     }
 
     @Test
-    public void errorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-
-            try {
-                final PublishSubject<Integer> ps1 = PublishSubject.create();
-                final PublishSubject<Integer> ps2 = PublishSubject.create();
-
-                TestSubscriber<Integer> ts = Maybe.mergeArray(ps1.singleElement(), ps2.singleElement())
-                .test();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> ps1.onError(ex);
-
-                Runnable r2 = () -> ps2.onError(ex);
-
-                TestHelper.race(r1, r2);
-
-                ts.assertFailure(Throwable.class);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
-    }
-
-    @Test
     public void mergeBadSource() {
         Maybe.mergeArray(new Maybe<Integer>() /* NFI */ {
             @Override

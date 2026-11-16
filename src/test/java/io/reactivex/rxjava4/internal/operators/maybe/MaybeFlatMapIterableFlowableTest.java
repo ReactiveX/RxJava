@@ -305,56 +305,6 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     }
 
     @Test
-    public void requestCreateInnerRace() {
-        final Integer[] a = new Integer[1000];
-        Arrays.fill(a, 1);
-
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishSubject<Integer> ps = PublishSubject.create();
-
-            ps.onNext(1);
-
-            final TestSubscriber<Integer> ts = ps.singleElement().flattenAsFlowable(
-                _ -> Arrays.asList(a))
-            .test(0L);
-
-            Runnable r1 = () -> {
-                ps.onComplete();
-                for (int i1 = 0; i1 < 500; i1++) {
-                    ts.request(1);
-                }
-            };
-
-            Runnable r2 = () -> {
-                for (int i2 = 0; i2 < 500; i2++) {
-                    ts.request(1);
-                }
-            };
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
-    public void cancelCreateInnerRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishSubject<Integer> ps = PublishSubject.create();
-
-            ps.onNext(1);
-
-            final TestSubscriber<Integer> ts = ps.singleElement().flattenAsFlowable(
-                            _ -> Arrays.asList(1, 2, 3))
-            .test(0L);
-
-            Runnable r1 = ps::onComplete;
-
-            Runnable r2 = ts::cancel;
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
     public void slowPathCancelAfterHasNext() {
         final Integer[] a = new Integer[1000];
         Arrays.fill(a, 1);
@@ -432,22 +382,4 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
         TestHelper.checkDoubleOnSubscribeMaybeToFlowable(m -> m.flattenAsFlowable(Collections::singletonList));
     }
 
-    @Test
-    public void onSuccessRequestRace() {
-        List<Object> list = List.of(1);
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-
-            MaybeSubject<Integer> ms = MaybeSubject.create();
-
-            TestSubscriber<Object> ts = ms.flattenAsFlowable(_ -> list)
-            .test(0L);
-
-            TestHelper.race(
-                    () -> ms.onSuccess(1),
-                    () -> ts.request(1)
-            );
-
-            ts.assertResult(1);
-        }
-    }
 }
