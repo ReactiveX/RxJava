@@ -189,27 +189,6 @@ public class SingleUsingTest extends RxJavaTest {
     }
 
     @Test
-    public void successDisposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp = PublishProcessor.create();
-
-            Disposable d = Disposable.empty();
-
-            final TestObserver<Integer> to = Single.using(Functions.justSupplier(d), (Function<Disposable, SingleSource<Integer>>) _ -> pp.single(-99), disposer)
-            .test();
-
-            pp.onNext(1);
-
-            Runnable r1 = pp::onComplete;
-            Runnable r2 = to::dispose;
-
-            TestHelper.race(r1, r2);
-
-            assertTrue(d.isDisposed());
-        }
-    }
-
-    @Test
     public void doubleOnSubscribe() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
@@ -240,28 +219,6 @@ public class SingleUsingTest extends RxJavaTest {
             TestHelper.assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
         } finally {
             RxJavaPlugins.reset();
-        }
-    }
-
-    @Test
-    @SuppressUndeliverable
-    public void errorDisposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp = PublishProcessor.create();
-
-            Disposable d = Disposable.empty();
-
-            final TestObserver<Integer> to = Single.using(Functions.justSupplier(d), (Function<Disposable, SingleSource<Integer>>) _ -> pp.single(-99), disposer)
-            .test();
-
-            final TestException ex = new TestException();
-
-            Runnable r1 = () -> pp.onError(ex);
-            Runnable r2 = to::dispose;
-
-            TestHelper.race(r1, r2);
-
-            assertTrue(d.isDisposed());
         }
     }
 

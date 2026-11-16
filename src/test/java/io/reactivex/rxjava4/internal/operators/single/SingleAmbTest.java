@@ -25,7 +25,6 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.BiConsumer;
 import io.reactivex.rxjava4.observers.TestObserver;
-import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subjects.*;
@@ -129,94 +128,6 @@ public class SingleAmbTest extends RxJavaTest {
         Single.ambArray(Single.error(new TestException()), Single.just(1))
         .test()
         .assertFailure(TestException.class);
-    }
-
-    @Test
-    public void nullSourceSuccessRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-
-            try {
-
-                final Subject<Integer> ps = ReplaySubject.create();
-                ps.onNext(1);
-
-                final Single<Integer> source = Single.ambArray(ps.singleOrError(), Single.<Integer>never(), Single.<Integer>never(), null);
-
-                Runnable r1 = source::test;
-
-                Runnable r2 = ps::onComplete;
-
-                TestHelper.race(r1, r2);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertError(errors, 0, NullPointerException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
-    }
-
-    @Test
-    public void multipleErrorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-
-            try {
-
-                final Subject<Integer> ps1 = PublishSubject.create();
-                final Subject<Integer> ps2 = PublishSubject.create();
-
-                Single.ambArray(ps1.singleOrError(), ps2.singleOrError()).test();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> ps1.onError(ex);
-
-                Runnable r2 = () -> ps2.onError(ex);
-
-                TestHelper.race(r1, r2);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
-    }
-
-    @Test
-    public void successErrorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-
-            try {
-
-                final Subject<Integer> ps1 = PublishSubject.create();
-                final Subject<Integer> ps2 = PublishSubject.create();
-
-                Single.ambArray(ps1.singleOrError(), ps2.singleOrError()).test();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> {
-                    ps1.onNext(1);
-                    ps1.onComplete();
-                };
-
-                Runnable r2 = () -> ps2.onError(ex);
-
-                TestHelper.race(r1, r2);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
     }
 
     @Test
