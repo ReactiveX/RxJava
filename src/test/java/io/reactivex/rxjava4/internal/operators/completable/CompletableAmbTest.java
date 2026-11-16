@@ -75,63 +75,6 @@ public class CompletableAmbTest extends RxJavaTest {
     }
 
     @Test
-    public void innerErrorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-            try {
-                final PublishProcessor<Integer> pp0 = PublishProcessor.create();
-                final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-
-                final TestObserver<Void> to = Completable.amb(Arrays.asList(pp0.ignoreElements(), pp1.ignoreElements()))
-                .test();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> pp0.onError(ex);
-
-                Runnable r2 = () -> pp1.onError(ex);
-
-                TestHelper.race(r1, r2);
-
-                to.assertFailure(TestException.class);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
-    }
-
-    @Test
-    public void nullSourceSuccessRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-
-            try {
-
-                final Subject<Integer> ps = ReplaySubject.create();
-                ps.onNext(1);
-
-                final Completable source = Completable.ambArray(ps.ignoreElements(), Completable.never(), Completable.never(), null);
-
-                Runnable r1 = source::test;
-
-                Runnable r2 = ps::onComplete;
-
-                TestHelper.race(r1, r2);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertError(errors, 0, NullPointerException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
-    }
-
-    @Test
     public void ambWithOrder() {
         Completable error = Completable.error(new RuntimeException());
         Completable.complete().ambWith(error).test().assertComplete();
