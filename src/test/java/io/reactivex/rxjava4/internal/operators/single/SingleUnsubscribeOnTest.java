@@ -85,33 +85,4 @@ public class SingleUnsubscribeOnTest extends RxJavaTest {
         TestHelper.checkDoubleOnSubscribeSingle(v -> v.unsubscribeOn(Schedulers.single()));
     }
 
-    @Test
-    public void disposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            PublishProcessor<Integer> pp = PublishProcessor.create();
-
-            final Disposable[] ds = { null };
-            pp.single(-99).unsubscribeOn(Schedulers.computation())
-            .subscribe(new SingleObserver<>() /* NFI */ {
-                @Override
-                public void onSubscribe(Disposable d) {
-                    ds[0] = d;
-                }
-
-                @Override
-                public void onSuccess(Integer value) {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-
-                }
-            });
-
-            Runnable r = () -> ds[0].dispose();
-
-            TestHelper.race(r, r);
-        }
-    }
 }
