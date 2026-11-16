@@ -283,6 +283,11 @@ checkstyle {
     checkstyleMain.exclude '**/module-info.java'
 }
 
+// TODO, reenable once Gradle/Checkstyle fixes the incompatibility
+tasks.withType(Checkstyle).configureEach {
+    enabled = toolchainJdk != "28"
+}
+
 if (project.hasProperty("releaseMode")) {
     logger.lifecycle("ReleaseMode: {}", project.releaseMode)
 
