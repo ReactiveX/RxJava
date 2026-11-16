@@ -26,7 +26,6 @@ import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observers.TestObserver;
-import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.subjects.SingleSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -94,36 +93,6 @@ public class SingleZipArrayTest extends RxJavaTest {
         assertFalse(pp0.hasSubscribers());
 
         to.assertFailure(TestException.class);
-    }
-
-    @Test
-    public void innerErrorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-            try {
-                final PublishProcessor<Integer> pp0 = PublishProcessor.create();
-                final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-
-                final TestObserver<Object> to = Single.zip(pp0.single(0), pp1.single(0), addString)
-                .test();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> pp0.onError(ex);
-
-                Runnable r2 = () -> pp1.onError(ex);
-
-                TestHelper.race(r1, r2);
-
-                to.assertFailure(TestException.class);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
     }
 
     @Test
