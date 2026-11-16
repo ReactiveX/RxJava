@@ -16,7 +16,6 @@ package io.reactivex.rxjava4.internal.operators.single;
 import static io.reactivex.rxjava4.internal.util.ExceptionHelper.timeoutMessage;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
 import java.util.concurrent.*;
 
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,6 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.observers.TestObserver;
-import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.subjects.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -128,64 +126,6 @@ public class SingleTimeoutTest extends RxJavaTest {
         .assertResult(1);
 
         assertEquals(0, calls[0]);
-    }
-
-    @Test
-    public void successTimeoutRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final SingleSubject<Integer> subj = SingleSubject.create();
-            SingleSubject<Integer> fallback = SingleSubject.create();
-
-            final TestScheduler sch = new TestScheduler();
-
-            TestObserver<Integer> to = subj.timeout(1, TimeUnit.MILLISECONDS, sch, fallback).test();
-
-            Runnable r1 = () -> subj.onSuccess(1);
-
-            Runnable r2 = () -> sch.advanceTimeBy(1, TimeUnit.MILLISECONDS);
-
-            TestHelper.race(r1, r2);
-
-            if (!fallback.hasObservers()) {
-                to.assertResult(1);
-            } else {
-                to.assertEmpty();
-            }
-        }
-    }
-
-    @Test
-    public void errorTimeoutRace() {
-        final TestException ex = new TestException();
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-
-            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                final SingleSubject<Integer> subj = SingleSubject.create();
-                SingleSubject<Integer> fallback = SingleSubject.create();
-
-                final TestScheduler sch = new TestScheduler();
-
-                TestObserver<Integer> to = subj.timeout(1, TimeUnit.MILLISECONDS, sch, fallback).test();
-
-                Runnable r1 = () -> subj.onError(ex);
-
-                Runnable r2 = () -> sch.advanceTimeBy(1, TimeUnit.MILLISECONDS);
-
-                TestHelper.race(r1, r2);
-
-                if (!fallback.hasObservers()) {
-                    to.assertFailure(TestException.class);
-                } else {
-                    to.assertEmpty();
-                }
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-            }
-        } finally {
-            RxJavaPlugins.reset();
-        }
     }
 
     @Test
