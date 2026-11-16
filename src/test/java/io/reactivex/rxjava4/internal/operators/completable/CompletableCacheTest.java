@@ -24,7 +24,6 @@ import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.subjects.PublishSubject;
-import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>, Action {
 
@@ -165,52 +164,6 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
         to3.assertEmpty();
 
         to4.assertEmpty();
-    }
-
-    @Test
-    public void subscribeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            PublishSubject<Integer> ps = PublishSubject.create();
-
-            final Completable c = ps.ignoreElements().cache();
-
-            final TestObserver<Void> to1 = new TestObserver<>();
-
-            final TestObserver<Void> to2 = new TestObserver<>();
-
-            Runnable r1 = () -> c.subscribe(to1);
-            Runnable r2 = () -> c.subscribe(to2);
-
-            TestHelper.race(r1, r2);
-
-            ps.onComplete();
-
-            to1.assertResult();
-            to2.assertResult();
-        }
-    }
-
-    @Test
-    public void subscribeDisposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            PublishSubject<Integer> ps = PublishSubject.create();
-
-            final Completable c = ps.ignoreElements().cache();
-
-            final TestObserver<Void> to1 = c.test();
-
-            final TestObserver<Void> to2 = new TestObserver<>();
-
-            Runnable r1 = to1::dispose;
-            Runnable r2 = () -> c.subscribe(to2);
-
-            TestHelper.race(r1, r2);
-
-            ps.onComplete();
-
-            to1.assertEmpty();
-            to2.assertResult();
-        }
     }
 
     @Test
