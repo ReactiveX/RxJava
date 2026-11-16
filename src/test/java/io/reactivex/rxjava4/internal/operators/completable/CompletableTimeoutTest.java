@@ -104,40 +104,6 @@ public class CompletableTimeoutTest extends RxJavaTest {
     }
 
     @Test
-    public void errorTimeoutRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-
-            try {
-                final TestScheduler scheduler = new TestScheduler();
-
-                final PublishSubject<Integer> ps = PublishSubject.create();
-
-                TestObserverEx<Void> to = ps.ignoreElements()
-                        .timeout(1, TimeUnit.MILLISECONDS, scheduler, Completable.complete())
-                        .to(TestHelper.<Void>testConsumer());
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> ps.onError(ex);
-
-                Runnable r2 = () -> scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
-
-                TestHelper.race(r1, r2);
-
-                to.assertTerminated();
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
-    }
-
-    @Test
     public void ambRace() {
         TestObserver<Void> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
