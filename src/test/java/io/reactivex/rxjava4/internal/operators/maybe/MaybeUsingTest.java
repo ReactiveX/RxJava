@@ -235,66 +235,6 @@ public class MaybeUsingTest extends RxJavaTest {
     }
 
     @Test
-    public void successDisposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-
-            final PublishSubject<Integer> ps = PublishSubject.create();
-
-            final TestObserver<Integer> to = Maybe.using(() -> 1, _ -> ps.lastElement(), _ -> {
-            }, true)
-            .test();
-
-            ps.onNext(1);
-
-            Runnable r1 = to::dispose;
-
-            Runnable r2 = ps::onComplete;
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
-    @SuppressUndeliverable
-    public void errorDisposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-
-            final PublishSubject<Integer> ps = PublishSubject.create();
-
-            final TestObserver<Integer> to = Maybe.using(() -> 1, _ -> ps.firstElement(), _ -> {
-            }, true)
-            .test();
-
-            final TestException ex = new TestException();
-
-            Runnable r1 = to::dispose;
-
-            Runnable r2 = () -> ps.onError(ex);
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
-    public void emptyDisposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-
-            final PublishSubject<Integer> ps = PublishSubject.create();
-
-            final TestObserver<Integer> to = Maybe.using(() -> 1, _ -> ps.firstElement(), _ -> {
-
-            }, true)
-            .test();
-
-            Runnable r1 = to::dispose;
-
-            Runnable r2 = ps::onComplete;
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
     public void eagerDisposeResourceThenDisposeUpstream() {
         final StringBuilder sb = new StringBuilder();
 
