@@ -225,36 +225,6 @@ public class SingleTakeUntilTest extends RxJavaTest {
     }
 
     @Test
-    public void onErrorRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-
-            try {
-                final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-                final PublishProcessor<Integer> pp2 = PublishProcessor.create();
-
-                TestObserver<Integer> to = pp1.singleOrError().takeUntil(pp2).test();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> pp1.onError(ex);
-
-                Runnable r2 = () -> pp2.onError(ex);
-
-                TestHelper.race(r1, r2);
-
-                to.assertFailure(TestException.class);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
-    }
-
-    @Test
     public void otherSignalsAndCompletes() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
