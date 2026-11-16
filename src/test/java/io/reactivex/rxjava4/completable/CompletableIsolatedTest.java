@@ -15,14 +15,12 @@ package io.reactivex.rxjava4.completable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.schedulers.Schedulers;
 
 /**
  * Test Completable methods and operators.
@@ -34,9 +32,12 @@ public class CompletableIsolatedTest extends RxJavaTest {
     public void repeatNormal() {
         final AtomicReference<Throwable> err = new AtomicReference<>();
         final AtomicInteger calls = new AtomicInteger();
+        final AtomicReference<Disposable> disposable = new AtomicReference<>();
 
         Completable c = Completable.fromCallable(() -> {
-            calls.getAndIncrement();
+            if (calls.incrementAndGet() == 6) {
+                disposable.get().dispose();
+            }
             Thread.sleep(200);
             return null;
         }).repeat();
@@ -44,7 +45,7 @@ public class CompletableIsolatedTest extends RxJavaTest {
         c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(final Disposable d) {
-                Schedulers.single().scheduleDirect(d::dispose, 1100, TimeUnit.MILLISECONDS);
+                disposable.set(d);
             }
 
             @Override
