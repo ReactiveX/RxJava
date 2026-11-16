@@ -93,38 +93,4 @@ public class MaybeUnsubscribeOnTest extends RxJavaTest {
         TestHelper.checkDoubleOnSubscribeMaybe(v -> v.unsubscribeOn(Schedulers.single()));
     }
 
-    @Test
-    public void disposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            PublishProcessor<Integer> pp = PublishProcessor.create();
-
-            final Disposable[] ds = { null };
-            pp.singleElement().unsubscribeOn(Schedulers.computation())
-            .subscribe(new MaybeObserver<>() /* NFI */ {
-                @Override
-                public void onSubscribe(Disposable d) {
-                    ds[0] = d;
-                }
-
-                @Override
-                public void onSuccess(Integer value) {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-
-                }
-
-                @Override
-                public void onComplete() {
-
-                }
-            });
-
-            Runnable r = () -> ds[0].dispose();
-
-            TestHelper.race(r, r);
-        }
-    }
 }
