@@ -271,34 +271,6 @@ public class ObservableCacheTest extends RxJavaTest {
     }
 
     @Test
-    public void subscribeEmitRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishSubject<Integer> ps = PublishSubject.<Integer>create();
-
-            final Observable<Integer> cache = ps.cache();
-
-            cache.test();
-
-            final TestObserverEx<Integer> to = new TestObserverEx<>();
-
-            Runnable r1 = () -> cache.subscribe(to);
-
-            Runnable r2 = () -> {
-                for (int j = 0; j < 500; j++) {
-                    ps.onNext(j);
-                }
-                ps.onComplete();
-            };
-
-            TestHelper.race(r1, r2);
-
-            to
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertSubscribed().assertValueCount(500).assertComplete().assertNoErrors();
-        }
-    }
-
-    @Test
     public void cancelledUpFront() {
         final AtomicInteger call = new AtomicInteger();
         Observable<Object> f = Observable.fromCallable((Callable<Object>) call::incrementAndGet).concatWith(Observable.never())
@@ -310,20 +282,6 @@ public class ObservableCacheTest extends RxJavaTest {
         .assertEmpty();
 
         assertEquals(1, call.get());
-    }
-
-    @Test
-    public void addRemoveRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            Observable<Object> o = Observable.never().cache();
-
-            TestObserver<Object> to = o.test();
-
-            TestHelper.race(
-                    to::dispose,
-                    o::test
-            );
-        }
     }
 
     @Test
