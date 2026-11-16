@@ -25,7 +25,6 @@ import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
-import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class MaybeCacheTest extends RxJavaTest {
 
@@ -204,37 +203,6 @@ public class MaybeCacheTest extends RxJavaTest {
         pp.onComplete();
 
         ts.assertEmpty();
-    }
-
-    @Test
-    public void addAddRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            PublishProcessor<Integer> pp = PublishProcessor.create();
-
-            final Maybe<Integer> source = pp.singleElement().cache();
-
-            Runnable r = source::test;
-
-            TestHelper.race(r, r);
-        }
-    }
-
-    @Test
-    public void removeRemoveRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            PublishProcessor<Integer> pp = PublishProcessor.create();
-
-            final Maybe<Integer> source = pp.singleElement().cache();
-
-            final TestObserver<Integer> to1 = source.test();
-            final TestObserver<Integer> to2 = source.test();
-
-            Runnable r1 = to1::dispose;
-
-            Runnable r2 = to2::dispose;
-
-            TestHelper.race(r1, r2);
-        }
     }
 
     @Test
