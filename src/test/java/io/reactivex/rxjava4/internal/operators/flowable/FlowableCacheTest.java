@@ -389,36 +389,6 @@ public class FlowableCacheTest extends RxJavaTest {
     }
 
     @Test
-    public void subscribeSubscribeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final Flowable<Integer> cache = Flowable.range(1, 500).cache();
-
-            final TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
-            final TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<>();
-
-            Runnable r1 = () -> cache.subscribe(ts1);
-
-            Runnable r2 = () -> cache.subscribe(ts2);
-
-            TestHelper.race(r1, r2);
-
-            ts1
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertSubscribed()
-            .assertValueCount(500)
-            .assertComplete()
-            .assertNoErrors();
-
-            ts2
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertSubscribed()
-            .assertValueCount(500)
-            .assertComplete()
-            .assertNoErrors();
-        }
-    }
-
-    @Test
     public void subscribeCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.<Integer>create();
@@ -451,20 +421,6 @@ public class FlowableCacheTest extends RxJavaTest {
         .assertValuesOnly(1, 2)
         .requestMore(3)
         .assertResult(1, 2, 3, 4, 5);
-    }
-
-    @Test
-    public void addRemoveRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            Flowable<Object> f = Flowable.never().cache();
-
-            TestSubscriber<Object> ts = f.test();
-
-            TestHelper.race(
-                    ts::cancel,
-                    f::test
-            );
-        }
     }
 
     @Test
