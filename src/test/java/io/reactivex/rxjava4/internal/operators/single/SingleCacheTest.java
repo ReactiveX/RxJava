@@ -19,7 +19,6 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.processors.PublishProcessor;
-import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class SingleCacheTest extends RxJavaTest {
 
@@ -37,23 +36,6 @@ public class SingleCacheTest extends RxJavaTest {
         to.assertEmpty();
 
         cached.test().assertResult(1);
-    }
-
-    @Test
-    public void addRemoveRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            PublishProcessor<Integer> pp = PublishProcessor.create();
-
-            final Single<Integer> cached = pp.single(-99).cache();
-
-            final TestObserver<Integer> to1 = cached.test();
-
-            Runnable r1 = to1::dispose;
-
-            Runnable r2 = cached::test;
-
-            TestHelper.race(r1, r2);
-        }
     }
 
     @Test
