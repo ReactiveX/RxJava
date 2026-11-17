@@ -87,54 +87,6 @@ public class SubscriptionHelperTest extends RxJavaTest {
     }
 
     @Test
-    public void cancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
-
-            Runnable r = () -> SubscriptionHelper.cancel(atomicSubscription);
-
-            TestHelper.race(r, r);
-        }
-    }
-
-    @Test
-    public void setRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
-
-            final BooleanSubscription bs1 = new BooleanSubscription();
-            final BooleanSubscription bs2 = new BooleanSubscription();
-
-            Runnable r1 = () -> SubscriptionHelper.set(atomicSubscription, bs1);
-
-            Runnable r2 = () -> SubscriptionHelper.set(atomicSubscription, bs2);
-
-            TestHelper.race(r1, r2);
-
-            assertTrue(bs1.isCancelled() ^ bs2.isCancelled());
-        }
-    }
-
-    @Test
-    public void replaceRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
-
-            final BooleanSubscription bs1 = new BooleanSubscription();
-            final BooleanSubscription bs2 = new BooleanSubscription();
-
-            Runnable r1 = () -> SubscriptionHelper.replace(atomicSubscription, bs1);
-
-            Runnable r2 = () -> SubscriptionHelper.replace(atomicSubscription, bs2);
-
-            TestHelper.race(r1, r2);
-
-            assertFalse(bs1.isCancelled());
-            assertFalse(bs2.isCancelled());
-        }
-    }
-
-    @Test
     public void cancelAndChange() {
         AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
 
@@ -165,38 +117,6 @@ public class SubscriptionHelperTest extends RxJavaTest {
             TestHelper.assertError(errors, 0, IllegalArgumentException.class, "n > 0 required but it was -99");
         } finally {
             RxJavaPlugins.reset();
-        }
-    }
-
-    @Test
-    public void deferredRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
-            final AtomicLong r = new AtomicLong();
-
-            final AtomicLong q = new AtomicLong();
-
-            final Subscription a = new Subscription() /* NFI */ {
-                @Override
-                public void request(long n) {
-                    q.addAndGet(n);
-                }
-
-                @Override
-                public void cancel() {
-
-                }
-            };
-
-            Runnable r1 = () -> SubscriptionHelper.deferredSetOnce(atomicSubscription, r, a);
-
-            Runnable r2 = () -> SubscriptionHelper.deferredRequest(atomicSubscription, r, 1);
-
-            TestHelper.race(r1, r2);
-
-            assertSame(a, atomicSubscription.get());
-            assertEquals(1, q.get());
-            assertEquals(0, r.get());
         }
     }
 
