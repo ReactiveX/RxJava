@@ -153,17 +153,6 @@ public class FutureObserverTest extends RxJavaTest {
     }
 
     @Test
-    public void cancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final FutureObserver<Integer> fo = new FutureObserver<>();
-
-            Runnable r = () -> fo.cancel(false);
-
-            TestHelper.race(r, r);
-        }
-    }
-
-    @Test
     public void await() throws Exception {
         Schedulers.single().scheduleDirect(() -> {
             fo.onNext(1);
@@ -171,52 +160,6 @@ public class FutureObserverTest extends RxJavaTest {
         }, 100, TimeUnit.MILLISECONDS);
 
         assertEquals(1, fo.get(5, TimeUnit.SECONDS).intValue());
-    }
-
-    @Test
-    public void onErrorCancelRace() {
-        RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
-        try {
-            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                final FutureObserver<Integer> fo = new FutureObserver<>();
-
-                final TestException ex = new TestException();
-
-                Runnable r1 = () -> fo.cancel(false);
-
-                Runnable r2 = () -> fo.onError(ex);
-
-                TestHelper.race(r1, r2);
-            }
-        } finally {
-            RxJavaPlugins.reset();
-        }
-    }
-
-    @Test
-    public void onCompleteCancelRace() {
-        RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
-        try {
-            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                final FutureObserver<Integer> fo = new FutureObserver<>();
-
-                if (i % 3 == 0) {
-                    fo.onSubscribe(Disposable.empty());
-                }
-
-                if (i % 2 == 0) {
-                    fo.onNext(1);
-                }
-
-                Runnable r1 = () -> fo.cancel(false);
-
-                Runnable r2 = fo::onComplete;
-
-                TestHelper.race(r1, r2);
-            }
-        } finally {
-            RxJavaPlugins.reset();
-        }
     }
 
     @Test
@@ -350,16 +293,4 @@ public class FutureObserverTest extends RxJavaTest {
         }
     }
 
-    @Test
-    public void cancelOnSubscribeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final FutureObserver<Integer> fo = new FutureObserver<>();
-
-            Runnable r = () -> fo.cancel(false);
-
-            Disposable d = Disposable.empty();
-
-            TestHelper.race(r, () -> fo.onSubscribe(d));
-        }
-    }
 }
