@@ -990,6 +990,21 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Collects all upstream items into the given mutable data structure and emits it as a {@code Single}.
+     * @param <U> the accumulator and output type
+     * @param initialItem the mutable data structure that will collect the items
+     * @param collector the callback that modifies the data structure with each upstream item
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code initialItem} or {@code collector} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    default <@NonNull U> Single<U> collectInto(@NonNull U initialItem, @NonNull BiConsumer<? super U, ? super T> collector) {
+        Objects.requireNonNull(initialItem, "initialItem is null");
+        return collect(() -> initialItem, collector).lastOrError();
+    }
+
+    /**
      * Counts all upstream items and emits the count as a {@code Single}.
      * @return the new {@code Single} instance
      */
