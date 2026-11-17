@@ -21,7 +21,7 @@ import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamStreamableSource;
 import io.reactivex.rxjava4.operators.*;
 
-public record StreamableTake<T>(Streamable<T> source, long count)
+public record StreamableTake<T>(Streamable<T> source, long itemCount)
 implements Streamable<T>, HasUpstreamStreamableSource<T> {
 
     @SuppressWarnings("unchecked")
@@ -29,15 +29,15 @@ implements Streamable<T>, HasUpstreamStreamableSource<T> {
     public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         var upstream = source.stream(cancellation);
         if (upstream instanceof IndexableSource<?> isrc) {
-            return new TakeStreamerIndexable<>(upstream, (IndexableSource<T>)isrc, count);
+            return new TakeStreamerIndexable<>(upstream, (IndexableSource<T>)isrc, itemCount);
         } else
         if (upstream instanceof DeferredEnumerableSource<?> dsrc) {
-            return new TakeStreamerDeferredEnumerable<>(upstream, (DeferredEnumerableSource<T>)dsrc, count);
+            return new TakeStreamerDeferredEnumerable<>(upstream, (DeferredEnumerableSource<T>)dsrc, itemCount);
         } else
         if (upstream instanceof EnumerableSource<?> esrc) {
-            return new TakeStreamerEnumerable<>(upstream, (EnumerableSource<T>)esrc, count);
+            return new TakeStreamerEnumerable<>(upstream, (EnumerableSource<T>)esrc, itemCount);
         }
-        return new TakeStreamerBasic<>(upstream, count);
+        return new TakeStreamerBasic<>(upstream, itemCount);
     }
 
     static abstract class TakeStreamerBase<T> implements Streamer<T> {

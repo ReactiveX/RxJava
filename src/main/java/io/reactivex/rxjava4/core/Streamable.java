@@ -990,6 +990,16 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Counts all upstream items and emits the count as a {@code Single}.
+     * @return the new {@code Single} instance
+     */
+    @CheckReturnValue
+    @NonNull
+    default Single<Long> count() {
+        return collect(Collectors.counting()).lastOrError();
+    }
+
+    /**
      * Collects all upstream values via the use of a {@link Collector} configuration
      * and emits its resulting value as a single item of the returned {@code Streamable}.
      * <p>

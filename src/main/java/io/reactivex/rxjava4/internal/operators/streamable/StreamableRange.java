@@ -20,11 +20,11 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.operators.*;
 
-public record StreamableRange(int start, int count) implements IsSynchronousStreamable<Integer> {
+public record StreamableRange(int start, int itemCount) implements IsSynchronousStreamable<Integer> {
 
     @Override
     public @NonNull Streamer<@NonNull Integer> stream(@NonNull StreamerCancellation cancellation) {
-        return new RangeStreamer<>(start, start + count);
+        return new RangeStreamer<>(start, start + itemCount);
     }
 
     static final class RangeStreamer<T>
