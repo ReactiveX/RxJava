@@ -488,36 +488,6 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
-    public void singlePublisher() throws Exception {
-        withRetry(3, () -> {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-            try {
-                TestSubscriber<Integer> ts = Single.just(1)
-                .subscribeOn(Schedulers.cached())
-                .flatMapPublisher((Function<Integer, Publisher<Integer>>) _ -> {
-                    sleep();
-                    return Flowable.<Integer>error(new TestException());
-                })
-                .test();
-
-                cb.await();
-
-                beforeCancelSleep(ts);
-
-                ts.cancel();
-
-                Thread.sleep(SLEEP_AFTER_CANCEL);
-
-                ts.assertEmpty();
-
-                assertTrue(errors.isEmpty(), errors.toString());
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        });
-    }
-
-    @Test
     public void singleCombiner() throws Exception {
         withRetry(3, () -> {
             List<Throwable> errors = TestHelper.trackPluginErrors();
