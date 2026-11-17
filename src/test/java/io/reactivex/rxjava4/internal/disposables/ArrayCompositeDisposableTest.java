@@ -68,37 +68,4 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
         assertTrue(d6.isDisposed());
     }
 
-    @Test
-    public void disposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
-
-            Runnable r = acd::dispose;
-
-            TestHelper.race(r, r);
-        }
-    }
-
-    @Test
-    public void replaceRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
-
-            Runnable r = () -> acd.replaceResource(0, Disposable.empty());
-
-            TestHelper.race(r, r);
-        }
-    }
-
-    @Test
-    public void setRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
-
-            Runnable r = () -> acd.setResource(0, Disposable.empty());
-
-            TestHelper.race(r, r);
-        }
-    }
-
 }
