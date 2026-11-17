@@ -25,7 +25,7 @@ import io.reactivex.rxjava4.schedulers.Schedulers;
 
 public record StreamableIntervalRange(
         long start,
-        long count,
+        long itemCount,
         long initialDelay,
         long period,
         TimeUnit unit,
@@ -41,7 +41,7 @@ public record StreamableIntervalRange(
 
     @Override
     public @NonNull Streamer<Long> stream(@NonNull StreamerCancellation cancellation) {
-        var streamer = new IntervalStreamer(start, start + count);
+        var streamer = new IntervalStreamer(start, start + itemCount);
         if (scheduler != null) {
             var d = scheduler.schedulePeriodicallyDirect(streamer, initialDelay, period, unit);
             DisposableHelper.setOnce(streamer, d);

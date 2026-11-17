@@ -24,22 +24,22 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.StreamerCancellation;
 import io.reactivex.rxjava4.operators.*;
 
-public record StreamableSkip<T>(Streamable<T> source, long count) implements Streamable<T> {
+public record StreamableSkip<T>(Streamable<T> source, long itemCount) implements Streamable<T> {
 
     @SuppressWarnings("unchecked")
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull StreamerCancellation cancellation) {
         var upstream = source.stream(cancellation);
         if (upstream instanceof IndexableSource<?> isrc) {
-            return new SkipStreamerIndexed<>(upstream, (IndexableSource<T>)isrc, count);
+            return new SkipStreamerIndexed<>(upstream, (IndexableSource<T>)isrc, itemCount);
         } else
         if (upstream instanceof DeferredEnumerableSource<?> dsrc) {
-            return new SkipStreamerDeferredEnumerable<>(upstream, (DeferredEnumerableSource<T>)dsrc, count);
+            return new SkipStreamerDeferredEnumerable<>(upstream, (DeferredEnumerableSource<T>)dsrc, itemCount);
         } else
         if (upstream instanceof EnumerableSource<?> esrc) {
-            return new SkipStreamerEnumerable<>(upstream, (EnumerableSource<T>)esrc, count);
+            return new SkipStreamerEnumerable<>(upstream, (EnumerableSource<T>)esrc, itemCount);
         }
-        return new SkipStreamerBasic<>(upstream, count);
+        return new SkipStreamerBasic<>(upstream, itemCount);
     }
 
     static abstract class SkipStreamer<T> extends AtomicInteger implements Streamer<T>, BiConsumer<Boolean, Throwable> {
