@@ -24,6 +24,10 @@ import io.reactivex.rxjava4.tck.BaseTck;
 @Test
 public class FlowableVirtualCreateVirtualTckTest extends BaseTck<Long> {
 
+    public FlowableVirtualCreateVirtualTckTest() {
+        super(50);
+    }
+
     @Override
     public Publisher<Long> createFlowPublisher(final long elements) {
         return
