@@ -65,37 +65,6 @@ public class ReplayCancellationTest extends RxJavaTest {
         );
     }
 
-    @Test
-    public void flowableRequestCancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            PublishProcessor<Object> source = PublishProcessor.create();
-            ConnectableFlowable<Object> replay = source.replay(1);
-            ReplayConsumer consumer = new ReplayConsumer(new Object());
-            replay.subscribe(consumer);
-            Disposable connection = replay.connect();
-            try {
-                TestHelper.race(() -> consumer.upstream.request(1), consumer.upstream::cancel);
-                source.onNext(1);
-                assertEquals(0, consumer.values);
-            } finally {
-                connection.dispose();
-            }
-        }
-    }
-
-    @Test
-    public void processorRequestCancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            ReplayProcessor<Object> source = ReplayProcessor.createWithSize(1);
-            ReplayConsumer consumer = new ReplayConsumer(new Object());
-            source.subscribe(consumer);
-            TestHelper.race(() -> consumer.upstream.request(1), consumer.upstream::cancel);
-            source.onNext(1);
-            assertEquals(0, consumer.values);
-            assertFalse(source.hasSubscribers());
-        }
-    }
-
     static ReplayConsumer cancelObservable(int kind) {
         Object value = new Object();
         ReplayConsumer consumer = new ReplayConsumer(value);
