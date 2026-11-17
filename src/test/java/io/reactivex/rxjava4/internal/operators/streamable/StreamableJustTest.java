@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -48,6 +50,32 @@ public class StreamableJustTest extends StreamableBaseTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(List.of(1));
+    }
+
+    @Test
+    public void multipleItems() throws Throwable {
+        Streamable.just(1, 2).test().awaitDone(5, TimeUnit.SECONDS).assertResult(1, 2);
+        Streamable.just(1, 2, 3).test().awaitDone(5, TimeUnit.SECONDS).assertResult(1, 2, 3);
+        Streamable.just(1, 2, 3, 4).test().awaitDone(5, TimeUnit.SECONDS).assertResult(1, 2, 3, 4);
+        Streamable.just(1, 2, 3, 4, 5).test().awaitDone(5, TimeUnit.SECONDS).assertResult(1, 2, 3, 4, 5);
+        Streamable.just(1, 2, 3, 4, 5, 6).test().awaitDone(5, TimeUnit.SECONDS).assertResult(1, 2, 3, 4, 5, 6);
+        Streamable.just(1, 2, 3, 4, 5, 6, 7).test().awaitDone(5, TimeUnit.SECONDS).assertResult(1, 2, 3, 4, 5, 6, 7);
+        Streamable.just(1, 2, 3, 4, 5, 6, 7, 8).test().awaitDone(5, TimeUnit.SECONDS).assertResult(1, 2, 3, 4, 5, 6, 7, 8);
+        Streamable.just(1, 2, 3, 4, 5, 6, 7, 8, 9).test().awaitDone(5, TimeUnit.SECONDS).assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        Streamable.just(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).test().awaitDone(5, TimeUnit.SECONDS).assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void multipleItemsRejectNull() {
+        assertThrows(NullPointerException.class, () -> Streamable.just(1, null));
+        assertThrows(NullPointerException.class, () -> Streamable.just(1, 2, null));
+        assertThrows(NullPointerException.class, () -> Streamable.just(1, 2, 3, null));
+        assertThrows(NullPointerException.class, () -> Streamable.just(1, 2, 3, 4, null));
+        assertThrows(NullPointerException.class, () -> Streamable.just(1, 2, 3, 4, 5, null));
+        assertThrows(NullPointerException.class, () -> Streamable.just(1, 2, 3, 4, 5, 6, null));
+        assertThrows(NullPointerException.class, () -> Streamable.just(1, 2, 3, 4, 5, 6, 7, null));
+        assertThrows(NullPointerException.class, () -> Streamable.just(1, 2, 3, 4, 5, 6, 7, 8, null));
+        assertThrows(NullPointerException.class, () -> Streamable.just(1, 2, 3, 4, 5, 6, 7, 8, 9, null));
     }
 
 }
