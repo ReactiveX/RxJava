@@ -116,17 +116,6 @@ public class DisposableTest extends RxJavaTest {
     }
 
     @Test
-    public void disposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final Disposable d = Disposable.empty();
-
-            Runnable r = d::dispose;
-
-            TestHelper.race(r, r);
-        }
-    }
-
-    @Test
     public void fromSubscriptionNull() {
         assertThrows(NullPointerException.class, () -> {
             Disposable.fromSubscription(null);

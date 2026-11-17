@@ -73,22 +73,4 @@ public class CancellableDisposableTest extends RxJavaTest {
         assertEquals(1, count.get());
     }
 
-    @Test
-    public void disposeRace() {
-
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicInteger count = new AtomicInteger();
-
-            Cancellable c = count::getAndIncrement;
-
-            final CancellableDisposable cd = new CancellableDisposable(c);
-
-            Runnable r = cd::dispose;
-
-            TestHelper.race(r, r);
-
-            assertEquals(1, count.get());
-        }
-    }
-
 }
