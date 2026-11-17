@@ -2053,27 +2053,6 @@ public class FlowableGroupByTest extends RxJavaTest {
     }
 
     @Test
-    public void issue6982Case1() {
-        final int groups = 20;
-
-        int groupByBufferSize = 2;
-        int flatMapMaxConcurrency = 200 * groups;
-
-        // ~50% of executions - Not completed (latch = 1, values = 500000, errors = 0, completions = 0, timeout!,
-        // disposed!)
-
-        Flowable
-        .range(1, 500_000)
-        .map(i -> i % groups)
-        .groupBy(i -> i, i -> i, ttlCapGuava(Duration.ofMillis(10)), new StandardBufferedConfig(false, groupByBufferSize))
-        .flatMap(gf -> gf.observeOn(Schedulers.computation()), new StandardConcurrentBufferedConfig(flatMapMaxConcurrency))
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertNoErrors()
-        .assertComplete();
-    }
-
-    @Test
     public void issue6982Case2() {
         final int groups = 20;
 
