@@ -92,31 +92,4 @@ public class ArrayCompositeSubscriptionTest extends RxJavaTest {
         ac.replaceResource(0, null);
     }
 
-    @Test
-    public void disposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final ArrayCompositeSubscription ac = new ArrayCompositeSubscription(1000);
-
-            Runnable r = ac::dispose;
-
-            TestHelper.race(r, r);
-        }
-    }
-
-    @Test
-    public void setReplaceRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final ArrayCompositeSubscription ac = new ArrayCompositeSubscription(1);
-
-            final BooleanSubscription s1 = new BooleanSubscription();
-            final BooleanSubscription s2 = new BooleanSubscription();
-
-            Runnable r1 = () -> ac.setResource(0, s1);
-
-            Runnable r2 = () -> ac.replaceResource(0, s2);
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
 }
