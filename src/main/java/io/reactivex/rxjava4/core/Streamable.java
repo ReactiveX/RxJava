@@ -483,6 +483,225 @@ public interface Streamable<@NonNull T> {
     }
 
     /**
+     * Returns a {@code Streamable} that produces the given two items in order and completes.
+     * @param <T> the element type
+     * @param item1 the first item to produce
+     * @param item2 the second item to produce
+     * @return the {@code Streamable} instance
+     * @throws NullPointerException if any item is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> just(@NonNull T item1, @NonNull T item2) {
+        Objects.requireNonNull(item1, "item1 is null");
+        Objects.requireNonNull(item2, "item2 is null");
+        return fromArray(item1, item2);
+    }
+
+    /**
+     * Returns a {@code Streamable} that produces the given three items in order and completes.
+     * @param <T> the element type
+     * @param item1 the first item to produce
+     * @param item2 the second item to produce
+     * @param item3 the third item to produce
+     * @return the {@code Streamable} instance
+     * @throws NullPointerException if any item is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3) {
+        Objects.requireNonNull(item1, "item1 is null");
+        Objects.requireNonNull(item2, "item2 is null");
+        Objects.requireNonNull(item3, "item3 is null");
+        return fromArray(item1, item2, item3);
+    }
+
+    /**
+     * Returns a {@code Streamable} that produces the given four items in order and completes.
+     * @param <T> the element type
+     * @param item1 the first item to produce
+     * @param item2 the second item to produce
+     * @param item3 the third item to produce
+     * @param item4 the fourth item to produce
+     * @return the {@code Streamable} instance
+     * @throws NullPointerException if any item is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4) {
+        Objects.requireNonNull(item1, "item1 is null");
+        Objects.requireNonNull(item2, "item2 is null");
+        Objects.requireNonNull(item3, "item3 is null");
+        Objects.requireNonNull(item4, "item4 is null");
+        return fromArray(item1, item2, item3, item4);
+    }
+
+    /**
+     * Returns a {@code Streamable} that produces the given five items in order and completes.
+     * @param <T> the element type
+     * @param item1 the first item to produce
+     * @param item2 the second item to produce
+     * @param item3 the third item to produce
+     * @param item4 the fourth item to produce
+     * @param item5 the fifth item to produce
+     * @return the {@code Streamable} instance
+     * @throws NullPointerException if any item is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4, @NonNull T item5) {
+        Objects.requireNonNull(item1, "item1 is null");
+        Objects.requireNonNull(item2, "item2 is null");
+        Objects.requireNonNull(item3, "item3 is null");
+        Objects.requireNonNull(item4, "item4 is null");
+        Objects.requireNonNull(item5, "item5 is null");
+        return fromArray(item1, item2, item3, item4, item5);
+    }
+
+    /**
+     * Returns a {@code Streamable} that produces the given six items in order and completes.
+     * @param <T> the element type
+     * @param item1 the first item to produce
+     * @param item2 the second item to produce
+     * @param item3 the third item to produce
+     * @param item4 the fourth item to produce
+     * @param item5 the fifth item to produce
+     * @param item6 the sixth item to produce
+     * @return the {@code Streamable} instance
+     * @throws NullPointerException if any item is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4, @NonNull T item5, @NonNull T item6) {
+        Objects.requireNonNull(item1, "item1 is null");
+        Objects.requireNonNull(item2, "item2 is null");
+        Objects.requireNonNull(item3, "item3 is null");
+        Objects.requireNonNull(item4, "item4 is null");
+        Objects.requireNonNull(item5, "item5 is null");
+        Objects.requireNonNull(item6, "item6 is null");
+        return fromArray(item1, item2, item3, item4, item5, item6);
+    }
+
+    /**
+     * Returns a {@code Streamable} that produces the given seven items in order and completes.
+     * @param <T> the element type
+     * @param item1 the first item to produce
+     * @param item2 the second item to produce
+     * @param item3 the third item to produce
+     * @param item4 the fourth item to produce
+     * @param item5 the fifth item to produce
+     * @param item6 the sixth item to produce
+     * @param item7 the seventh item to produce
+     * @return the {@code Streamable} instance
+     * @throws NullPointerException if any item is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4, @NonNull T item5, @NonNull T item6, @NonNull T item7) {
+        Objects.requireNonNull(item1, "item1 is null");
+        Objects.requireNonNull(item2, "item2 is null");
+        Objects.requireNonNull(item3, "item3 is null");
+        Objects.requireNonNull(item4, "item4 is null");
+        Objects.requireNonNull(item5, "item5 is null");
+        Objects.requireNonNull(item6, "item6 is null");
+        Objects.requireNonNull(item7, "item7 is null");
+        return fromArray(item1, item2, item3, item4, item5, item6, item7);
+    }
+
+    /**
+     * Returns a {@code Streamable} that produces the given eight items in order and completes.
+     * @param <T> the element type
+     * @param item1 the first item to produce
+     * @param item2 the second item to produce
+     * @param item3 the third item to produce
+     * @param item4 the fourth item to produce
+     * @param item5 the fifth item to produce
+     * @param item6 the sixth item to produce
+     * @param item7 the seventh item to produce
+     * @param item8 the eighth item to produce
+     * @return the {@code Streamable} instance
+     * @throws NullPointerException if any item is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4,
+            @NonNull T item5, @NonNull T item6, @NonNull T item7, @NonNull T item8) {
+        Objects.requireNonNull(item1, "item1 is null");
+        Objects.requireNonNull(item2, "item2 is null");
+        Objects.requireNonNull(item3, "item3 is null");
+        Objects.requireNonNull(item4, "item4 is null");
+        Objects.requireNonNull(item5, "item5 is null");
+        Objects.requireNonNull(item6, "item6 is null");
+        Objects.requireNonNull(item7, "item7 is null");
+        Objects.requireNonNull(item8, "item8 is null");
+        return fromArray(item1, item2, item3, item4, item5, item6, item7, item8);
+    }
+
+    /**
+     * Returns a {@code Streamable} that produces the given nine items in order and completes.
+     * @param <T> the element type
+     * @param item1 the first item to produce
+     * @param item2 the second item to produce
+     * @param item3 the third item to produce
+     * @param item4 the fourth item to produce
+     * @param item5 the fifth item to produce
+     * @param item6 the sixth item to produce
+     * @param item7 the seventh item to produce
+     * @param item8 the eighth item to produce
+     * @param item9 the ninth item to produce
+     * @return the {@code Streamable} instance
+     * @throws NullPointerException if any item is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4,
+            @NonNull T item5, @NonNull T item6, @NonNull T item7, @NonNull T item8, @NonNull T item9) {
+        Objects.requireNonNull(item1, "item1 is null");
+        Objects.requireNonNull(item2, "item2 is null");
+        Objects.requireNonNull(item3, "item3 is null");
+        Objects.requireNonNull(item4, "item4 is null");
+        Objects.requireNonNull(item5, "item5 is null");
+        Objects.requireNonNull(item6, "item6 is null");
+        Objects.requireNonNull(item7, "item7 is null");
+        Objects.requireNonNull(item8, "item8 is null");
+        Objects.requireNonNull(item9, "item9 is null");
+        return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9);
+    }
+
+    /**
+     * Returns a {@code Streamable} that produces the given ten items in order and completes.
+     * @param <T> the element type
+     * @param item1 the first item to produce
+     * @param item2 the second item to produce
+     * @param item3 the third item to produce
+     * @param item4 the fourth item to produce
+     * @param item5 the fifth item to produce
+     * @param item6 the sixth item to produce
+     * @param item7 the seventh item to produce
+     * @param item8 the eighth item to produce
+     * @param item9 the ninth item to produce
+     * @param item10 the tenth item to produce
+     * @return the {@code Streamable} instance
+     * @throws NullPointerException if any item is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    static <@NonNull T> Streamable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4,
+            @NonNull T item5, @NonNull T item6, @NonNull T item7, @NonNull T item8, @NonNull T item9, @NonNull T item10) {
+        Objects.requireNonNull(item1, "item1 is null");
+        Objects.requireNonNull(item2, "item2 is null");
+        Objects.requireNonNull(item3, "item3 is null");
+        Objects.requireNonNull(item4, "item4 is null");
+        Objects.requireNonNull(item5, "item5 is null");
+        Objects.requireNonNull(item6, "item6 is null");
+        Objects.requireNonNull(item7, "item7 is null");
+        Objects.requireNonNull(item8, "item8 is null");
+        Objects.requireNonNull(item9, "item9 is null");
+        Objects.requireNonNull(item10, "item10 is null");
+        return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10);
+    }
+
+    /**
      * Returns an {@code Streamable} that never produces an item and never terminates.
      * @param <T> the element type
      * @return the {@code Streamable} instance
