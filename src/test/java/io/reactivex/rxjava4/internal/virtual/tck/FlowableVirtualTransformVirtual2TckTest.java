@@ -26,6 +26,10 @@ import io.reactivex.rxjava4.tck.BaseTck;
 @Test
 public class FlowableVirtualTransformVirtual2TckTest extends BaseTck<Long> {
 
+    public FlowableVirtualTransformVirtual2TckTest() {
+        super(50);
+    }
+
     @Override
     public Publisher<Long> createFlowPublisher(final long elements) {
         var half = elements >> 1;
