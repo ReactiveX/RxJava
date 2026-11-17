@@ -488,7 +488,7 @@ public interface Streamable<@NonNull T> {
      * @param item1 the first item to produce
      * @param item2 the second item to produce
      * @return the {@code Streamable} instance
-     * @throws NullPointerException if any item is {@code null}
+     * @throws NullPointerException if {@code item1} or {@code item2} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -505,7 +505,7 @@ public interface Streamable<@NonNull T> {
      * @param item2 the second item to produce
      * @param item3 the third item to produce
      * @return the {@code Streamable} instance
-     * @throws NullPointerException if any item is {@code null}
+     * @throws NullPointerException if {@code item1}, {@code item2} or {@code item3} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -524,7 +524,7 @@ public interface Streamable<@NonNull T> {
      * @param item3 the third item to produce
      * @param item4 the fourth item to produce
      * @return the {@code Streamable} instance
-     * @throws NullPointerException if any item is {@code null}
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3} or {@code item4} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -545,7 +545,7 @@ public interface Streamable<@NonNull T> {
      * @param item4 the fourth item to produce
      * @param item5 the fifth item to produce
      * @return the {@code Streamable} instance
-     * @throws NullPointerException if any item is {@code null}
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3}, {@code item4} or {@code item5} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -568,7 +568,7 @@ public interface Streamable<@NonNull T> {
      * @param item5 the fifth item to produce
      * @param item6 the sixth item to produce
      * @return the {@code Streamable} instance
-     * @throws NullPointerException if any item is {@code null}
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3}, {@code item4}, {@code item5} or {@code item6} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -593,7 +593,8 @@ public interface Streamable<@NonNull T> {
      * @param item6 the sixth item to produce
      * @param item7 the seventh item to produce
      * @return the {@code Streamable} instance
-     * @throws NullPointerException if any item is {@code null}
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3}, {@code item4},
+     *                              {@code item5}, {@code item6} or {@code item7} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -620,7 +621,8 @@ public interface Streamable<@NonNull T> {
      * @param item7 the seventh item to produce
      * @param item8 the eighth item to produce
      * @return the {@code Streamable} instance
-     * @throws NullPointerException if any item is {@code null}
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3}, {@code item4},
+     *                              {@code item5}, {@code item6}, {@code item7} or {@code item8} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -650,7 +652,8 @@ public interface Streamable<@NonNull T> {
      * @param item8 the eighth item to produce
      * @param item9 the ninth item to produce
      * @return the {@code Streamable} instance
-     * @throws NullPointerException if any item is {@code null}
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3}, {@code item4},
+     *                              {@code item5}, {@code item6}, {@code item7}, {@code item8} or {@code item9} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -682,7 +685,8 @@ public interface Streamable<@NonNull T> {
      * @param item9 the ninth item to produce
      * @param item10 the tenth item to produce
      * @return the {@code Streamable} instance
-     * @throws NullPointerException if any item is {@code null}
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3}, {@code item4}, {@code item5},
+     *                              {@code item6}, {@code item7}, {@code item8}, {@code item9} or {@code item10} is {@code null}
      */
     @CheckReturnValue
     @NonNull
