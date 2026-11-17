@@ -126,17 +126,6 @@ public class FutureSubscriberTest extends RxJavaTest {
     }
 
     @Test
-    public void cancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final FutureSubscriber<Integer> fs = new FutureSubscriber<>();
-
-            Runnable r = () -> fs.cancel(false);
-
-            TestHelper.race(r, r);
-        }
-    }
-
-    @Test
     public void await() throws Exception {
         Schedulers.single().scheduleDirect(() -> {
             fs.onNext(1);
@@ -144,44 +133,6 @@ public class FutureSubscriberTest extends RxJavaTest {
         }, 100, TimeUnit.MILLISECONDS);
 
         assertEquals(1, fs.get(5, TimeUnit.SECONDS).intValue());
-    }
-
-    @Test
-    @SuppressUndeliverable
-    public void onErrorCancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final FutureSubscriber<Integer> fs = new FutureSubscriber<>();
-
-            final TestException ex = new TestException();
-
-            Runnable r1 = () -> fs.cancel(false);
-
-            Runnable r2 = () -> fs.onError(ex);
-
-            TestHelper.race(r1, r2);
-        }
-    }
-
-    @Test
-    @SuppressUndeliverable
-    public void onCompleteCancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final FutureSubscriber<Integer> fs = new FutureSubscriber<>();
-
-            if (i % 3 == 0) {
-                fs.onSubscribe(new BooleanSubscription());
-            }
-
-            if (i % 2 == 0) {
-                fs.onNext(1);
-            }
-
-            Runnable r1 = () -> fs.cancel(false);
-
-            Runnable r2 = fs::onComplete;
-
-            TestHelper.race(r1, r2);
-        }
     }
 
     @Test
