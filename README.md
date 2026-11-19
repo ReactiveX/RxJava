@@ -1,6 +1,6 @@
 # RxJava: Reactive Extensions for the JVM
 
-## :information_source: 4.0.0 release: 2026.11.30. Monday. [Track](https://github.com/ReactiveX/RxJava/milestone/30)
+## :information_source: 4.0.0 release: 2027.04.26. Monday. [Track](https://github.com/ReactiveX/RxJava/milestone/30)
 
 [![Maven Central](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava4/rxjava/badge.svg)](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava4/rxjava)
 [![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=4.x)](https://codecov.io/gh/ReactiveX/RxJava/branch/4.x)
