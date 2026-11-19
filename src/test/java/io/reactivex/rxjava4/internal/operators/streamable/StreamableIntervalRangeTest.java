@@ -317,6 +317,23 @@ public class StreamableIntervalRangeTest extends StreamableBaseTest {
     }
 
     @Test
+    public void maxValueEnd() {
+        Streamable.intervalRange(Long.MAX_VALUE - 2, 3, 1, 1, TimeUnit.MILLISECONDS, Schedulers.single())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(Long.MAX_VALUE - 2, Long.MAX_VALUE - 1, Long.MAX_VALUE);
+    }
+
+    @Test
+    public void unlimitedFromOne() {
+        Streamable.intervalRange(1, Long.MAX_VALUE, 1, 1, TimeUnit.MILLISECONDS, Schedulers.single())
+        .take(3)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1L, 2L, 3L);
+    }
+
+    @Test
     public void underflowLongExec() throws Throwable {
         assertThrows(IllegalArgumentException.class, () -> {
             withVirtual(exec -> {

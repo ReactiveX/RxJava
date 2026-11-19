@@ -87,7 +87,7 @@ public record StreamableIntervalRange(
         public void run() {
             var c = counterTask++;
             available = c;
-            if (c + 1 >= end) {
+            if (c + 1 - end >= 0) {
                 DisposableHelper.dispose(this);
             }
             for (;;) {
@@ -107,7 +107,7 @@ public record StreamableIntervalRange(
         public @NonNull CompletionStage<Boolean> next() {
             waiter.getAndSet(null);
             for (;;) {
-                if (counterLocal >= end) {
+                if (counterLocal - end >= 0) {
                     return NEXT_FALSE;
                 }
                 var c = current;
