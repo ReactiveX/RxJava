@@ -11,18 +11,45 @@ jobs:
   post-to-x:
     runs-on: ubuntu-latest
     steps:
-      - name: Post to @RxJava
-        uses: captradeoff/x-post-action@3538d7eeb4e7d50013ed06127f352967967da8c9 # v1.2
+      - uses: actions/setup-node@v4
         with:
-          appKey: ${{ secrets.X_APP_KEY }}
-          appSecret: ${{ secrets.X_APP_SECRET }}
-          accessToken: ${{ secrets.X_ACCESS_TOKEN }}
-          accessSecret: ${{ secrets.X_ACCESS_SECRET }}
-          message: |
-            RxJava ${{ github.event.release.tag_name }} released!🤘
+          node-version: 22
 
-            💿 or'd 🗨️ https://dsc.gg/rxjava  
+      - name: Install twitter-api-v2
+        run: npm install --no-save --no-package-lock twitter-api-v2@1
 
-            Changelog  🫴 https://github.com/ReactiveX/RxJava/releases/tag/${{ github.event.release.tag_name }}
+      - name: Post to @RxJava
+        env:
+          X_APP_KEY: ${{ secrets.X_APP_KEY }}
+          X_APP_SECRET: ${{ secrets.X_APP_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          node --input-type=module <<'EOF'
+          import { TwitterApi } from 'twitter-api-v2';
 
-            🫡 @akarnokd
+          const client = new TwitterApi({
+            appKey: process.env.X_APP_KEY,
+            appSecret: process.env.X_APP_SECRET,
+            accessToken: process.env.X_ACCESS_TOKEN,
+            accessSecret: process.env.X_ACCESS_SECRET,
+          });
+
+          const tag = process.env.TAG;
+          const message = `RxJava ${tag} released!🤘
+
+          💿 or'd 🗨️ https://dsc.gg/rxjava
+
+          Changelog  🫴 https://github.com/ReactiveX/RxJava/releases/tag/${tag}
+
+          🫡 @akarnokd`.replace(/^ {10}/gm, '');
+
+          try {
+            const { data } = await client.v2.tweet(message);
+            console.log(`Posted: https://x.com/RxJava/status/${data.id}`);
+          } catch (e) {
+            console.error(e?.data ?? e);
+            process.exit(1);
+          }
+          EOF
