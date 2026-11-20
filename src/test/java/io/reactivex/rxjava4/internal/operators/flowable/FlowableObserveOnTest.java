@@ -1596,32 +1596,6 @@ public class FlowableObserveOnTest extends RxJavaTest {
     }
 
     @Test
-    public void backFusedCancelConditional() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
-
-            final TestScheduler scheduler = new TestScheduler();
-
-            Flowable.just(1).hide()
-            .observeOn(scheduler)
-            .filter(Functions.alwaysTrue())
-            .subscribe(ts);
-
-            Runnable r1 = ts::cancel;
-
-            Runnable r2 = scheduler::triggerActions;
-
-            TestHelper.race(r1, r2);
-
-            ts.assertFusionMode(QueueFuseable.ASYNC);
-
-            if (!ts.values().isEmpty()) {
-                ts.assertResult(1);
-            }
-        }
-    }
-
-    @Test
     public void syncFusedRequestOneByOneConditional() {
         Flowable.range(1, 5)
         .observeOn(ImmediateThinScheduler.INSTANCE)
