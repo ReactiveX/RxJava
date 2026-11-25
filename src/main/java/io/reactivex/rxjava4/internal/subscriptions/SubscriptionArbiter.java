@@ -71,6 +71,15 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
         Objects.requireNonNull(s, "s is null");
 
         if (get() == 0 && compareAndSet(0, 1)) {
+            if (cancelled) {
+                // a cancel() that ran entirely between the check above and the CAS
+                // has already drained and will not see this subscription
+                s.cancel();
+                if (decrementAndGet() != 0) {
+                    drainLoop();
+                }
+                return;
+            }
             Subscription a = actual;
 
             if (a != null && cancelOnReplace) {
